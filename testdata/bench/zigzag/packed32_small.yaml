@@ -1,0 +1,147 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: fastpb.test.Repeated
+benchmark: true
+protoscope: | # go run testdata/bench/gen_repeated.go -f '%dz' -hi 128 -n 2048
+  3: {
+    24z  39z  111z 44z  62z  57z  39z  84z  64z  45z  66z  26z  13z  110z 49z  26z
+    101z 30z  47z  10z  91z  63z  86z  105z 127z 6z   76z  9z   103z 32z  114z 63z
+    88z  35z  27z  36z  71z  124z 0z   100z 118z 24z  0z   108z 77z  11z  127z 98z
+    32z  52z  37z  49z  48z  107z 85z  24z  87z  118z 98z  43z  71z  64z  19z  32z
+    61z  33z  101z 80z  101z 16z  30z  48z  116z 56z  113z 101z 42z  14z  6z   115z
+    75z  107z 101z 50z  75z  38z  92z  108z 46z  120z 30z  95z  102z 46z  9z   75z
+    81z  39z  11z  35z  93z  107z 35z  52z  85z  24z  74z  17z  81z  76z  54z  78z
+    54z  30z  46z  112z 63z  66z  68z  110z 127z 95z  124z 113z 25z  19z  124z 126z
+    82z  16z  70z  51z  11z  26z  50z  119z 90z  1z   64z  46z  102z 53z  35z  51z
+    26z  58z  80z  25z  6z   9z   6z   66z  42z  10z  76z  69z  100z 81z  4z   3z
+    108z 37z  37z  7z   74z  72z  48z  120z 73z  95z  65z  84z  65z  127z 92z  18z
+    19z  57z  62z  99z  96z  3z   100z 105z 23z  95z  48z  84z  95z  38z  75z  51z
+    115z 11z  90z  34z  106z 27z  91z  5z   78z  43z  24z  49z  67z  2z   38z  30z
+    70z  101z 9z   15z  14z  56z  90z  20z  63z  55z  31z  2z   123z 107z 117z 105z
+    16z  90z  8z   6z   56z  73z  91z  66z  105z 5z   90z  108z 99z  102z 120z 38z
+    41z  85z  80z  30z  47z  55z  6z   107z 93z  1z   32z  69z  12z  42z  78z  108z
+    58z  68z  66z  125z 25z  67z  106z 69z  59z  83z  13z  87z  16z  56z  20z  50z
+    113z 77z  77z  119z 95z  126z 64z  107z 83z  50z  68z  122z 119z 92z  42z  53z
+    42z  43z  60z  87z  75z  24z  45z  119z 17z  114z 5z   65z  8z   24z  13z  123z
+    52z  34z  96z  39z  22z  107z 119z 45z  78z  124z 109z 8z   8z   81z  110z 75z
+    51z  93z  70z  2z   10z  107z 76z  44z  3z   59z  120z 29z  63z  5z   110z 48z
+    2z   103z 74z  100z 37z  94z  52z  107z 10z  101z 77z  74z  113z 9z   31z  13z
+    104z 86z  87z  46z  109z 77z  87z  107z 117z 41z  105z 85z  45z  114z 105z 118z
+    88z  56z  8z   17z  112z 42z  69z  92z  119z 71z  1z   80z  119z 96z  36z  35z
+    37z  108z 48z  39z  81z  9z   75z  105z 69z  97z  34z  36z  44z  9z   62z  24z
+    117z 48z  65z  61z  47z  113z 111z 115z 50z  113z 18z  69z  103z 36z  86z  112z
+    97z  98z  88z  26z  72z  58z  109z 118z 16z  94z  87z  104z 90z  64z  29z  40z
+    116z 40z  84z  29z  10z  17z  33z  80z  76z  27z  7z   82z  51z  62z  21z  95z
+    28z  1z   88z  121z 87z  31z  43z  37z  127z 49z  47z  34z  6z   126z 29z  71z
+    105z 51z  28z  33z  111z 114z 55z  10z  84z  36z  125z 51z  107z 104z 12z  71z
+    116z 63z  57z  122z 115z 126z 39z  110z 10z  23z  36z  124z 52z  82z  9z   5z
+    45z  39z  88z  99z  13z  15z  114z 79z  88z  105z 122z 95z  84z  1z   109z 63z
+    120z 94z  72z  25z  90z  86z  39z  30z  16z  86z  35z  119z 110z 45z  127z 69z
+    98z  41z  92z  111z 34z  14z  77z  103z 110z 78z  87z  39z  91z  87z  103z 68z
+    42z  99z  84z  10z  14z  47z  79z  123z 93z  13z  60z  4z   46z  43z  17z  53z
+    32z  5z   86z  49z  1z   33z  45z  14z  69z  25z  103z 48z  103z 95z  106z 25z
+    23z  76z  27z  121z 117z 115z 87z  36z  51z  84z  21z  28z  104z 40z  64z  102z
+    87z  36z  16z  57z  127z 94z  46z  28z  65z  23z  33z  73z  28z  1z   113z 63z
+    57z  4z   119z 99z  100z 92z  122z 90z  42z  123z 118z 12z  1z   33z  72z  92z
+    16z  106z 36z  79z  62z  8z   49z  47z  0z   33z  57z  2z   20z  81z  106z 54z
+    51z  17z  117z 26z  50z  82z  92z  101z 125z 51z  77z  60z  79z  125z 26z  13z
+    54z  28z  64z  101z 81z  36z  65z  38z  95z  26z  97z  5z   39z  25z  3z   107z
+    7z   45z  63z  76z  90z  117z 111z 19z  4z   81z  1z   42z  32z  64z  54z  23z
+    46z  121z 103z 115z 124z 65z  98z  92z  36z  88z  38z  96z  27z  67z  85z  105z
+    45z  22z  33z  39z  87z  21z  13z  8z   47z  40z  80z  36z  23z  37z  2z   67z
+    88z  17z  114z 20z  122z 59z  103z 118z 62z  35z  61z  51z  85z  5z   100z 10z
+    48z  96z  21z  78z  19z  57z  112z 45z  49z  68z  37z  127z 44z  35z  34z  118z
+    34z  29z  121z 37z  68z  114z 38z  42z  77z  21z  29z  22z  123z 69z  101z 18z
+    111z 22z  109z 39z  65z  3z   30z  42z  35z  77z  40z  79z  92z  110z 29z  44z
+    53z  43z  68z  15z  38z  57z  6z   17z  59z  89z  73z  80z  9z   74z  40z  60z
+    3z   7z   23z  78z  34z  81z  125z 15z  59z  55z  74z  83z  53z  30z  19z  123z
+    38z  35z  121z 17z  1z   92z  35z  85z  5z   51z  119z 105z 90z  17z  77z  92z
+    98z  98z  118z 90z  81z  108z 29z  14z  113z 28z  3z   53z  90z  38z  2z   73z
+    119z 64z  26z  65z  83z  104z 35z  30z  14z  40z  108z 49z  78z  102z 59z  62z
+    58z  116z 59z  4z   34z  71z  24z  20z  34z  64z  8z   101z 72z  43z  102z 81z
+    75z  9z   59z  92z  106z 31z  108z 86z  74z  41z  62z  105z 77z  101z 3z   29z
+    5z   24z  123z 70z  93z  29z  6z   4z   35z  14z  110z 115z 19z  64z  70z  29z
+    56z  12z  45z  114z 73z  110z 87z  50z  113z 52z  90z  56z  17z  102z 87z  36z
+    72z  73z  108z 96z  103z 13z  111z 122z 22z  126z 54z  55z  98z  39z  119z 93z
+    112z 50z  21z  109z 31z  13z  72z  94z  87z  29z  115z 43z  42z  87z  2z   79z
+    124z 40z  108z 18z  53z  69z  89z  37z  96z  99z  15z  97z  108z 10z  50z  122z
+    67z  84z  102z 91z  94z  121z 113z 96z  92z  119z 10z  69z  49z  18z  69z  38z
+    110z 56z  69z  127z 126z 115z 125z 4z   81z  74z  72z  14z  100z 127z 123z 108z
+    62z  59z  76z  120z 0z   85z  57z  56z  96z  11z  39z  21z  18z  15z  29z  117z
+    112z 99z  47z  81z  14z  44z  97z  58z  36z  116z 22z  96z  59z  32z  82z  60z
+    71z  122z 11z  11z  83z  38z  34z  36z  97z  112z 88z  25z  26z  9z   36z  85z
+    31z  29z  124z 35z  42z  109z 12z  32z  120z 69z  88z  82z  32z  93z  61z  65z
+    57z  48z  1z   52z  79z  0z   107z 17z  56z  70z  12z  73z  74z  45z  88z  85z
+    76z  72z  2z   61z  6z   112z 121z 91z  117z 53z  92z  21z  68z  2z   67z  59z
+    66z  22z  70z  27z  65z  30z  9z   110z 117z 118z 64z  21z  112z 84z  66z  63z
+    124z 83z  2z   95z  24z  6z   8z   23z  67z  48z  94z  95z  54z  23z  16z  91z
+    19z  103z 83z  103z 67z  19z  118z 123z 126z 43z  83z  17z  37z  46z  123z 106z
+    104z 44z  12z  77z  54z  17z  111z 93z  28z  107z 116z 14z  68z  51z  99z  99z
+    110z 21z  32z  59z  56z  106z 27z  18z  88z  0z   79z  2z   48z  71z  116z 85z
+    70z  67z  101z 14z  85z  102z 116z 124z 32z  33z  69z  126z 62z  122z 61z  71z
+    86z  5z   110z 86z  26z  47z  0z   47z  83z  112z 109z 8z   72z  119z 105z 57z
+    100z 96z  125z 63z  10z  96z  84z  36z  58z  36z  60z  18z  62z  76z  77z  108z
+    17z  58z  104z 9z   110z 15z  61z  66z  70z  31z  26z  122z 1z   90z  60z  96z
+    105z 20z  84z  80z  45z  95z  93z  24z  13z  38z  85z  12z  93z  105z 2z   12z
+    53z  0z   127z 25z  103z 67z  26z  22z  95z  114z 39z  8z   57z  43z  77z  123z
+    125z 17z  74z  69z  127z 30z  59z  21z  54z  110z 117z 39z  84z  89z  65z  107z
+    94z  60z  114z 16z  18z  55z  95z  30z  61z  7z   36z  106z 28z  104z 38z  3z
+    125z 84z  53z  113z 83z  78z  117z 32z  57z  49z  51z  29z  101z 3z   7z   102z
+    115z 93z  113z 75z  70z  18z  101z 73z  86z  30z  22z  65z  65z  52z  113z 71z
+    111z 80z  14z  74z  0z   127z 36z  104z 84z  98z  0z   0z   55z  87z  5z   122z
+    90z  73z  120z 79z  76z  98z  88z  32z  98z  3z   34z  1z   14z  23z  124z 84z
+    126z 103z 82z  99z  0z   7z   23z  88z  15z  109z 31z  118z 49z  104z 27z  87z
+    60z  91z  38z  117z 21z  31z  58z  16z  35z  119z 0z   95z  89z  72z  74z  72z
+    81z  21z  35z  109z 102z 103z 32z  35z  46z  31z  5z   45z  33z  59z  49z  74z
+    59z  91z  90z  75z  46z  72z  114z 48z  48z  78z  121z 71z  70z  36z  2z   84z
+    69z  101z 13z  10z  33z  11z  44z  119z 31z  15z  117z 120z 24z  81z  101z 98z
+    94z  103z 101z 85z  9z   12z  108z 20z  94z  60z  23z  1z   12z  37z  113z 115z
+    121z 32z  127z 59z  83z  57z  117z 105z 0z   95z  99z  84z  86z  97z  55z  66z
+    112z 5z   50z  92z  92z  127z 53z  0z   67z  25z  60z  88z  99z  67z  73z  57z
+    15z  80z  123z 63z  86z  88z  28z  54z  60z  27z  25z  28z  57z  32z  105z 45z
+    102z 7z   29z  0z   79z  13z  33z  119z 53z  123z 18z  40z  59z  120z 45z  102z
+    45z  53z  72z  118z 98z  25z  123z 29z  84z  124z 34z  54z  50z  37z  39z  63z
+    0z   8z   63z  51z  51z  73z  127z 98z  41z  12z  52z  69z  13z  77z  33z  49z
+    60z  37z  85z  107z 56z  24z  62z  97z  17z  117z 76z  91z  0z   94z  87z  22z
+    62z  74z  105z 112z 38z  18z  64z  79z  59z  82z  33z  102z 0z   63z  107z 85z
+    57z  116z 64z  22z  34z  110z 122z 46z  98z  48z  117z 111z 39z  88z  46z  49z
+    89z  102z 29z  109z 14z  1z   27z  57z  6z   53z  22z  104z 26z  76z  84z  106z
+    41z  29z  63z  14z  41z  115z 73z  80z  40z  97z  28z  72z  46z  46z  80z  105z
+    71z  30z  116z 46z  125z 28z  14z  68z  84z  27z  54z  19z  111z 82z  114z 17z
+    34z  82z  62z  58z  94z  28z  23z  7z   112z 2z   43z  49z  30z  61z  12z  5z
+    97z  38z  109z 8z   23z  48z  127z 16z  33z  101z 16z  127z 3z   78z  34z  35z
+    43z  59z  54z  10z  119z 43z  58z  35z  1z   109z 67z  23z  47z  97z  44z  63z
+    88z  20z  72z  53z  20z  34z  33z  41z  7z   87z  62z  56z  88z  46z  73z  65z
+    86z  37z  103z 8z   89z  84z  50z  116z 114z 10z  15z  84z  102z 38z  22z  90z
+    16z  87z  29z  32z  109z 53z  51z  113z 32z  4z   76z  30z  80z  79z  113z 56z
+    100z 44z  116z 123z 89z  82z  70z  48z  106z 87z  70z  27z  7z   109z 48z  98z
+    52z  114z 25z  36z  122z 97z  111z 32z  73z  15z  83z  94z  31z  13z  12z  58z
+    94z  126z 73z  105z 32z  39z  36z  89z  120z 18z  44z  78z  18z  120z 45z  32z
+    86z  101z 58z  58z  57z  65z  116z 12z  12z  81z  27z  98z  97z  24z  40z  115z
+    100z 26z  23z  70z  85z  32z  114z 109z 121z 10z  99z  65z  91z  14z  75z  18z
+    92z  110z 57z  104z 83z  70z  24z  40z  30z  93z  82z  13z  114z 69z  122z 47z
+    51z  15z  14z  56z  44z  122z 45z  34z  2z   13z  93z  67z  115z 66z  12z  24z
+    46z  24z  119z 84z  52z  27z  110z 80z  111z 6z   70z  105z 39z  40z  90z  5z
+    89z  23z  78z  78z  43z  89z  40z  11z  85z  104z 35z  95z  105z 69z  102z 59z
+    43z  30z  58z  127z 83z  5z   111z 30z  36z  99z  69z  102z 61z  102z 110z 55z
+    13z  47z  118z 85z  8z   70z  51z  81z  6z   28z  77z  4z   81z  15z  28z  126z
+    114z 28z  9z   27z  119z 68z  11z  68z  93z  85z  45z  121z 79z  74z  94z  105z
+    112z 94z  89z  94z  31z  97z  126z 10z  113z 86z  44z  55z  117z 69z  101z 83z
+    78z  86z  6z   61z  14z  11z  18z  2z   104z 51z  77z  1z   98z  70z  37z  114z
+    85z  72z  108z 90z  45z  80z  100z 21z  76z  98z  84z  26z  2z   100z 24z  53z
+    26z  66z  34z  113z 38z  39z  21z  100z 107z 49z  40z  91z  15z  40z  59z  107z
+    12z  97z  33z  85z  57z  112z 84z  47z  45z  28z  119z 29z  116z 5z   93z  38z
+    13z  47z  58z  65z  62z  25z  95z  7z   114z 46z  120z 46z  40z  22z  40z  119z
+  }

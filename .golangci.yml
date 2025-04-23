@@ -1,0 +1,102 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+linters:
+  enable-all: true
+  disable:
+    - depguard          # We don't have import restrictions.
+    - dogsled           # Rejects correct code.
+    - dupl              # Lots of false positives.
+    - errname           # Our errors are named errXXX or ErrXXX.
+    - exhaustive        # Seemingly made of false positives.
+    - exhaustruct       # Listing every field is not idiomatic.
+    - forbidigo         # We don't have forbidden patterns.
+    - forcetypeassert   # Covered by errcheck.
+
+    - gochecknoglobals  # Globals are good actually.
+    - gochecknoinits    # Ditto. ^
+
+    - gocognit          # Dubious "cognitive overhead" quantification.
+    - gocyclo           # Cyclotomic analysis is redundant.
+    - funlen            # Ditto. ^
+    - cyclop            # Ditto. ^
+    - maintidx          # Ditto. ^
+
+    - rowserrcheck      # No SQL code.
+    - sqlclosecheck     # Ditto. ^
+    
+    - nlreturn          # Generous whitespace violates house style.
+    - wsl               # Ditto. ^
+
+    - predeclared       # Using predeclared names as variables is fine.
+    - revive            # Ditto. ^
+
+    - lll               # More trouble than it's worth.
+    - makezero          # Appending to non-empty slices is ok.
+    - nestif            # This encourages artificially breaking things up.
+    - nonamedreturns    # Named returns are awesome.
+    - unparam           # Getting rid of redundant params is often unhelpful.
+    - varnamelen        # Single letter names are fine. This is Go, after all.
+    - inamedparam       # Named params in interface signatures are not always necessary.
+    - ireturn           # "Accept interfaces, return structs" isn't ironclad.
+    - mnd               # Some unnamed constants are okay.
+    - protogetter       # Lots of false positives, Can't use getter to check if field is present.
+    - tenv              # Deprecated in golangci-lint v1.64.0.
+    - testpackage       # Internal tests are fine.
+    - wastedassign      # Not supported with generics.
+    - wrapcheck         # Don't always need to wrap errors.
+
+
+linters-settings:
+  errcheck: { check-type-assertions: true }
+
+  gci:
+    # Section configuration to compare against.
+    # Section names are case-insensitive and may contain parameters in ().
+    # The default order of sections is `standard > default > custom > blank > dot`,
+    # If `custom-order` is `true`, it follows the order of `sections` option.
+    # Default: ["standard", "default"]
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/bufbuild/fastpb) # Custom section: groups all imports with the specified Prefix.
+
+  godox:
+    # TODO, OPT, etc. comments are fine to commit. Use FIXME comments for
+    # temporary hacks, and use godox to prevent committing them.
+    keywords: [FIXME]
+
+  govet:
+    disable: [ptrcheck] # No hope of passing this.
+
+issues:
+  exclude-dirs-use-default: false
+
+  exclude:
+    # Don't ban use of fmt.Errorf to create new errors, but the remaining
+    # checks from err113 are useful.
+    - "do not define dynamic errors.*"
+    # The integer overflow is excessively noisy since it doesn't seem to
+    # go away by adding appropriate range checks.
+    - "G115: integer overflow conversion.*"
+    # We call this parameter `t`.
+    - "parameter testing.TB should have name tb"
+
+  exclude-rules:
+    # dupword reports several errors in .proto test fixtures
+    # gosec reports a few minor issues in tests
+    - path: _test\.go
+      linters:
+        - dupword
+        - gosec

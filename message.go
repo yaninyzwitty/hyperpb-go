@@ -1,0 +1,480 @@
+// Copyright 2020-2025 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package fastpb
+
+import (
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/runtime/protoiface"
+
+	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/unsafe2"
+)
+
+// Message is a dynamic message value constructed with this package.
+//
+// Messages types returned by this package implement this interface.
+type Message interface {
+	proto.Message
+
+	// Context returns the context that owns this message.
+	Context() *Context
+
+	// Unmarshal is like [proto.Unmarshal], but permits fastpb-specific
+	// tuning options to be set.
+	//
+	// The returned error may additionally implement a method with the signature
+	//
+	//	Offset() int
+	//
+	// This function will return the approximate offset into data at which the
+	// error occurred.
+	Unmarshal([]byte, ...UnmarshalOption) error
+}
+
+// New allocates a new message of the given type.
+//
+// See [Context.New].
+func New(ty Type) Message {
+	return new(Context).New(ty)
+}
+
+// message is a dynamic message value.
+//
+// A *message lives on some arena, and all of its submessages do too. Because
+// arenas are designed such that if a pointer to any of its allocated data is
+// reachable, the whole arena is reachable, simply holding a *message into
+// the arena will keep everything else alive, including the *root, which is
+// arena-
+//
+// This means that *message values not being directly operated on by the
+// application do not need to be marked by the GC, because their memory already
+// gets marked whenever the GC sweeps a *root. As such, all of the fields of
+// a message are laid out in memory that follows it.
+type message struct {
+	context *Context
+	ty      Type
+
+	// Fields follow this. The bitset words are allocated immediately after
+	// the end of the message, so they are easy to offset to.
+	//
+	// The field data follows that, and offsets into the field data are already
+	// baked to include both the message header and the bitset words.
+}
+
+// getBit gets the value of the nth bit from this message's bitset.
+func (m *message) getBit(n uint32) bool {
+	size, _ := unsafe2.Layout[message]()
+	word := unsafe2.ByteLoad[uint32](m, size+int(n)/32*4)
+	mask := uint32(1) << (n % 32)
+	return word&mask != 0
+}
+
+// setBit sets the value of the nth bit from this message's bitset.
+func (m *message) setBit(n uint32, flag bool) {
+	word := unsafe2.Add(unsafe2.Cast[uint32](unsafe2.Add(m, 1)), int(n)/32)
+	mask := uint32(1) << (n % 32)
+
+	if flag {
+		*word |= mask
+	} else {
+		*word &^= mask
+	}
+}
+
+func (m *message) Context() *Context {
+	return m.context
+}
+
+func (m *message) Unmarshal(data []byte, options ...UnmarshalOption) error {
+	return startParse(m, data, options...)
+}
+
+func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
+	m := in.Message.(*message) //nolint:errcheck // Only called on *message values.
+	err = m.Unmarshal(in.Buf)
+	return out, err
+}
+
+func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInitializedOutput, err error) {
+	// Required fields are not real.
+	return out, nil
+}
+
+// Context is state that is shared by all messages in a particular tree of
+// messages.
+//
+// A zero context is ready to use.
+type Context struct {
+	// Context is the only memory not allocated on the arena.
+	arena arena.Arena
+	src   *byte
+	len   int
+}
+
+// New allocates a new message in this context.
+func (c *Context) New(ty Type) Message {
+	if c == nil {
+		c = new(Context)
+	}
+
+	// Easy mistake to make: the memory allocated in alloc() contains no
+	// pointers, so even though ty is "reachable" through m, it's not reachable
+	// from the GC's perspective, so we need to mark it as alive here.
+	//
+	// This implicitly marks all other types reachable from ty as alive, meaning
+	// we only need to do this for top-level calls to New().
+	c.arena.KeepAlive(ty)
+
+	return c.alloc(ty)
+}
+
+// Free releases any resources held by this context, allowing them to be re-used.
+//
+// Any messages previously parsed using this context must not be reused.
+func (c *Context) Free() {
+	c.arena.Free()
+	c.src = nil
+}
+
+func (c *Context) alloc(ty Type) *message {
+	data := c.arena.Alloc(int(ty.raw.size))
+	m := unsafe2.Cast[message](data)
+	unsafe2.StoreNoWB(&m.context, c)
+	unsafe2.StoreNoWB(&m.ty.raw, ty.raw)
+	return m
+}
+
+//go:noinline
+func (p1 parser1) alloc(p2 parser2) (parser1, parser2, *message) {
+	ty := p2.f().message.ty
+	size := int(ty.raw.size)
+
+	// Open-coded copy of arena.Alloc, which otherwise would not inline.
+	a := p1.arena()
+	// Messages are always pointer-aligned, so we can skip this part.
+	// size += arena.Align - 1
+	// size &^= arena.Align - 1
+
+	var n unsafe2.Addr[byte]
+	n, a.Next = a.Next, a.Next.Add(size)
+	if a.Next <= a.End {
+		p := n.AssertValid()
+		a.Log("alloc", "%v:%v, %d:%d", p, a.Next, size, arena.Align)
+
+		// Go seems unwilling to inline allocInPlace() here.
+		m := unsafe2.Cast[message](p)
+		unsafe2.StoreNoWB(&m.context, p1.c())
+		unsafe2.StoreNoWB(&m.ty.raw, p2.f().message.ty.raw)
+		return p1, p2, m
+	}
+
+	a.Next = n
+	a.Grow(size)
+
+	// This call is guaranteed to not infinite recurse.
+	// Doing a goto to the top of the function seems to confuse Go's register
+	// allocator, causing it to spill p1 and p2 in the prologue.
+	return p1.alloc(p2)
+}
+
+//go:nosplit
+func (p1 parser1) allocInPlace(p2 parser2, data *byte) (parser1, parser2, *message) {
+	m := unsafe2.Cast[message](data)
+	unsafe2.StoreNoWB(&m.context, p1.c())
+	unsafe2.StoreNoWB(&m.ty.raw, p2.f().message.ty.raw)
+	return p1, p2, m
+}
+
+var (
+	_ proto.Message        = new(message)
+	_ protoreflect.Message = new(message)
+)
+
+// ProtoReflect implements [proto.Message].
+func (m *message) ProtoReflect() protoreflect.Message {
+	return m
+}
+
+// Descriptor implements [protoreflect.Message].
+func (m *message) Descriptor() protoreflect.MessageDescriptor {
+	return m.ty.Descriptor()
+}
+
+// Type implements {protoreflect.Message}.
+func (m *message) Type() protoreflect.MessageType {
+	return m.ty
+}
+
+// New implements [protoreflect.Message].
+func (m *message) New() protoreflect.Message {
+	return m.ty.New()
+}
+
+// Interface implements [protoreflect.Message].
+func (m *message) Interface() protoreflect.ProtoMessage {
+	return m
+}
+
+// Range implements [protoreflect.Message].
+func (m *message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if !m.IsValid() {
+		return
+	}
+
+	f := m.ty.byIndex(0)
+	fs := m.Descriptor().Fields()
+	i := 0
+	for f.valid() {
+		if v := f.get(m); v.IsValid() && !yield(fs.Get(i), v) {
+			return
+		}
+		f = unsafe2.Add(f, 1)
+		i++
+	}
+}
+
+// Has implements [protoreflect.Message].
+func (m *message) Has(fd protoreflect.FieldDescriptor) bool {
+	if !m.IsValid() {
+		return false
+	}
+
+	f := m.ty.byDescriptor(fd)
+	if !f.valid() {
+		return false
+	}
+
+	v := f.get(m)
+	switch {
+	case !v.IsValid():
+		return false
+
+	case fd.IsList():
+		_, empty := v.Interface().(emptyList)
+		return !empty
+
+	case fd.IsMap():
+		panic(dbg.Unsupported())
+
+	case fd.Message() != nil:
+		_, empty := v.Interface().(empty)
+		return !empty
+
+	default:
+		return true
+	}
+}
+
+// Clear implements [protoreflect.Message].
+func (m *message) Clear(protoreflect.FieldDescriptor) {
+	if m.context.src == nil {
+		return
+	}
+	panic(dbg.Unsupported())
+}
+
+// Get implements [protoreflect.Message].
+func (m *message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	if !m.IsValid() {
+		// We need to panic here because there's no "reasonable" way to return
+		// a default for message-typed fields here.
+		panic("called Get on nil fastpb.Message")
+	}
+
+	f := m.ty.byDescriptor(fd)
+	if !f.valid() {
+		return protoreflect.ValueOf(nil)
+	}
+
+	if v := f.get(m); v.IsValid() {
+		// NOTE: non-scalar (message/repeated) fields always return a valid value.
+		return v
+	}
+	return fd.Default()
+}
+
+// Set implements [protoreflect.Message].
+//
+// Panics when called.
+func (m *message) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
+	panic(dbg.Unsupported())
+}
+
+// Mutable implements [protoreflect.Message].
+//
+// Panics when called.
+func (m *message) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
+	panic(dbg.Unsupported())
+}
+
+// NewField implements [protoreflect.Message].
+//
+// Panics when called.
+func (m *message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
+	panic(dbg.Unsupported())
+}
+
+// GetUnknown implements [protoreflect.Message].
+func (m *message) GetUnknown() protoreflect.RawFields {
+	return nil
+}
+
+// SetUnknown implements [protoreflect.Message].
+//
+// Panics when called.
+func (m *message) SetUnknown(raw protoreflect.RawFields) {
+	if len(raw) == 0 {
+		return
+	}
+	panic(dbg.Unsupported())
+}
+
+// WhichOneof implements [protoreflect.Message].
+//
+// Panics when called.
+func (m *message) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	panic(dbg.Unsupported())
+}
+
+// IsValid implements [protoreflect.Message].
+func (m *message) IsValid() bool {
+	return m != nil
+}
+
+// ProtoMethods implements [protoreflect.Message].
+func (m *message) ProtoMethods() *protoiface.Methods {
+	return &m.ty.raw.aux.methods
+}
+
+// empty is an empty value of any [Type].
+type empty struct{ ty Type }
+
+var (
+	_ proto.Message        = empty{}
+	_ protoreflect.Message = empty{}
+)
+
+// ProtoReflect implements [proto.Message].
+func (e empty) ProtoReflect() protoreflect.Message {
+	return e
+}
+
+// Descriptor implements [protoreflect.Message].
+func (e empty) Descriptor() protoreflect.MessageDescriptor {
+	return e.ty.Descriptor()
+}
+
+// Type implements {protoreflect.Message}.
+func (e empty) Type() protoreflect.MessageType {
+	return e.ty
+}
+
+// New implements [protoreflect.Message].
+func (e empty) New() protoreflect.Message {
+	return e.ty.New()
+}
+
+// Interface implements [protoreflect.Message].
+func (e empty) Interface() protoreflect.ProtoMessage {
+	return e
+}
+
+// Range implements [protoreflect.Message].
+func (e empty) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {}
+
+// Has implements [protoreflect.Message].
+func (e empty) Has(fd protoreflect.FieldDescriptor) bool {
+	return false
+}
+
+// Clear implements [protoreflect.Message].
+func (e empty) Clear(protoreflect.FieldDescriptor) {}
+
+// Get implements [protoreflect.Message].
+func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	f := e.ty.byDescriptor(fd)
+	if !f.valid() {
+		return protoreflect.ValueOf(nil)
+	}
+
+	switch {
+	case fd.IsList():
+		return protoreflect.ValueOf(emptyList{})
+
+	case fd.IsMap():
+		panic(dbg.Unsupported())
+
+	case fd.Message() != nil:
+		return protoreflect.ValueOf(empty{f.message})
+
+	default:
+		return fd.Default()
+	}
+}
+
+// Set implements [protoreflect.Message].
+//
+// Panics when called.
+func (e empty) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
+	panic(dbg.Unsupported())
+}
+
+// Mutable implements [protoreflect.Message].
+//
+// Panics when called.
+func (e empty) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
+	panic(dbg.Unsupported())
+}
+
+// NewField implements [protoreflect.Message].
+//
+// Panics when called.
+func (e empty) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
+	panic(dbg.Unsupported())
+}
+
+// GetUnknown implements [protoreflect.Message].
+func (e empty) GetUnknown() protoreflect.RawFields {
+	return nil
+}
+
+// SetUnknown implements [protoreflect.Message].
+//
+// Panics when called.
+func (e empty) SetUnknown(raw protoreflect.RawFields) {
+	if len(raw) == 0 {
+		return
+	}
+	panic(dbg.Unsupported())
+}
+
+// WhichOneof implements [protoreflect.Message].
+//
+// Panics when called.
+func (e empty) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	panic(dbg.Unsupported())
+}
+
+// IsValid implements [protoreflect.Message].
+func (e empty) IsValid() bool {
+	return false
+}
+
+// ProtoMethods implements [protoreflect.Message].
+func (e empty) ProtoMethods() *protoiface.Methods {
+	return &e.ty.raw.aux.methods
+}
