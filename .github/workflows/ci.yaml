@@ -1,4 +1,4 @@
-name: ci
+name: CI
 on:
   push:
     branches: [main]
@@ -12,6 +12,7 @@ permissions:
   contents: read
 jobs:
   ci:
+    name: "Tests and Benchmarks"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,7 +37,29 @@ jobs:
         run: make test
 
       - name: Benchmark
-        run: make bench
+        run: BENCHMARK="B/bench/^descriptor.yaml" make bench
+
+      - name: Check Generated Files
+        run: |
+          make generate
+          make checkgenerate
+
+  # Linting is crazy slow because it needs to build tons of code, so we run
+  # it in parallel from everything else.
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.24.x]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with: {go-version: "${{ matrix.go-version }}"}
 
       - name: Lint
-        run: make checkgenerate lint
+        run: make lint

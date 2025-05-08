@@ -19,8 +19,8 @@ package fastpb
 import (
 	"math/bits"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 //go:nosplit
@@ -114,7 +114,7 @@ func appendVarint8(p1 parser1, p2 parser2, v uint8) (parser1, parser2) {
 
 	if rep.isZC() && rep.cap > 0 {
 
-		zc := rep.zc(p1.c().src)
+		zc := repCast[byte](*rep).zc(p1.c().src)
 		slice := arena.NewSlice[uint8](p1.arena(), len(zc)+1)
 		for i, b := range zc {
 			unsafe2.Store(slice.Ptr(), i, uint8(b))
@@ -141,7 +141,7 @@ func appendVarint32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
 
 	if rep.isZC() && rep.cap > 0 {
 
-		zc := rep.zc(p1.c().src)
+		zc := repCast[byte](*rep).zc(p1.c().src)
 		slice := arena.NewSlice[uint32](p1.arena(), len(zc)+1)
 		for i, b := range zc {
 			unsafe2.Store(slice.Ptr(), i, uint32(b))
@@ -168,7 +168,7 @@ func appendVarint64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
 
 	if rep.isZC() && rep.cap > 0 {
 
-		zc := rep.zc(p1.c().src)
+		zc := repCast[byte](*rep).zc(p1.c().src)
 		slice := arena.NewSlice[uint64](p1.arena(), len(zc)+1)
 		for i, b := range zc {
 			unsafe2.Store(slice.Ptr(), i, uint64(b))
@@ -325,22 +325,25 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	rep := unsafe2.Cast[rep[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
 	if rep.isZC() {
 
-		if rep.cap > 0 {
+		switch {
+		case rep.cap > 0:
 
-			zc := rep.zc(p1.c().src)
+			zc := repCast[byte](*rep).zc(p1.c().src)
 			slice := arena.NewSlice[uint8](p1.arena(), len(zc)+int(count))
 			for i, b := range zc {
 				unsafe2.Store(slice.Ptr(), i, uint8(b))
 			}
 			rep.setArena(slice)
-		} else if count == n {
+
+		case count == n:
 			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
 
 			rep.setZC(zc{uint32(offset), n})
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-		} else {
+
+		default:
 			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
 		}
 	} else if spare := rep.cap - rep.len; spare < count {
@@ -426,22 +429,25 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	rep := unsafe2.Cast[rep[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
 	if rep.isZC() {
 
-		if rep.cap > 0 {
+		switch {
+		case rep.cap > 0:
 
-			zc := rep.zc(p1.c().src)
+			zc := repCast[byte](*rep).zc(p1.c().src)
 			slice := arena.NewSlice[uint32](p1.arena(), len(zc)+int(count))
 			for i, b := range zc {
 				unsafe2.Store(slice.Ptr(), i, uint32(b))
 			}
 			rep.setArena(slice)
-		} else if count == n {
+
+		case count == n:
 			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
 
 			rep.setZC(zc{uint32(offset), n})
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-		} else {
+
+		default:
 			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
 		}
 	} else if spare := rep.cap - rep.len; spare < count {
@@ -527,22 +533,25 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	rep := unsafe2.Cast[rep[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
 	if rep.isZC() {
 
-		if rep.cap > 0 {
+		switch {
+		case rep.cap > 0:
 
-			zc := rep.zc(p1.c().src)
+			zc := repCast[byte](*rep).zc(p1.c().src)
 			slice := arena.NewSlice[uint64](p1.arena(), len(zc)+int(count))
 			for i, b := range zc {
 				unsafe2.Store(slice.Ptr(), i, uint64(b))
 			}
 			rep.setArena(slice)
-		} else if count == n {
+
+		case count == n:
 			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
 
 			rep.setZC(zc{uint32(offset), n})
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-		} else {
+
+		default:
 			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
 		}
 	} else if spare := rep.cap - rep.len; spare < count {

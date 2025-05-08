@@ -100,3 +100,8 @@ issues:
       linters:
         - dupword
         - gosec
+
+    # Disable import formatting in generated stencil files.
+    - path: _stencil\.go
+      linters:
+        - gci

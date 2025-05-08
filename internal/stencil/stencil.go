@@ -27,6 +27,7 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -318,6 +319,19 @@ func run() error {
 			importSpec.Specs = append(importSpec.Specs, imp)
 		}
 	}
+
+	slices.SortFunc(importSpec.Specs, func(a, b ast.Spec) int {
+		x, y := a.(*ast.ImportSpec).Path.Value, b.(*ast.ImportSpec).Path.Value
+		stdX, stdY := !strings.Contains(x, "."), !strings.Contains(y, ".")
+		if stdX && !stdY {
+			return -1
+		}
+		if stdY && !stdX {
+			return 1
+		}
+
+		return cmp.Compare(x, y)
+	})
 
 	// Print to a string, so that we can add nosplit comments the "easy" way.
 	buf := new(strings.Builder)
