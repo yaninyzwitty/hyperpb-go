@@ -1,3 +1,5 @@
+![The Buf logo](./.github/buf-logo.svg)
+
 # fastpb
 
 `fastpb` is a highly optimized dynamic message library for Protobuf, which
