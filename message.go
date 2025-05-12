@@ -344,10 +344,27 @@ func (m *message) SetUnknown(raw protoreflect.RawFields) {
 }
 
 // WhichOneof implements [protoreflect.Message].
-//
-// Panics when called.
-func (m *message) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	panic(dbg.Unsupported())
+func (m *message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	if !m.IsValid() {
+		return nil
+	}
+
+	fd := od.Fields().Get(0)
+	f := m.ty.byDescriptor(fd)
+	if !f.valid() {
+		return nil
+	}
+
+	if f.getter.offset.number == 0 {
+		// Not implemented internally as a oneof.
+		if !m.Has(fd) {
+			return nil
+		}
+		return fd
+	}
+
+	which := unsafe2.ByteLoad[uint32](m, f.getter.offset.bit)
+	return fd.ContainingMessage().Fields().ByNumber(protoreflect.FieldNumber(which))
 }
 
 // IsValid implements [protoreflect.Message].
@@ -463,10 +480,8 @@ func (e empty) SetUnknown(raw protoreflect.RawFields) {
 }
 
 // WhichOneof implements [protoreflect.Message].
-//
-// Panics when called.
 func (e empty) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	panic(dbg.Unsupported())
+	return nil
 }
 
 // IsValid implements [protoreflect.Message].

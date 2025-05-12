@@ -153,6 +153,16 @@ func (e *equal) message(a, b protoreflect.Message, rec bool) {
 			e.any(a.Get(fd), b.Get(fd), a.IsValid() || b.IsValid())
 		})
 	}
+
+	ods := d.Oneofs()
+	for i := range ods.Len() {
+		od := ods.Get(i)
+		e.push(od.Name(), func() {
+			if a.WhichOneof(od) != b.WhichOneof(od) {
+				e.fail("unequal which: want %v, got %v", a.WhichOneof(od), b.WhichOneof(od))
+			}
+		})
+	}
 }
 
 func (e *equal) list(a, b protoreflect.List, rec bool) {
