@@ -108,6 +108,50 @@ func parseOptionalZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 }
 
 //go:nosplit
+func parseOneofVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseOneofVarint[uint32]
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, uint32(n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseOneofVarint[uint64]
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, uint64(n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseOneofZigZag[uint32]
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, zigzag64[uint32](n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseOneofZigZag[uint64]
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, zigzag64[uint64](n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
 func appendVarint8(p1 parser1, p2 parser2, v uint8) (parser1, parser2) {
 	_ = appendVarint[uint8]
 	rep := unsafe2.Cast[rep[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))

@@ -15,6 +15,7 @@
 package fastpb
 
 import (
+	"cmp"
 	"fmt"
 	"math"
 	"reflect"
@@ -150,25 +151,344 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 
 	if dbg.Enabled {
 		runtime.SetFinalizer(base, func(t *typeHeader) {
-			dbg.Log(nil, "finalizer", "%p:%s", t, t.aux.desc.FullName())
+			c.log("finalizer", "%p:%s", t, t.aux.desc.FullName())
 		})
 	}
 
 	return Type{raw: base}
 }
 
-func (c *compiler) message(md protoreflect.MessageDescriptor) {
-	tSym := typeSymbol{md}
-	pSym := parserSymbol{md}
+// ir is analysis information about a message type for generating a parser
+// and a dynamic type for it.
+type ir struct {
+	d protoreflect.MessageDescriptor
 
-	if _, ok := c.symbols[tSym]; ok {
-		return
+	// Each Protobuf field has three associated pieces of data that can be
+	// sorted in different orders. There is the field inside of a [Type],
+	// the field's parsers (which there may be more than one of per tField),
+	// and the field's struct offsets (which may be shared by t).
+	t []tField
+	p []pField
+	s []sField
+
+	size   int
+	layout typeLayout
+}
+
+type tField struct {
+	d      protoreflect.FieldDescriptor
+	arch   *archetype
+	offset fieldOffset
+}
+
+type pField struct {
+	tIdx int // Index in ir.t.
+	aIdx int // Index in ir.t[tIdx].arch.parsers.
+
+	hot  bool // If true, this parser should be in the "hot" part of the stream.
+	next int  // The next parser to execute, as an index into ir.p.
+}
+
+type sField struct {
+	tIdx []int // Index in ir.t. May be more than one!
+
+	size, align, bits uint32
+	offset            fieldOffset
+}
+
+// analyze generates an intermediate representation for a given message,
+// performing the necessary layout and scheduling analysis for its parser(s).
+func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
+	ir := &ir{d: md}
+
+	// Classify all of the fields into archetypes.
+	fields := md.Fields()
+	for i := range fields.Len() {
+		fd := fields.Get(i)
+		arch := selectArchetype(fd, func(fd protoreflect.FieldDescriptor) FieldProfile {
+			if c.prof == nil {
+				return FieldProfile{}
+			}
+			return c.prof(FieldSite{Field: fd})
+		})
+
+		if arch.bits > 0 && arch.oneof {
+			panic(fmt.Sprintf("oneof archetype for %v requested bits; this is a bug", fd.FullName()))
+		}
+
+		tIdx := len(ir.t)
+		ir.t = append(ir.t, tField{
+			d:    fd,
+			arch: arch,
+		})
+
+		for j := range arch.parsers {
+			ir.p = append(ir.p, pField{
+				tIdx: tIdx,
+				aIdx: j,
+				hot:  j == 0,
+			})
+		}
+
+		// Protoc will always place oneof members contiguously in the fields
+		// array of a message. This means that if this is not the first member
+		// of a oneof, the most recent value in ir.s will be the current oneof's
+		// struct slot.
+		if arch.oneof &&
+			fd.ContainingOneof().Fields().Get(0).Index() != fd.Index() {
+			last := &ir.s[len(ir.s)-1]
+			last.tIdx = append(last.tIdx, tIdx)
+		} else {
+			ir.s = append(ir.s, sField{
+				tIdx: []int{tIdx},
+			})
+		}
 	}
 
-	fields := md.Fields()
-	tOffset := c.write(tSym,
+	// Next, lay out the struct by sorting the struct members by alignment.
+	var bits, whichWords int
+	for i := range ir.s {
+		sf := &ir.s[i]
+		for _, j := range sf.tIdx {
+			arch := ir.t[j].arch
+			sf.size = max(sf.size, arch.size)
+			sf.align = max(sf.align, arch.align)
+			sf.bits = max(sf.bits, arch.bits)
+		}
+
+		bits += int(sf.bits)
+
+		if ir.t[sf.tIdx[0]].arch.oneof {
+			whichWords++
+		}
+	}
+	slices.SortStableFunc(ir.s, func(a, b sField) int {
+		return -cmp.Compare(a.align, b.align)
+	})
+
+	// Append a hidden zero-size field at the end to ensure that the stride of
+	// this type is divisible by 8.
+	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align)})
+
+	// Figure out the number of bit words we need. We use 32-bit words.
+	const bitsPerWord = 32
+	bitWords := (bits + bitsPerWord - 1) / bitsPerWord // Divide and round up.
+	ir.layout.bitWords = bitWords + whichWords
+
+	ir.size, _ = unsafe2.Layout[message]()
+	ir.size += (bitWords + whichWords) * 4
+
+	var nextBit uint32
+	nextWhichWord := uint32(ir.size - whichWords*4)
+	for i := range ir.s {
+		sf := &ir.s[i]
+
+		// Allocate bit and byte storage for this field.
+		if sf.size > 0 {
+			_, up := unsafe2.Addr[byte](ir.size).Misalign(int(sf.align))
+			ir.size += up
+			if dbg.Enabled && up > 0 {
+				// Note alignment padding required for the previous field.
+				if i == 0 {
+					ir.layout.bitWords += up / 4
+				} else {
+					f := ir.layout.fields
+					f[len(f)-1].padding = uint32(up)
+				}
+			}
+
+			sf.offset.data = uint32(ir.size)
+			ir.size += int(sf.size)
+		}
+
+		if sf.bits > 0 {
+			sf.offset.bit = nextBit
+			nextBit += sf.bits
+		}
+
+		oneof := sf.tIdx != nil && ir.t[sf.tIdx[0]].arch.oneof
+		if oneof {
+			sf.offset.bit = nextWhichWord
+			nextWhichWord += 4
+		}
+
+		// Copy the offset information into each field that uses this struct
+		// slot.
+		for _, j := range sf.tIdx {
+			ir.t[j].offset = sf.offset
+			if oneof {
+				ir.t[j].offset.number = uint32(ir.t[j].d.Number())
+			}
+		}
+
+		if dbg.Enabled && sf.tIdx != nil {
+			index := sf.tIdx[0]
+			if ir.t[index].arch.oneof {
+				index = ^ir.t[index].d.ContainingOneof().Index()
+			}
+
+			ir.layout.fields = append(ir.layout.fields, fieldLayout{
+				size:   sf.size,
+				align:  sf.align,
+				bits:   sf.bits,
+				index:  index,
+				offset: sf.offset,
+			})
+		}
+	}
+
+	if dbg.Enabled {
+		// Print the resulting layout for this struct.
+		c.log("layout", "%s\n%v", ir.d.FullName(), dbg.Formatter(func(buf fmt.State) {
+			start, _ := unsafe2.Layout[message]()
+			fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.bitWords, ir.layout.bitWords)
+			for _, sf := range ir.s {
+				if sf.tIdx == nil {
+					continue
+				}
+
+				tf := ir.t[sf.tIdx[0]]
+				name := tf.d.Name()
+				if tf.arch.oneof {
+					name = "oneof:" + tf.d.ContainingOneof().Name()
+				}
+
+				fmt.Fprintf(buf, "  %#04x", sf.offset.data)
+				if sf.bits > 0 {
+					fmt.Fprintf(buf, "(%v)", sf.offset.bit)
+				} else {
+					fmt.Fprint(buf, "(-)")
+				}
+				fmt.Fprintf(buf, "[%d:%d:%d]", sf.size, sf.align, sf.bits)
+
+				fmt.Fprintf(buf, " %s: ", name)
+				switch tf.d.Cardinality() {
+				case protoreflect.Optional:
+					if tf.d.HasOptionalKeyword() {
+						fmt.Fprint(buf, "optional ")
+					}
+				case protoreflect.Repeated:
+					fmt.Fprint(buf, "repeated ")
+				case protoreflect.Required:
+					fmt.Fprint(buf, "required ")
+				}
+				if m := tf.d.Message(); m != nil {
+					fmt.Fprintf(buf, "%v (%v) ", m.FullName(), tf.d.Kind())
+				} else if e := tf.d.Enum(); e != nil {
+					fmt.Fprintf(buf, "%v (%v) ", e.FullName(), tf.d.Kind())
+				} else {
+					fmt.Fprintf(buf, "%v ", tf.d.Kind())
+				}
+				fmt.Fprintln(buf)
+			}
+		}))
+	}
+
+	// Now, sort the parsers into the hot and cold sides. Stable sort is
+	// particularly important here!
+	slices.SortStableFunc(ir.p, func(a, b pField) int {
+		var aCold, bCold int
+		if !a.hot {
+			aCold = 1
+		}
+		if !b.hot {
+			bCold = 1
+		}
+		return cmp.Compare(aCold, bCold)
+	})
+
+	// Now, lay out control flow between parsers. Each parser points to the
+	// first one after it that refers to a different field or oneof, except
+	// for cold parsers, which always point to a hot parser.
+	//
+	// For this purpose, we build a table of the index of the first hot parser
+	// for each field/oneof. Oneof indices are entered as their complements.
+	table := make(map[int]int, len(ir.t))
+	idx := func(tIdx int) int {
+		tf := ir.t[tIdx]
+		if tf.arch.oneof {
+			return ^tf.d.ContainingOneof().Index()
+		}
+		return tf.d.Index()
+	}
+
+	for i, pf := range ir.p {
+		if !pf.hot {
+			continue
+		}
+
+		j := idx(pf.tIdx)
+		if _, ok := table[j]; !ok {
+			table[j] = i
+		}
+	}
+
+	for i := range ir.p {
+		pf := &ir.p[i]
+
+		p := ir.t[pf.tIdx].arch.parsers[pf.aIdx]
+		if p.retry {
+			pf.next = i
+			continue
+		}
+
+		orig := idx(pf.tIdx)
+	loop:
+		for tIdx := pf.tIdx; tIdx < len(ir.t); tIdx++ {
+			i := idx(tIdx)
+			j, ok := table[i]
+			if !ok {
+				continue
+			}
+
+			// j is the index of *some* hot parser. This may be for the same
+			// field/oneof as the current index, so we need to keep incrementing
+			// it until it either:
+			//
+			// 1. Points to a cold parser, and hence it should just wrap around
+			//    to the first parser in the stream.
+			//
+			// 2. We hit a parser for a different field/oneof.
+			for ; ; j++ {
+				if j == len(ir.p) {
+					break loop // Wraparound.
+				}
+				next := ir.p[j]
+				if !next.hot {
+					break loop // We reached the cold section.
+				}
+
+				if idx(next.tIdx) != orig {
+					pf.next = j
+					break loop
+				}
+			}
+		}
+	}
+
+	if dbg.Enabled {
+		// Print the parser CFG.
+		c.log("cfg", "%s\n%v", ir.d.FullName(), dbg.Formatter(func(buf fmt.State) {
+			for i, pf := range ir.p {
+				tf := ir.t[pf.tIdx]
+				fmt.Fprintf(buf, "  #%d: %v#%d -> #%d\n", i, tf.d.Name(), pf.aIdx, pf.next)
+			}
+		}))
+	}
+
+	return ir
+}
+
+// codegen code-generates the analyzed contents of an intermediate
+// representation.
+func (c *compiler) codegen(ir *ir) {
+	tSym := typeSymbol{ir.d}
+	pSym := parserSymbol{ir.d}
+
+	c.write(tSym,
 		typeHeader{
-			count: uint32(fields.Len()),
+			size:  uint32(ir.size),
+			count: uint32(len(ir.t)),
 		},
 		relo{
 			symbol: pSym,
@@ -179,38 +499,11 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 			offset: unsafe.Offsetof(typeHeader{}.numbers),
 		},
 	)
-	c.totalTypes++
 
-	type entry struct {
-		tIdx, pIdx int
-		arch       *archetype
-		fd         protoreflect.FieldDescriptor
-	}
-
-	// Classify all of the fields into entries.
-	entries := make([]entry, 0, fields.Len())
-	var totalBits int
-	for i := range fields.Len() {
-		fd := fields.Get(i)
-		arch := selectArchetype(fd, func(fd protoreflect.FieldDescriptor) FieldProfile {
-			if c.prof == nil {
-				return FieldProfile{}
-			}
-			return c.prof(FieldSite{Field: fd})
-		})
-		if arch != nil {
-			// TODO: oneof members should be excluded here and processed separately,
-			// since each oneof will correspond to only one entry.
-			entries = append(entries, entry{
-				tIdx: i,
-				arch: arch,
-				fd:   fd,
-			})
-			totalBits += int(arch.bits)
-		}
-
+	numbers := make([]table.Entry[uint32], 0, len(ir.t))
+	for i, tf := range ir.t {
 		var relos []relo
-		if md := fd.Message(); md != nil {
+		if md := tf.d.Message(); md != nil {
 			relos = []relo{{
 				symbol: typeSymbol{md},
 				offset: unsafe.Offsetof(field{}.message),
@@ -218,27 +511,28 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 		}
 
 		// Append whatever field data we can before doing layout.
-		c.write(nil, field{}, relos...)
+		c.write(nil,
+			field{
+				getter: getter{
+					offset: tf.offset,
+					thunk:  tf.arch.getter,
+				},
+			},
+			relos...,
+		)
+
+		numbers = append(numbers, table.Entry[uint32]{
+			Key:   int32(tf.d.Number()),
+			Value: uint32(i),
+		})
 	}
 	// Append the dummy end field.
 	c.write(nil, field{})
 
 	// Append the field number table.
-	numbers := make([]table.Entry[uint32], fields.Len())
-	for i := range numbers {
-		numbers[i].Key = int32(fields.Get(i).Number())
-		numbers[i].Value = uint32(i)
-	}
-	c.writeFunc(
-		tableSymbol{tSym},
-		func(b []byte) (int, []byte) {
-			b, t := table.New(b, numbers...)
-			return unsafe2.Sub(t.Data, unsafe.SliceData(b)), b
-		},
-	)
+	writeTable(c, tableSymbol{tSym}, numbers)
 
-	// Append the "unspecialized" parser for this type.
-	pOffset := c.write(pSym,
+	c.write(pSym,
 		typeParser{},
 		relo{
 			symbol: tSym,
@@ -249,158 +543,76 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 			offset: unsafe.Offsetof(typeParser{}.tags),
 		},
 		relo{
-			symbol: fieldParserSymbol{
-				parser: pSym,
-				index:  0,
-			},
-			offset: unsafe.Offsetof(typeParser{}.entry) + unsafe.Offsetof(fieldParser{}.nextOk),
+			symbol: fieldParserSymbol{parser: pSym, index: 0},
+			offset: unsafe.Offsetof(typeParser{}.entry) +
+				unsafe.Offsetof(fieldParser{}.nextOk),
 		},
 	)
 
 	numbers = numbers[:0]
 	// Lay out the parser table.
-	var j int
-	for i := range entries {
-		e := &entries[i]
-		e.pIdx = j
+	for i, pf := range ir.p {
+		tf := ir.t[pf.tIdx]
+		p := tf.arch.parsers[pf.aIdx]
 
-		for k, p := range e.arch.parsers {
-			var tag fieldTag
-			tag.encode(e.fd.Number(), p.kind)
+		var tag fieldTag
+		tag.encode(tf.d.Number(), p.kind)
 
-			numbers = append(numbers, table.Entry[uint32]{
-				Key:   int32(protowire.EncodeTag(e.fd.Number(), p.kind)),
-				Value: uint32(j),
-			})
+		numbers = append(numbers, table.Entry[uint32]{
+			Key:   int32(protowire.EncodeTag(tf.d.Number(), p.kind)),
+			Value: uint32(i),
+		})
 
-			nextOk := e.pIdx + len(e.arch.parsers)
-			nextErr := j + 1
-			if i == len(entries)-1 && k == len(e.arch.parsers)-1 {
-				nextOk, nextErr = 0, 0
-			}
-
-			if p.retry {
-				nextOk = j
-			}
-
-			relos := []relo{
-				{
-					symbol: fieldParserSymbol{
-						parser: pSym,
-						index:  nextOk,
-					},
-					offset: unsafe.Offsetof(fieldParser{}.nextOk),
-				},
-				{
-					symbol: fieldParserSymbol{
-						parser: pSym,
-						index:  nextErr,
-					},
-					offset: unsafe.Offsetof(fieldParser{}.nextErr),
-				},
-			}
-			if md := e.fd.Message(); md != nil {
-				relos = append(relos, relo{
-					symbol: parserSymbol{md},
-					offset: unsafe.Offsetof(fieldParser{}.message),
-				})
-			}
-
-			c.write(
-				fieldParserSymbol{
-					parser: pSym,
-					index:  j,
-				},
-				fieldParser{
-					tag:   tag,
-					thunk: unsafe2.NewPC(p.parser),
-				},
-				relos...,
-			)
-
-			j++
+		nextOk := pf.next
+		nextErr := i + 1
+		if nextErr == len(ir.p) {
+			nextErr = 0
 		}
+
+		relos := []relo{
+			{
+				symbol: fieldParserSymbol{parser: pSym, index: nextOk},
+				offset: unsafe.Offsetof(fieldParser{}.nextOk),
+			},
+			{
+				symbol: fieldParserSymbol{parser: pSym, index: nextErr},
+				offset: unsafe.Offsetof(fieldParser{}.nextErr),
+			},
+		}
+		if md := tf.d.Message(); md != nil {
+			relos = append(relos, relo{
+				symbol: parserSymbol{md},
+				offset: unsafe.Offsetof(fieldParser{}.message),
+			})
+		}
+
+		c.write(
+			fieldParserSymbol{parser: pSym, index: i},
+			fieldParser{
+				tag:    tag,
+				offset: tf.offset,
+				thunk:  unsafe2.NewPC(p.parser),
+			},
+			relos...,
+		)
 	}
 
 	// Append the parser's field number table.
-	c.writeFunc(
-		tableSymbol{pSym},
-		func(b []byte) (int, []byte) {
-			b, t := table.New(b, numbers...)
-			return unsafe2.Sub(t.Data, unsafe.SliceData(b)), b
-		},
-	)
+	writeTable(c, tableSymbol{pSym}, numbers)
+}
 
-	// Sort the fields by decreasing alignment. This means we do not need to
-	// adjust fields to add padding as we lay them out.
-	slices.SortStableFunc(entries, func(a, b entry) int {
-		return int(b.arch.align) - int(a.arch.align)
-	})
-
-	var layout typeLayout
-
-	// Figure out the number of bit words we need. We use words equal to the
-	// int64 alignment.
-	bitsPerWord := unsafe2.Int64Align * 8
-	bitWords := totalBits / bitsPerWord
-	if totalBits%bitsPerWord > 0 {
-		bitWords++
+func (c *compiler) message(md protoreflect.MessageDescriptor) {
+	if _, ok := c.symbols[typeSymbol{md}]; ok {
+		return
 	}
-	bitBytes := bitWords * unsafe2.Int64Align
-	layout.bitWords = bitWords
+	c.totalTypes++
 
-	size, _ := unsafe2.Layout[message]()
-	size += bitBytes
+	c.log("message", "%s", md.FullName())
+	ir := c.analyze(md)
+	c.codegen(ir)
+	c.layouts[ir.d] = ir.layout
 
-	// Lay out the struct for this type.
-	ty := Type{raw: unsafe2.Cast[typeHeader](unsafe2.Add(unsafe.SliceData(c.buf), tOffset))}
-	parser := unsafe2.Cast[typeParser](unsafe2.Add(unsafe.SliceData(c.buf), pOffset))
-
-	var nextBit uint32
-	nextOffset := uint32(size)
-	for _, e := range entries {
-		f := ty.byIndex(e.tIdx)
-
-		// Allocate bit and byte storage for this field.
-		//
-		// TODO: oneofs will require special handling here.
-		var offset fieldOffset
-		if e.arch.size > 0 {
-			_, up := unsafe2.Addr[byte](nextOffset).Misalign(int(e.arch.align))
-			nextOffset += uint32(up)
-			if dbg.Enabled && up > 0 {
-				layout.fields[len(layout.fields)-1].padding = up
-			}
-
-			offset.data = nextOffset
-			nextOffset += e.arch.size
-		}
-		if e.arch.bits > 0 {
-			offset.bit = nextBit
-			nextBit += e.arch.bits
-		}
-
-		f.getter.offset = offset
-		f.getter.thunk = e.arch.getter
-
-		for i := range e.arch.parsers {
-			parser.fields().Get(e.pIdx + i).offset = offset
-		}
-
-		if dbg.Enabled {
-			layout.fields = append(layout.fields, fieldLayout{
-				arch:   e.arch,
-				index:  e.tIdx,
-				offset: offset,
-			})
-		}
-	}
-
-	if dbg.Enabled {
-		c.layouts[md] = layout
-	}
-
-	ty.raw.size = nextOffset
+	fields := md.Fields()
 	for i := range fields.Len() {
 		field := fields.Get(i)
 		if m := field.Message(); m != nil {
@@ -419,13 +631,13 @@ func (c *compiler) link(base *byte) {
 	for target, symbol := range c.relos {
 		offset, ok := c.symbols[symbol]
 		if !ok {
-			panic(fmt.Sprintf("fastpb: undefined symbol: %v", symbol))
+			panic(fmt.Sprintf("fastpb: undefined symbol: %#v", symbol))
 		}
 
 		target := unsafe2.Cast[*byte](unsafe2.Add(base, target))
 		symbol := unsafe2.Add(base, offset)
 
-		dbg.Log([]any{"%p", c}, "relo", "%#v %p->%p", symbol, target, symbol)
+		c.log("relo", "%#v %p->%p", symbol, target, symbol)
 		*target = symbol
 	}
 }
@@ -441,6 +653,13 @@ func (c *compiler) write(symbol, v any, relos ...relo) int {
 
 		return len(b), append(b, unsafe2.AnyBytes(v)...)
 	}, relos...)
+}
+
+func writeTable[V comparable](c *compiler, symbol any, entries []table.Entry[V]) int {
+	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
+		b, t := table.New(b, entries...)
+		return unsafe2.Sub(t.Data, unsafe.SliceData(b)), b
+	})
 }
 
 // writeFunc is like write, but it uses the given function to append data.
@@ -464,4 +683,8 @@ func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...
 	}
 
 	return offset
+}
+
+func (c *compiler) log(op, format string, args ...any) {
+	dbg.Log([]any{"%p", c}, op, format, args...)
 }

@@ -58,7 +58,7 @@ func (p *fieldParser) Format(s fmt.State, verb rune) {
 }
 
 func (f fieldOffset) Format(s fmt.State, verb rune) {
-	dbg.Fprintf("%d:%d", f.bit, f.data).Format(s, verb)
+	dbg.Fprintf("%d:%d:%#04x", f.bit, f.number, f.data).Format(s, verb)
 }
 
 func (ft fieldTag) Format(s fmt.State, verb rune) {
@@ -127,18 +127,32 @@ func (m *message) dump() string {
 	if len(layout.fields) > 0 {
 		fmt.Fprintln(buf, "fields:")
 		fields := m.ty.Descriptor().Fields()
+		oneofs := m.ty.Descriptor().Oneofs()
 		for _, field := range layout.fields {
 			start := buf.Len()
-			fd := fields.Get(field.index)
-			fmt.Fprintf(buf, "  %#04x %s/%d:", field.offset.data, fd.Name(), fd.Number())
+
+			if field.index >= 0 {
+				fd := fields.Get(field.index)
+				fmt.Fprintf(buf, "  %#04x %s/%d:", field.offset.data, fd.Name(), fd.Number())
+			} else {
+				od := oneofs.Get(^field.index)
+				fmt.Fprintf(buf, "  %#04x %s/", field.offset.data, od.Name())
+				for i := range od.Fields().Len() {
+					if i > 0 {
+						buf.WriteByte(',')
+					}
+					fmt.Fprint(buf, od.Fields().Get(i).Number())
+				}
+				buf.WriteByte(':')
+			}
 
 			for buf.Len()-start < 24 {
 				buf.WriteByte(' ')
 			}
 
-			if field.arch.bits > 0 {
+			if field.bits > 0 {
 				fmt.Fprint(buf, " (")
-				for i := range field.arch.bits {
+				for i := range field.bits {
 					if m.getBit(i + field.offset.bit) {
 						fmt.Fprint(buf, "1")
 					} else {
@@ -153,8 +167,8 @@ func (m *message) dump() string {
 			}
 
 			// Print each byte of data, grouped into words of four.
-			for i := range field.arch.size + uint32(field.padding) {
-				if i == field.arch.size {
+			for i := range field.size + field.padding {
+				if i == field.size {
 					fmt.Fprint(buf, " | ")
 				} else if i%4 == 0 {
 					fmt.Fprint(buf, " ")
@@ -162,11 +176,11 @@ func (m *message) dump() string {
 				fmt.Fprintf(buf, "%02x", unsafe2.ByteLoad[byte](m, field.offset.data+i))
 			}
 
-			if field.arch.size == uint32(zcSize) {
+			if field.size == uint32(zcSize) {
 				zc := unsafe2.ByteLoad[zc](m, field.offset.data)
 				start := int(zc.offset)
 				end := start + int(zc.len)
-				if m.context.len >= start && m.context.len >= end {
+				if start <= m.context.len && end <= m.context.len && start < end {
 					fmt.Fprintf(buf, " %q", zc.bytes(m.context.src))
 				}
 			}

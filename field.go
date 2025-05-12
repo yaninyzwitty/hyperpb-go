@@ -99,9 +99,17 @@ type fieldParser struct {
 // fieldOffset is field offset information for a generated message type's field.
 type fieldOffset struct {
 	// First bit index for bits allocated to this field.
+	//
+	// If this is a oneof field, this is instead an offset into the
+	// oneof word table.
 	bit uint32
+
 	// Byte offset within the containing message to the data for this field.
 	data uint32
+
+	// This field's number. Only used by oneof fields; all other fields have
+	// a zero here.
+	number uint32
 }
 
 // fieldTag is a specially-formatted tag for the parser.
@@ -173,6 +181,9 @@ type archetype struct {
 	// Bits to allocate for this field.
 	bits uint32
 
+	// Set if this is a oneof field.
+	oneof bool
+
 	// The getter thunk for this field.
 	//
 	// This func MUST be a reference to a function or a global closure, so that
@@ -208,12 +219,14 @@ func selectArchetype(
 	fd protoreflect.FieldDescriptor,
 	prof func(protoreflect.FieldDescriptor) FieldProfile,
 ) (a *archetype) {
+	od := fd.ContainingOneof()
 	switch {
 	case fd.Cardinality() == protoreflect.Repeated:
 		a = &repeatedFields[fd.Kind()]
-
+	case od != nil && od.Fields().Len() > 1:
+		// One-element oneofs are treated like optional fields.
+		a = &oneofFields[fd.Kind()]
 	case fd.HasPresence():
-		// TODO: Oneofs are currently are implemented as a struct rather than a union.
 		a = &optionalFields[fd.Kind()]
 	default:
 		a = &singularFields[fd.Kind()]
@@ -407,23 +420,8 @@ var singularFields = [...]archetype{
 	// Special scalar types.
 	protoreflect.BoolKind: {
 		size: 0, align: 1, bits: 1,
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			b := m.getBit(getter.offset.bit)
-			if !b {
-				return protoreflect.ValueOf(nil)
-			}
-			return protoreflect.ValueOf(true)
-		},
-		parsers: []parseKind{{
-			kind: protowire.VarintType,
-			parser: func(p1 parser1, p2 parser2) (parser1, parser2) {
-				var n uint64
-				p1, p2, n = p1.varint(p2)
-				p2.m().setBit(p2.f().offset.bit, n != 0)
-
-				return p1, p2
-			},
-		}},
+		getter:  getBool,
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseBool}},
 	},
 	protoreflect.EnumKind: {
 		size:    uint32(unsafe2.Int32Size),
@@ -434,49 +432,24 @@ var singularFields = [...]archetype{
 
 	// String types.
 	protoreflect.StringKind: {
-		size:  uint32(zcSize),
-		align: uint32(zcAlign),
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
-			data := zc.utf8(m.context.src)
-
-			if data == "" {
-				return protoreflect.ValueOf(nil)
-			}
-
-			return protoreflect.ValueOf(data)
-		},
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		getter:  getString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseString}},
 	},
 	protoreflect.BytesKind: {
-		size:  uint32(zcSize),
-		align: uint32(zcAlign),
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
-			data := zc.bytes(m.context.src)
-
-			if len(data) == 0 {
-				return protoreflect.ValueOf(nil)
-			}
-
-			return protoreflect.ValueOf(data)
-		},
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		getter:  getBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
 		// A singular message is laid out as a single *message pointer.
-		size:  uint32(unsafe2.PointerSize),
-		align: uint32(unsafe2.PointerAlign),
-		getter: func(m *message, ty Type, getter getter) protoreflect.Value {
-			ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
-			if ptr == nil {
-				return protoreflect.ValueOf(empty{ty})
-			}
-			return protoreflect.ValueOf(ptr)
-		},
-
+		size:   uint32(unsafe2.PointerSize),
+		align:  uint32(unsafe2.PointerAlign),
+		getter: getMessage,
 		// This message parser is eager. TODO: add a lazy message archetype.
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseMessage}},
 	},
@@ -494,6 +467,14 @@ func getScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
 	}
 
 	return protoreflect.ValueOf(v)
+}
+
+func getBool(m *message, _ Type, getter getter) protoreflect.Value {
+	b := m.getBit(getter.offset.bit)
+	if !b {
+		return protoreflect.ValueOf(nil)
+	}
+	return protoreflect.ValueOf(true)
 }
 
 // We can't use the stencil above due to negative zero: 0.0 == -0.0 according
@@ -516,6 +497,36 @@ func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 	return protoreflect.ValueOf(math.Float64frombits(v))
+}
+
+func getString(m *message, _ Type, getter getter) protoreflect.Value {
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	data := zc.utf8(m.context.src)
+
+	if data == "" {
+		return protoreflect.ValueOf(nil)
+	}
+
+	return protoreflect.ValueOf(data)
+}
+
+func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	data := zc.bytes(m.context.src)
+
+	if len(data) == 0 {
+		return protoreflect.ValueOf(nil)
+	}
+
+	return protoreflect.ValueOf(data)
+}
+
+func getMessage(m *message, ty Type, getter getter) protoreflect.Value {
+	ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
+	if ptr == nil {
+		return protoreflect.ValueOf(empty{ty})
+	}
+	return protoreflect.ValueOf(ptr)
 }
 
 //go:nosplit
@@ -568,6 +579,14 @@ func parseBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
 	storeField(p1, p2, zc)
+
+	return p1, p2
+}
+
+func parseBool(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	p2.m().setBit(p2.f().offset.bit, n != 0)
 
 	return p1, p2
 }
@@ -687,23 +706,8 @@ var optionalFields = [...]archetype{
 	// Special scalar types.
 	protoreflect.BoolKind: {
 		size: 0, align: 1, bits: 2,
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			if !m.getBit(getter.offset.bit) {
-				return protoreflect.ValueOf(nil)
-			}
-			return protoreflect.ValueOf(m.getBit(getter.offset.bit + 1))
-		},
-		parsers: []parseKind{{
-			kind: protowire.VarintType,
-			parser: func(p1 parser1, p2 parser2) (parser1, parser2) {
-				var n uint64
-				p1, p2, n = p1.varint(p2)
-				p2.m().setBit(p2.f().offset.bit, true)
-				p2.m().setBit(p2.f().offset.bit+1, n != 0)
-
-				return p1, p2
-			},
-		}},
+		getter:  getOptionalBool,
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalBool}},
 	},
 	protoreflect.EnumKind: {
 		size:    uint32(unsafe2.Int32Size),
@@ -715,29 +719,17 @@ var optionalFields = [...]archetype{
 
 	// String types.
 	protoreflect.StringKind: {
-		size:  uint32(zcSize),
-		align: uint32(zcAlign),
-		bits:  1,
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			if !m.getBit(getter.offset.bit) {
-				return protoreflect.ValueOf(nil)
-			}
-			zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
-			return protoreflect.ValueOf(zc.utf8(m.context.src))
-		},
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		bits:    1,
+		getter:  getOptionalString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalString}},
 	},
 	protoreflect.BytesKind: {
-		size:  uint32(zcSize),
-		align: uint32(zcAlign),
-		bits:  1,
-		getter: func(m *message, _ Type, getter getter) protoreflect.Value {
-			if !m.getBit(getter.offset.bit) {
-				return protoreflect.ValueOf(nil)
-			}
-			zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
-			return protoreflect.ValueOf(zc.bytes(m.context.src))
-		},
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		bits:    1,
+		getter:  getOptionalBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalBytes}},
 	},
 
@@ -752,6 +744,29 @@ func getOptionalScalar[T scalar](m *message, _ Type, getter getter) protoreflect
 	}
 	v := unsafe2.ByteLoad[T](m, getter.offset.data)
 	return protoreflect.ValueOf(v)
+}
+
+func getOptionalBool(m *message, _ Type, getter getter) protoreflect.Value {
+	if !m.getBit(getter.offset.bit) {
+		return protoreflect.ValueOf(nil)
+	}
+	return protoreflect.ValueOf(m.getBit(getter.offset.bit + 1))
+}
+
+func getOptionalString(m *message, _ Type, getter getter) protoreflect.Value {
+	if !m.getBit(getter.offset.bit) {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.utf8(m.context.src))
+}
+
+func getOptionalBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	if !m.getBit(getter.offset.bit) {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.bytes(m.context.src))
 }
 
 //go:nosplit
@@ -818,6 +833,282 @@ func parseOptionalBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	return p1, p2
 }
 
+func parseOptionalBool(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	p2.m().setBit(p2.f().offset.bit, true)
+	p2.m().setBit(p2.f().offset.bit+1, n != 0)
+
+	return p1, p2
+}
+
+var oneofFields = [...]archetype{
+	// 32-bit varint types.
+	protoreflect.Int32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+	protoreflect.Uint32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+	protoreflect.Sint32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag32}},
+	},
+
+	// 64-bit varint types.
+	protoreflect.Int64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+	},
+	protoreflect.Uint64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+	},
+	protoreflect.Sint64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag64}},
+	},
+
+	// 32-bit fixed types.
+	protoreflect.Fixed32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+	protoreflect.Sfixed32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+	protoreflect.FloatKind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[float32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+
+	// 64-bit fixed types.
+	protoreflect.Fixed64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+	protoreflect.Sfixed64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+	protoreflect.DoubleKind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[float64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+
+	// Special scalar types.
+	protoreflect.BoolKind: {
+		size: 1, align: 1,
+		oneof:   true,
+		getter:  getOneofBool,
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofBool}},
+	},
+	protoreflect.EnumKind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[protoreflect.EnumNumber],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+
+	// String types.
+	protoreflect.StringKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		oneof:   true,
+		getter:  getOneofString,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofString}},
+	},
+	protoreflect.BytesKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		oneof:   true,
+		getter:  getOneofBytes,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
+	},
+
+	// Message types.
+	protoreflect.MessageKind: {
+		// A singular message is laid out as a single *message pointer.
+		size:   uint32(unsafe2.PointerSize),
+		align:  uint32(unsafe2.PointerAlign),
+		oneof:  true,
+		getter: getOneofMessage,
+		// This message parser is eager. TODO: add a lazy message archetype.
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofMessage}},
+	},
+	protoreflect.GroupKind: {
+		// Not implemented.
+	},
+}
+
+func getOneofScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	v := unsafe2.ByteLoad[T](m, getter.offset.data)
+	return protoreflect.ValueOf(v)
+}
+
+func getOneofBool(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	v := unsafe2.ByteLoad[byte](m, getter.offset.data)
+	return protoreflect.ValueOf(v != 0)
+}
+
+func getOneofString(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.utf8(m.context.src))
+}
+
+func getOneofBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.bytes(m.context.src))
+}
+
+func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(empty{ty})
+	}
+	ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
+	return protoreflect.ValueOf(ptr)
+}
+
+//go:nosplit
+//fastpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
+//fastpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
+func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, T(n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+//fastpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
+//fastpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
+func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, zigzag64[T](n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint32
+	p1, p2, n = p1.fixed32(p2)
+	storeField(p1, p2, n)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.fixed64(p2)
+	storeField(p1, p2, n)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
+	var zc zc
+	p1, p2, zc = p1.utf8(p2)
+	storeField(p1, p2, zc)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
+	var zc zc
+	p1, p2, zc = p1.bytes(p2)
+	storeField(p1, p2, zc)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+func parseOneofBool(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	var b byte
+	if n != 0 {
+		b = 1
+	}
+
+	storeField(p1, p2, b)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+func parseOneofMessage(p1 parser1, p2 parser2) (parser1, parser2) {
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	return parseMessage(p1, p2)
+}
+
 var repeatedFields = [...]archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
@@ -825,8 +1116,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalarMaybeBytes[int32],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Uint32Kind: {
@@ -834,8 +1125,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalarMaybeBytes[uint32],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, parser: parseRepeatedVarint32},
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
+			{kind: protowire.VarintType, parser: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Sint32Kind: {
@@ -843,8 +1134,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedZigZag[int32],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 		},
 	},
 
@@ -854,8 +1145,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalarMaybeBytes[int64],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 		},
 	},
 	protoreflect.Uint64Kind: {
@@ -872,8 +1163,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedZigZag[int64],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 		},
 	},
 
@@ -883,8 +1174,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[uint32],
 		parsers: []parseKind{
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
+			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.Sfixed32Kind: {
@@ -892,8 +1183,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[int32],
 		parsers: []parseKind{
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
+			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.FloatKind: {
@@ -901,8 +1192,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[float32],
 		parsers: []parseKind{
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
+			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 		},
 	},
 
@@ -912,8 +1203,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[uint64],
 		parsers: []parseKind{
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
+			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.Sfixed64Kind: {
@@ -921,8 +1212,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[int64],
 		parsers: []parseKind{
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
+			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.DoubleKind: {
@@ -930,8 +1221,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[float64],
 		parsers: []parseKind{
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
+			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 		},
 	},
 
@@ -941,8 +1232,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedBool,
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint8},
 			{kind: protowire.BytesType, parser: parsePackedVarint8},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint8},
 		},
 	},
 	protoreflect.EnumKind: {
@@ -950,8 +1241,8 @@ var repeatedFields = [...]archetype{
 		align:  uint32(repAlign),
 		getter: getRepeatedScalar[protoreflect.EnumNumber],
 		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
+			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 		},
 	},
 

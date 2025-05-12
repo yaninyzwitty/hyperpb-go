@@ -470,6 +470,254 @@ func (x *Tree) GetCh() []*Tree {
 	return nil
 }
 
+type Oneof struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Single:
+	//
+	//	*Oneof_S1
+	Single isOneof_Single `protobuf_oneof:"single"`
+	// Types that are valid to be assigned to Multi:
+	//
+	//	*Oneof_M1
+	//	*Oneof_M2
+	//	*Oneof_M3
+	//	*Oneof_M4
+	//	*Oneof_M5
+	//	*Oneof_M6
+	//	*Oneof_M7
+	//	*Oneof_M8
+	//	*Oneof_M9
+	//	*Oneof_M10
+	Multi         isOneof_Multi `protobuf_oneof:"multi"`
+	Tail          int32         `protobuf:"varint,30,opt,name=tail,proto3" json:"tail,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Oneof) Reset() {
+	*x = Oneof{}
+	mi := &file_test_test_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Oneof) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Oneof) ProtoMessage() {}
+
+func (x *Oneof) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Oneof.ProtoReflect.Descriptor instead.
+func (*Oneof) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Oneof) GetSingle() isOneof_Single {
+	if x != nil {
+		return x.Single
+	}
+	return nil
+}
+
+func (x *Oneof) GetS1() int32 {
+	if x != nil {
+		if x, ok := x.Single.(*Oneof_S1); ok {
+			return x.S1
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetMulti() isOneof_Multi {
+	if x != nil {
+		return x.Multi
+	}
+	return nil
+}
+
+func (x *Oneof) GetM1() int32 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M1); ok {
+			return x.M1
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM2() int64 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M2); ok {
+			return x.M2
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM3() int32 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M3); ok {
+			return x.M3
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM4() int64 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M4); ok {
+			return x.M4
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM5() uint32 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M5); ok {
+			return x.M5
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM6() uint64 {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M6); ok {
+			return x.M6
+		}
+	}
+	return 0
+}
+
+func (x *Oneof) GetM7() bool {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M7); ok {
+			return x.M7
+		}
+	}
+	return false
+}
+
+func (x *Oneof) GetM8() string {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M8); ok {
+			return x.M8
+		}
+	}
+	return ""
+}
+
+func (x *Oneof) GetM9() []byte {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M9); ok {
+			return x.M9
+		}
+	}
+	return nil
+}
+
+func (x *Oneof) GetM10() *Oneof {
+	if x != nil {
+		if x, ok := x.Multi.(*Oneof_M10); ok {
+			return x.M10
+		}
+	}
+	return nil
+}
+
+func (x *Oneof) GetTail() int32 {
+	if x != nil {
+		return x.Tail
+	}
+	return 0
+}
+
+type isOneof_Single interface {
+	isOneof_Single()
+}
+
+type Oneof_S1 struct {
+	S1 int32 `protobuf:"varint,1,opt,name=s1,proto3,oneof"`
+}
+
+func (*Oneof_S1) isOneof_Single() {}
+
+type isOneof_Multi interface {
+	isOneof_Multi()
+}
+
+type Oneof_M1 struct {
+	M1 int32 `protobuf:"varint,11,opt,name=m1,proto3,oneof"`
+}
+
+type Oneof_M2 struct {
+	M2 int64 `protobuf:"varint,12,opt,name=m2,proto3,oneof"`
+}
+
+type Oneof_M3 struct {
+	M3 int32 `protobuf:"zigzag32,13,opt,name=m3,proto3,oneof"`
+}
+
+type Oneof_M4 struct {
+	M4 int64 `protobuf:"zigzag64,14,opt,name=m4,proto3,oneof"`
+}
+
+type Oneof_M5 struct {
+	M5 uint32 `protobuf:"fixed32,15,opt,name=m5,proto3,oneof"`
+}
+
+type Oneof_M6 struct {
+	M6 uint64 `protobuf:"fixed64,16,opt,name=m6,proto3,oneof"`
+}
+
+type Oneof_M7 struct {
+	M7 bool `protobuf:"varint,17,opt,name=m7,proto3,oneof"`
+}
+
+type Oneof_M8 struct {
+	M8 string `protobuf:"bytes,18,opt,name=m8,proto3,oneof"`
+}
+
+type Oneof_M9 struct {
+	M9 []byte `protobuf:"bytes,19,opt,name=m9,proto3,oneof"`
+}
+
+type Oneof_M10 struct {
+	M10 *Oneof `protobuf:"bytes,20,opt,name=m10,proto3,oneof"`
+}
+
+func (*Oneof_M1) isOneof_Multi() {}
+
+func (*Oneof_M2) isOneof_Multi() {}
+
+func (*Oneof_M3) isOneof_Multi() {}
+
+func (*Oneof_M4) isOneof_Multi() {}
+
+func (*Oneof_M5) isOneof_Multi() {}
+
+func (*Oneof_M6) isOneof_Multi() {}
+
+func (*Oneof_M7) isOneof_Multi() {}
+
+func (*Oneof_M8) isOneof_Multi() {}
+
+func (*Oneof_M9) isOneof_Multi() {}
+
+func (*Oneof_M10) isOneof_Multi() {}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
@@ -529,7 +777,22 @@ const file_test_test_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\v2\x11.fastpb.test.ListR\x04tail\"7\n" +
 	"\x04Tree\x12\f\n" +
 	"\x01v\x18\x01 \x01(\x05R\x01v\x12!\n" +
-	"\x02ch\x18\x02 \x03(\v2\x11.fastpb.test.TreeR\x02chB\x97\x01\n" +
+	"\x02ch\x18\x02 \x03(\v2\x11.fastpb.test.TreeR\x02ch\"\x8a\x02\n" +
+	"\x05Oneof\x12\x10\n" +
+	"\x02s1\x18\x01 \x01(\x05H\x00R\x02s1\x12\x10\n" +
+	"\x02m1\x18\v \x01(\x05H\x01R\x02m1\x12\x10\n" +
+	"\x02m2\x18\f \x01(\x03H\x01R\x02m2\x12\x10\n" +
+	"\x02m3\x18\r \x01(\x11H\x01R\x02m3\x12\x10\n" +
+	"\x02m4\x18\x0e \x01(\x12H\x01R\x02m4\x12\x10\n" +
+	"\x02m5\x18\x0f \x01(\aH\x01R\x02m5\x12\x10\n" +
+	"\x02m6\x18\x10 \x01(\x06H\x01R\x02m6\x12\x10\n" +
+	"\x02m7\x18\x11 \x01(\bH\x01R\x02m7\x12\x10\n" +
+	"\x02m8\x18\x12 \x01(\tH\x01R\x02m8\x12\x10\n" +
+	"\x02m9\x18\x13 \x01(\fH\x01R\x02m9\x12&\n" +
+	"\x03m10\x18\x14 \x01(\v2\x12.fastpb.test.OneofH\x01R\x03m10\x12\x12\n" +
+	"\x04tail\x18\x1e \x01(\x05R\x04tailB\b\n" +
+	"\x06singleB\a\n" +
+	"\x05multiB\x97\x01\n" +
 	"\x0fcom.fastpb.testB\tTestProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Testb\x06proto3"
 
 var (
@@ -544,21 +807,23 @@ func file_test_test_proto_rawDescGZIP() []byte {
 	return file_test_test_proto_rawDescData
 }
 
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_test_test_proto_goTypes = []any{
 	(*Scalars)(nil),  // 0: fastpb.test.Scalars
 	(*Repeated)(nil), // 1: fastpb.test.Repeated
 	(*List)(nil),     // 2: fastpb.test.List
 	(*Tree)(nil),     // 3: fastpb.test.Tree
+	(*Oneof)(nil),    // 4: fastpb.test.Oneof
 }
 var file_test_test_proto_depIdxs = []int32{
 	2, // 0: fastpb.test.List.tail:type_name -> fastpb.test.List
 	3, // 1: fastpb.test.Tree.ch:type_name -> fastpb.test.Tree
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	4, // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_test_test_proto_init() }
@@ -567,13 +832,26 @@ func file_test_test_proto_init() {
 		return
 	}
 	file_test_test_proto_msgTypes[0].OneofWrappers = []any{}
+	file_test_test_proto_msgTypes[4].OneofWrappers = []any{
+		(*Oneof_S1)(nil),
+		(*Oneof_M1)(nil),
+		(*Oneof_M2)(nil),
+		(*Oneof_M3)(nil),
+		(*Oneof_M4)(nil),
+		(*Oneof_M5)(nil),
+		(*Oneof_M6)(nil),
+		(*Oneof_M7)(nil),
+		(*Oneof_M8)(nil),
+		(*Oneof_M9)(nil),
+		(*Oneof_M10)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

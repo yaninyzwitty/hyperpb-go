@@ -130,10 +130,10 @@ type typeLayout struct {
 
 // fieldLayout is layout information for a [field]. Only for debugging.
 type fieldLayout struct {
-	arch    *archetype
-	index   int // Which field is this in the MessageDescriptor?
-	offset  fieldOffset
-	padding int // Tail padding after this field.
+	size, align, bits, padding uint32
+
+	index  int // Which field is this in the MessageDescriptor?
+	offset fieldOffset
 }
 
 // typeParser is a parser for some [Type]. A [Type] may have multiple parsers.

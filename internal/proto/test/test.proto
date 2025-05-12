@@ -66,3 +66,24 @@ message Tree {
     int32 v = 1;
     repeated Tree ch = 2;
 }
+
+message Oneof {
+    oneof single {
+        int32 s1 = 1;
+    }
+
+    oneof multi {
+        int32 m1 = 11;
+        int64 m2 = 12;
+        sint32 m3 = 13;
+        sint64 m4 = 14;
+        fixed32 m5 = 15;
+        fixed64 m6 = 16;
+        bool m7 = 17;
+        string m8 = 18;
+        bytes m9 = 19;
+        Oneof m10 = 20;
+    }
+
+    int32 tail = 30;
+}
