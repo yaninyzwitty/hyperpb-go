@@ -1,0 +1,291 @@
+// Copyright 2020-2025 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package fastpb
+
+import (
+	"google.golang.org/protobuf/encoding/protowire"
+	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/bufbuild/fastpb/internal/unsafe2"
+)
+
+//go:generate go run ./internal/stencil
+
+var oneofFields = [...]archetype{
+	// 32-bit varint types.
+	protoreflect.Int32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+	protoreflect.Uint32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+	protoreflect.Sint32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag32}},
+	},
+
+	// 64-bit varint types.
+	protoreflect.Int64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+	},
+	protoreflect.Uint64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+	},
+	protoreflect.Sint64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag64}},
+	},
+
+	// 32-bit fixed types.
+	protoreflect.Fixed32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+	protoreflect.Sfixed32Kind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[int32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+	protoreflect.FloatKind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[float32],
+		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+	},
+
+	// 64-bit fixed types.
+	protoreflect.Fixed64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[uint64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+	protoreflect.Sfixed64Kind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[int64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+	protoreflect.DoubleKind: {
+		size:    uint32(unsafe2.Int64Size),
+		align:   uint32(unsafe2.Int64Align),
+		oneof:   true,
+		getter:  getOneofScalar[float64],
+		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+	},
+
+	// Special scalar types.
+	protoreflect.BoolKind: {
+		size: 1, align: 1,
+		oneof:   true,
+		getter:  getOneofBool,
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofBool}},
+	},
+	protoreflect.EnumKind: {
+		size:    uint32(unsafe2.Int32Size),
+		align:   uint32(unsafe2.Int32Align),
+		oneof:   true,
+		getter:  getOneofScalar[protoreflect.EnumNumber],
+		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+	},
+
+	// String types.
+	protoreflect.StringKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		oneof:   true,
+		getter:  getOneofString,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofString}},
+	},
+	protoreflect.BytesKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		oneof:   true,
+		getter:  getOneofBytes,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
+	},
+
+	// Message types.
+	protoreflect.MessageKind: {
+		// A singular message is laid out as a single *message pointer.
+		size:   uint32(unsafe2.PointerSize),
+		align:  uint32(unsafe2.PointerAlign),
+		oneof:  true,
+		getter: getOneofMessage,
+		// This message parser is eager. TODO: add a lazy message archetype.
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofMessage}},
+	},
+	protoreflect.GroupKind: {
+		// Not implemented.
+	},
+}
+
+func getOneofScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	v := unsafe2.ByteLoad[T](m, getter.offset.data)
+	return protoreflect.ValueOf(v)
+}
+
+func getOneofBool(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	v := unsafe2.ByteLoad[byte](m, getter.offset.data)
+	return protoreflect.ValueOf(v != 0)
+}
+
+func getOneofString(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.utf8(m.context.src))
+}
+
+func getOneofBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(nil)
+	}
+	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	return protoreflect.ValueOf(zc.bytes(m.context.src))
+}
+
+func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
+	if which != getter.offset.number {
+		return protoreflect.ValueOf(empty{ty})
+	}
+	ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
+	return protoreflect.ValueOf(ptr)
+}
+
+//go:nosplit
+//fastpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
+//fastpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
+func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, T(n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+//fastpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
+//fastpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
+func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	storeField(p1, p2, zigzag64[T](n))
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint32
+	p1, p2, n = p1.fixed32(p2)
+	storeField(p1, p2, n)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.fixed64(p2)
+	storeField(p1, p2, n)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
+	var zc zc
+	p1, p2, zc = p1.utf8(p2)
+	storeField(p1, p2, zc)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
+	var zc zc
+	p1, p2, zc = p1.bytes(p2)
+	storeField(p1, p2, zc)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+func parseOneofBool(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint64
+	p1, p2, n = p1.varint(p2)
+	var b byte
+	if n != 0 {
+		b = 1
+	}
+
+	storeField(p1, p2, b)
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+
+	return p1, p2
+}
+
+func parseOneofMessage(p1 parser1, p2 parser2) (parser1, parser2) {
+	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	return parseMessage(p1, p2)
+}
