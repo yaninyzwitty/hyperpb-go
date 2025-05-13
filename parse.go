@@ -68,6 +68,9 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 		panic("fastpb: attempted to parse message using in-use Context")
 	}
 
+	m.context.lock.Lock()
+	defer m.context.lock.Unlock()
+
 	pp := &parserP{
 		maxMisses: defaultMaxMisses,
 		maxDepth:  defaultMaxDepth,
@@ -572,19 +575,27 @@ func (p1 parser1) message(p2 parser2, len int, m *message) (parser1, parser2) {
 
 	p1.g_ = ^uint64(0)
 	p2.m_ = unsafe2.Addr[message](p2.scratch)
-	p2.pp().t_ = unsafe2.AddrOf(p2.m().ty.raw.parser)
+	p2.pp().t_ = unsafe2.AddrOf(p2.m().ty().raw.parser)
 	if dbg.Enabled {
-		p1.log(
-			p2, "new", "%#x, %v, %v",
-			p2.m_,
-			p2.m().ty,
-			p2.m().ty.raw,
-		)
-		p1.log(p2, "tags", "%v", p2.t().tags)
+		p1, p2 = logMessage(p1, p2)
 	}
 
 	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().entry)
 
+	return p1, p2
+}
+
+// Outlined so that push() does not hit the stack size limit for nosplit.
+//
+//go:noinline
+func logMessage(p1 parser1, p2 parser2) (parser1, parser2) {
+	p1.log(
+		p2, "new", "%#x, %v, %v",
+		p2.m_,
+		p2.m().ty(),
+		p2.m().ty().raw,
+	)
+	p1.log(p2, "tags", "%v", p2.t().tags)
 	return p1, p2
 }
 
@@ -752,7 +763,7 @@ field:
 		// Skip this field, and keep skipping fields until we find a field
 		// number we recognize.
 		for {
-			p1, p2 = p1.skip(p2, tag2)
+			p1, p2 = p1.unknown(p2, tag2)
 			if p1.len() == 0 {
 				goto pop
 			}
@@ -778,9 +789,9 @@ pop:
 			p1.log(
 				p2, "finish", "%v, ty: %p:%s %v",
 				p2.m_,
-				p2.m().ty.raw,
-				p2.m().ty.Descriptor().FullName(),
-				p2.m().ty.raw,
+				p2.m().ty().raw,
+				p2.m().ty().Descriptor().FullName(),
+				p2.m().ty().raw,
 			)
 		}
 
@@ -813,22 +824,48 @@ func (p1 parser1) byTag(p2 parser2, tag2 uint64) (parser1, parser2, uint64) {
 	return p1, p2, tag2
 }
 
-func (p1 parser1) skip(p2 parser2, tag2 uint64) (parser1, parser2) {
+//go:noinline
+func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
+	// Rewind the stream to find the start offset of this field. We can do this
+	// because we know that tag2 is nonzero, so first we can trim off leading
+	// zero bytes for an over-long varint, and then skip back the minimum
+	// number of bytes needed to store tag2.
+	start := p1.b_
+	start--
+	for *start.AssertValid()&0x7f == 0 {
+		start--
+	}
+	start = start.Add(1 - protowire.SizeVarint(tag2))
+
 	num := protowire.Number(tag2 >> 3)
 	ty := protowire.Type(tag2 & 0b111)
 	if num == 0 {
 		p1.fail(p2, errCodeFieldNumber)
 	}
 
-	n := protowire.ConsumeFieldValue(num, ty, p1.buf())
-	p1.log(p2, "decoding field", "%d, %d, %d bytes", num, ty, n)
-	if n < 0 {
-		p1.fail(p2, errCode(-n))
+	m := protowire.ConsumeFieldValue(num, ty, p1.buf())
+	p1.log(p2, "decoding field", "%d, %d, %d bytes", num, ty, m)
+	if m < 0 {
+		p1.fail(p2, errCode(-m))
 	}
 
-	// Unknown field. Skip it for now.
-	p1.log(p2, "unknown", "%d bytes", n)
-	p1 = p1.advance(n)
+	p1.log(p2, "unknown", "%d bytes", m)
+	p1 = p1.advance(m)
+
+	zc := zc{
+		offset: uint32(start - unsafe2.AddrOf(p1.c().src)),
+		len:    uint32(p1.b_ - start),
+	}
+	cold := p2.m().mutableCold()
+	if cold.unknown.Len() > 0 {
+		last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
+		if zc.offset == last.offset+last.len {
+			last.len += zc.len
+			return p1, p2
+		}
+	}
+
+	cold.unknown = cold.unknown.AppendOne(p1.arena(), zc)
 	return p1, p2
 }
 

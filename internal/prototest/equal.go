@@ -26,6 +26,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
@@ -139,6 +140,19 @@ func (e *equal) message(a, b protoreflect.Message, rec bool) {
 
 	if !rec && !a.IsValid() && !b.IsValid() {
 		return
+	}
+
+	// Can't just compare for equality, since go protobuf actually re-encodes
+	// each unknown field minimally! This is not actually necessary to match
+	// the contract of unknown fields.
+	transcode := func(b []byte) []byte {
+		empty := new(emptypb.Empty)
+		_ = proto.Unmarshal(b, empty)
+		return empty.ProtoReflect().GetUnknown()
+	}
+
+	if !bytes.Equal(transcode(a.GetUnknown()), transcode(b.GetUnknown())) {
+		e.fail("unequal unknown fields: want `%x`, got `%x`", a.GetUnknown(), b.GetUnknown())
 	}
 
 	d := a.Descriptor()

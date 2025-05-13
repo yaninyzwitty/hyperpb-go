@@ -44,7 +44,7 @@ func (p *fieldParser) Format(s fmt.State, verb rune) {
 			if p.message == nil {
 				return nil
 			}
-			return p.message.ty
+			return p.message.tyOffset
 		}(),
 		"offset", p.offset,
 		"next", func() any {
@@ -92,7 +92,7 @@ func (t *typeHeader) Format(s fmt.State, verb rune) {
 func (p *typeParser) Format(s fmt.State, verb rune) {
 	dbg.Dict(
 		dbg.Fprintf("%p", p),
-		"ty", p.ty,
+		"ty", p.tyOffset,
 		"tags", p.tags,
 	).Format(s, verb)
 }
@@ -102,8 +102,21 @@ var _ = (*message).dump // Mark this function as used.
 // dump dumps the internal state of a message.
 func (m *message) dump() string {
 	buf := new(strings.Builder)
-	fmt.Fprintf(buf, "type: %p:%v\n", m.ty.Descriptor(), m.ty.Descriptor().FullName())
-	fmt.Fprintf(buf, "header: %p:%p:%p\n", m, m.context, m.ty.raw)
+	cold := m.cold()
+
+	fmt.Fprintf(buf, "type: %p:%v\n", m.ty().Descriptor(), m.ty().Descriptor().FullName())
+	fmt.Fprintf(buf, "header: %p:%p:%p/%#x\n", m, m.context, m.ty().raw, m.tyOffset)
+
+	if cold != nil {
+		fmt.Fprintf(buf, "cold: %p, unknown: ", cold)
+		for i, unknown := range cold.unknown.Raw() {
+			if i > 0 {
+				fmt.Fprint(buf, ", ")
+			}
+			fmt.Fprintf(buf, "%v `%x`", unknown, unknown.bytes(m.context.src))
+		}
+		fmt.Fprintln(buf)
+	}
 
 	if !dbg.Enabled {
 		fmt.Fprintln(buf, "bits: ???")
@@ -111,14 +124,14 @@ func (m *message) dump() string {
 		return buf.String()
 	}
 
-	layout := m.ty.raw.aux.layout.Get()
+	layout := m.ty().raw.aux.layout.Get()
 
 	// Print out the bit words.
 	if layout.bitWords > 0 {
 		fmt.Fprint(buf, "bits:")
-		words := unsafe2.Beyond[uint64](m).Slice(layout.bitWords)
+		words := unsafe2.Beyond[uint32](m).Slice(layout.bitWords)
 		for _, word := range words {
-			fmt.Fprintf(buf, " %064b", bits.Reverse64(word))
+			fmt.Fprintf(buf, " %032b", bits.Reverse32(word))
 		}
 		fmt.Fprintln(buf)
 	}
@@ -126,8 +139,8 @@ func (m *message) dump() string {
 	// Print out each field.
 	if len(layout.fields) > 0 {
 		fmt.Fprintln(buf, "fields:")
-		fields := m.ty.Descriptor().Fields()
-		oneofs := m.ty.Descriptor().Oneofs()
+		fields := m.ty().Descriptor().Fields()
+		oneofs := m.ty().Descriptor().Oneofs()
 		for _, field := range layout.fields {
 			start := buf.Len()
 

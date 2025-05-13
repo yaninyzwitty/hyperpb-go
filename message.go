@@ -15,6 +15,9 @@
 package fastpb
 
 import (
+	"sync"
+	"unsafe"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
@@ -43,6 +46,8 @@ type Message interface {
 	// This function will return the approximate offset into data at which the
 	// error occurred.
 	Unmarshal([]byte, ...UnmarshalOption) error
+
+	ty() Type
 }
 
 // New allocates a new message of the given type.
@@ -65,14 +70,25 @@ func New(ty Type) Message {
 // gets marked whenever the GC sweeps a *root. As such, all of the fields of
 // a message are laid out in memory that follows it.
 type message struct {
-	context *Context
-	ty      Type
+	context  *Context
+	tyOffset uint32
+	coldIdx  int32 // Index into context.cold; negative means no cold pointer.
 
 	// Fields follow this. The bitset words are allocated immediately after
 	// the end of the message, so they are easy to offset to.
 	//
 	// The field data follows that, and offsets into the field data are already
 	// baked to include both the message header and the bitset words.
+}
+
+var (
+	_ proto.Message        = new(message)
+	_ protoreflect.Message = new(message)
+)
+
+// cold is portions of a message that are located in context.cold.
+type cold struct {
+	unknown arena.Slice[zc] // Unknown field chunks.
 }
 
 // getBit gets the value of the nth bit from this message's bitset.
@@ -103,6 +119,27 @@ func (m *message) Unmarshal(data []byte, options ...UnmarshalOption) error {
 	return startParse(m, data, options...)
 }
 
+func (m *message) ty() Type {
+	return m.context.lib.fromOffset(m.tyOffset)
+}
+
+func (m *message) cold() *cold {
+	if m.coldIdx < 0 {
+		return nil
+	}
+	return unsafe2.Load(unsafe.SliceData(m.context.cold), m.coldIdx)
+}
+
+func (m *message) mutableCold() *cold {
+	if m.coldIdx < 0 {
+		cold := unsafe2.Cast[cold](m.context.arena.Alloc(int(m.ty().raw.coldSize)))
+		m.coldIdx = int32(len(m.context.cold))
+		m.context.cold = append(m.context.cold, cold)
+		return cold
+	}
+	return unsafe2.Load(unsafe.SliceData(m.context.cold), m.coldIdx)
+}
+
 func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
 	m := in.Message.(*message) //nolint:errcheck // Only called on *message values.
 	err = m.Unmarshal(in.Buf)
@@ -121,8 +158,15 @@ func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInit
 type Context struct {
 	// Context is the only memory not allocated on the arena.
 	arena arena.Arena
+	lib   *Library
 	src   *byte
 	len   int
+
+	// Synchronizes calls to startParse() with this context.
+	lock sync.Mutex
+
+	// Off-arena memory which holds arena pointers to "cold" parts of a message.
+	cold []*cold
 }
 
 // New allocates a new message in this context.
@@ -147,20 +191,37 @@ func (c *Context) New(ty Type) Message {
 // Any messages previously parsed using this context must not be reused.
 func (c *Context) Free() {
 	c.arena.Free()
+	c.lib = nil
 	c.src = nil
+
+	clear(c.cold)
+	c.cold = c.cold[:0]
 }
 
 func (c *Context) alloc(ty Type) *message {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	switch c.lib {
+	case nil:
+		c.lib = ty.Library()
+	case ty.Library():
+		break
+	default:
+		panic("fastpb: attempted to mix messages from different fastpb.Library pointers")
+	}
+
 	data := c.arena.Alloc(int(ty.raw.size))
 	m := unsafe2.Cast[message](data)
 	unsafe2.StoreNoWB(&m.context, c)
-	unsafe2.StoreNoWB(&m.ty.raw, ty.raw)
+	m.tyOffset = uint32(unsafe2.Sub(ty.raw, c.lib.base))
+	m.coldIdx = -1
 	return m
 }
 
 //go:noinline
 func (p1 parser1) alloc(p2 parser2) (parser1, parser2, *message) {
-	ty := p2.f().message.ty
+	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
 	size := int(ty.raw.size)
 
 	// Open-coded copy of arena.Alloc, which otherwise would not inline.
@@ -178,7 +239,8 @@ func (p1 parser1) alloc(p2 parser2) (parser1, parser2, *message) {
 		// Go seems unwilling to inline allocInPlace() here.
 		m := unsafe2.Cast[message](p)
 		unsafe2.StoreNoWB(&m.context, p1.c())
-		unsafe2.StoreNoWB(&m.ty.raw, p2.f().message.ty.raw)
+		m.tyOffset = p2.f().message.tyOffset
+		m.coldIdx = -1
 		return p1, p2, m
 	}
 
@@ -195,14 +257,10 @@ func (p1 parser1) alloc(p2 parser2) (parser1, parser2, *message) {
 func (p1 parser1) allocInPlace(p2 parser2, data *byte) (parser1, parser2, *message) {
 	m := unsafe2.Cast[message](data)
 	unsafe2.StoreNoWB(&m.context, p1.c())
-	unsafe2.StoreNoWB(&m.ty.raw, p2.f().message.ty.raw)
+	m.tyOffset = p2.f().message.tyOffset
+	m.coldIdx = -1
 	return p1, p2, m
 }
-
-var (
-	_ proto.Message        = new(message)
-	_ protoreflect.Message = new(message)
-)
 
 // ProtoReflect implements [proto.Message].
 func (m *message) ProtoReflect() protoreflect.Message {
@@ -211,17 +269,17 @@ func (m *message) ProtoReflect() protoreflect.Message {
 
 // Descriptor implements [protoreflect.Message].
 func (m *message) Descriptor() protoreflect.MessageDescriptor {
-	return m.ty.Descriptor()
+	return m.ty().Descriptor()
 }
 
 // Type implements {protoreflect.Message}.
 func (m *message) Type() protoreflect.MessageType {
-	return m.ty
+	return m.ty()
 }
 
 // New implements [protoreflect.Message].
 func (m *message) New() protoreflect.Message {
-	return m.ty.New()
+	return m.ty().New()
 }
 
 // Interface implements [protoreflect.Message].
@@ -235,7 +293,7 @@ func (m *message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 		return
 	}
 
-	f := m.ty.byIndex(0)
+	f := m.ty().byIndex(0)
 	fs := m.Descriptor().Fields()
 	i := 0
 	for f.valid() {
@@ -253,7 +311,7 @@ func (m *message) Has(fd protoreflect.FieldDescriptor) bool {
 		return false
 	}
 
-	f := m.ty.byDescriptor(fd)
+	f := m.ty().byDescriptor(fd)
 	if !f.valid() {
 		return false
 	}
@@ -295,7 +353,7 @@ func (m *message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 		panic("called Get on nil fastpb.Message")
 	}
 
-	f := m.ty.byDescriptor(fd)
+	f := m.ty().byDescriptor(fd)
 	if !f.valid() {
 		return protoreflect.ValueOf(nil)
 	}
@@ -330,7 +388,20 @@ func (m *message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
 
 // GetUnknown implements [protoreflect.Message].
 func (m *message) GetUnknown() protoreflect.RawFields {
-	return nil
+	cold := m.cold()
+	if cold == nil {
+		return nil
+	}
+
+	if cold.unknown.Len() == 1 {
+		return cold.unknown.Ptr().bytes(m.context.src)
+	}
+
+	var out []byte
+	for _, zc := range cold.unknown.Raw() {
+		out = append(out, zc.bytes(m.context.src)...)
+	}
+	return out
 }
 
 // SetUnknown implements [protoreflect.Message].
@@ -350,7 +421,7 @@ func (m *message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.Field
 	}
 
 	fd := od.Fields().Get(0)
-	f := m.ty.byDescriptor(fd)
+	f := m.ty().byDescriptor(fd)
 	if !f.valid() {
 		return nil
 	}
@@ -374,7 +445,7 @@ func (m *message) IsValid() bool {
 
 // ProtoMethods implements [protoreflect.Message].
 func (m *message) ProtoMethods() *protoiface.Methods {
-	return &m.ty.raw.aux.methods
+	return &m.ty().raw.aux.methods
 }
 
 // empty is an empty value of any [Type].

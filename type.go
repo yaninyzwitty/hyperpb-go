@@ -25,6 +25,26 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
+// Library represents the full output of [Compile]. Given any [Type], it can
+// be used to obtain the [Type] for any other message type that was compiled
+// as part of the same call to [Compile].
+type Library struct {
+	base  *typeHeader
+	types map[protoreflect.MessageDescriptor]Type
+}
+
+// Type returns the [Type] for the given descriptor in this library.
+//
+// If not present, returns false.
+func (l *Library) Type(md protoreflect.MessageDescriptor) (Type, bool) {
+	t, ok := l.types[md]
+	return t, ok
+}
+
+func (l *Library) fromOffset(n uint32) Type {
+	return Type{raw: unsafe2.ByteAdd(l.base, n)}
+}
+
 // Type is an optimized message descriptor.
 //
 // Type implements [protoreflect.MessageType].
@@ -38,6 +58,11 @@ type Type struct {
 // Because Type's shape is equal to a pointer, Go will inline it into
 // the data field of an interface, avoiding an indirection.
 var _ protoreflect.MessageType = Type{}
+
+// Library returns the type library this type is part of.
+func (t Type) Library() *Library {
+	return t.raw.aux.lib
+}
 
 // Descriptor implements [protoreflect.MessageType].
 func (t Type) Descriptor() protoreflect.MessageDescriptor {
@@ -94,7 +119,7 @@ type typeHeader struct {
 	// The number of bytes of memory that must be allocated for a *message of
 	// this type. This includes the size of the header. Alignment is implicitly
 	// that of uint64.
-	size uint32
+	size, coldSize uint32
 
 	// The "unspecialized" parser for this type.
 	parser *typeParser
@@ -118,6 +143,7 @@ type typeHeader struct {
 type typeAux struct {
 	layout dbg.Value[typeLayout]
 
+	lib     *Library
 	desc    protoreflect.MessageDescriptor
 	methods protoiface.Methods
 }
@@ -141,7 +167,7 @@ type typeParser struct {
 	_ unsafe2.NoCopy
 
 	// The type that this parser parses.
-	ty Type
+	tyOffset uint32
 
 	// Maps field tags to offsets in fields.
 	tags table.Table[uint32]

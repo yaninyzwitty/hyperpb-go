@@ -358,7 +358,7 @@ func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
 	first := unsafe2.Cast[message](raw.Ptr())
 
 	return protoreflect.ValueOf(inlineMessageList{
-		ty:    first.ty,
+		ty:    first.ty(),
 		raw:   first,
 		dummy: make([]struct{}, raw.Len()),
 	})
@@ -649,7 +649,8 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	}
 
 	{
-		size := p2.f().message.ty.raw.size
+		ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
+		size := ty.raw.size
 		if r.ptr == 0 {
 			p1, p2, r = newInlineRepeatedField(p1, p2, r)
 		} else if r.len == r.cap {
@@ -693,7 +694,8 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, pars
 	//
 	// TODO: Add a profiling knob for setting the default number of
 	// elements.
-	size := p2.f().message.ty.raw.size
+	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
+	size := ty.raw.size
 	s := arena.NewSlice[byte](p1.arena(), int(size))
 	r.ptr = unsafe2.AddrOf(s.Ptr())
 	r.cap = uint32(s.Cap()) / size
@@ -703,7 +705,8 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, pars
 
 //go:noinline
 func spillInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, parser2, *rep[byte]) {
-	size := p2.f().message.ty.raw.size
+	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
+	size := ty.raw.size
 
 	// Spill all of the messages onto a pointer slice.
 	s := arena.NewSlice[*message](p1.arena(), int(r.cap)*2)

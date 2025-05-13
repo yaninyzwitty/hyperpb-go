@@ -41,7 +41,7 @@ type CompileOption func(*compiler)
 func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) Type {
 	c := &compiler{
 		symbols: make(map[any]int),
-		relos:   make(map[int]any),
+		relos:   make(map[int]relo),
 
 		layouts: make(map[protoreflect.MessageDescriptor]typeLayout),
 	}
@@ -87,7 +87,7 @@ type compiler struct {
 	// and relos maps offsets to pointer values that should be filled in with
 	// the final pointer value for that symbol.
 	symbols map[any]int
-	relos   map[int]any
+	relos   map[int]relo
 
 	layouts map[protoreflect.MessageDescriptor]typeLayout
 
@@ -128,7 +128,10 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 
 	// Resolve all message type references. This needs to be done as a separate
 	// step due to potential cycles.
-	base := unsafe2.Cast[typeHeader](p)
+	lib := &Library{
+		base:  unsafe2.Cast[typeHeader](p),
+		types: make(map[protoreflect.MessageDescriptor]Type),
+	}
 	var i int
 	for symbol, offset := range c.symbols {
 		sym, ok := symbol.(typeSymbol)
@@ -136,13 +139,16 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 			continue
 		}
 
-		ty := Type{raw: unsafe2.ByteAdd(base, offset)}
+		ty := Type{raw: unsafe2.ByteAdd(lib.base, offset)}
 		ty.raw.aux = &auxes[i]
 		i++
 
+		ty.raw.aux.lib = lib
 		ty.raw.aux.desc = sym.ty
 		ty.raw.aux.methods.Unmarshal = unmarshalShim
 		ty.raw.aux.methods.CheckInitialized = requiredShim
+
+		lib.types[sym.ty] = ty
 
 		if dbg.Enabled {
 			*ty.raw.aux.layout.Get() = c.layouts[sym.ty]
@@ -150,12 +156,12 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 	}
 
 	if dbg.Enabled {
-		runtime.SetFinalizer(base, func(t *typeHeader) {
+		runtime.SetFinalizer(lib.base, func(t *typeHeader) {
 			c.log("finalizer", "%p:%s", t, t.aux.desc.FullName())
 		})
 	}
 
-	return Type{raw: base}
+	return Type{raw: lib.base}
 }
 
 // ir is analysis information about a message type for generating a parser
@@ -485,10 +491,12 @@ func (c *compiler) codegen(ir *ir) {
 	tSym := typeSymbol{ir.d}
 	pSym := parserSymbol{ir.d}
 
+	coldSize, _ := unsafe2.Layout[cold]()
 	c.write(tSym,
 		typeHeader{
-			size:  uint32(ir.size),
-			count: uint32(len(ir.t)),
+			size:     uint32(ir.size),
+			coldSize: uint32(coldSize),
+			count:    uint32(len(ir.t)),
 		},
 		relo{
 			symbol: pSym,
@@ -535,8 +543,9 @@ func (c *compiler) codegen(ir *ir) {
 	c.write(pSym,
 		typeParser{},
 		relo{
-			symbol: tSym,
-			offset: unsafe.Offsetof(typeParser{}.ty),
+			symbol:   tSym,
+			offset:   unsafe.Offsetof(typeParser{}.tyOffset),
+			relative: true,
 		},
 		relo{
 			symbol: tableSymbol{pSym},
@@ -623,22 +632,26 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 
 // relo is a relocation that is resolved in [compiler.link].
 type relo struct {
-	symbol any
-	offset uintptr
+	symbol   any
+	offset   uintptr
+	relative bool // If true, the written value is relative to the base address.
 }
 
 func (c *compiler) link(base *byte) {
-	for target, symbol := range c.relos {
-		offset, ok := c.symbols[symbol]
+	for target, relo := range c.relos {
+		offset, ok := c.symbols[relo.symbol]
 		if !ok {
-			panic(fmt.Sprintf("fastpb: undefined symbol: %#v", symbol))
+			panic(fmt.Sprintf("fastpb: undefined symbol: %#v", relo.symbol))
 		}
 
-		target := unsafe2.Cast[*byte](unsafe2.Add(base, target))
-		symbol := unsafe2.Add(base, offset)
-
-		c.log("relo", "%#v %p->%p", symbol, target, symbol)
-		*target = symbol
+		if relo.relative {
+			c.log("relo", "%#v %#x->%#x", relo.symbol, target, uint32(offset))
+			unsafe2.ByteStore(base, target, uint32(offset))
+		} else {
+			value := unsafe2.Add(base, offset)
+			c.log("relo", "%#v %#x->%#x", relo.symbol, target, value)
+			unsafe2.ByteStore(base, target, value)
+		}
 	}
 }
 
@@ -679,7 +692,7 @@ func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...
 		if _, ok := c.relos[offset]; ok {
 			panic(fmt.Sprintf("fastpb: two relocations for the same offset %#x", offset))
 		}
-		c.relos[offset] = relo.symbol
+		c.relos[offset] = relo
 	}
 
 	return offset

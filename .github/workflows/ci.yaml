@@ -30,8 +30,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
-          key: "${{ runner.os }}-protocompile-ci-${{ hashFiles('**/go.sum') }}"
-          restore-keys: "${{ runner.os }}-protocompile-ci-"
+          key: "${{ runner.os }}-fastpb-ci-${{ hashFiles('**/go.sum') }}"
+          restore-keys: "${{ runner.os }}-fastpb-ci-"
 
       - name: Test
         run: make test
@@ -60,6 +60,13 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with: {go-version: "${{ matrix.go-version }}"}
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: "${{ runner.os }}-fastpb-ci-${{ hashFiles('**/go.sum') }}"
+          restore-keys: "${{ runner.os }}-fastpb-ci-"
 
       - name: Lint
         run: make lint
