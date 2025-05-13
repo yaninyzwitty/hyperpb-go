@@ -322,8 +322,7 @@ func (m *message) Has(fd protoreflect.FieldDescriptor) bool {
 		return false
 
 	case fd.IsList():
-		_, empty := v.Interface().(emptyList)
-		return !empty
+		return v.List().Len() != 0
 
 	case fd.IsMap():
 		panic(dbg.Unsupported())

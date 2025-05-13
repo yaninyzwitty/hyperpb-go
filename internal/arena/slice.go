@@ -15,6 +15,10 @@
 package arena
 
 import (
+	"fmt"
+	"unsafe"
+
+	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -27,14 +31,35 @@ type Slice[T any] struct {
 	len, cap uint32
 }
 
+// SliceAddr is like [Slice], but its pointer is replaced with an address, so
+// loading/storing values of this type issues no write barriers.
+type SliceAddr[T any] struct {
+	ptr      unsafe2.Addr[T]
+	len, cap uint32
+}
+
 const (
-	SliceSize  = unsafe2.PointerSize + unsafe2.Int32Size*2
-	SliceAlign = max(unsafe2.PointerAlign, unsafe2.Int32Align)
+	SliceSize  = int(unsafe.Sizeof(Slice[byte]{}))
+	SliceAlign = int(unsafe.Alignof(Slice[byte]{}))
 )
 
 // SliceFromParts assembles a slice from its raw components.
 func SliceFromParts[T any](ptr *T, len, cap uint32) Slice[T] {
 	return Slice[T]{ptr, len, cap}
+}
+
+// Addr converts this slice into an address slice.
+//
+// See the caveats of [unsafe2.AddrOf].
+func (s Slice[T]) Addr() SliceAddr[T] {
+	return SliceAddr[T]{unsafe2.AddrOf(s.ptr), s.len, s.cap}
+}
+
+// Addr converts this address slice into a true [Slice].
+//
+// See the caveats of [unsafe2.Addr.AssertValid].
+func (s SliceAddr[T]) AssertValid() Slice[T] {
+	return Slice[T]{s.ptr.AssertValid(), s.len, s.cap}
 }
 
 // SliceOf allocates a slice for the given values.
@@ -64,9 +89,36 @@ func (s Slice[_]) Len() int {
 	return int(s.len)
 }
 
+// SetLet directly sets the length of s.
+func (s Slice[T]) SetLen(n int) Slice[T] {
+	if dbg.Enabled && n > int(s.cap) {
+		panic(fmt.Errorf("runtime error: SetLen(%v) with Cap() = %v", n, s.cap))
+	}
+
+	dbg.Log(nil, "set len", "%v->%d", s.Addr(), n)
+	s.len = uint32(n)
+	return s
+}
+
 // Cap returns this slice's capacity.
 func (s Slice[_]) Cap() int {
 	return int(s.cap)
+}
+
+// Load loads a value at the given index.
+func (s Slice[T]) Load(n int) T {
+	if dbg.Enabled {
+		return s.Raw()[n]
+	}
+	return unsafe2.Load(s.Ptr(), n)
+}
+
+// Store stores a value at the given index.
+func (s Slice[T]) Store(n int, v T) {
+	if dbg.Enabled {
+		s.Raw()[n] = v
+	}
+	unsafe2.Store(s.Ptr(), n, v)
 }
 
 // Raw returns the underlying slice for this slice.
@@ -115,19 +167,20 @@ func (s Slice[T]) AppendOne(a *Arena, elem T) Slice[T] {
 
 // Grow extends the capacity of this slice by n bytes.
 func (s Slice[T]) Grow(a *Arena, n int) Slice[T] {
-	a.Log("grow", "%p[%d:%d], %d", s.ptr, s.len, s.cap, n)
+	var z T
+	size, _ := unsafe2.Layout[T]()
+	a.Log("grow", "%p[%d:%d], %d x %T", s.ptr, s.len, s.cap, n, z)
 
 	if s.ptr == nil {
 		cap := sliceLayout[T](n)
 		s.ptr = unsafe2.Cast[T](a.Alloc(cap))
-		s.cap = uint32(cap)
+		s.cap = uint32(cap) / uint32(size)
 		return s
 	}
 
 	oldSize := sliceLayout[T](s.Cap())
 	newSize := sliceLayout[T](s.Cap() + n)
 
-	size, _ := unsafe2.Layout[T]()
 	p := a.realloc(newSize, oldSize, unsafe2.Cast[byte](s.ptr))
 	s.ptr = unsafe2.Cast[T](p)
 	s.cap = uint32(newSize) / uint32(size)
@@ -140,4 +193,19 @@ func sliceLayout[T any](n int) (size int) {
 		panic("fastpb: over-aligned object")
 	}
 	return suggestSize(size * n)
+}
+
+// Format implements [fmt.Formatter].
+func (s Slice[T]) Format(state fmt.State, v rune) {
+	if s.Ptr() == nil && (s.Len() != 0 || s.Cap() != 0) {
+		fmt.Fprintf(state, "%v", s.Addr())
+		return
+	}
+
+	fmt.Fprintf(state, fmt.FormatString(state, v), s.Raw())
+}
+
+// String implements [fmt.Stringer].
+func (s SliceAddr[T]) String() string {
+	return fmt.Sprintf("%v[%d:%d]", s.ptr, s.len, s.cap)
 }

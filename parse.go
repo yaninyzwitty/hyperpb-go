@@ -826,6 +826,10 @@ func (p1 parser1) byTag(p2 parser2, tag2 uint64) (parser1, parser2, uint64) {
 
 //go:noinline
 func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
+	if tag2&^0xffffffff != 0 {
+		p1.fail(p2, errCodeOverflow)
+	}
+
 	// Rewind the stream to find the start offset of this field. We can do this
 	// because we know that tag2 is nonzero, so first we can trim off leading
 	// zero bytes for an over-long varint, and then skip back the minimum
@@ -844,12 +848,10 @@ func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
 	}
 
 	m := protowire.ConsumeFieldValue(num, ty, p1.buf())
-	p1.log(p2, "decoding field", "%d, %d, %d bytes", num, ty, m)
+	p1.log(p2, "unknown", "%d, %d, %d bytes", num, ty, m)
 	if m < 0 {
 		p1.fail(p2, errCode(-m))
 	}
-
-	p1.log(p2, "unknown", "%d bytes", m)
 	p1 = p1.advance(m)
 
 	zc := zc{

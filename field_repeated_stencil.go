@@ -20,152 +20,26 @@ import (
 	"math/bits"
 
 	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 //go:nosplit
-func appendVarint8(p1 parser1, p2 parser2, v uint8) (parser1, parser2) {
-	_ = appendVarint[uint8]
-	rep := unsafe2.Cast[rep[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	if rep.isZC() && rep.cap > 0 {
-
-		zc := repCast[byte](*rep).zc(p1.c().src)
-		slice := arena.NewSlice[uint8](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			unsafe2.Store(slice.Ptr(), i, uint8(b))
-		}
-		unsafe2.Store(slice.Ptr(), slice.Len(), v)
-		rep.setArena(slice)
-		return p1, p2
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-func appendVarint32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
-	_ = appendVarint[uint32]
-	rep := unsafe2.Cast[rep[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	if rep.isZC() && rep.cap > 0 {
-
-		zc := repCast[byte](*rep).zc(p1.c().src)
-		slice := arena.NewSlice[uint32](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			unsafe2.Store(slice.Ptr(), i, uint32(b))
-		}
-		unsafe2.Store(slice.Ptr(), slice.Len(), v)
-		rep.setArena(slice)
-		return p1, p2
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-func appendVarint64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
-	_ = appendVarint[uint64]
-	rep := unsafe2.Cast[rep[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	if rep.isZC() && rep.cap > 0 {
-
-		zc := repCast[byte](*rep).zc(p1.c().src)
-		slice := arena.NewSlice[uint64](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			unsafe2.Store(slice.Ptr(), i, uint64(b))
-		}
-		unsafe2.Store(slice.Ptr(), slice.Len(), v)
-		rep.setArena(slice)
-		return p1, p2
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-func appendFixed32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
-	_ = appendFixed[uint32]
-	rep := unsafe2.Cast[rep[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	if rep.isZC() && rep.cap > 0 {
-
-		p1, p2, rep = spillArena32(p1, p2, rep)
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-func appendFixed64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
-	_ = appendFixed[uint64]
-	rep := unsafe2.Cast[rep[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	if rep.isZC() && rep.cap > 0 {
-
-		p1, p2, rep = spillArena64(p1, p2, rep)
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-func spillArena8(p1 parser1, p2 parser2, rep *rep[uint8]) (parser1, parser2, *rep[uint8]) {
+func spillArena8(p1 parser1, p2 parser2, rep arena.Slice[uint8]) (parser1, parser2, arena.Slice[uint8]) {
 	_ = spillArena[uint8]
-	slice := rep.zc(p1.c().src)
-	rep.setArena(arena.SliceOf(p1.arena(), slice...))
-	return p1, p2, rep
+	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
 }
 
 //go:nosplit
-func spillArena32(p1 parser1, p2 parser2, rep *rep[uint32]) (parser1, parser2, *rep[uint32]) {
+func spillArena32(p1 parser1, p2 parser2, rep arena.Slice[uint32]) (parser1, parser2, arena.Slice[uint32]) {
 	_ = spillArena[uint32]
-	slice := rep.zc(p1.c().src)
-	rep.setArena(arena.SliceOf(p1.arena(), slice...))
-	return p1, p2, rep
+	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
 }
 
 //go:nosplit
-func spillArena64(p1 parser1, p2 parser2, rep *rep[uint64]) (parser1, parser2, *rep[uint64]) {
+func spillArena64(p1 parser1, p2 parser2, rep arena.Slice[uint64]) (parser1, parser2, arena.Slice[uint64]) {
 	_ = spillArena[uint64]
-	slice := rep.zc(p1.c().src)
-	rep.setArena(arena.SliceOf(p1.arena(), slice...))
-	return p1, p2, rep
+	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
 }
 
 //go:nosplit
@@ -173,8 +47,36 @@ func parseRepeatedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseRepeatedVarint[uint8]
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p1, p2 = appendVarint8(p1, p2, uint8(n))
 
+	slot := unsafe2.Cast[arena.SliceAddr[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	if isZC(slice) && slice.Cap() > 0 {
+
+		zc := unwrapRawZC(slice).bytes(p1.c().src)
+		slice := arena.NewSlice[uint8](p1.arena(), len(zc)+1)
+		for i, b := range zc {
+			slice.Store(i, uint8(b))
+		}
+		slice.Store(slice.Len()-1, uint8(n))
+		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, uint8(n))
+
+		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), uint8(n))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
 	return p1, p2
 }
 
@@ -183,8 +85,36 @@ func parseRepeatedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseRepeatedVarint[uint32]
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p1, p2 = appendVarint32(p1, p2, uint32(n))
 
+	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	if isZC(slice) && slice.Cap() > 0 {
+
+		zc := unwrapRawZC(slice).bytes(p1.c().src)
+		slice := arena.NewSlice[uint32](p1.arena(), len(zc)+1)
+		for i, b := range zc {
+			slice.Store(i, uint32(b))
+		}
+		slice.Store(slice.Len()-1, uint32(n))
+		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, uint32(n))
+
+		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), uint32(n))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
 	return p1, p2
 }
 
@@ -193,8 +123,36 @@ func parseRepeatedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseRepeatedVarint[uint64]
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p1, p2 = appendVarint64(p1, p2, uint64(n))
 
+	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	if isZC(slice) && slice.Cap() > 0 {
+
+		zc := unwrapRawZC(slice).bytes(p1.c().src)
+		slice := arena.NewSlice[uint64](p1.arena(), len(zc)+1)
+		for i, b := range zc {
+			slice.Store(i, uint64(b))
+		}
+		slice.Store(slice.Len()-1, uint64(n))
+		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, uint64(n))
+
+		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), uint64(n))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
 	return p1, p2
 }
 
@@ -210,46 +168,58 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	p2.scratch = uint64(p1.e_)
 	p1.e_ = p1.b_.Add(int(n))
 
-	var count uint32
+	var count int
 	for p := p1.b_; p < p1.e_; p += 8 {
 		n := min(8, p1.e_-p)
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
 		bytes |= signBits << (n * 8)
-		count += uint32(bits.OnesCount64(signBits &^ bytes))
+		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	rep := unsafe2.Cast[rep[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	if rep.isZC() {
+	slot := unsafe2.Cast[arena.SliceAddr[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+	if isZC(slice) {
 
 		switch {
-		case rep.cap > 0:
+		case slice.Cap() > 0:
 
-			zc := repCast[byte](*rep).zc(p1.c().src)
-			slice := arena.NewSlice[uint8](p1.arena(), len(zc)+int(count))
+			zc := unwrapRawZC(slice).bytes(p1.c().src)
+			slice = arena.NewSlice[uint8](p1.arena(), len(zc)+count)
 			for i, b := range zc {
-				unsafe2.Store(slice.Ptr(), i, uint8(b))
+				slice.Store(i, uint8(b))
 			}
-			rep.setArena(slice)
+			slice = slice.SetLen(len(zc))
 
-		case count == n:
-			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
+			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
-			rep.setZC(zc{uint32(offset), n})
+		case count == int(n):
+			*slot = wrapZC[uint8](zc{
+				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
+				len:	n,
+			}).Addr()
+
+			if dbg.Enabled {
+				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
+				p1.log(p2, "zc", "%v %v", *slot, raw)
+			}
+
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
 
 		default:
-			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
+			slice = slice.Grow(p1.arena(), count)
+			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := rep.cap - rep.len; spare < count {
-		rep.setArena(rep.arena().Grow(p1.arena(), int(count-spare)))
+	} else if spare := slice.Cap() - slice.Len(); spare < count {
+		slice = slice.Grow(p1.arena(), count-spare)
+		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
 	}
 
-	p := rep.ptr.Add(int(rep.len))
+	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
 
 	switch {
-	case count == uint32(p1.len()):
+	case count == p1.len():
 		for {
 			*p.AssertValid() = uint8(*p1.b())
 			p1.b_++
@@ -261,7 +231,7 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 
 			break
 		}
-	case count >= uint32(p1.len())/2:
+	case count >= p1.len()/2:
 		for {
 			var x uint64
 			if v := *p1.b(); int8(v) >= 0 {
@@ -297,7 +267,10 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	rep.len = uint32(p.Sub(rep.ptr))
+	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+
+	*slot = slice.Addr()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -314,46 +287,58 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	p2.scratch = uint64(p1.e_)
 	p1.e_ = p1.b_.Add(int(n))
 
-	var count uint32
+	var count int
 	for p := p1.b_; p < p1.e_; p += 8 {
 		n := min(8, p1.e_-p)
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
 		bytes |= signBits << (n * 8)
-		count += uint32(bits.OnesCount64(signBits &^ bytes))
+		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	rep := unsafe2.Cast[rep[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	if rep.isZC() {
+	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+	if isZC(slice) {
 
 		switch {
-		case rep.cap > 0:
+		case slice.Cap() > 0:
 
-			zc := repCast[byte](*rep).zc(p1.c().src)
-			slice := arena.NewSlice[uint32](p1.arena(), len(zc)+int(count))
+			zc := unwrapRawZC(slice).bytes(p1.c().src)
+			slice = arena.NewSlice[uint32](p1.arena(), len(zc)+count)
 			for i, b := range zc {
-				unsafe2.Store(slice.Ptr(), i, uint32(b))
+				slice.Store(i, uint32(b))
 			}
-			rep.setArena(slice)
+			slice = slice.SetLen(len(zc))
 
-		case count == n:
-			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
+			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
-			rep.setZC(zc{uint32(offset), n})
+		case count == int(n):
+			*slot = wrapZC[uint32](zc{
+				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
+				len:	n,
+			}).Addr()
+
+			if dbg.Enabled {
+				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
+				p1.log(p2, "zc", "%v %v", *slot, raw)
+			}
+
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
 
 		default:
-			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
+			slice = slice.Grow(p1.arena(), count)
+			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := rep.cap - rep.len; spare < count {
-		rep.setArena(rep.arena().Grow(p1.arena(), int(count-spare)))
+	} else if spare := slice.Cap() - slice.Len(); spare < count {
+		slice = slice.Grow(p1.arena(), count-spare)
+		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
 	}
 
-	p := rep.ptr.Add(int(rep.len))
+	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
 
 	switch {
-	case count == uint32(p1.len()):
+	case count == p1.len():
 		for {
 			*p.AssertValid() = uint32(*p1.b())
 			p1.b_++
@@ -365,7 +350,7 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 
 			break
 		}
-	case count >= uint32(p1.len())/2:
+	case count >= p1.len()/2:
 		for {
 			var x uint64
 			if v := *p1.b(); int8(v) >= 0 {
@@ -401,7 +386,10 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	rep.len = uint32(p.Sub(rep.ptr))
+	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+
+	*slot = slice.Addr()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -418,46 +406,58 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	p2.scratch = uint64(p1.e_)
 	p1.e_ = p1.b_.Add(int(n))
 
-	var count uint32
+	var count int
 	for p := p1.b_; p < p1.e_; p += 8 {
 		n := min(8, p1.e_-p)
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
 		bytes |= signBits << (n * 8)
-		count += uint32(bits.OnesCount64(signBits &^ bytes))
+		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	rep := unsafe2.Cast[rep[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	if rep.isZC() {
+	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+	if isZC(slice) {
 
 		switch {
-		case rep.cap > 0:
+		case slice.Cap() > 0:
 
-			zc := repCast[byte](*rep).zc(p1.c().src)
-			slice := arena.NewSlice[uint64](p1.arena(), len(zc)+int(count))
+			zc := unwrapRawZC(slice).bytes(p1.c().src)
+			slice = arena.NewSlice[uint64](p1.arena(), len(zc)+count)
 			for i, b := range zc {
-				unsafe2.Store(slice.Ptr(), i, uint64(b))
+				slice.Store(i, uint64(b))
 			}
-			rep.setArena(slice)
+			slice = slice.SetLen(len(zc))
 
-		case count == n:
-			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
+			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
-			rep.setZC(zc{uint32(offset), n})
+		case count == int(n):
+			*slot = wrapZC[uint64](zc{
+				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
+				len:	n,
+			}).Addr()
+
+			if dbg.Enabled {
+				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
+				p1.log(p2, "zc", "%v %v", *slot, raw)
+			}
+
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
 
 		default:
-			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
+			slice = slice.Grow(p1.arena(), count)
+			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := rep.cap - rep.len; spare < count {
-		rep.setArena(rep.arena().Grow(p1.arena(), int(count-spare)))
+	} else if spare := slice.Cap() - slice.Len(); spare < count {
+		slice = slice.Grow(p1.arena(), count-spare)
+		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
 	}
 
-	p := rep.ptr.Add(int(rep.len))
+	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
 
 	switch {
-	case count == uint32(p1.len()):
+	case count == p1.len():
 		for {
 			*p.AssertValid() = uint64(*p1.b())
 			p1.b_++
@@ -469,7 +469,7 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 
 			break
 		}
-	case count >= uint32(p1.len())/2:
+	case count >= p1.len()/2:
 		for {
 			var x uint64
 			if v := *p1.b(); int8(v) >= 0 {
@@ -505,8 +505,65 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	rep.len = uint32(p.Sub(rep.ptr))
+	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+
+	*slot = slice.Addr()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+
+//go:nosplit
+func appendFixed32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
+	_ = appendFixed[uint32]
+	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	if isZC(slice) && slice.Cap() > 0 {
+
+		p1, p2, slice = spillArena32(p1, p2, slice)
+		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
+	return p1, p2
+}
+
+//go:nosplit
+func appendFixed64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
+	_ = appendFixed[uint64]
+	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	if isZC(slice) && slice.Cap() > 0 {
+
+		p1, p2, slice = spillArena64(p1, p2, slice)
+		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
 	return p1, p2
 }
 
@@ -515,24 +572,28 @@ func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint32]
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
+	if zc.len == 0 {
+		return p1, p2
+	}
 
 	size, _ := unsafe2.Layout[uint32]()
 	if int(zc.len)%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	rep := unsafe2.Cast[rep[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
 
 	switch {
-	case !rep.isZC():
+	case !isZC(slice):
 
-	case rep.cap == 0:
+	case slice.Cap() == 0:
 
-		rep.setZC(zc)
+		*slot = wrapZC[uint32](zc).Addr()
 		goto exit
 	default:
 
-		p1, p2, rep = spillArena(p1, p2, rep)
+		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
 	{
@@ -542,9 +603,7 @@ func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 			int(zc.len)/size,
 		)
 
-		slice := rep.arena()
-		slice = slice.Append(p1.arena(), borrowed...)
-		rep.setArena(slice)
+		*slot = slice.Append(p1.arena(), borrowed...).Addr()
 	}
 
 exit:
@@ -556,24 +615,28 @@ func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint64]
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
+	if zc.len == 0 {
+		return p1, p2
+	}
 
 	size, _ := unsafe2.Layout[uint64]()
 	if int(zc.len)%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	rep := unsafe2.Cast[rep[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
 
 	switch {
-	case !rep.isZC():
+	case !isZC(slice):
 
-	case rep.cap == 0:
+	case slice.Cap() == 0:
 
-		rep.setZC(zc)
+		*slot = wrapZC[uint64](zc).Addr()
 		goto exit
 	default:
 
-		p1, p2, rep = spillArena(p1, p2, rep)
+		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
 	{
@@ -583,9 +646,7 @@ func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 			int(zc.len)/size,
 		)
 
-		slice := rep.arena()
-		slice = slice.Append(p1.arena(), borrowed...)
-		rep.setArena(slice)
+		*slot = slice.Append(p1.arena(), borrowed...).Addr()
 	}
 
 exit:

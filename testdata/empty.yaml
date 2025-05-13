@@ -13,3 +13,4 @@
 # limitations under the License.
 
 type: fastpb.test.Scalars
+protoscope: [""]

@@ -15,12 +15,14 @@
 package fastpb_test
 
 import (
+	"bytes"
 	"embed"
 	"encoding/hex"
 	"io/fs"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/protocolbuffers/protoscope"
@@ -41,53 +43,55 @@ import (
 
 func TestUnmarshal(t *testing.T) {
 	t.Parallel()
-	for _, test := range parseTests(t) {
-		t.Run(test.Name, func(t *testing.T) {
-			t.Parallel()
-			test.run(t, nil)
-		})
-	}
+	runTests(t, func(t *testing.T, test *test) {
+		t.Helper()
+		test.run(t, nil)
+	})
 }
 
 func BenchmarkUnmarshal(b *testing.B) {
-	for _, test := range parseTests(b) {
-		b.Run(test.Name, func(b *testing.B) {
-			b.Run("fastpb", func(b *testing.B) {
-				b.ReportAllocs()
-				b.SetBytes(int64(len(test.Bytes)))
-				for range b.N {
-					m := fastpb.New(test.Type.Fast)
-					_ = proto.Unmarshal(test.Bytes, m)
-				}
+	runTests(b, func(b *testing.B, test *test) {
+		b.Helper()
+
+		for _, specimen := range test.Specimens {
+			b.Run("", func(b *testing.B) {
+				b.Run("fastpb", func(b *testing.B) {
+					b.ReportAllocs()
+					b.SetBytes(int64(len(test.Specimens)))
+					for range b.N {
+						m := fastpb.New(test.Type.Fast)
+						_ = proto.Unmarshal(specimen, m)
+					}
+				})
+				b.Run("amortize", func(b *testing.B) {
+					b.ReportAllocs()
+					b.SetBytes(int64(len(test.Specimens)))
+					ctx := new(fastpb.Context)
+					for range b.N {
+						m := ctx.New(test.Type.Fast)
+						_ = proto.Unmarshal(specimen, m)
+						ctx.Free()
+					}
+				})
+				b.Run("gencode", func(b *testing.B) {
+					b.ReportAllocs()
+					b.SetBytes(int64(len(test.Specimens)))
+					for range b.N {
+						m := test.Type.Gencode.New().Interface()
+						_ = proto.Unmarshal(specimen, m)
+					}
+				})
+				b.Run("dynamicpb", func(b *testing.B) {
+					b.ReportAllocs()
+					b.SetBytes(int64(len(test.Specimens)))
+					for range b.N {
+						m := dynamicpb.NewMessage(test.Type.Gencode.Descriptor())
+						_ = proto.Unmarshal(specimen, m)
+					}
+				})
 			})
-			b.Run("amortize", func(b *testing.B) {
-				b.ReportAllocs()
-				b.SetBytes(int64(len(test.Bytes)))
-				ctx := new(fastpb.Context)
-				for range b.N {
-					m := ctx.New(test.Type.Fast)
-					_ = proto.Unmarshal(test.Bytes, m)
-					ctx.Free()
-				}
-			})
-			b.Run("gencode", func(b *testing.B) {
-				b.ReportAllocs()
-				b.SetBytes(int64(len(test.Bytes)))
-				for range b.N {
-					m := test.Type.Gencode.New().Interface()
-					_ = proto.Unmarshal(test.Bytes, m)
-				}
-			})
-			b.Run("dynamicpb", func(b *testing.B) {
-				b.ReportAllocs()
-				b.SetBytes(int64(len(test.Bytes)))
-				for range b.N {
-					m := dynamicpb.NewMessage(test.Type.Gencode.Descriptor())
-					_ = proto.Unmarshal(test.Bytes, m)
-				}
-			})
-		})
-	}
+		}
+	})
 }
 
 type test struct {
@@ -104,12 +108,12 @@ type test struct {
 
 	Profile map[string]FieldProfile `yaml:"profile"`
 
-	// Three ways to encode the test: hex, textproto, and protoscope.
-	Hex        string `yaml:"hex"`
-	TextProto  string `yaml:"textproto"`
-	Protoscope string `yaml:"protoscope"`
+	// Three ways to encode the test: hex, textproto, and protoscope
+	Hex        []string `yaml:"hex"`
+	TextProto  []string `yaml:"textproto"`
+	Protoscope []string `yaml:"protoscope"`
 
-	Bytes []byte `yaml:"-"`
+	Specimens [][]byte `yaml:"-"`
 }
 
 // Copy of fastpb.FieldProfile with yaml annotations.
@@ -123,10 +127,15 @@ var _ = fastpb.FieldProfile(FieldProfile{})
 //go:embed testdata/*
 var testdata embed.FS
 
-func parseTests(t testing.TB) []*test {
+type testingT[T any] interface {
+	testing.TB
+	Run(string, func(T)) bool
+}
+
+func runTests[T testingT[T]](t T, f func(T, *test)) {
 	t.Helper()
 
-	var tests []*test
+	var failed atomic.Bool
 	err := fs.WalkDir(testdata, ".", func(path string, d fs.DirEntry, err error) error {
 		require.NoError(t, err, "loading test %q", path)
 
@@ -134,24 +143,32 @@ func parseTests(t testing.TB) []*test {
 			return nil
 		}
 
-		data, err := fs.ReadFile(testdata, path)
-		require.NoError(t, err, "loading test %q", path)
+		t.Run(path, func(t T) {
+			if t, ok := any(t).(*testing.T); ok {
+				t.Parallel()
+			}
 
-		test := parseTest(t, path, data)
-		if test != nil {
-			tests = append(tests, test)
-		}
+			defer failed.CompareAndSwap(false, t.Failed())
+
+			data, err := fs.ReadFile(testdata, path)
+			require.NoError(t, err, "loading test %q", path)
+
+			test := parseTest(t, path, data)
+			if test != nil {
+				f(t, test)
+			}
+		})
 
 		return nil
 	})
 	require.NoError(t, err)
-
-	return tests
 }
 
 func parseTest(t testing.TB, path string, file []byte) *test {
 	t.Helper()
 	defer dbg.WithTesting(t)()
+
+	require.True(t, bytes.HasSuffix(file, []byte("\n")), "missing trailing newline in %q", path)
 
 	test := new(test)
 	err := yaml.Unmarshal(file, &test)
@@ -172,48 +189,59 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 		}),
 	)
 
-	switch {
-	case test.Hex != "":
+	for _, raw := range test.Hex {
 		r := strings.NewReplacer(" ", "", "\t", "", "\n", "", "\r", "")
-		test.Bytes, err = hex.DecodeString(r.Replace(test.Hex))
+		b, err := hex.DecodeString(r.Replace(raw))
 		require.NoError(t, err, "loading test %q", path)
 
-	case test.TextProto != "":
+		test.Specimens = append(test.Specimens, b)
+	}
+
+	for _, raw := range test.TextProto {
 		m := test.Type.Gencode.New().Interface()
-		err = prototext.Unmarshal([]byte(test.TextProto), m)
+		err = prototext.Unmarshal([]byte(raw), m)
 		require.NoError(t, err, "loading test %q", path)
 
-		test.Bytes, err = proto.Marshal(m)
+		b, err := proto.Marshal(m)
 		require.NoError(t, err, "loading test %q", path)
 
-	case test.Protoscope != "":
-		s := protoscope.NewScanner(test.Protoscope)
-		test.Bytes, err = s.Exec()
+		test.Specimens = append(test.Specimens, b)
+	}
+
+	for _, raw := range test.Protoscope {
+		s := protoscope.NewScanner(raw)
+		b, err := s.Exec()
 		require.NoError(t, err, "loading test %q", path)
+
+		test.Specimens = append(test.Specimens, b)
 	}
 
 	return test
 }
 
-func (test *test) run(t testing.TB, ctx *fastpb.Context) {
+func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 	t.Helper()
 
 	debug.SetPanicOnFault(true)
 	defer dbg.WithTesting(t)()
 
-	// Parse using the gencode.
-	m1 := test.Type.Gencode.New().Interface()
-	err1 := proto.Unmarshal(test.Bytes, m1)
+	for _, specimen := range test.Specimens {
+		t.Run("", func(t *testing.T) {
+			// Parse using the gencode.
+			m1 := test.Type.Gencode.New().Interface()
+			err1 := proto.Unmarshal(specimen, m1)
 
-	// Parse using fastpb.
-	m2 := ctx.New(test.Type.Fast)
-	err2 := proto.Unmarshal(test.Bytes, m2)
+			// Parse using fastpb.
+			m2 := ctx.New(test.Type.Fast)
+			err2 := proto.Unmarshal(specimen, m2)
 
-	if err1 != nil {
-		require.Error(t, err2, "gencode error: %v", err1)
-		return
+			if err1 != nil {
+				require.Error(t, err2, "gencode error: %v", err1)
+				return
+			}
+
+			require.NoError(t, err2)
+			prototest.Equal(t, m1, m2)
+		})
 	}
-
-	require.NoError(t, err2)
-	prototest.Equal(t, m1, m2)
 }

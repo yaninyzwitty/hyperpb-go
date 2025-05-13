@@ -16,7 +16,8 @@ type: google.protobuf.FileDescriptorSet
 benchmark: true
 profile:
   google.protobuf.FieldDescriptorProto.options: {cold: true}
-hex: | # protoc -o/dev/stdout --include_source_info google/protobuf/descriptor.proto | xxd -ps
+hex:
+- | # protoc -o/dev/stdout --include_source_info google/protobuf/descriptor.proto | xxd -ps
   0acba2040a20676f6f676c652f70726f746f6275662f6465736372697074
   6f722e70726f746f120f676f6f676c652e70726f746f627566224d0a1146
   696c6544657363726970746f7253657412380a0466696c6518012003280b

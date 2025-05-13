@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: fastpb.test.Scalars
-protoscope: |
+protoscope:
+- |
   21: 1
   22: 2i32
-  

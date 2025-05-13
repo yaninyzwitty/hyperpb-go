@@ -13,6 +13,5 @@
 # limitations under the License.
 
 type: fastpb.test.Scalars
-hex: |
-  80808080808080808002
+hex: ['80808080808080808002']
   

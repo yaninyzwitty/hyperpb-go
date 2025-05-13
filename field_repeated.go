@@ -16,96 +16,44 @@ package fastpb
 
 import (
 	"math/bits"
-	"unsafe"
 
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 //go:generate go run ./internal/stencil
 
-// rep is the raw form of a rep field.
-//
-// It is a union between zc and arena.Slice[E].
-type rep[E any] struct {
-	// This is an address to prevent the generation of write barriers when
-	// writing to a rep[E] inside of a message.
-	//
-	// messages are always on the heap and we assume the GC will never move
-	// them or the arena-allocated pointer this field holds.
-	//
-	// Not doing this means that any update to a repeated field will touch
-	// the write barrier, a global atomic used to coordinate GC operations. We
-	// do not need to participate in the write barrier because this address is
-	// already traceable from elsewhere (the root message being operated on)
-	// and will never move and thus need to be updated by the GC.
-	//
-	// Write barriers are generated whenever we load or store a pointer value,
-	// such as when loading or storing a **T or *[]T. Touching the write barrier
-	// is very slow: even in the fast path it causes a cache miss.
-	//
-	// Moreover, all *rep[E]s are arena pointers, which the GC cannot trace
-	// into, so this pointer already doesn't exist as far as the GC is
-	// concerned.
-	ptr unsafe2.Addr[E]
-
-	// This part does double duty as a zc.
-	len, cap uint32
+func isZC[T any](slice arena.Slice[T]) bool {
+	return slice.Ptr() == nil
 }
 
-const (
-	repSize  = unsafe.Sizeof(rep[int32]{})
-	repAlign = unsafe.Alignof(rep[int32]{})
-)
-
-func repCast[T, U any](r rep[U]) rep[T] {
-	return rep[T]{unsafe2.Addr[T](r.ptr), r.len, r.cap}
+func wrapZC[T any](zc zc) arena.Slice[T] {
+	return arena.SliceFromParts[T](nil, zc.offset, zc.len)
 }
 
-// isZC returns whether this rep is in zero-copy mode.
-func (r rep[E]) isZC() bool {
-	return r.ptr == 0
+func unwrapRawZC[T any](slice arena.Slice[T]) zc {
+	return zc{offset: uint32(slice.Len()), len: uint32(slice.Cap())}
 }
 
-func (r rep[E]) rawZC() zc {
-	return zc{offset: r.len, len: r.cap}
-}
-
-// zc interprets this rep as a zero-copy slice take from src.
-func (r rep[E]) zc(src *byte) []E {
-	size, _ := unsafe2.Layout[E]()
+func unwrapZC[T any](slice arena.Slice[T], src *byte) []T {
+	size, _ := unsafe2.Layout[T]()
 	// This is a borrow from src, and len and cap are a zc. Note that both
 	// are denominated in bytes in this mode.
-	return unsafe2.Slice(unsafe2.Cast[E](unsafe2.Add(src, r.len)), int(r.cap)/size)
-}
-
-// setZC sets this rep to the given ZC value.
-func (r *rep[E]) setZC(v zc) {
-	r.ptr = 0
-	r.len = v.offset
-	r.cap = v.len
-}
-
-// arena interprets this rep as an arena slice.
-func (r rep[E]) arena() arena.Slice[E] {
-	return arena.SliceFromParts(r.ptr.AssertValid(), r.len, r.cap)
-}
-
-// setArena sets this rep to the given arena slice.
-func (r *rep[E]) setArena(v arena.Slice[E]) {
-	r.ptr = unsafe2.AddrOf(v.Ptr())
-	r.len = uint32(v.Len())
-	r.cap = uint32(v.Cap())
+	return unsafe2.Slice(
+		unsafe2.Cast[T](unsafe2.Add(src, slice.Len())),
+		slice.Cap()/size,
+	)
 }
 
 var repeatedFields = [...]archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalarMaybeBytes[int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
@@ -113,8 +61,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Uint32Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalarMaybeBytes[uint32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
@@ -122,8 +70,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Sint32Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedZigZag[int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
@@ -133,8 +81,8 @@ var repeatedFields = [...]archetype{
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalarMaybeBytes[int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
@@ -142,8 +90,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Uint64Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalarMaybeBytes[uint64],
 		parsers: []parseKind{
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
@@ -151,8 +99,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Sint64Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedZigZag[int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
@@ -162,8 +110,8 @@ var repeatedFields = [...]archetype{
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[uint32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
@@ -171,8 +119,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Sfixed32Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
@@ -180,8 +128,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.FloatKind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[float32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
@@ -191,8 +139,8 @@ var repeatedFields = [...]archetype{
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[uint64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
@@ -200,8 +148,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.Sfixed64Kind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
@@ -209,8 +157,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.DoubleKind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[float64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
@@ -220,8 +168,8 @@ var repeatedFields = [...]archetype{
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedBool,
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint8},
@@ -229,8 +177,8 @@ var repeatedFields = [...]archetype{
 		},
 	},
 	protoreflect.EnumKind: {
-		size:   uint32(repSize),
-		align:  uint32(repAlign),
+		size:   uint32(arena.SliceSize),
+		align:  uint32(arena.SliceAlign),
 		getter: getRepeatedScalar[protoreflect.EnumNumber],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
@@ -240,22 +188,22 @@ var repeatedFields = [...]archetype{
 
 	// String types.
 	protoreflect.StringKind: {
-		size:    uint32(repSize),
-		align:   uint32(repAlign),
+		size:    uint32(arena.SliceSize),
+		align:   uint32(arena.SliceAlign),
 		getter:  getRepeatedString,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedUTF8}},
 	},
 	protoreflect.BytesKind: {
-		size:    uint32(repSize),
-		align:   uint32(repAlign),
+		size:    uint32(arena.SliceSize),
+		align:   uint32(arena.SliceAlign),
 		getter:  getRepeatedBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
-		size:    uint32(repSize),
-		align:   uint32(repAlign),
+		size:    uint32(arena.SliceSize),
+		align:   uint32(arena.SliceAlign),
 		bits:    1, // This bit determines whether the field is inlined or pointer mode.
 		getter:  getRepeatedMessage,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedMessage}},
@@ -264,62 +212,43 @@ var repeatedFields = [...]archetype{
 }
 
 func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[rep[T]](m, getter.offset.data)
+	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
 	var raw []T
-	switch {
-	case !v.isZC():
-		raw = v.arena().Raw()
-	case v.cap > 0:
-		raw = v.zc(m.context.src)
-	default:
-		return protoreflect.ValueOf(emptyList{})
+	if isZC(v) {
+		raw = unwrapZC(v, m.context.src)
+	} else {
+		raw = v.Raw()
 	}
-
 	return protoreflect.ValueOf(scalarList[T]{raw: raw})
 }
 
 func getRepeatedScalarMaybeBytes[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[rep[T]](m, getter.offset.data)
-	var raw []T
-	switch {
-	case !v.isZC():
-		raw = v.arena().Raw()
-	case v.cap > 0:
-		raw := repCast[byte](v).zc(m.context.src)
+	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
+	if isZC(v) {
+		raw := unwrapRawZC(v).bytes(m.context.src)
 		return protoreflect.ValueOf(byteScalarList[T]{raw: raw})
-	default:
-		return protoreflect.ValueOf(emptyList{})
 	}
 
-	return protoreflect.ValueOf(scalarList[T]{raw: raw})
+	return protoreflect.ValueOf(scalarList[T]{raw: v.Raw()})
 }
 
 func getRepeatedZigZag[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[rep[T]](m, getter.offset.data)
-	var raw []T
-	switch {
-	case !v.isZC():
-		raw = v.arena().Raw()
-	case v.cap > 0:
-		raw := repCast[byte](v).zc(m.context.src)
+	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
+	if isZC(v) {
+		raw := unwrapRawZC(v).bytes(m.context.src)
 		return protoreflect.ValueOf(byteZigZagList[T]{raw: raw})
-	default:
-		return protoreflect.ValueOf(emptyList{})
 	}
 
-	return protoreflect.ValueOf(zigzagList[T]{raw: raw})
+	return protoreflect.ValueOf(zigzagList[T]{raw: v.Raw()})
 }
 
 func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[rep[uint8]](m, getter.offset.data)
-	var raw []uint8
-	switch {
-	case !v.isZC():
-		raw = v.arena().Raw()
-	case v.cap > 0:
-		raw = v.zc(m.context.src)
-	default:
-		return protoreflect.ValueOf(emptyList{})
+	v := unsafe2.ByteLoad[arena.Slice[byte]](m, getter.offset.data)
+	var raw []byte
+	if isZC(v) {
+		raw = unwrapZC(v, m.context.src)
+	} else {
+		raw = v.Raw()
 	}
 
 	return protoreflect.ValueOf(boolList{raw: raw})
@@ -327,19 +256,11 @@ func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
 
 func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	raw := unsafe2.ByteLoad[arena.Slice[zc]](m, getter.offset.data).Raw()
-	if raw == nil {
-		return protoreflect.ValueOf(emptyList{})
-	}
-
 	return protoreflect.ValueOf(bytesList{raw: raw, shared: m.context})
 }
 
 func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
 	raw := unsafe2.ByteLoad[arena.Slice[zc]](m, getter.offset.data).Raw()
-	if raw == nil {
-		return protoreflect.ValueOf(emptyList{})
-	}
-
 	return protoreflect.ValueOf(stringList{raw: raw, shared: m.context})
 }
 
@@ -354,80 +275,20 @@ func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
 		return protoreflect.ValueOf(emptyList{})
 	}
 
-	// Get the type from the first element of the list.
-	first := unsafe2.Cast[message](raw.Ptr())
-
+	first := unsafe2.Cast[message](raw.Ptr()) // Get the type from the first element of the list.
 	return protoreflect.ValueOf(inlineMessageList{
 		ty:    first.ty(),
 		raw:   first,
-		dummy: make([]struct{}, raw.Len()),
+		dummy: make([]struct{}, raw.Len()/int(first.ty().raw.size)),
 	})
-}
-
-//go:nosplit
-//fastpb:stencil appendVarint8 appendVarint[uint8] spillArena -> spillArena8
-//fastpb:stencil appendVarint32 appendVarint[uint32] spillArena -> spillArena32
-//fastpb:stencil appendVarint64 appendVarint[uint64] spillArena -> spillArena64
-func appendVarint[T integer](p1 parser1, p2 parser2, v T) (parser1, parser2) {
-	rep := unsafe2.Cast[rep[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	// Check if we're already an arena, or an empty repeated field which looks like
-	// an empty arena slice.
-	if rep.isZC() && rep.cap > 0 {
-		// Already holds a borrow. Need to spill to arena.
-		// This is the worst-case scenario.
-		zc := repCast[byte](*rep).zc(p1.c().src)
-		slice := arena.NewSlice[T](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			unsafe2.Store(slice.Ptr(), i, T(b))
-		}
-		unsafe2.Store(slice.Ptr(), slice.Len(), v)
-		rep.setArena(slice)
-		return p1, p2
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
-}
-
-//go:nosplit
-//fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
-//fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
-func appendFixed[T any](p1 parser1, p2 parser2, v T) (parser1, parser2) {
-	rep := unsafe2.Cast[rep[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-
-	// Check if we're already an arena, or an empty repeated field which looks like
-	// an empty arena slice.
-	if rep.isZC() && rep.cap > 0 {
-		// Already holds a borrow. Need to spill to arena.
-		// This is the worst-case scenario.
-		p1, p2, rep = spillArena(p1, p2, rep)
-	}
-
-	if rep.len < rep.cap {
-		unsafe2.Store(rep.ptr.AssertValid(), rep.len, v)
-		rep.len++
-		return p1, p2
-	}
-
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
-	return p1, p2
 }
 
 //go:nosplit
 //fastpb:stencil spillArena8 spillArena[uint8]
 //fastpb:stencil spillArena32 spillArena[uint32]
 //fastpb:stencil spillArena64 spillArena[uint64]
-func spillArena[E any](p1 parser1, p2 parser2, rep *rep[E]) (parser1, parser2, *rep[E]) {
-	slice := rep.zc(p1.c().src)
-	rep.setArena(arena.SliceOf(p1.arena(), slice...))
-	return p1, p2, rep
+func spillArena[T any](p1 parser1, p2 parser2, rep arena.Slice[T]) (parser1, parser2, arena.Slice[T]) {
+	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
 }
 
 //go:nosplit
@@ -437,8 +298,39 @@ func spillArena[E any](p1 parser1, p2 parser2, rep *rep[E]) (parser1, parser2, *
 func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p1, p2 = appendVarint(p1, p2, T(n))
 
+	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	// Check if we're already an arena, or an empty repeated field which looks like
+	// an empty arena slice.
+	if isZC(slice) && slice.Cap() > 0 {
+		// Already holds a borrow. Need to spill to arena.
+		// This is the worst-case scenario.
+		zc := unwrapRawZC(slice).bytes(p1.c().src)
+		slice := arena.NewSlice[T](p1.arena(), len(zc)+1)
+		for i, b := range zc {
+			slice.Store(i, T(b))
+		}
+		slice.Store(slice.Len()-1, T(n))
+		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, T(n))
+
+		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), T(n))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
 	return p1, p2
 }
 
@@ -458,55 +350,67 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
-	var count uint32
+	var count int
 	for p := p1.b_; p < p1.e_; p += 8 {
 		n := min(8, p1.e_-p)
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
 		bytes |= signBits << (n * 8)
-		count += uint32(bits.OnesCount64(signBits &^ bytes))
+		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	rep := unsafe2.Cast[rep[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	if rep.isZC() {
+	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+	if isZC(slice) {
 		// Check if we're already on-arena, or an empty repeated field which looks
 		// like an empty arena slice.
 		switch {
-		case rep.cap > 0:
+		case slice.Cap() > 0:
 			// Already holds a borrow. Need to spill to arena.
 			// This is the worst-case scenario.
-			zc := repCast[byte](*rep).zc(p1.c().src)
-			slice := arena.NewSlice[T](p1.arena(), len(zc)+int(count))
+			zc := unwrapRawZC(slice).bytes(p1.c().src)
+			slice = arena.NewSlice[T](p1.arena(), len(zc)+count)
 			for i, b := range zc {
-				unsafe2.Store(slice.Ptr(), i, T(b))
+				slice.Store(i, T(b))
 			}
-			rep.setArena(slice)
+			slice = slice.SetLen(len(zc))
 
-		case count == n:
-			offset := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
+			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
-			rep.setZC(zc{uint32(offset), n})
+		case count == int(n):
+			*slot = wrapZC[T](zc{
+				offset: uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
+				len:    n,
+			}).Addr()
+
+			if dbg.Enabled {
+				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
+				p1.log(p2, "zc", "%v %v", *slot, raw)
+			}
+
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
 
 		default:
-			rep.setArena(rep.arena().Grow(p1.arena(), int(count)))
+			slice = slice.Grow(p1.arena(), count)
+			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := rep.cap - rep.len; spare < count {
-		rep.setArena(rep.arena().Grow(p1.arena(), int(count-spare)))
+	} else if spare := slice.Cap() - slice.Len(); spare < count {
+		slice = slice.Grow(p1.arena(), count-spare)
+		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
 	}
 
 	// Manual inlining of AppendOne. Previously, we called AppendOne, but
 	// Go would not inline it, which resulted in a lot of spilling in a hot
 	// loop!
-	p := rep.ptr.Add(int(rep.len))
+	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
 	// There are three variants of this loop: one for the cases where every
 	// varint is small (one byte; common). One for the cases where most varints
 	// are small (so the special-case branches are likely to be well-predicted)
 	// and when many varints are large so the aforementioned branches would
 	// not be predicted well.
 	switch {
-	case count == uint32(p1.len()):
+	case count == p1.len():
 		for {
 			*p.AssertValid() = T(*p1.b())
 			p1.b_++
@@ -518,7 +422,7 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 
 			break
 		}
-	case count >= uint32(p1.len())/2:
+	case count >= p1.len()/2:
 		for {
 			var x uint64
 			if v := *p1.b(); int8(v) >= 0 {
@@ -554,7 +458,10 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	rep.len = uint32(p.Sub(rep.ptr))
+	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
+	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+
+	*slot = slice.Addr()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -570,31 +477,66 @@ func parseRepeatedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 }
 
 //go:nosplit
+//fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
+//fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
+func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parser2) {
+	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+
+	// Check if we're already an arena, or an empty repeated field which looks like
+	// an empty arena slice.
+	if isZC(slice) && slice.Cap() > 0 {
+		// Already holds a borrow. Need to spill to arena.
+		// This is the worst-case scenario.
+		p1, p2, slice = spillArena(p1, p2, slice)
+		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
+	}
+
+	if slice.Len() < slice.Cap() {
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
+
+		*slot = slice.Addr()
+		return p1, p2
+	}
+
+	slice = slice.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
+	*slot = slice.Addr()
+	return p1, p2
+}
+
+//go:nosplit
 //fastpb:stencil parsePackedFixed32 parsePackedFixed[uint32]
 //fastpb:stencil parsePackedFixed64 parsePackedFixed[uint64]
 func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
+	if zc.len == 0 {
+		return p1, p2
+	}
 
 	size, _ := unsafe2.Layout[T]()
 	if int(zc.len)%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	rep := unsafe2.Cast[rep[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
 
 	switch {
-	case !rep.isZC():
+	case !isZC(slice):
 		// Already on an arena.
-	case rep.cap == 0:
+	case slice.Cap() == 0:
 		// Empty repeated field. We can just shove the zc here.
 		// This is the best-case scenario.
-		rep.setZC(zc)
+		*slot = wrapZC[T](zc).Addr()
 		goto exit
 	default:
 		// Already holds a borrow. Need to spill to arena.
 		// This is the worst-case scenario.
-		p1, p2, rep = spillArena(p1, p2, rep)
+		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
 	{
@@ -604,9 +546,7 @@ func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 			int(zc.len)/size,
 		)
 
-		slice := rep.arena()
-		slice = slice.Append(p1.arena(), borrowed...)
-		rep.setArena(slice)
+		*slot = slice.Append(p1.arena(), borrowed...).Addr()
 	}
 
 exit:
@@ -618,8 +558,8 @@ func parseRepeatedBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var v zc
 	p1, p2, v = p1.bytes(p2)
 
-	rep := unsafe2.Cast[rep[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
+	slice := unsafe2.Cast[arena.SliceAddr[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
 
 	return p1, p2
 }
@@ -629,8 +569,8 @@ func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
 	var v zc
 	p1, p2, v = p1.utf8(p2)
 
-	rep := unsafe2.Cast[rep[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	rep.setArena(rep.arena().AppendOne(p1.arena(), v))
+	slice := unsafe2.Cast[arena.SliceAddr[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
 
 	return p1, p2
 }
@@ -640,47 +580,54 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	var (
-		r *rep[byte] = unsafe2.Cast[rep[byte]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-		m *message
-	)
+	slot := unsafe2.Cast[arena.SliceAddr[byte]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	slice := slot.AssertValid()
+	p1.log(p2, "repeated message", "%v", slice.Addr())
+
+	var m *message
+
 	if p2.m().getBit(p2.f().offset.bit) {
-		goto outlined
+		goto pointers
 	}
 
 	{
 		ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-		size := ty.raw.size
-		if r.ptr == 0 {
-			p1, p2, r = newInlineRepeatedField(p1, p2, r)
-		} else if r.len == r.cap {
-			p1.log(p2, "repeated message spill", "%v[%d:%d]", r.ptr, r.len, r.cap)
-			p1, p2, r = spillInlineRepeatedField(p1, p2, r)
+		size := int(ty.raw.size)
+		if slice.Ptr() == nil {
+			p1, p2, slot = newInlineRepeatedField(p1, p2, slot)
+		} else if slice.Len()+size > slice.Cap() {
+			p1, p2 = spillInlineRepeatedField(p1, p2, slot)
+			p1.log(p2, "repeated message spill", "%v->%v", slice.Addr(), *slot)
 
-			goto outlined
+			goto pointers
 		}
 
-		p := unsafe2.Add(r.ptr.AssertValid(), r.len*size)
-		r.len++
+		slice = slot.AssertValid()
+		p := unsafe2.Add(slice.Ptr(), slice.Len())
+		slice = slice.SetLen(slice.Len() + size)
+		*slot = slice.Addr()
 
-		p1.log(p2, "inline repeated message", "%v[%d:%d], %p/%d", r.ptr, r.len, r.cap, p, size)
+		p1.log(p2, "inline repeated message", "%v, %p/%d", slice.Addr(), p, size)
 		p1, p2, m = p1.allocInPlace(p2, p)
 		goto exit
 	}
 
-outlined:
+pointers:
 	{
 		p1, p2, m = p1.alloc(p2)
 
-		r := unsafe2.Cast[rep[unsafe2.Addr[message]]](r)
-		p1.log(p2, "outline repeated message", "%v[%d:%d], %p/", r.ptr, r.len, r.cap, m)
-		if r.len == r.cap {
+		slot := unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot)
+		slice := slot.AssertValid()
+		if slice.Len() == slice.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
+			p1.log(p2, "outline repeated message", "%v, %p", *slot, m)
 			goto exit
 		}
 
-		*unsafe2.Add(r.ptr.AssertValid(), r.len) = unsafe2.AddrOf(m)
-		r.len++
+		slice = slice.SetLen(slice.Len() + 1)
+		slice.Store(slice.Len()-1, unsafe2.AddrOf(m))
+		p1.log(p2, "outline repeated message", "%v, %p", slice.Addr(), m)
+		*slot = slice.Addr()
 	}
 
 exit:
@@ -688,7 +635,7 @@ exit:
 }
 
 //go:noinline
-func newInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, parser2, *rep[byte]) {
+func newInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2, *arena.SliceAddr[byte]) {
 	// First element of this field. Allocate a byte array large enough to
 	// hold one element.
 	//
@@ -696,35 +643,40 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, pars
 	// elements.
 	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
 	size := ty.raw.size
-	s := arena.NewSlice[byte](p1.arena(), int(size))
-	r.ptr = unsafe2.AddrOf(s.Ptr())
-	r.cap = uint32(s.Cap()) / size
+	slice := arena.NewSlice[byte](p1.arena(), int(size))
+	slice = slice.SetLen(0)
+	*slot = slice.Addr()
 
-	return p1, p2, r
+	return p1, p2, slot
 }
 
 //go:noinline
-func spillInlineRepeatedField(p1 parser1, p2 parser2, r *rep[byte]) (parser1, parser2, *rep[byte]) {
+func spillInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2) {
 	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	size := ty.raw.size
+	size := int(ty.raw.size)
+	slice := slot.AssertValid()
 
 	// Spill all of the messages onto a pointer slice.
-	s := arena.NewSlice[*message](p1.arena(), int(r.cap)*2)
-	for i := range r.len {
-		unsafe2.StoreNoWB(unsafe2.Add(s.Ptr(), i),
-			unsafe2.Cast[message](unsafe2.ByteAdd(r.ptr.AssertValid(), int(i*size))))
+	spill := arena.NewSlice[unsafe2.Addr[message]](p1.arena(), slice.Cap()/size*2)
+	var spillIdx int
+	for i := 0; i < slice.Len(); i += size {
+		m := unsafe2.Cast[message](unsafe2.Add(slice.Ptr(), i))
+		spill.Store(spillIdx, unsafe2.AddrOf(m))
+		spillIdx++
 	}
+	spill = spill.SetLen(spillIdx)
 
-	r.ptr = unsafe2.Addr[byte](unsafe2.AddrOf(s.Ptr()))
-	r.cap = uint32(s.Cap())
+	*unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot) = spill.Addr()
 	p2.m().setBit(p2.f().offset.bit, true) // Mark this as an outlined message.
 
-	return p1, p2, r
+	return p1, p2
 }
 
 //go:noinline
 func appendOneMessage(p1 parser1, p2 parser2, m *message) (parser1, parser2, *message) {
-	r := unsafe2.Cast[rep[unsafe2.Addr[message]]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	r.setArena(r.arena().AppendOne(p1.arena(), unsafe2.AddrOf(m)))
+	slot := unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](
+		unsafe2.ByteAdd(p2.m(), p2.f().offset.data),
+	)
+	*slot = slot.AssertValid().AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr()
 	return p1, p2, m
 }

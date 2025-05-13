@@ -57,14 +57,10 @@ message Repeated {
     repeated fixed64 r6 = 6;
 }
 
-message List {
-    int32 head = 1;
-    List tail = 2;
-}
-
-message Tree {
+message Graph {
     int32 v = 1;
-    repeated Tree ch = 2;
+    Graph s = 2;
+    repeated Graph r = 3;
 }
 
 message Oneof {

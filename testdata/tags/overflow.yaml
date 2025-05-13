@@ -13,6 +13,11 @@
 # limitations under the License.
 
 type: fastpb.test.Scalars
-protoscope: |
-  -0x100000001: {""}
-  
+protoscope:
+- '-0x100000001: {""}'
+- '7: {"wrong"} -0x100000001: {""}'
+- '0xfffffff:7 0'
+- '1633714184: 48'
+
+hex:
+- 'ffffffffb77cc110'

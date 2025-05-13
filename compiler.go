@@ -606,6 +606,16 @@ func (c *compiler) codegen(ir *ir) {
 		)
 	}
 
+	// Ensure that there is at least one parser to be the entry-point.
+	if len(ir.p) == 0 {
+		c.write(
+			fieldParserSymbol{parser: pSym, index: 0},
+			fieldParser{
+				tag: ^fieldTag(0), // This will never be matched.
+			},
+		)
+	}
+
 	// Append the parser's field number table.
 	writeTable(c, tableSymbol{pSym}, numbers)
 }

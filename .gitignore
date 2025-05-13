@@ -1,2 +1,3 @@
 fastpb.*
 .tmp
+testdata/fuzz

@@ -15,15 +15,14 @@
 type: fastpb.test.Scalars
 protoscope:
 - |
-  1: long-form:1 -1
-  2: long-form:2 43
-  3: long-form:3 0xfffffffe
-  4: long-form:4 1000001
-  5: long-form:5 -3z
-  6: long-form:6 1000002z
-  13: long-form:7 1
-  21: long-form:8 -1
-  22: long-form:9 43
-
-# This is an 11-byte varint.
-- '1: `ffffffffffffffffff02`'
+  11: -0.0i32
+  12: -0.0i64
+  31: -0.0i32
+  32: -0.0i64
+  
+textproto:
+- |
+  a11: nan
+  a12: nan
+  b11: nan
+  b12: nan

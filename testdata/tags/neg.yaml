@@ -13,6 +13,8 @@
 # limitations under the License.
 
 type: fastpb.test.Scalars
-protoscope: |
+protoscope: 
+- '-1: {""}'
+- |
+  7: {"wrong"}
   -1: {""}
-  

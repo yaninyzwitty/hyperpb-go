@@ -71,14 +71,6 @@ func (zc zc) Format(s fmt.State, verb rune) {
 	dbg.Fprintf("[%d:%d]", zc.offset, zc.offset+zc.len).Format(s, verb)
 }
 
-func (r rep[E]) Format(s fmt.State, verb rune) {
-	if r.isZC() {
-		fmt.Fprintf(s, "%v", r.rawZC())
-	}
-
-	fmt.Fprintf(s, "%v:%v", r.ptr, r.arena())
-}
-
 func (t *typeHeader) Format(s fmt.State, verb rune) {
 	dbg.Dict(
 		dbg.Fprintf("%p", t),

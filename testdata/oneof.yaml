@@ -12,18 +12,55 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Scalars
+type: fastpb.test.Oneof
 protoscope:
 - |
-  1: long-form:1 -1
-  2: long-form:2 43
-  3: long-form:3 0xfffffffe
-  4: long-form:4 1000001
-  5: long-form:5 -3z
-  6: long-form:6 1000002z
-  13: long-form:7 1
-  21: long-form:8 -1
-  22: long-form:9 43
+  1: -1
+  11: 42
+  30: -2
+- |
+  1: -1
+  12: 42
+  30: -2
+- |
+  1: -1
+  13: 42z
+  30: -2
+- |
+  1: -1
+  14: 42z
+  30: -2
+- |
+  1: -1
+  15: 42i32
+  30: -2
+- |
+  1: -1
+  16: 42i64
+  30: -2
+- |
+  1: -1
+  17: false
+  30: -2
+- |
+  1: -1
+  18: {"test test test"}
+  30: -2
+- |
+  1: -1
+  19: {"test test test"}
+  30: -2
+- |
+  1: -1
+  20: {
+    20: {
+      11: 12
+    }
+  }
+  30: -2
 
-# This is an 11-byte varint.
-- '1: `ffffffffffffffffff02`'
+- |
+  1: -1
+  20: {}
+  11: 42 # This should override the 20 field above.
+  30: -2

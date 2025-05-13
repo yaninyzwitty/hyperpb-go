@@ -18,19 +18,24 @@ import (
 	"testing"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/bufbuild/fastpb"
 	testpb "github.com/bufbuild/fastpb/internal/gen/test"
 	"github.com/bufbuild/fastpb/internal/sync2"
 )
 
-var contexts = sync2.Pool[fastpb.Context]{
-	Reset: (*fastpb.Context).Free,
-}
+var contexts = sync2.Pool[fastpb.Context]{Reset: (*fastpb.Context).Free}
 
-func FuzzScalars(f *testing.F) {
-	fuzz[*testpb.Scalars](f)
-}
+func FuzzScalars(f *testing.F)    { fuzz[*testpb.Scalars](f) }
+func FuzzRepeated(f *testing.F)   { fuzz[*testpb.Repeated](f) }
+func FuzzGraph(f *testing.F)      { fuzz[*testpb.Graph](f) }
+func FuzzOneof(f *testing.F)      { fuzz[*testpb.Oneof](f) }
+func FuzzDescriptor(f *testing.F) { fuzz[*descriptorpb.FileDescriptorProto](f) }
+func FuzzStruct(f *testing.F)     { fuzz[*structpb.Value](f) }
+func FuzzEmpty(f *testing.F)      { fuzz[*emptypb.Empty](f) }
 
 func fuzz[M proto.Message](f *testing.F) {
 	f.Helper()
@@ -45,7 +50,7 @@ func fuzz[M proto.Message](f *testing.F) {
 		defer drop()
 
 		test := *test
-		test.Bytes = b
+		test.Specimens = [][]byte{b}
 		test.run(t, ctx)
 	})
 }

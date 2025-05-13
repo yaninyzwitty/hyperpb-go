@@ -366,28 +366,29 @@ func (x *Repeated) GetR6() []uint64 {
 	return nil
 }
 
-type List struct {
+type Graph struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Head          int32                  `protobuf:"varint,1,opt,name=head,proto3" json:"head,omitempty"`
-	Tail          *List                  `protobuf:"bytes,2,opt,name=tail,proto3" json:"tail,omitempty"`
+	V             int32                  `protobuf:"varint,1,opt,name=v,proto3" json:"v,omitempty"`
+	S             *Graph                 `protobuf:"bytes,2,opt,name=s,proto3" json:"s,omitempty"`
+	R             []*Graph               `protobuf:"bytes,3,rep,name=r,proto3" json:"r,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *List) Reset() {
-	*x = List{}
+func (x *Graph) Reset() {
+	*x = Graph{}
 	mi := &file_test_test_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *List) String() string {
+func (x *Graph) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*List) ProtoMessage() {}
+func (*Graph) ProtoMessage() {}
 
-func (x *List) ProtoReflect() protoreflect.Message {
+func (x *Graph) ProtoReflect() protoreflect.Message {
 	mi := &file_test_test_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -399,73 +400,28 @@ func (x *List) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use List.ProtoReflect.Descriptor instead.
-func (*List) Descriptor() ([]byte, []int) {
+// Deprecated: Use Graph.ProtoReflect.Descriptor instead.
+func (*Graph) Descriptor() ([]byte, []int) {
 	return file_test_test_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *List) GetHead() int32 {
-	if x != nil {
-		return x.Head
-	}
-	return 0
-}
-
-func (x *List) GetTail() *List {
-	if x != nil {
-		return x.Tail
-	}
-	return nil
-}
-
-type Tree struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	V             int32                  `protobuf:"varint,1,opt,name=v,proto3" json:"v,omitempty"`
-	Ch            []*Tree                `protobuf:"bytes,2,rep,name=ch,proto3" json:"ch,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Tree) Reset() {
-	*x = Tree{}
-	mi := &file_test_test_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Tree) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Tree) ProtoMessage() {}
-
-func (x *Tree) ProtoReflect() protoreflect.Message {
-	mi := &file_test_test_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Tree.ProtoReflect.Descriptor instead.
-func (*Tree) Descriptor() ([]byte, []int) {
-	return file_test_test_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Tree) GetV() int32 {
+func (x *Graph) GetV() int32 {
 	if x != nil {
 		return x.V
 	}
 	return 0
 }
 
-func (x *Tree) GetCh() []*Tree {
+func (x *Graph) GetS() *Graph {
 	if x != nil {
-		return x.Ch
+		return x.S
+	}
+	return nil
+}
+
+func (x *Graph) GetR() []*Graph {
+	if x != nil {
+		return x.R
 	}
 	return nil
 }
@@ -496,7 +452,7 @@ type Oneof struct {
 
 func (x *Oneof) Reset() {
 	*x = Oneof{}
-	mi := &file_test_test_proto_msgTypes[4]
+	mi := &file_test_test_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -508,7 +464,7 @@ func (x *Oneof) String() string {
 func (*Oneof) ProtoMessage() {}
 
 func (x *Oneof) ProtoReflect() protoreflect.Message {
-	mi := &file_test_test_proto_msgTypes[4]
+	mi := &file_test_test_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -521,7 +477,7 @@ func (x *Oneof) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Oneof.ProtoReflect.Descriptor instead.
 func (*Oneof) Descriptor() ([]byte, []int) {
-	return file_test_test_proto_rawDescGZIP(), []int{4}
+	return file_test_test_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Oneof) GetSingle() isOneof_Single {
@@ -771,13 +727,11 @@ const file_test_test_proto_rawDesc = "" +
 	"\x02r3\x18\x03 \x03(\x11R\x02r3\x12\x0e\n" +
 	"\x02r4\x18\x04 \x03(\x12R\x02r4\x12\x0e\n" +
 	"\x02r5\x18\x05 \x03(\aR\x02r5\x12\x0e\n" +
-	"\x02r6\x18\x06 \x03(\x06R\x02r6\"A\n" +
-	"\x04List\x12\x12\n" +
-	"\x04head\x18\x01 \x01(\x05R\x04head\x12%\n" +
-	"\x04tail\x18\x02 \x01(\v2\x11.fastpb.test.ListR\x04tail\"7\n" +
-	"\x04Tree\x12\f\n" +
-	"\x01v\x18\x01 \x01(\x05R\x01v\x12!\n" +
-	"\x02ch\x18\x02 \x03(\v2\x11.fastpb.test.TreeR\x02ch\"\x8a\x02\n" +
+	"\x02r6\x18\x06 \x03(\x06R\x02r6\"Y\n" +
+	"\x05Graph\x12\f\n" +
+	"\x01v\x18\x01 \x01(\x05R\x01v\x12 \n" +
+	"\x01s\x18\x02 \x01(\v2\x12.fastpb.test.GraphR\x01s\x12 \n" +
+	"\x01r\x18\x03 \x03(\v2\x12.fastpb.test.GraphR\x01r\"\x8a\x02\n" +
 	"\x05Oneof\x12\x10\n" +
 	"\x02s1\x18\x01 \x01(\x05H\x00R\x02s1\x12\x10\n" +
 	"\x02m1\x18\v \x01(\x05H\x01R\x02m1\x12\x10\n" +
@@ -807,18 +761,17 @@ func file_test_test_proto_rawDescGZIP() []byte {
 	return file_test_test_proto_rawDescData
 }
 
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_test_test_proto_goTypes = []any{
 	(*Scalars)(nil),  // 0: fastpb.test.Scalars
 	(*Repeated)(nil), // 1: fastpb.test.Repeated
-	(*List)(nil),     // 2: fastpb.test.List
-	(*Tree)(nil),     // 3: fastpb.test.Tree
-	(*Oneof)(nil),    // 4: fastpb.test.Oneof
+	(*Graph)(nil),    // 2: fastpb.test.Graph
+	(*Oneof)(nil),    // 3: fastpb.test.Oneof
 }
 var file_test_test_proto_depIdxs = []int32{
-	2, // 0: fastpb.test.List.tail:type_name -> fastpb.test.List
-	3, // 1: fastpb.test.Tree.ch:type_name -> fastpb.test.Tree
-	4, // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
+	2, // 0: fastpb.test.Graph.s:type_name -> fastpb.test.Graph
+	2, // 1: fastpb.test.Graph.r:type_name -> fastpb.test.Graph
+	3, // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
@@ -832,7 +785,7 @@ func file_test_test_proto_init() {
 		return
 	}
 	file_test_test_proto_msgTypes[0].OneofWrappers = []any{}
-	file_test_test_proto_msgTypes[4].OneofWrappers = []any{
+	file_test_test_proto_msgTypes[3].OneofWrappers = []any{
 		(*Oneof_S1)(nil),
 		(*Oneof_M1)(nil),
 		(*Oneof_M2)(nil),
@@ -851,7 +804,7 @@ func file_test_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
