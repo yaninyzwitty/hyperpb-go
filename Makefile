@@ -16,7 +16,9 @@ LICENSE_IGNORE := -E -e "/testdata/"
 # Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
 GO ?= go
 GO_CMD := GOTOOLCHAIN=local $(GO)
+GO_TAGS ?= ""
 
+ASM_FILTER ?= ^github.com/bufbuild/fastpb
 BENCHMARK ?= .
 
 TOOLS_MOD_DIR := ./internal/tools
@@ -38,11 +40,11 @@ clean: ## Delete intermediate build artifacts
 
 .PHONY: test
 test: build ## Run unit tests
-	$(GO_CMD) test ./...
+	$(GO_CMD) test -tags=$(GO_TAGS) ./...
 
 .PHONY: bench
 bench: build ## Run benchmarks
-	$(GO_CMD) test -bench '$(BENCHMARK)' -benchmem -run '^B'
+	$(GO_CMD) test -tags=$(GO_TAGS) -bench '$(BENCHMARK)' -benchmem -run '^B'
 
 .PHONY: profile
 profile: build ## Profile benchmarks and open them in pprof
@@ -53,8 +55,8 @@ profile: build ## Profile benchmarks and open them in pprof
 
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
-	$(GO_CMD) test -c -o fastpb.test
-	$(GO_CMD) tool objdump -gnu -s '^github.com/bufbuild/fastpb' fastpb.test | \
+	$(GO_CMD) test -tags=$(GO_TAGS) -c -o fastpb.test
+	$(GO_CMD) tool objdump -gnu -s '$(ASM_FILTER)' fastpb.test | \
 		$(GO_CMD) run ./internal/prettyasm \
 			-info fileline \
 			-prefix 'github.com/bufbuild/fastpb' \
@@ -63,13 +65,11 @@ asm: build ## Generate assembly output for manual inspection
 
 .PHONY: build
 build: generate ## Build all packages
-	$(GO_CMD) build ./...
+	$(GO_CMD) build -tags=$(GO_TAGS) ./...
 
 .PHONY: lint
 lint: $(BIN)/golangci-lint ## Lint Go
-	$(GO_CMD) vet \
-		-unsafeptr=false \
-		./...
+	$(GO_CMD) vet -unsafeptr=false ./...
 	$(BIN)/golangci-lint run
 
 .PHONY: lintfix

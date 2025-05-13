@@ -13,10 +13,15 @@ permissions:
 jobs:
   ci:
     name: "Tests and Benchmarks"
-    runs-on: ubuntu-latest
     strategy:
       matrix:
+        # We use macos here because those are the only ARM runners available
+        # to private repositories.
+        os: [ubuntu-latest, macos-15]
+        tags: ["", debug]
         go-version: [1.24.x]
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -34,12 +39,14 @@ jobs:
           restore-keys: "${{ runner.os }}-fastpb-ci-"
 
       - name: Test
-        run: make test
+        run: GO_TAGS=${{ matrix.tags }} make test
 
       - name: Benchmark
+        if: ${{ matrix.tags == '' }}
         run: BENCHMARK="B/bench/^descriptor.yaml" make bench
 
       - name: Check Generated Files
+        if: ${{ matrix.tags == '' }}
         run: |
           make generate
           make checkgenerate
