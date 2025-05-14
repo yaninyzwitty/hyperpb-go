@@ -21,9 +21,8 @@ import ()
 //go:nosplit
 func parseVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseVarint[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint32(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 
 	return p1, p2
 }
@@ -31,9 +30,8 @@ func parseVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseVarint[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint64(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }
@@ -41,9 +39,9 @@ func parseVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseZigZag[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint32](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint32](p2.scratch))
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 
 	return p1, p2
 }
@@ -51,9 +49,9 @@ func parseZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseZigZag[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint64](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint64](p2.scratch))
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }

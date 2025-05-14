@@ -1,0 +1,31 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: fastpb.test.Extensions
+textproto:
+- |
+  [fastpb.test.b1]: -1
+  [fastpb.test.b2]: 43
+  [fastpb.test.b3]: 0xfffffffe
+  [fastpb.test.b4]: 1000001
+  [fastpb.test.b5]: -3
+  [fastpb.test.b6]: 1000002
+  [fastpb.test.b7]: 10000000
+  [fastpb.test.b8]: 20000000
+  [fastpb.test.b9]: -10000000
+  [fastpb.test.b10]: 2000000110000
+  [fastpb.test.b11]: -inf
+  [fastpb.test.b12]: 3.14159265359
+  [fastpb.test.b13]: true
+  

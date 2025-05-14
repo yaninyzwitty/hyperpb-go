@@ -150,8 +150,12 @@ var singularFields = [...]archetype{
 }
 
 func getScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[T](m, getter.offset.data)
+	p := getField[T](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
 
+	v := *p
 	var zero T
 	if v == zero {
 		return protoreflect.ValueOf(nil)
@@ -175,7 +179,12 @@ func getBool(m *message, _ Type, getter getter) protoreflect.Value {
 // This also avoids a potential equality comparison with a signaling NaN, which
 // can cause all sorts of mayhem.
 func getFloat32(m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[uint32](m, getter.offset.data)
+	p := getField[uint32](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	v := *p
 	if v == 0 {
 		return protoreflect.ValueOf(nil)
 	}
@@ -183,7 +192,12 @@ func getFloat32(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[uint64](m, getter.offset.data)
+	p := getField[uint64](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	v := *p
 	if v == 0 {
 		return protoreflect.ValueOf(nil)
 	}
@@ -191,7 +205,12 @@ func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getString(m *message, _ Type, getter getter) protoreflect.Value {
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	p := getField[zc](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	zc := *p
 	data := zc.utf8(m.context.src)
 
 	if data == "" {
@@ -202,7 +221,12 @@ func getString(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	p := getField[zc](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	zc := *p
 	data := zc.bytes(m.context.src)
 
 	if len(data) == 0 {
@@ -213,20 +237,24 @@ func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getMessage(m *message, ty Type, getter getter) protoreflect.Value {
-	ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
-	if ptr == nil {
+	p := getField[*message](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	m = *p
+	if m == nil {
 		return protoreflect.ValueOf(empty{ty})
 	}
-	return protoreflect.ValueOf(ptr)
+	return protoreflect.ValueOf(m)
 }
 
 //go:nosplit
 //fastpb:stencil parseVarint32 parseVarint[uint32]
 //fastpb:stencil parseVarint64 parseVarint[uint64]
 func parseVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, T(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[T](p1, p2)
 
 	return p1, p2
 }
@@ -235,9 +263,9 @@ func parseVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil parseZigZag32 parseZigZag[uint32]
 //fastpb:stencil parseZigZag64 parseZigZag[uint64]
 func parseZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[T](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[T](p2.scratch))
+	p1, p2 = storeFromScratch[T](p1, p2)
 
 	return p1, p2
 }
@@ -245,15 +273,15 @@ func parseZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 func parseFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.fixed32(p2)
-	storeField(p1, p2, n)
+	p2.scratch = uint64(n)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 
 	return p1, p2
 }
 
 func parseFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.fixed64(p2)
-	storeField(p1, p2, n)
+	p1, p2, p2.scratch = p1.fixed64(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }
@@ -261,7 +289,8 @@ func parseFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseString(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.utf8(p2)
-	storeField(p1, p2, zc)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }
@@ -269,7 +298,8 @@ func parseString(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	storeField(p1, p2, zc)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }
@@ -285,14 +315,15 @@ func parseBool(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.lengthPrefix(p2)
+	p2.scratch = uint64(n)
 
-	// This is an address for the same reason that rep[E].ptr is.
-	mp := unsafe2.Cast[unsafe2.Addr[message]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
-	m := (*mp).AssertValid() //nolint:gocritic // Explicit deref for emphasis.
+	var mp **message
+	p1, p2, mp = getMutableField[*message](p1, p2)
+	m := *mp
 	if m == nil {
 		p1, p2, m = p1.alloc(p2)
-		*mp = unsafe2.AddrOf(m)
+		unsafe2.StoreNoWB(mp, m)
 	}
 
-	return p1.message(p2, int(n), m)
+	return p1.message(p2, int(p2.scratch), m)
 }

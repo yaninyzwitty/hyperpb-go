@@ -67,12 +67,7 @@ type getter struct {
 // fieldParser is a parser for a single field.
 type fieldParser struct {
 	_ unsafe2.NoCopy
-	// The expected tag value for the field. This is encoded as a single uint64
-	// so it is passed in registers.
-	//
-	// The high byte is the length of the tag. The tag is encoded without any
-	// sign bits set, since the matching code strips off the sign bits for
-	// performing the comparison.
+	// The expected, partially decoded tag value for the field.
 	tag fieldTag
 
 	// Byte offset to the typeParser this fieldParser uses, if any.
@@ -100,7 +95,10 @@ type fieldOffset struct {
 	bit uint32
 
 	// Byte offset within the containing message to the data for this field.
-	data uint32
+	//
+	// If negative, this is a cold field, and this is the negation of an offset
+	// into the cold field area.
+	data int32
 
 	// This field's number. Only used by oneof fields; all other fields have
 	// a zero here.
@@ -212,7 +210,7 @@ type parseKind struct {
 // Returns nil if the field is not supported yet.
 func selectArchetype(
 	fd protoreflect.FieldDescriptor,
-	prof func(protoreflect.FieldDescriptor) FieldProfile,
+	prof FieldProfile,
 ) (a *archetype) {
 	od := fd.ContainingOneof()
 	switch {
@@ -255,6 +253,18 @@ func (zc zc) utf8(src *byte) string {
 	return unsafe2.String(unsafe2.Add(src, zc.offset), zc.len)
 }
 
-func storeField[T any](p1 parser1, p2 parser2, v T) {
-	unsafe2.ByteStore(p2.m(), p2.f().offset.data, v)
+// pack packs this zc value into a single register.
+//
+// Storing the result as a uint64 is equivalent to storing a zc.
+func (zc zc) pack() uint64 {
+	// XXX: Endian hostile!!
+	return uint64(zc.offset) | uint64(zc.len)<<32
+}
+
+//nolint:unused
+func unpackZC(v uint64) zc {
+	return zc{
+		offset: uint32(v),
+		len:    uint32(v >> 32),
+	}
 }

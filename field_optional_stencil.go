@@ -21,10 +21,9 @@ import ()
 //go:nosplit
 func parseOptionalVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOptionalVarint[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint32(n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -32,10 +31,9 @@ func parseOptionalVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOptionalVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOptionalVarint[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint64(n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -43,10 +41,10 @@ func parseOptionalVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOptionalZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOptionalZigZag[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint32](n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint32](p2.scratch))
+	p1, p2 = storeFromScratch[uint32](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -54,10 +52,10 @@ func parseOptionalZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOptionalZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOptionalZigZag[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint64](n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint64](p2.scratch))
+	p1, p2 = storeFromScratch[uint64](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }

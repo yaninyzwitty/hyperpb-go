@@ -1,0 +1,48 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: fastpb.test.Scalars
+pgo:
+- pattern: .*
+  parse: -0.99
+textproto:
+- |
+  a1: -1
+  a2: 43
+  a3: 0xfffffffe
+  a4: 1000001
+  a5: -3
+  a6: 1000002
+  a7: 10000000
+  a8: 20000000
+  a9: -10000000
+  a10: 2000000110000
+  a11: -inf
+  a12: 3.14159265359
+  a13: true
+
+  b1: -1
+  b2: 43
+  b3: 0xfffffffe
+  b4: 1000001
+  b5: -3
+  b6: 1000002
+  b7: 10000000
+  b8: 20000000
+  b9: -10000000
+  b10: 2000000110000
+  b11: -inf
+  b12: 3.14159265359
+  b13: true
+  

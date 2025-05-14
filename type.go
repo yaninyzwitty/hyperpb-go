@@ -102,12 +102,18 @@ func (t Type) byIndex(n int) *field {
 
 // byNumber returns the field with the given number.
 func (t Type) byDescriptor(fd protoreflect.FieldDescriptor) *field {
-	i := int(t.raw.count)
-
-	if fd.ContainingMessage() == t.Descriptor() && !fd.IsExtension() {
-		i = fd.Index()
+	switch {
+	case fd.ContainingMessage() != t.Descriptor():
+		return nil
+	case fd.IsExtension():
+		idx := t.raw.numbers.Lookup(int32(fd.Number()))
+		if idx == nil {
+			return nil
+		}
+		return t.byIndex(int(*idx))
+	default:
+		return t.byIndex(fd.Index())
 	}
-	return t.byIndex(i)
 }
 
 // typeHeader is the raw header for compiled [Type] information. Each [Type]
@@ -146,6 +152,7 @@ type typeAux struct {
 	lib     *Library
 	desc    protoreflect.MessageDescriptor
 	methods protoiface.Methods
+	fds     []protoreflect.ExtensionDescriptor
 }
 
 // typeLayout is layout information for a [Type]. Only for debugging.

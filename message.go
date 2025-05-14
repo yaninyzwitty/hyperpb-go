@@ -91,6 +91,61 @@ type cold struct {
 	unknown arena.Slice[zc] // Unknown field chunks.
 }
 
+// getField returns the field data for a given message.
+//
+// Returns nil if the field is cold and there is no cold region allocated.
+func getField[T any](m *message, offset fieldOffset) *T {
+	if offset.data < 0 {
+		cold := m.cold()
+		if cold == nil {
+			return nil
+		}
+		return unsafe2.Cast[T](unsafe2.ByteAdd(cold, ^offset.data))
+	}
+	return unsafe2.Cast[T](unsafe2.ByteAdd(m, offset.data))
+}
+
+// getField returns the field data for a given message. Uses p2.m and p2.f for
+// the message and offset.
+//
+// If this field is in the cold region, it allocates one.
+func getMutableField[T any](p1 parser1, p2 parser2) (parser1, parser2, *T) {
+	var p unsafe.Pointer
+	p1, p2, p = getUntypedMutableField(p1, p2)
+	return p1, p2, (*T)(p)
+}
+
+//go:nosplit
+func getUntypedMutableField(p1 parser1, p2 parser2) (parser1, parser2, unsafe.Pointer) {
+	offset := p2.f().offset.data
+	if offset >= 0 {
+		return p1, p2, unsafe.Add(unsafe.Pointer(p2.m()), offset)
+	}
+	var cold *cold
+	p1, p2, cold = p1.mutableCold(p2)
+	return p1, p2, unsafe.Add(unsafe.Pointer(cold), ^offset)
+}
+
+// storeField loads a field pointer using [getMutableField] and stores v to it.
+//
+//nolint:unused
+func storeField[T any](p1 parser1, p2 parser2, v T) (parser1, parser2) {
+	var p unsafe.Pointer
+	p1, p2, p = getUntypedMutableField(p1, p2)
+	*(*T)(p) = v
+	return p1, p2
+}
+
+// storeFromScratch is like storeField, but it uses p2.scratch as the value to
+// store. This is useful for avoiding spills, by writing the temporary parsed
+// value into the call-preserved scratch register.
+func storeFromScratch[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+	var p unsafe.Pointer
+	p1, p2, p = getUntypedMutableField(p1, p2)
+	*(*T)(p) = T(p2.scratch)
+	return p1, p2
+}
+
 // getBit gets the value of the nth bit from this message's bitset.
 func (m *message) getBit(n uint32) bool {
 	size, _ := unsafe2.Layout[message]()
@@ -111,6 +166,19 @@ func (m *message) setBit(n uint32, flag bool) {
 	}
 }
 
+// setBit is like [message.setBit], but with a different ABI that keeps parser
+// state in registers.
+//
+// It can only be used to set bits to true, and it draws m and n from
+// p1 and p2.
+func (p1 parser1) setBit(p2 parser2) (parser1, parser2) {
+	n := int(p2.f().offset.bit)
+	word := unsafe2.Add(unsafe2.Cast[uint32](unsafe2.Add(p2.m(), 1)), n/32)
+	mask := uint32(1) << (n % 32)
+	*word |= mask
+	return p1, p2
+}
+
 func (m *message) Context() *Context {
 	return m.context
 }
@@ -123,21 +191,36 @@ func (m *message) ty() Type {
 	return m.context.lib.fromOffset(m.tyOffset)
 }
 
+// cold returns a pointer to the cold region, or nil if it hasn't been allocated.
 func (m *message) cold() *cold {
 	if m.coldIdx < 0 {
 		return nil
 	}
-	return unsafe2.Load(unsafe.SliceData(m.context.cold), m.coldIdx)
+	return unsafe2.LoadSlice(m.context.cold, m.coldIdx)
 }
 
+// mutableCold returns a pointer to the cold region, allocating one if needed.
 func (m *message) mutableCold() *cold {
 	if m.coldIdx < 0 {
-		cold := unsafe2.Cast[cold](m.context.arena.Alloc(int(m.ty().raw.coldSize)))
+		size := int(m.ty().raw.coldSize)
+		cold := unsafe2.Cast[cold](m.context.arena.Alloc(size))
 		m.coldIdx = int32(len(m.context.cold))
 		m.context.cold = append(m.context.cold, cold)
 		return cold
 	}
-	return unsafe2.Load(unsafe.SliceData(m.context.cold), m.coldIdx)
+	return unsafe2.LoadSlice(m.context.cold, m.coldIdx)
+}
+
+// mutableCold is like [message.mutableCold], but with a parser-friendly ABI.
+func (p1 parser1) mutableCold(p2 parser2) (parser1, parser2, *cold) {
+	if p2.m().coldIdx < 0 {
+		size := int(p2.m().ty().raw.coldSize)
+		cold := unsafe2.Cast[cold](p1.arena().Alloc(size))
+		p2.m().coldIdx = int32(len(p1.c().cold))
+		p1.c().cold = append(p1.c().cold, cold)
+		return p1, p2, cold
+	}
+	return p1, p2, unsafe2.LoadSlice(p1.c().cold, p2.m().coldIdx)
 }
 
 func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
@@ -294,10 +377,9 @@ func (m *message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 	}
 
 	f := m.ty().byIndex(0)
-	fs := m.Descriptor().Fields()
 	i := 0
 	for f.valid() {
-		if v := f.get(m); v.IsValid() && !yield(fs.Get(i), v) {
+		if v := f.get(m); v.IsValid() && !yield(m.ty().raw.aux.fds[i], v) {
 			return
 		}
 		f = unsafe2.Add(f, 1)

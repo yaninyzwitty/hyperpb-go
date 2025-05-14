@@ -17,6 +17,7 @@ package fastpb
 import (
 	"cmp"
 	"fmt"
+	"iter"
 	"math"
 	"reflect"
 	"runtime"
@@ -25,6 +26,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
 
 	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
@@ -44,6 +46,7 @@ func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) Type {
 		relos:   make(map[int]relo),
 
 		layouts: make(map[protoreflect.MessageDescriptor]typeLayout),
+		fdCache: make(map[protoreflect.MessageDescriptor][]protoreflect.ExtensionDescriptor),
 	}
 	for _, opt := range options {
 		if opt != nil {
@@ -64,18 +67,45 @@ type FieldSite struct {
 // FieldProfile is profiling information returned by a profile passed to
 // [PGO].
 //
-// The zero value of this type results in "default behavior".
+// The zero value of this type results in "default behavior", indicating that
+// the profile does not have enough data to form an opinion.
 type FieldProfile struct {
-	// If true, this indicates that this field is rarely seen in its parent
-	// message and should take a slow path.
-	Cold bool
+	Parse Temperature // How likely this field is to be seen on the wire.
 }
+
+// Temperature is a reading from 1.0 to -1.0 that indicates the "hotness" of
+// some codepath, such as parsing or access.
+//
+// The expected probability is P = (n+1)/2. This is such that the zero value
+// indicates "no opinion".
+type Temperature float64
 
 // PGO adds profile-guided optimization information to a compiler.
 //
 // Profile is a function that returns profiling information for a given field.
 func PGO(prof func(site FieldSite) FieldProfile) CompileOption {
 	return func(c *compiler) { c.prof = prof }
+}
+
+// Extensions provides an extension resolver for a compiler.
+//
+// Unlike ordinary Protobuf parsers, fastpb does not perform extension
+// resolution on the fly. Instead, any extensions that should be parsed must
+// be provided up-front.
+func Extensions(resolver func(protoreflect.MessageDescriptor) iter.Seq[protoreflect.ExtensionDescriptor]) CompileOption {
+	return func(c *compiler) { c.extns = resolver }
+}
+
+// ExtensionsFromRegistry uses a type registry to provide extension information
+// about a message type.
+func ExtensionsFromRegistry(types *protoregistry.Types) CompileOption {
+	return Extensions(func(md protoreflect.MessageDescriptor) iter.Seq[protoreflect.ExtensionDescriptor] {
+		return func(yield func(protoreflect.ExtensionDescriptor) bool) {
+			types.RangeExtensionsByMessage(md.FullName(), func(ext protoreflect.ExtensionType) bool {
+				return yield(ext.TypeDescriptor().Descriptor())
+			})
+		}
+	})
 }
 
 // compiler is context for compiling a descriptor into a [Type].
@@ -91,7 +121,10 @@ type compiler struct {
 
 	layouts map[protoreflect.MessageDescriptor]typeLayout
 
-	prof func(FieldSite) FieldProfile
+	prof  func(FieldSite) FieldProfile
+	extns func(protoreflect.MessageDescriptor) iter.Seq[protoreflect.ExtensionDescriptor]
+
+	fdCache map[protoreflect.MessageDescriptor][]protoreflect.FieldDescriptor
 }
 
 type typeSymbol struct {
@@ -147,6 +180,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 		ty.raw.aux.desc = sym.ty
 		ty.raw.aux.methods.Unmarshal = unmarshalShim
 		ty.raw.aux.methods.CheckInitialized = requiredShim
+		ty.raw.aux.fds = c.fdCache[sym.ty]
 
 		lib.types[sym.ty] = ty
 
@@ -177,12 +211,13 @@ type ir struct {
 	p []pField
 	s []sField
 
-	size   int
-	layout typeLayout
+	hot, cold int
+	layout    typeLayout
 }
 
 type tField struct {
 	d      protoreflect.FieldDescriptor
+	prof   FieldProfile
 	arch   *archetype
 	offset fieldOffset
 }
@@ -200,6 +235,45 @@ type sField struct {
 
 	size, align, bits uint32
 	offset            fieldOffset
+	hot               bool
+}
+
+// profile returns profiling information for fd in the compiler's current
+// context.
+func (c *compiler) profile(fd protoreflect.FieldDescriptor) FieldProfile {
+	if c.prof == nil {
+		return FieldProfile{}
+	}
+	return c.prof(FieldSite{Field: fd})
+}
+
+func (c *compiler) fields(md protoreflect.MessageDescriptor) []protoreflect.FieldDescriptor {
+	fields, ok := c.fdCache[md]
+	if ok {
+		return fields
+	}
+
+	fds := md.Fields()
+	fields = make([]protoreflect.FieldDescriptor, fds.Len())
+	for i := range fields {
+		fields[i] = fds.Get(i)
+	}
+
+	if c.extns != nil {
+		fields = slices.AppendSeq(fields, c.extns(md))
+		// Ensure determinism by sorting the extension fields by number. The
+		// implementation of GlobalTypes.RangeExtensions uses a map and so likes
+		// to have a per-process random order.
+		//
+		// We don't actually lose anything from not sorting, but it makes tests
+		// deterministic.
+		slices.SortFunc(fields[fds.Len():], func(a, b protoreflect.FieldDescriptor) int {
+			return cmp.Compare(a.Number(), b.Number())
+		})
+	}
+
+	c.fdCache[md] = fields
+	return fields
 }
 
 // analyze generates an intermediate representation for a given message,
@@ -208,15 +282,17 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 	ir := &ir{d: md}
 
 	// Classify all of the fields into archetypes.
-	fields := md.Fields()
-	for i := range fields.Len() {
-		fd := fields.Get(i)
-		arch := selectArchetype(fd, func(fd protoreflect.FieldDescriptor) FieldProfile {
-			if c.prof == nil {
-				return FieldProfile{}
-			}
-			return c.prof(FieldSite{Field: fd})
-		})
+	for _, fd := range c.fields(md) {
+		prof := c.profile(fd)
+
+		hot := prof.Parse >= 0
+		if prof.Parse == 0 && fd.IsExtension() {
+			// Extensions default to being cold.
+			prof.Parse = -0.5
+			hot = false
+		}
+
+		arch := selectArchetype(fd, prof)
 
 		if arch.bits > 0 && arch.oneof {
 			panic(fmt.Sprintf("oneof archetype for %v requested bits; this is a bug", fd.FullName()))
@@ -225,6 +301,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		tIdx := len(ir.t)
 		ir.t = append(ir.t, tField{
 			d:    fd,
+			prof: prof,
 			arch: arch,
 		})
 
@@ -232,7 +309,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 			ir.p = append(ir.p, pField{
 				tIdx: tIdx,
 				aIdx: j,
-				hot:  j == 0,
+				hot:  j == 0 && hot,
 			})
 		}
 
@@ -255,57 +332,80 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 	var bits, whichWords int
 	for i := range ir.s {
 		sf := &ir.s[i]
+		var temp Temperature
 		for _, j := range sf.tIdx {
 			arch := ir.t[j].arch
 			sf.size = max(sf.size, arch.size)
 			sf.align = max(sf.align, arch.align)
 			sf.bits = max(sf.bits, arch.bits)
+
+			temp += ir.t[j].prof.Parse
 		}
 
 		bits += int(sf.bits)
+		temp /= Temperature(len(sf.tIdx))
+		sf.hot = temp >= 0
 
 		if ir.t[sf.tIdx[0]].arch.oneof {
 			whichWords++
 		}
 	}
-	slices.SortStableFunc(ir.s, func(a, b sField) int {
-		return -cmp.Compare(a.align, b.align)
-	})
 
-	// Append a hidden zero-size field at the end to ensure that the stride of
+	// Append hidden zero-size fields at the end to ensure that the stride of
 	// this type is divisible by 8.
-	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align)})
+	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align), hot: true})
+	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align), hot: false})
+
+	slices.SortStableFunc(ir.s, func(a, b sField) int {
+		// Sort hot fields before cold fields. This simplifies the code below.
+		switch {
+		case a.hot == b.hot:
+			return -cmp.Compare(a.align, b.align)
+		case a.hot:
+			return -1
+		default:
+			return 1
+		}
+	})
 
 	// Figure out the number of bit words we need. We use 32-bit words.
 	const bitsPerWord = 32
 	bitWords := (bits + bitsPerWord - 1) / bitsPerWord // Divide and round up.
 	ir.layout.bitWords = bitWords + whichWords
 
-	ir.size, _ = unsafe2.Layout[message]()
-	ir.size += (bitWords + whichWords) * 4
+	ir.hot, _ = unsafe2.Layout[message]()
+	ir.hot += (bitWords + whichWords) * 4
+
+	ir.cold, _ = unsafe2.Layout[cold]()
 
 	var nextBit uint32
-	nextWhichWord := uint32(ir.size - whichWords*4)
+	nextWhichWord := uint32(ir.hot - whichWords*4)
 	for i := range ir.s {
 		sf := &ir.s[i]
 
 		// Allocate bit and byte storage for this field.
-		if sf.size > 0 {
-			_, up := unsafe2.Addr[byte](ir.size).Misalign(int(sf.align))
-			ir.size += up
-			if dbg.Enabled && up > 0 {
-				// Note alignment padding required for the previous field.
-				if i == 0 {
-					ir.layout.bitWords += up / 4
-				} else {
-					f := ir.layout.fields
-					f[len(f)-1].padding = uint32(up)
-				}
-			}
-
-			sf.offset.data = uint32(ir.size)
-			ir.size += int(sf.size)
+		size := &ir.hot
+		if !sf.hot {
+			size = &ir.cold
 		}
+
+		_, up := unsafe2.Addr[byte](*size).Misalign(int(sf.align))
+		*size += up
+		if dbg.Enabled && up > 0 {
+			// Note alignment padding required for the previous field.
+			if i == 0 && sf.hot {
+				ir.layout.bitWords += up / 4
+			} else if ir.s[i-1].hot == sf.hot {
+				f := ir.layout.fields
+				f[len(f)-1].padding = uint32(up)
+			}
+		}
+
+		sf.offset.data = int32(*size)
+		if !sf.hot {
+			sf.offset.data = ^sf.offset.data
+		}
+		*size += int(sf.size)
 
 		if sf.bits > 0 {
 			sf.offset.bit = nextBit
@@ -341,6 +441,13 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 				offset: sf.offset,
 			})
 		}
+	}
+
+	if ir.hot > math.MaxInt32 {
+		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", md.FullName(), ir.hot, math.MaxInt32))
+	}
+	if ir.cold > math.MaxInt32 {
+		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", md.FullName(), ir.cold, math.MaxInt32))
 	}
 
 	if dbg.Enabled {
@@ -491,11 +598,10 @@ func (c *compiler) codegen(ir *ir) {
 	tSym := typeSymbol{ir.d}
 	pSym := parserSymbol{ir.d}
 
-	coldSize, _ := unsafe2.Layout[cold]()
 	c.write(tSym,
 		typeHeader{
-			size:     uint32(ir.size),
-			coldSize: uint32(coldSize),
+			size:     uint32(ir.hot),
+			coldSize: uint32(ir.cold),
 			count:    uint32(len(ir.t)),
 		},
 		relo{
@@ -612,6 +718,14 @@ func (c *compiler) codegen(ir *ir) {
 			fieldParserSymbol{parser: pSym, index: 0},
 			fieldParser{
 				tag: ^fieldTag(0), // This will never be matched.
+			},
+			relo{
+				symbol: fieldParserSymbol{parser: pSym, index: 0},
+				offset: unsafe.Offsetof(fieldParser{}.nextOk),
+			},
+			relo{
+				symbol: fieldParserSymbol{parser: pSym, index: 0},
+				offset: unsafe.Offsetof(fieldParser{}.nextErr),
 			},
 		)
 	}

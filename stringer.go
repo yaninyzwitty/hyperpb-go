@@ -96,19 +96,10 @@ func (m *message) dump() string {
 	buf := new(strings.Builder)
 	cold := m.cold()
 
-	fmt.Fprintf(buf, "type: %p:%v\n", m.ty().Descriptor(), m.ty().Descriptor().FullName())
-	fmt.Fprintf(buf, "header: %p:%p:%p/%#x\n", m, m.context, m.ty().raw, m.tyOffset)
-
-	if cold != nil {
-		fmt.Fprintf(buf, "cold: %p, unknown: ", cold)
-		for i, unknown := range cold.unknown.Raw() {
-			if i > 0 {
-				fmt.Fprint(buf, ", ")
-			}
-			fmt.Fprintf(buf, "%v `%x`", unknown, unknown.bytes(m.context.src))
-		}
-		fmt.Fprintln(buf)
-	}
+	fmt.Fprintf(buf, "type: %p:%v, %p/%#x\n", m.ty().Descriptor(), m.ty().Descriptor().FullName(), m.ty().raw, m.tyOffset)
+	fmt.Fprintf(buf, "hot:  %p, %d/%#[2]x\n", m, m.ty().raw.size)
+	fmt.Fprintf(buf, "cold: %p, %d/%#[2]x\n", cold, m.ty().raw.coldSize)
+	fmt.Fprintf(buf, "ctx:  %p\n", m.context)
 
 	if !dbg.Enabled {
 		fmt.Fprintln(buf, "bits: ???")
@@ -121,9 +112,12 @@ func (m *message) dump() string {
 	// Print out the bit words.
 	if layout.bitWords > 0 {
 		fmt.Fprint(buf, "bits:")
-		words := unsafe2.Beyond[uint32](m).Slice(layout.bitWords)
-		for _, word := range words {
-			fmt.Fprintf(buf, " %032b", bits.Reverse32(word))
+		words := unsafe2.Beyond[byte](m).Slice(layout.bitWords * 4)
+		for i, word := range words {
+			if i > 0 && i%4 == 0 {
+				fmt.Fprintf(buf, "\n     ")
+			}
+			fmt.Fprintf(buf, " %08b", bits.Reverse8(word))
 		}
 		fmt.Fprintln(buf)
 	}
@@ -131,17 +125,41 @@ func (m *message) dump() string {
 	// Print out each field.
 	if len(layout.fields) > 0 {
 		fmt.Fprintln(buf, "fields:")
-		fields := m.ty().Descriptor().Fields()
 		oneofs := m.ty().Descriptor().Oneofs()
+
+		var maxBits uint32
+		for _, field := range layout.fields {
+			maxBits = max(field.bits, maxBits)
+		}
+
 		for _, field := range layout.fields {
 			start := buf.Len()
+			data := getField[byte](m, field.offset)
+
+			switch {
+			case field.size == 0:
+				fmt.Fprint(buf, "  0x----/0x")
+
+				nybbles := (bits.Len(uint(unsafe2.AddrOf(data))) + 3) / 4
+				for range nybbles {
+					fmt.Fprint(buf, "-")
+				}
+			case field.offset.data < 0:
+				fmt.Fprintf(buf, " ^%#04x/%p", ^field.offset.data, data)
+			default:
+				fmt.Fprintf(buf, "  %#04x/%p", field.offset.data, data)
+			}
 
 			if field.index >= 0 {
-				fd := fields.Get(field.index)
-				fmt.Fprintf(buf, "  %#04x %s/%d:", field.offset.data, fd.Name(), fd.Number())
+				fd := m.ty().raw.aux.fds[field.index]
+				if fd.IsExtension() {
+					fmt.Fprintf(buf, " [%s]/%d:", fd.Name(), fd.Number())
+				} else {
+					fmt.Fprintf(buf, " %s/%d:", fd.Name(), fd.Number())
+				}
 			} else {
 				od := oneofs.Get(^field.index)
-				fmt.Fprintf(buf, "  %#04x %s/", field.offset.data, od.Name())
+				fmt.Fprintf(buf, " %s/", od.Name())
 				for i := range od.Fields().Len() {
 					if i > 0 {
 						buf.WriteByte(',')
@@ -151,12 +169,12 @@ func (m *message) dump() string {
 				buf.WriteByte(':')
 			}
 
-			for buf.Len()-start < 24 {
+			for buf.Len()-start < 32 {
 				buf.WriteByte(' ')
 			}
 
-			if field.bits > 0 {
-				fmt.Fprint(buf, " (")
+			if maxBits > 0 {
+				fmt.Fprint(buf, " ")
 				for i := range field.bits {
 					if m.getBit(i + field.offset.bit) {
 						fmt.Fprint(buf, "1")
@@ -164,25 +182,28 @@ func (m *message) dump() string {
 						fmt.Fprint(buf, "0")
 					}
 				}
-				fmt.Fprint(buf, ")")
-			}
-
-			for buf.Len()-start < 30 {
-				buf.WriteByte(' ')
+				for range maxBits - field.bits {
+					fmt.Fprint(buf, "-")
+				}
 			}
 
 			// Print each byte of data, grouped into words of four.
+			if data == nil {
+				fmt.Fprintln(buf, "---")
+				continue
+			}
+
 			for i := range field.size + field.padding {
 				if i == field.size {
 					fmt.Fprint(buf, " | ")
 				} else if i%4 == 0 {
 					fmt.Fprint(buf, " ")
 				}
-				fmt.Fprintf(buf, "%02x", unsafe2.ByteLoad[byte](m, field.offset.data+i))
+				fmt.Fprintf(buf, "%02x", unsafe2.ByteLoad[byte](data, i))
 			}
 
 			if field.size == uint32(zcSize) {
-				zc := unsafe2.ByteLoad[zc](m, field.offset.data)
+				zc := unsafe2.ByteLoad[zc](data, 0)
 				start := int(zc.offset)
 				end := start + int(zc.len)
 				if start <= m.context.len && end <= m.context.len && start < end {
@@ -192,6 +213,14 @@ func (m *message) dump() string {
 
 			fmt.Fprintln(buf)
 		}
+	}
+
+	if cold != nil && cold.unknown.Len() > 0 {
+		fmt.Fprint(buf, "unknown:")
+		for _, unknown := range cold.unknown.Raw() {
+			fmt.Fprintf(buf, "  %v `%x`\n", unknown, unknown.bytes(m.context.src))
+		}
+		fmt.Fprintln(buf)
 	}
 
 	return buf.String()

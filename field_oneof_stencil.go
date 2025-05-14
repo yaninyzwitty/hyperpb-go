@@ -21,9 +21,8 @@ import "github.com/bufbuild/fastpb/internal/unsafe2"
 //go:nosplit
 func parseOneofVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofVarint[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint32(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -32,9 +31,8 @@ func parseOneofVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOneofVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofVarint[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, uint64(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -43,9 +41,9 @@ func parseOneofVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOneofZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofZigZag[uint32]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint32](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint32](p2.scratch))
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -54,9 +52,9 @@ func parseOneofZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parseOneofZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofZigZag[uint64]
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[uint64](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[uint64](p2.scratch))
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2

@@ -20,6 +20,7 @@ import (
 	"encoding/hex"
 	"io/fs"
 	"path/filepath"
+	"regexp"
 	"runtime/debug"
 	"strings"
 	"sync/atomic"
@@ -53,43 +54,51 @@ func BenchmarkUnmarshal(b *testing.B) {
 	runTests(b, func(b *testing.B, test *test) {
 		b.Helper()
 
-		for _, specimen := range test.Specimens {
-			b.Run("", func(b *testing.B) {
-				b.Run("fastpb", func(b *testing.B) {
-					b.ReportAllocs()
-					b.SetBytes(int64(len(specimen)))
-					for range b.N {
-						m := fastpb.New(test.Type.Fast)
-						_ = proto.Unmarshal(specimen, m)
-					}
-				})
-				b.Run("amortize", func(b *testing.B) {
-					b.ReportAllocs()
-					b.SetBytes(int64(len(specimen)))
-					ctx := new(fastpb.Context)
-					for range b.N {
-						m := ctx.New(test.Type.Fast)
-						_ = proto.Unmarshal(specimen, m)
-						ctx.Free()
-					}
-				})
-				b.Run("gencode", func(b *testing.B) {
-					b.ReportAllocs()
-					b.SetBytes(int64(len(specimen)))
-					for range b.N {
-						m := test.Type.Gencode.New().Interface()
-						_ = proto.Unmarshal(specimen, m)
-					}
-				})
-				b.Run("dynamicpb", func(b *testing.B) {
-					b.ReportAllocs()
-					b.SetBytes(int64(len(specimen)))
-					for range b.N {
-						m := dynamicpb.NewMessage(test.Type.Gencode.Descriptor())
-						_ = proto.Unmarshal(specimen, m)
-					}
-				})
+		run := func(b *testing.B, specimen []byte) {
+			b.Helper()
+			b.Run("fastpb", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				for range b.N {
+					m := fastpb.New(test.Type.Fast)
+					_ = proto.Unmarshal(specimen, m)
+				}
 			})
+			b.Run("amortize", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				ctx := new(fastpb.Context)
+				for range b.N {
+					m := ctx.New(test.Type.Fast)
+					_ = proto.Unmarshal(specimen, m)
+					ctx.Free()
+				}
+			})
+			b.Run("gencode", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				for range b.N {
+					m := test.Type.Gencode.New().Interface()
+					_ = proto.Unmarshal(specimen, m)
+				}
+			})
+			b.Run("dynamicpb", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				for range b.N {
+					m := dynamicpb.NewMessage(test.Type.Gencode.Descriptor())
+					_ = proto.Unmarshal(specimen, m)
+				}
+			})
+		}
+
+		if len(test.Specimens) == 1 {
+			run(b, test.Specimens[0])
+			return
+		}
+
+		for _, specimen := range test.Specimens {
+			b.Run("", func(b *testing.B) { run(b, specimen) })
 		}
 	})
 }
@@ -106,7 +115,12 @@ type test struct {
 	// If set, run this test as a benchmark.
 	Benchmark bool `yaml:"benchmark"`
 
-	Profile map[string]FieldProfile `yaml:"profile"`
+	PGO []struct {
+		Pattern *regexp.Regexp `yaml:"pattern"`
+		Profile struct {
+			Parse fastpb.Temperature `yaml:"parse"`
+		} `yaml:"-,inline"`
+	} `yaml:"pgo"`
 
 	// Three ways to encode the test: hex, textproto, and protoscope
 	Hex        []string `yaml:"hex"`
@@ -115,14 +129,6 @@ type test struct {
 
 	Specimens [][]byte `yaml:"-"`
 }
-
-// Copy of fastpb.FieldProfile with yaml annotations.
-type FieldProfile struct {
-	Cold bool `yaml:"cold"`
-}
-
-// Ensure that the above type matches the exported version.
-var _ = fastpb.FieldProfile(FieldProfile{})
 
 //go:embed testdata/*
 var testdata embed.FS
@@ -171,10 +177,12 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 	require.True(t, bytes.HasSuffix(file, []byte("\n")), "missing trailing newline in %q", path)
 
 	test := new(test)
-	err := yaml.Unmarshal(file, &test)
+	dec := yaml.NewDecoder(bytes.NewReader(file))
+	dec.KnownFields(true)
+	err := dec.Decode(&test)
 	require.NoError(t, err, "loading test %q", path)
-	if _, bench := t.(*testing.B); bench && !test.Benchmark {
-		return nil
+	if b, ok := t.(*testing.B); ok && !test.Benchmark {
+		b.SkipNow()
 	}
 
 	test.Name = strings.TrimPrefix(path, "testdata/")
@@ -185,8 +193,14 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 	test.Type.Fast = fastpb.Compile(
 		test.Type.Gencode.Descriptor(),
 		fastpb.PGO(func(site fastpb.FieldSite) fastpb.FieldProfile {
-			return fastpb.FieldProfile(test.Profile[string(site.Field.FullName())])
+			for _, rule := range test.PGO {
+				if rule.Pattern.MatchString(string(site.Field.FullName())) {
+					return fastpb.FieldProfile(rule.Profile)
+				}
+			}
+			return fastpb.FieldProfile{}
 		}),
+		fastpb.ExtensionsFromRegistry(protoregistry.GlobalTypes),
 	)
 
 	for _, raw := range test.Hex {
@@ -222,28 +236,38 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 	t.Helper()
 
+	run := func(t *testing.T, specimen []byte) {
+		t.Helper()
+
+		debug.SetPanicOnFault(true)
+		defer dbg.WithTesting(t)()
+
+		// Parse using the gencode.
+		m1 := test.Type.Gencode.New().Interface()
+		err1 := proto.Unmarshal(specimen, m1)
+
+		// Parse using fastpb.
+		m2 := ctx.New(test.Type.Fast)
+		err2 := proto.Unmarshal(specimen, m2)
+
+		if err1 != nil {
+			require.Error(t, err2, "gencode error: %v", err1)
+			return
+		}
+
+		require.NoError(t, err2)
+		prototest.Equal(t, m1, m2)
+	}
+
+	if len(test.Specimens) == 1 {
+		run(t, test.Specimens[0])
+		return
+	}
+
 	for _, specimen := range test.Specimens {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-
-			debug.SetPanicOnFault(true)
-			defer dbg.WithTesting(t)()
-
-			// Parse using the gencode.
-			m1 := test.Type.Gencode.New().Interface()
-			err1 := proto.Unmarshal(specimen, m1)
-
-			// Parse using fastpb.
-			m2 := ctx.New(test.Type.Fast)
-			err2 := proto.Unmarshal(specimen, m2)
-
-			if err1 != nil {
-				require.Error(t, err2, "gencode error: %v", err1)
-				return
-			}
-
-			require.NoError(t, err2)
-			prototest.Equal(t, m1, m2)
+			run(t, specimen)
 		})
 	}
 }

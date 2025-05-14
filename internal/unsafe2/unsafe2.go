@@ -74,6 +74,11 @@ func Load[P ~*E, E any, I Int](p P, n I) E {
 	return *Add(p, n)
 }
 
+// LoadSlice loads a slice without performing a bounds check.
+func LoadSlice[S ~[]E, E any, I Int](s S, n I) E {
+	return Load(unsafe.SliceData(s), n)
+}
+
 // Store stores a value at the given index.
 func Store[P ~*E, E any, I Int](p P, n I, v E) {
 	*Add(p, n) = v

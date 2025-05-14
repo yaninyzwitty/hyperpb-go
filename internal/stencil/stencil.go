@@ -245,7 +245,7 @@ func run() error {
 		stencil.Name.Name = dir.Target
 
 		// Now walk the AST of stencil and overwrite any identifiers with the
-		// same name as a generic parameter. THis isn't perfect, but it's
+		// same name as a generic parameter. This isn't perfect, but it's
 		// essentially all we need.
 		//
 		// On the way down, also record all of the bases for selectors. This

@@ -212,7 +212,12 @@ var repeatedFields = [...]archetype{
 }
 
 func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
+	p := getField[arena.Slice[T]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(scalarList[T]{raw: nil})
+	}
+
+	v := *p
 	var raw []T
 	if isZC(v) {
 		raw = unwrapZC(v, m.context.src)
@@ -223,7 +228,12 @@ func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect
 }
 
 func getRepeatedScalarMaybeBytes[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
+	p := getField[arena.Slice[T]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(scalarList[T]{raw: nil})
+	}
+
+	v := *p
 	if isZC(v) {
 		raw := unwrapRawZC(v).bytes(m.context.src)
 		return protoreflect.ValueOf(byteScalarList[T]{raw: raw})
@@ -233,7 +243,12 @@ func getRepeatedScalarMaybeBytes[T integer](m *message, _ Type, getter getter) p
 }
 
 func getRepeatedZigZag[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[arena.Slice[T]](m, getter.offset.data)
+	p := getField[arena.Slice[T]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(zigzagList[T]{raw: nil})
+	}
+
+	v := *p
 	if isZC(v) {
 		raw := unwrapRawZC(v).bytes(m.context.src)
 		return protoreflect.ValueOf(byteZigZagList[T]{raw: raw})
@@ -243,7 +258,12 @@ func getRepeatedZigZag[T integer](m *message, _ Type, getter getter) protoreflec
 }
 
 func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
-	v := unsafe2.ByteLoad[arena.Slice[byte]](m, getter.offset.data)
+	p := getField[arena.Slice[byte]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(boolList{raw: nil})
+	}
+
+	v := *p
 	var raw []byte
 	if isZC(v) {
 		raw = unwrapZC(v, m.context.src)
@@ -254,32 +274,47 @@ func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(boolList{raw: raw})
 }
 
-func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	raw := unsafe2.ByteLoad[arena.Slice[zc]](m, getter.offset.data).Raw()
-	return protoreflect.ValueOf(bytesList{raw: raw, shared: m.context})
+func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
+	p := getField[arena.Slice[zc]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(boolList{raw: nil})
+	}
+
+	v := *p
+	return protoreflect.ValueOf(stringList{raw: v.Raw(), shared: m.context})
 }
 
-func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
-	raw := unsafe2.ByteLoad[arena.Slice[zc]](m, getter.offset.data).Raw()
-	return protoreflect.ValueOf(stringList{raw: raw, shared: m.context})
+func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	p := getField[arena.Slice[zc]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(boolList{raw: nil})
+	}
+
+	v := *p
+	return protoreflect.ValueOf(bytesList{raw: v.Raw(), shared: m.context})
 }
 
 func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
 	if m.getBit(getter.offset.bit) {
-		raw := unsafe2.ByteLoad[arena.Slice[*message]](m, getter.offset.data)
+		raw := *getField[arena.Slice[*message]](m, getter.offset)
 		return protoreflect.ValueOf(messageList{raw: raw.Raw()})
 	}
 
-	raw := unsafe2.ByteLoad[arena.Slice[byte]](m, getter.offset.data)
-	if raw.Ptr() == nil {
+	p := getField[arena.Slice[byte]](m, getter.offset)
+	if p == nil {
+		return protoreflect.ValueOf(boolList{raw: nil})
+	}
+
+	v := *p
+	if v.Ptr() == nil {
 		return protoreflect.ValueOf(emptyList{})
 	}
 
-	first := unsafe2.Cast[message](raw.Ptr()) // Get the type from the first element of the list.
+	first := unsafe2.Cast[message](v.Ptr()) // Get the type from the first element of the list.
 	return protoreflect.ValueOf(inlineMessageList{
 		ty:    first.ty(),
 		raw:   first,
-		dummy: make([]struct{}, raw.Len()/int(first.ty().raw.size)),
+		dummy: make([]struct{}, v.Len()/int(first.ty().raw.size)),
 	})
 }
 
@@ -299,7 +334,8 @@ func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[T]
+	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
 	slice := slot.AssertValid()
 
 	// Check if we're already an arena, or an empty repeated field which looks like
@@ -358,7 +394,8 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[T]
+	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
 	slice := slot.AssertValid()
 	if isZC(slice) {
 		// Check if we're already on-arena, or an empty repeated field which looks
@@ -480,7 +517,8 @@ func parseRepeatedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
 //fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
 func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parser2) {
-	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[T]
+	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
 	slice := slot.AssertValid()
 
 	// Check if we're already an arena, or an empty repeated field which looks like
@@ -522,7 +560,8 @@ func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[T]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[T]
+	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
 	slice := slot.AssertValid()
 
 	switch {
@@ -558,7 +597,8 @@ func parseRepeatedBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var v zc
 	p1, p2, v = p1.bytes(p2)
 
-	slice := unsafe2.Cast[arena.SliceAddr[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slice *arena.SliceAddr[zc]
+	p1, p2, slice = getMutableField[arena.SliceAddr[zc]](p1, p2)
 	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
 
 	return p1, p2
@@ -569,7 +609,8 @@ func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
 	var v zc
 	p1, p2, v = p1.utf8(p2)
 
-	slice := unsafe2.Cast[arena.SliceAddr[zc]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slice *arena.SliceAddr[zc]
+	p1, p2, slice = getMutableField[arena.SliceAddr[zc]](p1, p2)
 	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
 
 	return p1, p2
@@ -580,7 +621,8 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	slot := unsafe2.Cast[arena.SliceAddr[byte]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[byte]
+	p1, p2, slot = getMutableField[arena.SliceAddr[byte]](p1, p2)
 	slice := slot.AssertValid()
 	p1.log(p2, "repeated message", "%v", slice.Addr())
 
@@ -667,16 +709,15 @@ func spillInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte
 	spill = spill.SetLen(spillIdx)
 
 	*unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot) = spill.Addr()
-	p2.m().setBit(p2.f().offset.bit, true) // Mark this as an outlined message.
+	p1, p2 = p1.setBit(p2) // Mark this as an outlined message.
 
 	return p1, p2
 }
 
 //go:noinline
 func appendOneMessage(p1 parser1, p2 parser2, m *message) (parser1, parser2, *message) {
-	slot := unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](
-		unsafe2.ByteAdd(p2.m(), p2.f().offset.data),
-	)
+	var slot *arena.SliceAddr[unsafe2.Addr[message]]
+	p1, p2, slot = getMutableField[arena.SliceAddr[unsafe2.Addr[message]]](p1, p2)
 	*slot = slot.AssertValid().AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr()
 	return p1, p2, m
 }

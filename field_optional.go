@@ -155,7 +155,7 @@ func getOptionalScalar[T scalar](m *message, _ Type, getter getter) protoreflect
 	if !m.getBit(getter.offset.bit) {
 		return protoreflect.ValueOf(nil)
 	}
-	v := unsafe2.ByteLoad[T](m, getter.offset.data)
+	v := *getField[T](m, getter.offset)
 	return protoreflect.ValueOf(v)
 }
 
@@ -170,7 +170,7 @@ func getOptionalString(m *message, _ Type, getter getter) protoreflect.Value {
 	if !m.getBit(getter.offset.bit) {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	zc := *getField[zc](m, getter.offset)
 	return protoreflect.ValueOf(zc.utf8(m.context.src))
 }
 
@@ -178,7 +178,7 @@ func getOptionalBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	if !m.getBit(getter.offset.bit) {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	zc := *getField[zc](m, getter.offset)
 	return protoreflect.ValueOf(zc.bytes(m.context.src))
 }
 
@@ -186,10 +186,9 @@ func getOptionalBytes(m *message, _ Type, getter getter) protoreflect.Value {
 //fastpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
 //fastpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
 func parseOptionalVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, T(n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[T](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -198,10 +197,10 @@ func parseOptionalVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
 //fastpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
 func parseOptionalZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[T](n))
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[T](p2.scratch))
+	p1, p2 = storeFromScratch[T](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -210,18 +209,18 @@ func parseOptionalZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOptionalFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.fixed32(p2)
-	storeField(p1, p2, n)
-	p2.m().setBit(p2.f().offset.bit, true)
+	p2.scratch = uint64(n)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
 
 //go:nosplit
 func parseOptionalFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.fixed64(p2)
-	storeField(p1, p2, n)
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2, p2.scratch = p1.fixed64(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -230,8 +229,9 @@ func parseOptionalFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOptionalString(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.utf8(p2)
-	storeField(p1, p2, zc)
-	p2.m().setBit(p2.f().offset.bit, true)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -240,8 +240,9 @@ func parseOptionalString(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOptionalBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	storeField(p1, p2, zc)
-	p2.m().setBit(p2.f().offset.bit, true)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
+	p1, p2 = p1.setBit(p2)
 
 	return p1, p2
 }
@@ -249,7 +250,7 @@ func parseOptionalBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOptionalBool(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p2.m().setBit(p2.f().offset.bit, true)
+	p1, p2 = p1.setBit(p2)
 	p2.m().setBit(p2.f().offset.bit+1, n != 0)
 
 	return p1, p2

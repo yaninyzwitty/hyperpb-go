@@ -48,7 +48,8 @@ func parseRepeatedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint8]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint8]](p1, p2)
 	slice := slot.AssertValid()
 
 	if isZC(slice) && slice.Cap() > 0 {
@@ -86,7 +87,8 @@ func parseRepeatedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint32]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
 	slice := slot.AssertValid()
 
 	if isZC(slice) && slice.Cap() > 0 {
@@ -124,7 +126,8 @@ func parseRepeatedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint64]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
 	slice := slot.AssertValid()
 
 	if isZC(slice) && slice.Cap() > 0 {
@@ -176,7 +179,8 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint8]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint8]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint8]](p1, p2)
 	slice := slot.AssertValid()
 	if isZC(slice) {
 
@@ -295,7 +299,8 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint32]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
 	slice := slot.AssertValid()
 	if isZC(slice) {
 
@@ -414,7 +419,8 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint64]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
 	slice := slot.AssertValid()
 	if isZC(slice) {
 
@@ -516,7 +522,8 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func appendFixed32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
 	_ = appendFixed[uint32]
-	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint32]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
 	slice := slot.AssertValid()
 
 	if isZC(slice) && slice.Cap() > 0 {
@@ -543,7 +550,8 @@ func appendFixed32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
 //go:nosplit
 func appendFixed64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
 	_ = appendFixed[uint64]
-	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint64]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
 	slice := slot.AssertValid()
 
 	if isZC(slice) && slice.Cap() > 0 {
@@ -581,7 +589,8 @@ func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint32]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint32]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
 	slice := slot.AssertValid()
 
 	switch {
@@ -624,7 +633,8 @@ func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	slot := unsafe2.Cast[arena.SliceAddr[uint64]](unsafe2.ByteAdd(p2.m(), p2.f().offset.data))
+	var slot *arena.SliceAddr[uint64]
+	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
 	slice := slot.AssertValid()
 
 	switch {

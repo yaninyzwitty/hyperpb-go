@@ -167,7 +167,7 @@ func getOneofScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Va
 	if which != getter.offset.number {
 		return protoreflect.ValueOf(nil)
 	}
-	v := unsafe2.ByteLoad[T](m, getter.offset.data)
+	v := *getField[T](m, getter.offset)
 	return protoreflect.ValueOf(v)
 }
 
@@ -176,7 +176,7 @@ func getOneofBool(m *message, _ Type, getter getter) protoreflect.Value {
 	if which != getter.offset.number {
 		return protoreflect.ValueOf(nil)
 	}
-	v := unsafe2.ByteLoad[byte](m, getter.offset.data)
+	v := *getField[byte](m, getter.offset)
 	return protoreflect.ValueOf(v != 0)
 }
 
@@ -185,7 +185,7 @@ func getOneofString(m *message, _ Type, getter getter) protoreflect.Value {
 	if which != getter.offset.number {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	zc := *getField[zc](m, getter.offset)
 	return protoreflect.ValueOf(zc.utf8(m.context.src))
 }
 
@@ -194,7 +194,7 @@ func getOneofBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	if which != getter.offset.number {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := unsafe2.ByteLoad[zc](m, getter.offset.data)
+	zc := *getField[zc](m, getter.offset)
 	return protoreflect.ValueOf(zc.bytes(m.context.src))
 }
 
@@ -203,7 +203,7 @@ func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
 	if which != getter.offset.number {
 		return protoreflect.ValueOf(empty{ty})
 	}
-	ptr := unsafe2.ByteLoad[*message](m, getter.offset.data)
+	ptr := *getField[*message](m, getter.offset)
 	return protoreflect.ValueOf(ptr)
 }
 
@@ -211,9 +211,8 @@ func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
 //fastpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
 //fastpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
 func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, T(n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p1, p2 = storeFromScratch[T](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -223,9 +222,9 @@ func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
 //fastpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
 func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.varint(p2)
-	storeField(p1, p2, zigzag64[T](n))
+	p1, p2, p2.scratch = p1.varint(p2)
+	p2.scratch = uint64(zigzag64[T](p2.scratch))
+	p1, p2 = storeFromScratch[T](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -235,7 +234,8 @@ func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint32
 	p1, p2, n = p1.fixed32(p2)
-	storeField(p1, p2, n)
+	p2.scratch = uint64(n)
+	p1, p2 = storeFromScratch[uint32](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -243,9 +243,8 @@ func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 
 //go:nosplit
 func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint64
-	p1, p2, n = p1.fixed64(p2)
-	storeField(p1, p2, n)
+	p1, p2, p2.scratch = p1.fixed64(p2)
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -255,7 +254,8 @@ func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.utf8(p2)
-	storeField(p1, p2, zc)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -265,7 +265,8 @@ func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	storeField(p1, p2, zc)
+	p2.scratch = zc.pack()
+	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
@@ -274,12 +275,11 @@ func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofBool(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	var b byte
 	if n != 0 {
-		b = 1
+		n = 1
 	}
-
-	storeField(p1, p2, b)
+	p2.scratch = n
+	p1, p2 = storeFromScratch[byte](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
 	return p1, p2
