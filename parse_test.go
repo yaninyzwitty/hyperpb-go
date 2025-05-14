@@ -57,7 +57,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 			b.Run("", func(b *testing.B) {
 				b.Run("fastpb", func(b *testing.B) {
 					b.ReportAllocs()
-					b.SetBytes(int64(len(test.Specimens)))
+					b.SetBytes(int64(len(specimen)))
 					for range b.N {
 						m := fastpb.New(test.Type.Fast)
 						_ = proto.Unmarshal(specimen, m)
@@ -65,7 +65,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				})
 				b.Run("amortize", func(b *testing.B) {
 					b.ReportAllocs()
-					b.SetBytes(int64(len(test.Specimens)))
+					b.SetBytes(int64(len(specimen)))
 					ctx := new(fastpb.Context)
 					for range b.N {
 						m := ctx.New(test.Type.Fast)
@@ -75,7 +75,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				})
 				b.Run("gencode", func(b *testing.B) {
 					b.ReportAllocs()
-					b.SetBytes(int64(len(test.Specimens)))
+					b.SetBytes(int64(len(specimen)))
 					for range b.N {
 						m := test.Type.Gencode.New().Interface()
 						_ = proto.Unmarshal(specimen, m)
@@ -83,7 +83,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				})
 				b.Run("dynamicpb", func(b *testing.B) {
 					b.ReportAllocs()
-					b.SetBytes(int64(len(test.Specimens)))
+					b.SetBytes(int64(len(specimen)))
 					for range b.N {
 						m := dynamicpb.NewMessage(test.Type.Gencode.Descriptor())
 						_ = proto.Unmarshal(specimen, m)
@@ -143,7 +143,7 @@ func runTests[T testingT[T]](t T, f func(T, *test)) {
 			return nil
 		}
 
-		t.Run(path, func(t T) {
+		t.Run(strings.TrimPrefix(path, "testdata/"), func(t T) {
 			if t, ok := any(t).(*testing.T); ok {
 				t.Parallel()
 			}
@@ -222,11 +222,13 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 	t.Helper()
 
-	debug.SetPanicOnFault(true)
-	defer dbg.WithTesting(t)()
-
 	for _, specimen := range test.Specimens {
 		t.Run("", func(t *testing.T) {
+			t.Parallel()
+
+			debug.SetPanicOnFault(true)
+			defer dbg.WithTesting(t)()
+
 			// Parse using the gencode.
 			m1 := test.Type.Gencode.New().Interface()
 			err1 := proto.Unmarshal(specimen, m1)
