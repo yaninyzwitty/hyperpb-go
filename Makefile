@@ -44,7 +44,7 @@ test: build ## Run unit tests
 
 .PHONY: bench
 bench: build ## Run benchmarks
-	$(GO_CMD) test -tags=$(GO_TAGS) -bench '$(BENCHMARK)' -benchmem -run '^B'
+	$(GO_CMD) run ./internal/prettybench -tags=$(GO_TAGS) -bench '$(BENCHMARK)'
 
 .PHONY: profile
 profile: build ## Profile benchmarks and open them in pprof

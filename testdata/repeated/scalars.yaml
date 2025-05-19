@@ -13,7 +13,6 @@
 # limitations under the License.
 
 type: fastpb.test.Repeated
-benchmark: true
 protoscope:
 - |
   1: { 1 2 3 }
