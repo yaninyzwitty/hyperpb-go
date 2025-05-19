@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"embed"
 	"encoding/hex"
+	"flag"
 	"io/fs"
 	"path/filepath"
 	"regexp"
@@ -28,6 +29,7 @@ import (
 
 	"github.com/protocolbuffers/protoscope"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -38,9 +40,18 @@ import (
 
 	"github.com/bufbuild/fastpb"
 	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/flag2"
 	_ "github.com/bufbuild/fastpb/internal/gen/test"
 	"github.com/bufbuild/fastpb/internal/prototest"
 )
+
+var verbose bool
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+	verbose = flag2.Lookup[bool]("test.v")
+	m.Run()
+}
 
 func TestUnmarshal(t *testing.T) {
 	t.Parallel()
@@ -257,6 +268,18 @@ func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 
 		require.NoError(t, err2)
 		prototest.Equal(t, m1, m2)
+
+		if verbose {
+			options := protojson.MarshalOptions{
+				Multiline:     true,
+				Indent:        "  ",
+				UseProtoNames: true,
+			}
+			b1, _ := options.Marshal(m1)
+			b2, _ := options.Marshal(m2)
+			t.Logf("theirs: %s", b1)
+			t.Logf("ours: %s", b2)
+		}
 	}
 
 	if len(test.Specimens) == 1 {

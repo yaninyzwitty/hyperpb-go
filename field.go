@@ -34,7 +34,7 @@ type scalar interface {
 // integer is any of the integer types that this package has to handle
 // generically.
 type integer interface {
-	int8 | uint8 | int32 | int64 | uint32 | uint64
+	~int8 | ~uint8 | ~int32 | ~int64 | ~uint32 | ~uint64
 }
 
 func zigzag64[T integer](raw uint64) T {
@@ -56,12 +56,17 @@ type field struct {
 	getter  getter
 }
 
+type (
+	getterThunk func(*message, Type, getter) protoreflect.Value
+	parserThunk func(parser1, parser2) (parser1, parser2)
+)
+
 // getter is all the information necessary for accessing a field of a [message].
 type getter struct {
 	offset fieldOffset
 
 	// The thunk for extracting the field.
-	thunk func(*message, Type, getter) protoreflect.Value
+	thunk getterThunk
 }
 
 // fieldParser is a parser for a single field.
@@ -83,7 +88,7 @@ type fieldParser struct {
 
 	// The thunk to call for this field. The bool return must always return
 	// true.
-	thunk unsafe2.PC[func(parser1, parser2) (parser1, parser2)]
+	thunk unsafe2.PC[parserThunk]
 }
 
 // fieldOffset is field offset information for a generated message type's field.
@@ -181,7 +186,7 @@ type archetype struct {
 	//
 	// This func MUST be a reference to a function or a global closure, so that
 	// it is not a GC-managed pointer.
-	getter func(*message, Type, getter) protoreflect.Value
+	getter getterThunk
 
 	// Parsers available for different forms of this field.
 	parsers []parseKind
@@ -198,7 +203,7 @@ type parseKind struct {
 	//
 	// This func MUST be a reference to a function or a global closure, so that
 	// it is not a GC-managed pointer.
-	parser func(parser1, parser2) (parser1, parser2)
+	parser parserThunk
 }
 
 // selectArchetype classifies a field into a particular archetype.
@@ -214,7 +219,11 @@ func selectArchetype(
 ) (a *archetype) {
 	od := fd.ContainingOneof()
 	switch {
-	case fd.Cardinality() == protoreflect.Repeated:
+	case fd.IsMap():
+		k := fd.MapKey().Kind()
+		v := fd.MapValue().Kind()
+		a = &mapFields[k][v]
+	case fd.IsList():
 		a = &repeatedFields[fd.Kind()]
 	case od != nil && od.Fields().Len() > 1:
 		// One-element oneofs are treated like optional fields.
@@ -225,46 +234,5 @@ func selectArchetype(
 		a = &singularFields[fd.Kind()]
 	}
 
-	if a.getter == nil {
-		a = nil
-	}
-
 	return a
-}
-
-// zc (short for zero-copy) is a representation of a []byte as a slice into
-// the source array for a parsed message.
-type zc struct {
-	offset, len uint32
-}
-
-const (
-	zcSize  = unsafe.Sizeof(zc{})
-	zcAlign = unsafe.Alignof(zc{})
-)
-
-// bytes converts this zc into a byte slice, given the message source.
-func (zc zc) bytes(src *byte) []byte {
-	return unsafe2.Slice(unsafe2.Add(src, zc.offset), zc.len)
-}
-
-// utf8 converts this zc into a string, given the message source.
-func (zc zc) utf8(src *byte) string {
-	return unsafe2.String(unsafe2.Add(src, zc.offset), zc.len)
-}
-
-// pack packs this zc value into a single register.
-//
-// Storing the result as a uint64 is equivalent to storing a zc.
-func (zc zc) pack() uint64 {
-	// XXX: Endian hostile!!
-	return uint64(zc.offset) | uint64(zc.len)<<32
-}
-
-//nolint:unused
-func unpackZC(v uint64) zc {
-	return zc{
-		offset: uint32(v),
-		len:    uint32(v >> 32),
-	}
 }

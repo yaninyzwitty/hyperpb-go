@@ -245,7 +245,7 @@ func run() error {
 		stencil.Name.Name = dir.Target
 
 		// Now walk the AST of stencil and overwrite any identifiers with the
-		// same name as a generic parameter. This isn't perfect, but it's
+		// same name as a generic parameter. THis isn't perfect, but it's
 		// essentially all we need.
 		//
 		// On the way down, also record all of the bases for selectors. This
@@ -292,20 +292,28 @@ func run() error {
 		// Append a statement to the function to force the generic function to
 		// be used. This helps silence lints that don't understand that the
 		// seemingly unused generic function is part of the build step.
-
-		var indices []ast.Expr
-		for _, arg := range dir.Args {
-			indices = append(indices, &ast.Ident{Name: arg})
+		var orig ast.Expr
+		if generic.Recv != nil {
+			orig = &ast.SelectorExpr{
+				X:   &ast.ParenExpr{X: stencil.Type.Params.List[0].Type},
+				Sel: generic.Name,
+			}
+		} else {
+			var indices []ast.Expr
+			for _, arg := range dir.Args {
+				indices = append(indices, &ast.Ident{Name: arg})
+			}
+			orig = &ast.IndexListExpr{
+				X:       generic.Name,
+				Indices: indices,
+			}
 		}
 
 		stencil.Body.List = slices.Insert(
 			stencil.Body.List, 0, ast.Stmt(&ast.AssignStmt{
 				Lhs: []ast.Expr{&ast.Ident{Name: "_"}},
 				Tok: token.ASSIGN,
-				Rhs: []ast.Expr{&ast.IndexListExpr{
-					X:       generic.Name,
-					Indices: indices,
-				}},
+				Rhs: []ast.Expr{orig},
 			}),
 		)
 

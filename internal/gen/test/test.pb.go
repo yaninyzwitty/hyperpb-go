@@ -38,6 +38,58 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Enum int32
+
+const (
+	Enum_ENUM_UNSPECIFIED Enum = 0
+	Enum_ENUM_1           Enum = 1
+	Enum_ENUM_2           Enum = 2
+	Enum_ENUM_3           Enum = 3
+)
+
+// Enum value maps for Enum.
+var (
+	Enum_name = map[int32]string{
+		0: "ENUM_UNSPECIFIED",
+		1: "ENUM_1",
+		2: "ENUM_2",
+		3: "ENUM_3",
+	}
+	Enum_value = map[string]int32{
+		"ENUM_UNSPECIFIED": 0,
+		"ENUM_1":           1,
+		"ENUM_2":           2,
+		"ENUM_3":           3,
+	}
+)
+
+func (x Enum) Enum() *Enum {
+	p := new(Enum)
+	*p = x
+	return p
+}
+
+func (x Enum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Enum) Descriptor() protoreflect.EnumDescriptor {
+	return file_test_test_proto_enumTypes[0].Descriptor()
+}
+
+func (Enum) Type() protoreflect.EnumType {
+	return &file_test_test_proto_enumTypes[0]
+}
+
+func (x Enum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Enum.Descriptor instead.
+func (Enum) EnumDescriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{0}
+}
+
 type Scalars struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	A1            int32                  `protobuf:"varint,1,opt,name=a1,proto3" json:"a1,omitempty"`
@@ -674,6 +726,1578 @@ func (*Oneof_M9) isOneof_Multi() {}
 
 func (*Oneof_M10) isOneof_Multi() {}
 
+type Maps struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	M10           map[int32]int32        `protobuf:"bytes,16,rep,name=m10,proto3" json:"m10,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M11           map[int32]int64        `protobuf:"bytes,17,rep,name=m11,proto3" json:"m11,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M12           map[int32]uint32       `protobuf:"bytes,18,rep,name=m12,proto3" json:"m12,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M13           map[int32]uint64       `protobuf:"bytes,19,rep,name=m13,proto3" json:"m13,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M14           map[int32]int32        `protobuf:"bytes,20,rep,name=m14,proto3" json:"m14,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M15           map[int32]int64        `protobuf:"bytes,21,rep,name=m15,proto3" json:"m15,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M16           map[int32]uint32       `protobuf:"bytes,22,rep,name=m16,proto3" json:"m16,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M17           map[int32]uint64       `protobuf:"bytes,23,rep,name=m17,proto3" json:"m17,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M18           map[int32]int32        `protobuf:"bytes,24,rep,name=m18,proto3" json:"m18,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M19           map[int32]int64        `protobuf:"bytes,25,rep,name=m19,proto3" json:"m19,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M1A           map[int32]float32      `protobuf:"bytes,26,rep,name=m1a,proto3" json:"m1a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M1B           map[int32]float64      `protobuf:"bytes,27,rep,name=m1b,proto3" json:"m1b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M1C           map[int32]bool         `protobuf:"bytes,28,rep,name=m1c,proto3" json:"m1c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M1D           map[int32]Enum         `protobuf:"bytes,29,rep,name=m1d,proto3" json:"m1d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M1E           map[int32]string       `protobuf:"bytes,30,rep,name=m1e,proto3" json:"m1e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M1F           map[int32][]byte       `protobuf:"bytes,31,rep,name=m1f,proto3" json:"m1f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M20           map[int64]int32        `protobuf:"bytes,32,rep,name=m20,proto3" json:"m20,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M21           map[int64]int64        `protobuf:"bytes,33,rep,name=m21,proto3" json:"m21,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M22           map[int64]uint32       `protobuf:"bytes,34,rep,name=m22,proto3" json:"m22,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M23           map[int64]uint64       `protobuf:"bytes,35,rep,name=m23,proto3" json:"m23,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M24           map[int64]int32        `protobuf:"bytes,36,rep,name=m24,proto3" json:"m24,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M25           map[int64]int64        `protobuf:"bytes,37,rep,name=m25,proto3" json:"m25,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M26           map[int64]uint32       `protobuf:"bytes,38,rep,name=m26,proto3" json:"m26,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M27           map[int64]uint64       `protobuf:"bytes,39,rep,name=m27,proto3" json:"m27,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M28           map[int64]int32        `protobuf:"bytes,40,rep,name=m28,proto3" json:"m28,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M29           map[int64]int64        `protobuf:"bytes,41,rep,name=m29,proto3" json:"m29,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M2A           map[int64]float32      `protobuf:"bytes,42,rep,name=m2a,proto3" json:"m2a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M2B           map[int64]float64      `protobuf:"bytes,43,rep,name=m2b,proto3" json:"m2b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M2C           map[int64]bool         `protobuf:"bytes,44,rep,name=m2c,proto3" json:"m2c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M2D           map[int64]Enum         `protobuf:"bytes,45,rep,name=m2d,proto3" json:"m2d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M2E           map[int64]string       `protobuf:"bytes,46,rep,name=m2e,proto3" json:"m2e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M2F           map[int64][]byte       `protobuf:"bytes,47,rep,name=m2f,proto3" json:"m2f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M30           map[uint32]int32       `protobuf:"bytes,48,rep,name=m30,proto3" json:"m30,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M31           map[uint32]int64       `protobuf:"bytes,49,rep,name=m31,proto3" json:"m31,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M32           map[uint32]uint32      `protobuf:"bytes,50,rep,name=m32,proto3" json:"m32,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M33           map[uint32]uint64      `protobuf:"bytes,51,rep,name=m33,proto3" json:"m33,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M34           map[uint32]int32       `protobuf:"bytes,52,rep,name=m34,proto3" json:"m34,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M35           map[uint32]int64       `protobuf:"bytes,53,rep,name=m35,proto3" json:"m35,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M36           map[uint32]uint32      `protobuf:"bytes,54,rep,name=m36,proto3" json:"m36,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M37           map[uint32]uint64      `protobuf:"bytes,55,rep,name=m37,proto3" json:"m37,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M38           map[uint32]int32       `protobuf:"bytes,56,rep,name=m38,proto3" json:"m38,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M39           map[uint32]int64       `protobuf:"bytes,57,rep,name=m39,proto3" json:"m39,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M3A           map[uint32]float32     `protobuf:"bytes,58,rep,name=m3a,proto3" json:"m3a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M3B           map[uint32]float64     `protobuf:"bytes,59,rep,name=m3b,proto3" json:"m3b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M3C           map[uint32]bool        `protobuf:"bytes,60,rep,name=m3c,proto3" json:"m3c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M3D           map[uint32]Enum        `protobuf:"bytes,61,rep,name=m3d,proto3" json:"m3d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M3E           map[uint32]string      `protobuf:"bytes,62,rep,name=m3e,proto3" json:"m3e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M3F           map[uint32][]byte      `protobuf:"bytes,63,rep,name=m3f,proto3" json:"m3f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M40           map[uint64]int32       `protobuf:"bytes,64,rep,name=m40,proto3" json:"m40,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M41           map[uint64]int64       `protobuf:"bytes,65,rep,name=m41,proto3" json:"m41,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M42           map[uint64]uint32      `protobuf:"bytes,66,rep,name=m42,proto3" json:"m42,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M43           map[uint64]uint64      `protobuf:"bytes,67,rep,name=m43,proto3" json:"m43,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M44           map[uint64]int32       `protobuf:"bytes,68,rep,name=m44,proto3" json:"m44,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M45           map[uint64]int64       `protobuf:"bytes,69,rep,name=m45,proto3" json:"m45,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M46           map[uint64]uint32      `protobuf:"bytes,70,rep,name=m46,proto3" json:"m46,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M47           map[uint64]uint64      `protobuf:"bytes,71,rep,name=m47,proto3" json:"m47,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M48           map[uint64]int32       `protobuf:"bytes,72,rep,name=m48,proto3" json:"m48,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M49           map[uint64]int64       `protobuf:"bytes,73,rep,name=m49,proto3" json:"m49,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M4A           map[uint64]float32     `protobuf:"bytes,74,rep,name=m4a,proto3" json:"m4a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M4B           map[uint64]float64     `protobuf:"bytes,75,rep,name=m4b,proto3" json:"m4b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M4C           map[uint64]bool        `protobuf:"bytes,76,rep,name=m4c,proto3" json:"m4c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M4D           map[uint64]Enum        `protobuf:"bytes,77,rep,name=m4d,proto3" json:"m4d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M4E           map[uint64]string      `protobuf:"bytes,78,rep,name=m4e,proto3" json:"m4e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M4F           map[uint64][]byte      `protobuf:"bytes,79,rep,name=m4f,proto3" json:"m4f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M50           map[int32]int32        `protobuf:"bytes,80,rep,name=m50,proto3" json:"m50,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M51           map[int32]int64        `protobuf:"bytes,81,rep,name=m51,proto3" json:"m51,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M52           map[int32]uint32       `protobuf:"bytes,82,rep,name=m52,proto3" json:"m52,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M53           map[int32]uint64       `protobuf:"bytes,83,rep,name=m53,proto3" json:"m53,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M54           map[int32]int32        `protobuf:"bytes,84,rep,name=m54,proto3" json:"m54,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M55           map[int32]int64        `protobuf:"bytes,85,rep,name=m55,proto3" json:"m55,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M56           map[int32]uint32       `protobuf:"bytes,86,rep,name=m56,proto3" json:"m56,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M57           map[int32]uint64       `protobuf:"bytes,87,rep,name=m57,proto3" json:"m57,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M58           map[int32]int32        `protobuf:"bytes,88,rep,name=m58,proto3" json:"m58,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M59           map[int32]int64        `protobuf:"bytes,89,rep,name=m59,proto3" json:"m59,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M5A           map[int32]float32      `protobuf:"bytes,90,rep,name=m5a,proto3" json:"m5a,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M5B           map[int32]float64      `protobuf:"bytes,91,rep,name=m5b,proto3" json:"m5b,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M5C           map[int32]bool         `protobuf:"bytes,92,rep,name=m5c,proto3" json:"m5c,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M5D           map[int32]Enum         `protobuf:"bytes,93,rep,name=m5d,proto3" json:"m5d,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M5E           map[int32]string       `protobuf:"bytes,94,rep,name=m5e,proto3" json:"m5e,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M5F           map[int32][]byte       `protobuf:"bytes,95,rep,name=m5f,proto3" json:"m5f,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M60           map[int64]int32        `protobuf:"bytes,96,rep,name=m60,proto3" json:"m60,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M61           map[int64]int64        `protobuf:"bytes,97,rep,name=m61,proto3" json:"m61,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M62           map[int64]uint32       `protobuf:"bytes,98,rep,name=m62,proto3" json:"m62,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M63           map[int64]uint64       `protobuf:"bytes,99,rep,name=m63,proto3" json:"m63,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M64           map[int64]int32        `protobuf:"bytes,100,rep,name=m64,proto3" json:"m64,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M65           map[int64]int64        `protobuf:"bytes,101,rep,name=m65,proto3" json:"m65,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M66           map[int64]uint32       `protobuf:"bytes,102,rep,name=m66,proto3" json:"m66,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M67           map[int64]uint64       `protobuf:"bytes,103,rep,name=m67,proto3" json:"m67,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M68           map[int64]int32        `protobuf:"bytes,104,rep,name=m68,proto3" json:"m68,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M69           map[int64]int64        `protobuf:"bytes,105,rep,name=m69,proto3" json:"m69,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M6A           map[int64]float32      `protobuf:"bytes,106,rep,name=m6a,proto3" json:"m6a,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M6B           map[int64]float64      `protobuf:"bytes,107,rep,name=m6b,proto3" json:"m6b,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M6C           map[int64]bool         `protobuf:"bytes,108,rep,name=m6c,proto3" json:"m6c,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M6D           map[int64]Enum         `protobuf:"bytes,109,rep,name=m6d,proto3" json:"m6d,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M6E           map[int64]string       `protobuf:"bytes,110,rep,name=m6e,proto3" json:"m6e,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M6F           map[int64][]byte       `protobuf:"bytes,111,rep,name=m6f,proto3" json:"m6f,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M70           map[uint32]int32       `protobuf:"bytes,112,rep,name=m70,proto3" json:"m70,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M71           map[uint32]int64       `protobuf:"bytes,113,rep,name=m71,proto3" json:"m71,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M72           map[uint32]uint32      `protobuf:"bytes,114,rep,name=m72,proto3" json:"m72,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M73           map[uint32]uint64      `protobuf:"bytes,115,rep,name=m73,proto3" json:"m73,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M74           map[uint32]int32       `protobuf:"bytes,116,rep,name=m74,proto3" json:"m74,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M75           map[uint32]int64       `protobuf:"bytes,117,rep,name=m75,proto3" json:"m75,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M76           map[uint32]uint32      `protobuf:"bytes,118,rep,name=m76,proto3" json:"m76,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M77           map[uint32]uint64      `protobuf:"bytes,119,rep,name=m77,proto3" json:"m77,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M78           map[uint32]int32       `protobuf:"bytes,120,rep,name=m78,proto3" json:"m78,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M79           map[uint32]int64       `protobuf:"bytes,121,rep,name=m79,proto3" json:"m79,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M7A           map[uint32]float32     `protobuf:"bytes,122,rep,name=m7a,proto3" json:"m7a,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M7B           map[uint32]float64     `protobuf:"bytes,123,rep,name=m7b,proto3" json:"m7b,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M7C           map[uint32]bool        `protobuf:"bytes,124,rep,name=m7c,proto3" json:"m7c,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M7D           map[uint32]Enum        `protobuf:"bytes,125,rep,name=m7d,proto3" json:"m7d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M7E           map[uint32]string      `protobuf:"bytes,126,rep,name=m7e,proto3" json:"m7e,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M7F           map[uint32][]byte      `protobuf:"bytes,127,rep,name=m7f,proto3" json:"m7f,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M80           map[uint64]int32       `protobuf:"bytes,128,rep,name=m80,proto3" json:"m80,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M81           map[uint64]int64       `protobuf:"bytes,129,rep,name=m81,proto3" json:"m81,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M82           map[uint64]uint32      `protobuf:"bytes,130,rep,name=m82,proto3" json:"m82,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M83           map[uint64]uint64      `protobuf:"bytes,131,rep,name=m83,proto3" json:"m83,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M84           map[uint64]int32       `protobuf:"bytes,132,rep,name=m84,proto3" json:"m84,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M85           map[uint64]int64       `protobuf:"bytes,133,rep,name=m85,proto3" json:"m85,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M86           map[uint64]uint32      `protobuf:"bytes,134,rep,name=m86,proto3" json:"m86,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M87           map[uint64]uint64      `protobuf:"bytes,135,rep,name=m87,proto3" json:"m87,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M88           map[uint64]int32       `protobuf:"bytes,136,rep,name=m88,proto3" json:"m88,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M89           map[uint64]int64       `protobuf:"bytes,137,rep,name=m89,proto3" json:"m89,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M8A           map[uint64]float32     `protobuf:"bytes,138,rep,name=m8a,proto3" json:"m8a,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M8B           map[uint64]float64     `protobuf:"bytes,139,rep,name=m8b,proto3" json:"m8b,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M8C           map[uint64]bool        `protobuf:"bytes,140,rep,name=m8c,proto3" json:"m8c,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M8D           map[uint64]Enum        `protobuf:"bytes,141,rep,name=m8d,proto3" json:"m8d,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M8E           map[uint64]string      `protobuf:"bytes,142,rep,name=m8e,proto3" json:"m8e,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M8F           map[uint64][]byte      `protobuf:"bytes,143,rep,name=m8f,proto3" json:"m8f,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M90           map[int32]int32        `protobuf:"bytes,144,rep,name=m90,proto3" json:"m90,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M91           map[int32]int64        `protobuf:"bytes,145,rep,name=m91,proto3" json:"m91,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M92           map[int32]uint32       `protobuf:"bytes,146,rep,name=m92,proto3" json:"m92,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M93           map[int32]uint64       `protobuf:"bytes,147,rep,name=m93,proto3" json:"m93,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M94           map[int32]int32        `protobuf:"bytes,148,rep,name=m94,proto3" json:"m94,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	M95           map[int32]int64        `protobuf:"bytes,149,rep,name=m95,proto3" json:"m95,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	M96           map[int32]uint32       `protobuf:"bytes,150,rep,name=m96,proto3" json:"m96,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M97           map[int32]uint64       `protobuf:"bytes,151,rep,name=m97,proto3" json:"m97,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M98           map[int32]int32        `protobuf:"bytes,152,rep,name=m98,proto3" json:"m98,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M99           map[int32]int64        `protobuf:"bytes,153,rep,name=m99,proto3" json:"m99,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M9A           map[int32]float32      `protobuf:"bytes,154,rep,name=m9a,proto3" json:"m9a,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	M9B           map[int32]float64      `protobuf:"bytes,155,rep,name=m9b,proto3" json:"m9b,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	M9C           map[int32]bool         `protobuf:"bytes,156,rep,name=m9c,proto3" json:"m9c,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	M9D           map[int32]Enum         `protobuf:"bytes,157,rep,name=m9d,proto3" json:"m9d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M9E           map[int32]string       `protobuf:"bytes,158,rep,name=m9e,proto3" json:"m9e,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M9F           map[int32][]byte       `protobuf:"bytes,159,rep,name=m9f,proto3" json:"m9f,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Ma0           map[int64]int32        `protobuf:"bytes,160,rep,name=ma0,proto3" json:"ma0,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Ma1           map[int64]int64        `protobuf:"bytes,161,rep,name=ma1,proto3" json:"ma1,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Ma2           map[int64]uint32       `protobuf:"bytes,162,rep,name=ma2,proto3" json:"ma2,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Ma3           map[int64]uint64       `protobuf:"bytes,163,rep,name=ma3,proto3" json:"ma3,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Ma4           map[int64]int32        `protobuf:"bytes,164,rep,name=ma4,proto3" json:"ma4,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	Ma5           map[int64]int64        `protobuf:"bytes,165,rep,name=ma5,proto3" json:"ma5,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	Ma6           map[int64]uint32       `protobuf:"bytes,166,rep,name=ma6,proto3" json:"ma6,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Ma7           map[int64]uint64       `protobuf:"bytes,167,rep,name=ma7,proto3" json:"ma7,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Ma8           map[int64]int32        `protobuf:"bytes,168,rep,name=ma8,proto3" json:"ma8,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Ma9           map[int64]int64        `protobuf:"bytes,169,rep,name=ma9,proto3" json:"ma9,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Maa           map[int64]float32      `protobuf:"bytes,170,rep,name=maa,proto3" json:"maa,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mab           map[int64]float64      `protobuf:"bytes,171,rep,name=mab,proto3" json:"mab,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mac           map[int64]bool         `protobuf:"bytes,172,rep,name=mac,proto3" json:"mac,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mad           map[int64]Enum         `protobuf:"bytes,173,rep,name=mad,proto3" json:"mad,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mae           map[int64]string       `protobuf:"bytes,174,rep,name=mae,proto3" json:"mae,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Maf           map[int64][]byte       `protobuf:"bytes,175,rep,name=maf,proto3" json:"maf,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Mb0           map[bool]int32         `protobuf:"bytes,176,rep,name=mb0,proto3" json:"mb0,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mb1           map[bool]int64         `protobuf:"bytes,177,rep,name=mb1,proto3" json:"mb1,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mb2           map[bool]uint32        `protobuf:"bytes,178,rep,name=mb2,proto3" json:"mb2,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mb3           map[bool]uint64        `protobuf:"bytes,179,rep,name=mb3,proto3" json:"mb3,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mb4           map[bool]int32         `protobuf:"bytes,180,rep,name=mb4,proto3" json:"mb4,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	Mb5           map[bool]int64         `protobuf:"bytes,181,rep,name=mb5,proto3" json:"mb5,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	Mb6           map[bool]uint32        `protobuf:"bytes,182,rep,name=mb6,proto3" json:"mb6,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mb7           map[bool]uint64        `protobuf:"bytes,183,rep,name=mb7,proto3" json:"mb7,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mb8           map[bool]int32         `protobuf:"bytes,184,rep,name=mb8,proto3" json:"mb8,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mb9           map[bool]int64         `protobuf:"bytes,185,rep,name=mb9,proto3" json:"mb9,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mba           map[bool]float32       `protobuf:"bytes,186,rep,name=mba,proto3" json:"mba,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mbb           map[bool]float64       `protobuf:"bytes,187,rep,name=mbb,proto3" json:"mbb,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mbc           map[bool]bool          `protobuf:"bytes,188,rep,name=mbc,proto3" json:"mbc,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mbd           map[bool]Enum          `protobuf:"bytes,189,rep,name=mbd,proto3" json:"mbd,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mbe           map[bool]string        `protobuf:"bytes,190,rep,name=mbe,proto3" json:"mbe,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Mbf           map[bool][]byte        `protobuf:"bytes,191,rep,name=mbf,proto3" json:"mbf,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Mc0           map[string]int32       `protobuf:"bytes,192,rep,name=mc0,proto3" json:"mc0,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mc1           map[string]int64       `protobuf:"bytes,193,rep,name=mc1,proto3" json:"mc1,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mc2           map[string]uint32      `protobuf:"bytes,194,rep,name=mc2,proto3" json:"mc2,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mc3           map[string]uint64      `protobuf:"bytes,195,rep,name=mc3,proto3" json:"mc3,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mc4           map[string]int32       `protobuf:"bytes,196,rep,name=mc4,proto3" json:"mc4,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"zigzag32,2,opt,name=value"`
+	Mc5           map[string]int64       `protobuf:"bytes,197,rep,name=mc5,proto3" json:"mc5,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"zigzag64,2,opt,name=value"`
+	Mc6           map[string]uint32      `protobuf:"bytes,198,rep,name=mc6,proto3" json:"mc6,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mc7           map[string]uint64      `protobuf:"bytes,199,rep,name=mc7,proto3" json:"mc7,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mc8           map[string]int32       `protobuf:"bytes,200,rep,name=mc8,proto3" json:"mc8,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mc9           map[string]int64       `protobuf:"bytes,201,rep,name=mc9,proto3" json:"mc9,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mca           map[string]float32     `protobuf:"bytes,202,rep,name=mca,proto3" json:"mca,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Mcb           map[string]float64     `protobuf:"bytes,203,rep,name=mcb,proto3" json:"mcb,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	Mcc           map[string]bool        `protobuf:"bytes,204,rep,name=mcc,proto3" json:"mcc,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Mcd           map[string]Enum        `protobuf:"bytes,205,rep,name=mcd,proto3" json:"mcd,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mce           map[string]string      `protobuf:"bytes,206,rep,name=mce,proto3" json:"mce,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Mcf           map[string][]byte      `protobuf:"bytes,207,rep,name=mcf,proto3" json:"mcf,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Maps) Reset() {
+	*x = Maps{}
+	mi := &file_test_test_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Maps) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Maps) ProtoMessage() {}
+
+func (x *Maps) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Maps.ProtoReflect.Descriptor instead.
+func (*Maps) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Maps) GetM10() map[int32]int32 {
+	if x != nil {
+		return x.M10
+	}
+	return nil
+}
+
+func (x *Maps) GetM11() map[int32]int64 {
+	if x != nil {
+		return x.M11
+	}
+	return nil
+}
+
+func (x *Maps) GetM12() map[int32]uint32 {
+	if x != nil {
+		return x.M12
+	}
+	return nil
+}
+
+func (x *Maps) GetM13() map[int32]uint64 {
+	if x != nil {
+		return x.M13
+	}
+	return nil
+}
+
+func (x *Maps) GetM14() map[int32]int32 {
+	if x != nil {
+		return x.M14
+	}
+	return nil
+}
+
+func (x *Maps) GetM15() map[int32]int64 {
+	if x != nil {
+		return x.M15
+	}
+	return nil
+}
+
+func (x *Maps) GetM16() map[int32]uint32 {
+	if x != nil {
+		return x.M16
+	}
+	return nil
+}
+
+func (x *Maps) GetM17() map[int32]uint64 {
+	if x != nil {
+		return x.M17
+	}
+	return nil
+}
+
+func (x *Maps) GetM18() map[int32]int32 {
+	if x != nil {
+		return x.M18
+	}
+	return nil
+}
+
+func (x *Maps) GetM19() map[int32]int64 {
+	if x != nil {
+		return x.M19
+	}
+	return nil
+}
+
+func (x *Maps) GetM1A() map[int32]float32 {
+	if x != nil {
+		return x.M1A
+	}
+	return nil
+}
+
+func (x *Maps) GetM1B() map[int32]float64 {
+	if x != nil {
+		return x.M1B
+	}
+	return nil
+}
+
+func (x *Maps) GetM1C() map[int32]bool {
+	if x != nil {
+		return x.M1C
+	}
+	return nil
+}
+
+func (x *Maps) GetM1D() map[int32]Enum {
+	if x != nil {
+		return x.M1D
+	}
+	return nil
+}
+
+func (x *Maps) GetM1E() map[int32]string {
+	if x != nil {
+		return x.M1E
+	}
+	return nil
+}
+
+func (x *Maps) GetM1F() map[int32][]byte {
+	if x != nil {
+		return x.M1F
+	}
+	return nil
+}
+
+func (x *Maps) GetM20() map[int64]int32 {
+	if x != nil {
+		return x.M20
+	}
+	return nil
+}
+
+func (x *Maps) GetM21() map[int64]int64 {
+	if x != nil {
+		return x.M21
+	}
+	return nil
+}
+
+func (x *Maps) GetM22() map[int64]uint32 {
+	if x != nil {
+		return x.M22
+	}
+	return nil
+}
+
+func (x *Maps) GetM23() map[int64]uint64 {
+	if x != nil {
+		return x.M23
+	}
+	return nil
+}
+
+func (x *Maps) GetM24() map[int64]int32 {
+	if x != nil {
+		return x.M24
+	}
+	return nil
+}
+
+func (x *Maps) GetM25() map[int64]int64 {
+	if x != nil {
+		return x.M25
+	}
+	return nil
+}
+
+func (x *Maps) GetM26() map[int64]uint32 {
+	if x != nil {
+		return x.M26
+	}
+	return nil
+}
+
+func (x *Maps) GetM27() map[int64]uint64 {
+	if x != nil {
+		return x.M27
+	}
+	return nil
+}
+
+func (x *Maps) GetM28() map[int64]int32 {
+	if x != nil {
+		return x.M28
+	}
+	return nil
+}
+
+func (x *Maps) GetM29() map[int64]int64 {
+	if x != nil {
+		return x.M29
+	}
+	return nil
+}
+
+func (x *Maps) GetM2A() map[int64]float32 {
+	if x != nil {
+		return x.M2A
+	}
+	return nil
+}
+
+func (x *Maps) GetM2B() map[int64]float64 {
+	if x != nil {
+		return x.M2B
+	}
+	return nil
+}
+
+func (x *Maps) GetM2C() map[int64]bool {
+	if x != nil {
+		return x.M2C
+	}
+	return nil
+}
+
+func (x *Maps) GetM2D() map[int64]Enum {
+	if x != nil {
+		return x.M2D
+	}
+	return nil
+}
+
+func (x *Maps) GetM2E() map[int64]string {
+	if x != nil {
+		return x.M2E
+	}
+	return nil
+}
+
+func (x *Maps) GetM2F() map[int64][]byte {
+	if x != nil {
+		return x.M2F
+	}
+	return nil
+}
+
+func (x *Maps) GetM30() map[uint32]int32 {
+	if x != nil {
+		return x.M30
+	}
+	return nil
+}
+
+func (x *Maps) GetM31() map[uint32]int64 {
+	if x != nil {
+		return x.M31
+	}
+	return nil
+}
+
+func (x *Maps) GetM32() map[uint32]uint32 {
+	if x != nil {
+		return x.M32
+	}
+	return nil
+}
+
+func (x *Maps) GetM33() map[uint32]uint64 {
+	if x != nil {
+		return x.M33
+	}
+	return nil
+}
+
+func (x *Maps) GetM34() map[uint32]int32 {
+	if x != nil {
+		return x.M34
+	}
+	return nil
+}
+
+func (x *Maps) GetM35() map[uint32]int64 {
+	if x != nil {
+		return x.M35
+	}
+	return nil
+}
+
+func (x *Maps) GetM36() map[uint32]uint32 {
+	if x != nil {
+		return x.M36
+	}
+	return nil
+}
+
+func (x *Maps) GetM37() map[uint32]uint64 {
+	if x != nil {
+		return x.M37
+	}
+	return nil
+}
+
+func (x *Maps) GetM38() map[uint32]int32 {
+	if x != nil {
+		return x.M38
+	}
+	return nil
+}
+
+func (x *Maps) GetM39() map[uint32]int64 {
+	if x != nil {
+		return x.M39
+	}
+	return nil
+}
+
+func (x *Maps) GetM3A() map[uint32]float32 {
+	if x != nil {
+		return x.M3A
+	}
+	return nil
+}
+
+func (x *Maps) GetM3B() map[uint32]float64 {
+	if x != nil {
+		return x.M3B
+	}
+	return nil
+}
+
+func (x *Maps) GetM3C() map[uint32]bool {
+	if x != nil {
+		return x.M3C
+	}
+	return nil
+}
+
+func (x *Maps) GetM3D() map[uint32]Enum {
+	if x != nil {
+		return x.M3D
+	}
+	return nil
+}
+
+func (x *Maps) GetM3E() map[uint32]string {
+	if x != nil {
+		return x.M3E
+	}
+	return nil
+}
+
+func (x *Maps) GetM3F() map[uint32][]byte {
+	if x != nil {
+		return x.M3F
+	}
+	return nil
+}
+
+func (x *Maps) GetM40() map[uint64]int32 {
+	if x != nil {
+		return x.M40
+	}
+	return nil
+}
+
+func (x *Maps) GetM41() map[uint64]int64 {
+	if x != nil {
+		return x.M41
+	}
+	return nil
+}
+
+func (x *Maps) GetM42() map[uint64]uint32 {
+	if x != nil {
+		return x.M42
+	}
+	return nil
+}
+
+func (x *Maps) GetM43() map[uint64]uint64 {
+	if x != nil {
+		return x.M43
+	}
+	return nil
+}
+
+func (x *Maps) GetM44() map[uint64]int32 {
+	if x != nil {
+		return x.M44
+	}
+	return nil
+}
+
+func (x *Maps) GetM45() map[uint64]int64 {
+	if x != nil {
+		return x.M45
+	}
+	return nil
+}
+
+func (x *Maps) GetM46() map[uint64]uint32 {
+	if x != nil {
+		return x.M46
+	}
+	return nil
+}
+
+func (x *Maps) GetM47() map[uint64]uint64 {
+	if x != nil {
+		return x.M47
+	}
+	return nil
+}
+
+func (x *Maps) GetM48() map[uint64]int32 {
+	if x != nil {
+		return x.M48
+	}
+	return nil
+}
+
+func (x *Maps) GetM49() map[uint64]int64 {
+	if x != nil {
+		return x.M49
+	}
+	return nil
+}
+
+func (x *Maps) GetM4A() map[uint64]float32 {
+	if x != nil {
+		return x.M4A
+	}
+	return nil
+}
+
+func (x *Maps) GetM4B() map[uint64]float64 {
+	if x != nil {
+		return x.M4B
+	}
+	return nil
+}
+
+func (x *Maps) GetM4C() map[uint64]bool {
+	if x != nil {
+		return x.M4C
+	}
+	return nil
+}
+
+func (x *Maps) GetM4D() map[uint64]Enum {
+	if x != nil {
+		return x.M4D
+	}
+	return nil
+}
+
+func (x *Maps) GetM4E() map[uint64]string {
+	if x != nil {
+		return x.M4E
+	}
+	return nil
+}
+
+func (x *Maps) GetM4F() map[uint64][]byte {
+	if x != nil {
+		return x.M4F
+	}
+	return nil
+}
+
+func (x *Maps) GetM50() map[int32]int32 {
+	if x != nil {
+		return x.M50
+	}
+	return nil
+}
+
+func (x *Maps) GetM51() map[int32]int64 {
+	if x != nil {
+		return x.M51
+	}
+	return nil
+}
+
+func (x *Maps) GetM52() map[int32]uint32 {
+	if x != nil {
+		return x.M52
+	}
+	return nil
+}
+
+func (x *Maps) GetM53() map[int32]uint64 {
+	if x != nil {
+		return x.M53
+	}
+	return nil
+}
+
+func (x *Maps) GetM54() map[int32]int32 {
+	if x != nil {
+		return x.M54
+	}
+	return nil
+}
+
+func (x *Maps) GetM55() map[int32]int64 {
+	if x != nil {
+		return x.M55
+	}
+	return nil
+}
+
+func (x *Maps) GetM56() map[int32]uint32 {
+	if x != nil {
+		return x.M56
+	}
+	return nil
+}
+
+func (x *Maps) GetM57() map[int32]uint64 {
+	if x != nil {
+		return x.M57
+	}
+	return nil
+}
+
+func (x *Maps) GetM58() map[int32]int32 {
+	if x != nil {
+		return x.M58
+	}
+	return nil
+}
+
+func (x *Maps) GetM59() map[int32]int64 {
+	if x != nil {
+		return x.M59
+	}
+	return nil
+}
+
+func (x *Maps) GetM5A() map[int32]float32 {
+	if x != nil {
+		return x.M5A
+	}
+	return nil
+}
+
+func (x *Maps) GetM5B() map[int32]float64 {
+	if x != nil {
+		return x.M5B
+	}
+	return nil
+}
+
+func (x *Maps) GetM5C() map[int32]bool {
+	if x != nil {
+		return x.M5C
+	}
+	return nil
+}
+
+func (x *Maps) GetM5D() map[int32]Enum {
+	if x != nil {
+		return x.M5D
+	}
+	return nil
+}
+
+func (x *Maps) GetM5E() map[int32]string {
+	if x != nil {
+		return x.M5E
+	}
+	return nil
+}
+
+func (x *Maps) GetM5F() map[int32][]byte {
+	if x != nil {
+		return x.M5F
+	}
+	return nil
+}
+
+func (x *Maps) GetM60() map[int64]int32 {
+	if x != nil {
+		return x.M60
+	}
+	return nil
+}
+
+func (x *Maps) GetM61() map[int64]int64 {
+	if x != nil {
+		return x.M61
+	}
+	return nil
+}
+
+func (x *Maps) GetM62() map[int64]uint32 {
+	if x != nil {
+		return x.M62
+	}
+	return nil
+}
+
+func (x *Maps) GetM63() map[int64]uint64 {
+	if x != nil {
+		return x.M63
+	}
+	return nil
+}
+
+func (x *Maps) GetM64() map[int64]int32 {
+	if x != nil {
+		return x.M64
+	}
+	return nil
+}
+
+func (x *Maps) GetM65() map[int64]int64 {
+	if x != nil {
+		return x.M65
+	}
+	return nil
+}
+
+func (x *Maps) GetM66() map[int64]uint32 {
+	if x != nil {
+		return x.M66
+	}
+	return nil
+}
+
+func (x *Maps) GetM67() map[int64]uint64 {
+	if x != nil {
+		return x.M67
+	}
+	return nil
+}
+
+func (x *Maps) GetM68() map[int64]int32 {
+	if x != nil {
+		return x.M68
+	}
+	return nil
+}
+
+func (x *Maps) GetM69() map[int64]int64 {
+	if x != nil {
+		return x.M69
+	}
+	return nil
+}
+
+func (x *Maps) GetM6A() map[int64]float32 {
+	if x != nil {
+		return x.M6A
+	}
+	return nil
+}
+
+func (x *Maps) GetM6B() map[int64]float64 {
+	if x != nil {
+		return x.M6B
+	}
+	return nil
+}
+
+func (x *Maps) GetM6C() map[int64]bool {
+	if x != nil {
+		return x.M6C
+	}
+	return nil
+}
+
+func (x *Maps) GetM6D() map[int64]Enum {
+	if x != nil {
+		return x.M6D
+	}
+	return nil
+}
+
+func (x *Maps) GetM6E() map[int64]string {
+	if x != nil {
+		return x.M6E
+	}
+	return nil
+}
+
+func (x *Maps) GetM6F() map[int64][]byte {
+	if x != nil {
+		return x.M6F
+	}
+	return nil
+}
+
+func (x *Maps) GetM70() map[uint32]int32 {
+	if x != nil {
+		return x.M70
+	}
+	return nil
+}
+
+func (x *Maps) GetM71() map[uint32]int64 {
+	if x != nil {
+		return x.M71
+	}
+	return nil
+}
+
+func (x *Maps) GetM72() map[uint32]uint32 {
+	if x != nil {
+		return x.M72
+	}
+	return nil
+}
+
+func (x *Maps) GetM73() map[uint32]uint64 {
+	if x != nil {
+		return x.M73
+	}
+	return nil
+}
+
+func (x *Maps) GetM74() map[uint32]int32 {
+	if x != nil {
+		return x.M74
+	}
+	return nil
+}
+
+func (x *Maps) GetM75() map[uint32]int64 {
+	if x != nil {
+		return x.M75
+	}
+	return nil
+}
+
+func (x *Maps) GetM76() map[uint32]uint32 {
+	if x != nil {
+		return x.M76
+	}
+	return nil
+}
+
+func (x *Maps) GetM77() map[uint32]uint64 {
+	if x != nil {
+		return x.M77
+	}
+	return nil
+}
+
+func (x *Maps) GetM78() map[uint32]int32 {
+	if x != nil {
+		return x.M78
+	}
+	return nil
+}
+
+func (x *Maps) GetM79() map[uint32]int64 {
+	if x != nil {
+		return x.M79
+	}
+	return nil
+}
+
+func (x *Maps) GetM7A() map[uint32]float32 {
+	if x != nil {
+		return x.M7A
+	}
+	return nil
+}
+
+func (x *Maps) GetM7B() map[uint32]float64 {
+	if x != nil {
+		return x.M7B
+	}
+	return nil
+}
+
+func (x *Maps) GetM7C() map[uint32]bool {
+	if x != nil {
+		return x.M7C
+	}
+	return nil
+}
+
+func (x *Maps) GetM7D() map[uint32]Enum {
+	if x != nil {
+		return x.M7D
+	}
+	return nil
+}
+
+func (x *Maps) GetM7E() map[uint32]string {
+	if x != nil {
+		return x.M7E
+	}
+	return nil
+}
+
+func (x *Maps) GetM7F() map[uint32][]byte {
+	if x != nil {
+		return x.M7F
+	}
+	return nil
+}
+
+func (x *Maps) GetM80() map[uint64]int32 {
+	if x != nil {
+		return x.M80
+	}
+	return nil
+}
+
+func (x *Maps) GetM81() map[uint64]int64 {
+	if x != nil {
+		return x.M81
+	}
+	return nil
+}
+
+func (x *Maps) GetM82() map[uint64]uint32 {
+	if x != nil {
+		return x.M82
+	}
+	return nil
+}
+
+func (x *Maps) GetM83() map[uint64]uint64 {
+	if x != nil {
+		return x.M83
+	}
+	return nil
+}
+
+func (x *Maps) GetM84() map[uint64]int32 {
+	if x != nil {
+		return x.M84
+	}
+	return nil
+}
+
+func (x *Maps) GetM85() map[uint64]int64 {
+	if x != nil {
+		return x.M85
+	}
+	return nil
+}
+
+func (x *Maps) GetM86() map[uint64]uint32 {
+	if x != nil {
+		return x.M86
+	}
+	return nil
+}
+
+func (x *Maps) GetM87() map[uint64]uint64 {
+	if x != nil {
+		return x.M87
+	}
+	return nil
+}
+
+func (x *Maps) GetM88() map[uint64]int32 {
+	if x != nil {
+		return x.M88
+	}
+	return nil
+}
+
+func (x *Maps) GetM89() map[uint64]int64 {
+	if x != nil {
+		return x.M89
+	}
+	return nil
+}
+
+func (x *Maps) GetM8A() map[uint64]float32 {
+	if x != nil {
+		return x.M8A
+	}
+	return nil
+}
+
+func (x *Maps) GetM8B() map[uint64]float64 {
+	if x != nil {
+		return x.M8B
+	}
+	return nil
+}
+
+func (x *Maps) GetM8C() map[uint64]bool {
+	if x != nil {
+		return x.M8C
+	}
+	return nil
+}
+
+func (x *Maps) GetM8D() map[uint64]Enum {
+	if x != nil {
+		return x.M8D
+	}
+	return nil
+}
+
+func (x *Maps) GetM8E() map[uint64]string {
+	if x != nil {
+		return x.M8E
+	}
+	return nil
+}
+
+func (x *Maps) GetM8F() map[uint64][]byte {
+	if x != nil {
+		return x.M8F
+	}
+	return nil
+}
+
+func (x *Maps) GetM90() map[int32]int32 {
+	if x != nil {
+		return x.M90
+	}
+	return nil
+}
+
+func (x *Maps) GetM91() map[int32]int64 {
+	if x != nil {
+		return x.M91
+	}
+	return nil
+}
+
+func (x *Maps) GetM92() map[int32]uint32 {
+	if x != nil {
+		return x.M92
+	}
+	return nil
+}
+
+func (x *Maps) GetM93() map[int32]uint64 {
+	if x != nil {
+		return x.M93
+	}
+	return nil
+}
+
+func (x *Maps) GetM94() map[int32]int32 {
+	if x != nil {
+		return x.M94
+	}
+	return nil
+}
+
+func (x *Maps) GetM95() map[int32]int64 {
+	if x != nil {
+		return x.M95
+	}
+	return nil
+}
+
+func (x *Maps) GetM96() map[int32]uint32 {
+	if x != nil {
+		return x.M96
+	}
+	return nil
+}
+
+func (x *Maps) GetM97() map[int32]uint64 {
+	if x != nil {
+		return x.M97
+	}
+	return nil
+}
+
+func (x *Maps) GetM98() map[int32]int32 {
+	if x != nil {
+		return x.M98
+	}
+	return nil
+}
+
+func (x *Maps) GetM99() map[int32]int64 {
+	if x != nil {
+		return x.M99
+	}
+	return nil
+}
+
+func (x *Maps) GetM9A() map[int32]float32 {
+	if x != nil {
+		return x.M9A
+	}
+	return nil
+}
+
+func (x *Maps) GetM9B() map[int32]float64 {
+	if x != nil {
+		return x.M9B
+	}
+	return nil
+}
+
+func (x *Maps) GetM9C() map[int32]bool {
+	if x != nil {
+		return x.M9C
+	}
+	return nil
+}
+
+func (x *Maps) GetM9D() map[int32]Enum {
+	if x != nil {
+		return x.M9D
+	}
+	return nil
+}
+
+func (x *Maps) GetM9E() map[int32]string {
+	if x != nil {
+		return x.M9E
+	}
+	return nil
+}
+
+func (x *Maps) GetM9F() map[int32][]byte {
+	if x != nil {
+		return x.M9F
+	}
+	return nil
+}
+
+func (x *Maps) GetMa0() map[int64]int32 {
+	if x != nil {
+		return x.Ma0
+	}
+	return nil
+}
+
+func (x *Maps) GetMa1() map[int64]int64 {
+	if x != nil {
+		return x.Ma1
+	}
+	return nil
+}
+
+func (x *Maps) GetMa2() map[int64]uint32 {
+	if x != nil {
+		return x.Ma2
+	}
+	return nil
+}
+
+func (x *Maps) GetMa3() map[int64]uint64 {
+	if x != nil {
+		return x.Ma3
+	}
+	return nil
+}
+
+func (x *Maps) GetMa4() map[int64]int32 {
+	if x != nil {
+		return x.Ma4
+	}
+	return nil
+}
+
+func (x *Maps) GetMa5() map[int64]int64 {
+	if x != nil {
+		return x.Ma5
+	}
+	return nil
+}
+
+func (x *Maps) GetMa6() map[int64]uint32 {
+	if x != nil {
+		return x.Ma6
+	}
+	return nil
+}
+
+func (x *Maps) GetMa7() map[int64]uint64 {
+	if x != nil {
+		return x.Ma7
+	}
+	return nil
+}
+
+func (x *Maps) GetMa8() map[int64]int32 {
+	if x != nil {
+		return x.Ma8
+	}
+	return nil
+}
+
+func (x *Maps) GetMa9() map[int64]int64 {
+	if x != nil {
+		return x.Ma9
+	}
+	return nil
+}
+
+func (x *Maps) GetMaa() map[int64]float32 {
+	if x != nil {
+		return x.Maa
+	}
+	return nil
+}
+
+func (x *Maps) GetMab() map[int64]float64 {
+	if x != nil {
+		return x.Mab
+	}
+	return nil
+}
+
+func (x *Maps) GetMac() map[int64]bool {
+	if x != nil {
+		return x.Mac
+	}
+	return nil
+}
+
+func (x *Maps) GetMad() map[int64]Enum {
+	if x != nil {
+		return x.Mad
+	}
+	return nil
+}
+
+func (x *Maps) GetMae() map[int64]string {
+	if x != nil {
+		return x.Mae
+	}
+	return nil
+}
+
+func (x *Maps) GetMaf() map[int64][]byte {
+	if x != nil {
+		return x.Maf
+	}
+	return nil
+}
+
+func (x *Maps) GetMb0() map[bool]int32 {
+	if x != nil {
+		return x.Mb0
+	}
+	return nil
+}
+
+func (x *Maps) GetMb1() map[bool]int64 {
+	if x != nil {
+		return x.Mb1
+	}
+	return nil
+}
+
+func (x *Maps) GetMb2() map[bool]uint32 {
+	if x != nil {
+		return x.Mb2
+	}
+	return nil
+}
+
+func (x *Maps) GetMb3() map[bool]uint64 {
+	if x != nil {
+		return x.Mb3
+	}
+	return nil
+}
+
+func (x *Maps) GetMb4() map[bool]int32 {
+	if x != nil {
+		return x.Mb4
+	}
+	return nil
+}
+
+func (x *Maps) GetMb5() map[bool]int64 {
+	if x != nil {
+		return x.Mb5
+	}
+	return nil
+}
+
+func (x *Maps) GetMb6() map[bool]uint32 {
+	if x != nil {
+		return x.Mb6
+	}
+	return nil
+}
+
+func (x *Maps) GetMb7() map[bool]uint64 {
+	if x != nil {
+		return x.Mb7
+	}
+	return nil
+}
+
+func (x *Maps) GetMb8() map[bool]int32 {
+	if x != nil {
+		return x.Mb8
+	}
+	return nil
+}
+
+func (x *Maps) GetMb9() map[bool]int64 {
+	if x != nil {
+		return x.Mb9
+	}
+	return nil
+}
+
+func (x *Maps) GetMba() map[bool]float32 {
+	if x != nil {
+		return x.Mba
+	}
+	return nil
+}
+
+func (x *Maps) GetMbb() map[bool]float64 {
+	if x != nil {
+		return x.Mbb
+	}
+	return nil
+}
+
+func (x *Maps) GetMbc() map[bool]bool {
+	if x != nil {
+		return x.Mbc
+	}
+	return nil
+}
+
+func (x *Maps) GetMbd() map[bool]Enum {
+	if x != nil {
+		return x.Mbd
+	}
+	return nil
+}
+
+func (x *Maps) GetMbe() map[bool]string {
+	if x != nil {
+		return x.Mbe
+	}
+	return nil
+}
+
+func (x *Maps) GetMbf() map[bool][]byte {
+	if x != nil {
+		return x.Mbf
+	}
+	return nil
+}
+
+func (x *Maps) GetMc0() map[string]int32 {
+	if x != nil {
+		return x.Mc0
+	}
+	return nil
+}
+
+func (x *Maps) GetMc1() map[string]int64 {
+	if x != nil {
+		return x.Mc1
+	}
+	return nil
+}
+
+func (x *Maps) GetMc2() map[string]uint32 {
+	if x != nil {
+		return x.Mc2
+	}
+	return nil
+}
+
+func (x *Maps) GetMc3() map[string]uint64 {
+	if x != nil {
+		return x.Mc3
+	}
+	return nil
+}
+
+func (x *Maps) GetMc4() map[string]int32 {
+	if x != nil {
+		return x.Mc4
+	}
+	return nil
+}
+
+func (x *Maps) GetMc5() map[string]int64 {
+	if x != nil {
+		return x.Mc5
+	}
+	return nil
+}
+
+func (x *Maps) GetMc6() map[string]uint32 {
+	if x != nil {
+		return x.Mc6
+	}
+	return nil
+}
+
+func (x *Maps) GetMc7() map[string]uint64 {
+	if x != nil {
+		return x.Mc7
+	}
+	return nil
+}
+
+func (x *Maps) GetMc8() map[string]int32 {
+	if x != nil {
+		return x.Mc8
+	}
+	return nil
+}
+
+func (x *Maps) GetMc9() map[string]int64 {
+	if x != nil {
+		return x.Mc9
+	}
+	return nil
+}
+
+func (x *Maps) GetMca() map[string]float32 {
+	if x != nil {
+		return x.Mca
+	}
+	return nil
+}
+
+func (x *Maps) GetMcb() map[string]float64 {
+	if x != nil {
+		return x.Mcb
+	}
+	return nil
+}
+
+func (x *Maps) GetMcc() map[string]bool {
+	if x != nil {
+		return x.Mcc
+	}
+	return nil
+}
+
+func (x *Maps) GetMcd() map[string]Enum {
+	if x != nil {
+		return x.Mcd
+	}
+	return nil
+}
+
+func (x *Maps) GetMce() map[string]string {
+	if x != nil {
+		return x.Mce
+	}
+	return nil
+}
+
+func (x *Maps) GetMcf() map[string][]byte {
+	if x != nil {
+		return x.Mcf
+	}
+	return nil
+}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
@@ -746,7 +2370,784 @@ const file_test_test_proto_rawDesc = "" +
 	"\x03m10\x18\x14 \x01(\v2\x12.fastpb.test.OneofH\x01R\x03m10\x12\x12\n" +
 	"\x04tail\x18\x1e \x01(\x05R\x04tailB\b\n" +
 	"\x06singleB\a\n" +
-	"\x05multiB\x97\x01\n" +
+	"\x05multi\"\xba\x9b\x01\n" +
+	"\x04Maps\x12,\n" +
+	"\x03m10\x18\x10 \x03(\v2\x1a.fastpb.test.Maps.M10EntryR\x03m10\x12,\n" +
+	"\x03m11\x18\x11 \x03(\v2\x1a.fastpb.test.Maps.M11EntryR\x03m11\x12,\n" +
+	"\x03m12\x18\x12 \x03(\v2\x1a.fastpb.test.Maps.M12EntryR\x03m12\x12,\n" +
+	"\x03m13\x18\x13 \x03(\v2\x1a.fastpb.test.Maps.M13EntryR\x03m13\x12,\n" +
+	"\x03m14\x18\x14 \x03(\v2\x1a.fastpb.test.Maps.M14EntryR\x03m14\x12,\n" +
+	"\x03m15\x18\x15 \x03(\v2\x1a.fastpb.test.Maps.M15EntryR\x03m15\x12,\n" +
+	"\x03m16\x18\x16 \x03(\v2\x1a.fastpb.test.Maps.M16EntryR\x03m16\x12,\n" +
+	"\x03m17\x18\x17 \x03(\v2\x1a.fastpb.test.Maps.M17EntryR\x03m17\x12,\n" +
+	"\x03m18\x18\x18 \x03(\v2\x1a.fastpb.test.Maps.M18EntryR\x03m18\x12,\n" +
+	"\x03m19\x18\x19 \x03(\v2\x1a.fastpb.test.Maps.M19EntryR\x03m19\x12,\n" +
+	"\x03m1a\x18\x1a \x03(\v2\x1a.fastpb.test.Maps.M1aEntryR\x03m1a\x12,\n" +
+	"\x03m1b\x18\x1b \x03(\v2\x1a.fastpb.test.Maps.M1bEntryR\x03m1b\x12,\n" +
+	"\x03m1c\x18\x1c \x03(\v2\x1a.fastpb.test.Maps.M1cEntryR\x03m1c\x12,\n" +
+	"\x03m1d\x18\x1d \x03(\v2\x1a.fastpb.test.Maps.M1dEntryR\x03m1d\x12,\n" +
+	"\x03m1e\x18\x1e \x03(\v2\x1a.fastpb.test.Maps.M1eEntryR\x03m1e\x12,\n" +
+	"\x03m1f\x18\x1f \x03(\v2\x1a.fastpb.test.Maps.M1fEntryR\x03m1f\x12,\n" +
+	"\x03m20\x18  \x03(\v2\x1a.fastpb.test.Maps.M20EntryR\x03m20\x12,\n" +
+	"\x03m21\x18! \x03(\v2\x1a.fastpb.test.Maps.M21EntryR\x03m21\x12,\n" +
+	"\x03m22\x18\" \x03(\v2\x1a.fastpb.test.Maps.M22EntryR\x03m22\x12,\n" +
+	"\x03m23\x18# \x03(\v2\x1a.fastpb.test.Maps.M23EntryR\x03m23\x12,\n" +
+	"\x03m24\x18$ \x03(\v2\x1a.fastpb.test.Maps.M24EntryR\x03m24\x12,\n" +
+	"\x03m25\x18% \x03(\v2\x1a.fastpb.test.Maps.M25EntryR\x03m25\x12,\n" +
+	"\x03m26\x18& \x03(\v2\x1a.fastpb.test.Maps.M26EntryR\x03m26\x12,\n" +
+	"\x03m27\x18' \x03(\v2\x1a.fastpb.test.Maps.M27EntryR\x03m27\x12,\n" +
+	"\x03m28\x18( \x03(\v2\x1a.fastpb.test.Maps.M28EntryR\x03m28\x12,\n" +
+	"\x03m29\x18) \x03(\v2\x1a.fastpb.test.Maps.M29EntryR\x03m29\x12,\n" +
+	"\x03m2a\x18* \x03(\v2\x1a.fastpb.test.Maps.M2aEntryR\x03m2a\x12,\n" +
+	"\x03m2b\x18+ \x03(\v2\x1a.fastpb.test.Maps.M2bEntryR\x03m2b\x12,\n" +
+	"\x03m2c\x18, \x03(\v2\x1a.fastpb.test.Maps.M2cEntryR\x03m2c\x12,\n" +
+	"\x03m2d\x18- \x03(\v2\x1a.fastpb.test.Maps.M2dEntryR\x03m2d\x12,\n" +
+	"\x03m2e\x18. \x03(\v2\x1a.fastpb.test.Maps.M2eEntryR\x03m2e\x12,\n" +
+	"\x03m2f\x18/ \x03(\v2\x1a.fastpb.test.Maps.M2fEntryR\x03m2f\x12,\n" +
+	"\x03m30\x180 \x03(\v2\x1a.fastpb.test.Maps.M30EntryR\x03m30\x12,\n" +
+	"\x03m31\x181 \x03(\v2\x1a.fastpb.test.Maps.M31EntryR\x03m31\x12,\n" +
+	"\x03m32\x182 \x03(\v2\x1a.fastpb.test.Maps.M32EntryR\x03m32\x12,\n" +
+	"\x03m33\x183 \x03(\v2\x1a.fastpb.test.Maps.M33EntryR\x03m33\x12,\n" +
+	"\x03m34\x184 \x03(\v2\x1a.fastpb.test.Maps.M34EntryR\x03m34\x12,\n" +
+	"\x03m35\x185 \x03(\v2\x1a.fastpb.test.Maps.M35EntryR\x03m35\x12,\n" +
+	"\x03m36\x186 \x03(\v2\x1a.fastpb.test.Maps.M36EntryR\x03m36\x12,\n" +
+	"\x03m37\x187 \x03(\v2\x1a.fastpb.test.Maps.M37EntryR\x03m37\x12,\n" +
+	"\x03m38\x188 \x03(\v2\x1a.fastpb.test.Maps.M38EntryR\x03m38\x12,\n" +
+	"\x03m39\x189 \x03(\v2\x1a.fastpb.test.Maps.M39EntryR\x03m39\x12,\n" +
+	"\x03m3a\x18: \x03(\v2\x1a.fastpb.test.Maps.M3aEntryR\x03m3a\x12,\n" +
+	"\x03m3b\x18; \x03(\v2\x1a.fastpb.test.Maps.M3bEntryR\x03m3b\x12,\n" +
+	"\x03m3c\x18< \x03(\v2\x1a.fastpb.test.Maps.M3cEntryR\x03m3c\x12,\n" +
+	"\x03m3d\x18= \x03(\v2\x1a.fastpb.test.Maps.M3dEntryR\x03m3d\x12,\n" +
+	"\x03m3e\x18> \x03(\v2\x1a.fastpb.test.Maps.M3eEntryR\x03m3e\x12,\n" +
+	"\x03m3f\x18? \x03(\v2\x1a.fastpb.test.Maps.M3fEntryR\x03m3f\x12,\n" +
+	"\x03m40\x18@ \x03(\v2\x1a.fastpb.test.Maps.M40EntryR\x03m40\x12,\n" +
+	"\x03m41\x18A \x03(\v2\x1a.fastpb.test.Maps.M41EntryR\x03m41\x12,\n" +
+	"\x03m42\x18B \x03(\v2\x1a.fastpb.test.Maps.M42EntryR\x03m42\x12,\n" +
+	"\x03m43\x18C \x03(\v2\x1a.fastpb.test.Maps.M43EntryR\x03m43\x12,\n" +
+	"\x03m44\x18D \x03(\v2\x1a.fastpb.test.Maps.M44EntryR\x03m44\x12,\n" +
+	"\x03m45\x18E \x03(\v2\x1a.fastpb.test.Maps.M45EntryR\x03m45\x12,\n" +
+	"\x03m46\x18F \x03(\v2\x1a.fastpb.test.Maps.M46EntryR\x03m46\x12,\n" +
+	"\x03m47\x18G \x03(\v2\x1a.fastpb.test.Maps.M47EntryR\x03m47\x12,\n" +
+	"\x03m48\x18H \x03(\v2\x1a.fastpb.test.Maps.M48EntryR\x03m48\x12,\n" +
+	"\x03m49\x18I \x03(\v2\x1a.fastpb.test.Maps.M49EntryR\x03m49\x12,\n" +
+	"\x03m4a\x18J \x03(\v2\x1a.fastpb.test.Maps.M4aEntryR\x03m4a\x12,\n" +
+	"\x03m4b\x18K \x03(\v2\x1a.fastpb.test.Maps.M4bEntryR\x03m4b\x12,\n" +
+	"\x03m4c\x18L \x03(\v2\x1a.fastpb.test.Maps.M4cEntryR\x03m4c\x12,\n" +
+	"\x03m4d\x18M \x03(\v2\x1a.fastpb.test.Maps.M4dEntryR\x03m4d\x12,\n" +
+	"\x03m4e\x18N \x03(\v2\x1a.fastpb.test.Maps.M4eEntryR\x03m4e\x12,\n" +
+	"\x03m4f\x18O \x03(\v2\x1a.fastpb.test.Maps.M4fEntryR\x03m4f\x12,\n" +
+	"\x03m50\x18P \x03(\v2\x1a.fastpb.test.Maps.M50EntryR\x03m50\x12,\n" +
+	"\x03m51\x18Q \x03(\v2\x1a.fastpb.test.Maps.M51EntryR\x03m51\x12,\n" +
+	"\x03m52\x18R \x03(\v2\x1a.fastpb.test.Maps.M52EntryR\x03m52\x12,\n" +
+	"\x03m53\x18S \x03(\v2\x1a.fastpb.test.Maps.M53EntryR\x03m53\x12,\n" +
+	"\x03m54\x18T \x03(\v2\x1a.fastpb.test.Maps.M54EntryR\x03m54\x12,\n" +
+	"\x03m55\x18U \x03(\v2\x1a.fastpb.test.Maps.M55EntryR\x03m55\x12,\n" +
+	"\x03m56\x18V \x03(\v2\x1a.fastpb.test.Maps.M56EntryR\x03m56\x12,\n" +
+	"\x03m57\x18W \x03(\v2\x1a.fastpb.test.Maps.M57EntryR\x03m57\x12,\n" +
+	"\x03m58\x18X \x03(\v2\x1a.fastpb.test.Maps.M58EntryR\x03m58\x12,\n" +
+	"\x03m59\x18Y \x03(\v2\x1a.fastpb.test.Maps.M59EntryR\x03m59\x12,\n" +
+	"\x03m5a\x18Z \x03(\v2\x1a.fastpb.test.Maps.M5aEntryR\x03m5a\x12,\n" +
+	"\x03m5b\x18[ \x03(\v2\x1a.fastpb.test.Maps.M5bEntryR\x03m5b\x12,\n" +
+	"\x03m5c\x18\\ \x03(\v2\x1a.fastpb.test.Maps.M5cEntryR\x03m5c\x12,\n" +
+	"\x03m5d\x18] \x03(\v2\x1a.fastpb.test.Maps.M5dEntryR\x03m5d\x12,\n" +
+	"\x03m5e\x18^ \x03(\v2\x1a.fastpb.test.Maps.M5eEntryR\x03m5e\x12,\n" +
+	"\x03m5f\x18_ \x03(\v2\x1a.fastpb.test.Maps.M5fEntryR\x03m5f\x12,\n" +
+	"\x03m60\x18` \x03(\v2\x1a.fastpb.test.Maps.M60EntryR\x03m60\x12,\n" +
+	"\x03m61\x18a \x03(\v2\x1a.fastpb.test.Maps.M61EntryR\x03m61\x12,\n" +
+	"\x03m62\x18b \x03(\v2\x1a.fastpb.test.Maps.M62EntryR\x03m62\x12,\n" +
+	"\x03m63\x18c \x03(\v2\x1a.fastpb.test.Maps.M63EntryR\x03m63\x12,\n" +
+	"\x03m64\x18d \x03(\v2\x1a.fastpb.test.Maps.M64EntryR\x03m64\x12,\n" +
+	"\x03m65\x18e \x03(\v2\x1a.fastpb.test.Maps.M65EntryR\x03m65\x12,\n" +
+	"\x03m66\x18f \x03(\v2\x1a.fastpb.test.Maps.M66EntryR\x03m66\x12,\n" +
+	"\x03m67\x18g \x03(\v2\x1a.fastpb.test.Maps.M67EntryR\x03m67\x12,\n" +
+	"\x03m68\x18h \x03(\v2\x1a.fastpb.test.Maps.M68EntryR\x03m68\x12,\n" +
+	"\x03m69\x18i \x03(\v2\x1a.fastpb.test.Maps.M69EntryR\x03m69\x12,\n" +
+	"\x03m6a\x18j \x03(\v2\x1a.fastpb.test.Maps.M6aEntryR\x03m6a\x12,\n" +
+	"\x03m6b\x18k \x03(\v2\x1a.fastpb.test.Maps.M6bEntryR\x03m6b\x12,\n" +
+	"\x03m6c\x18l \x03(\v2\x1a.fastpb.test.Maps.M6cEntryR\x03m6c\x12,\n" +
+	"\x03m6d\x18m \x03(\v2\x1a.fastpb.test.Maps.M6dEntryR\x03m6d\x12,\n" +
+	"\x03m6e\x18n \x03(\v2\x1a.fastpb.test.Maps.M6eEntryR\x03m6e\x12,\n" +
+	"\x03m6f\x18o \x03(\v2\x1a.fastpb.test.Maps.M6fEntryR\x03m6f\x12,\n" +
+	"\x03m70\x18p \x03(\v2\x1a.fastpb.test.Maps.M70EntryR\x03m70\x12,\n" +
+	"\x03m71\x18q \x03(\v2\x1a.fastpb.test.Maps.M71EntryR\x03m71\x12,\n" +
+	"\x03m72\x18r \x03(\v2\x1a.fastpb.test.Maps.M72EntryR\x03m72\x12,\n" +
+	"\x03m73\x18s \x03(\v2\x1a.fastpb.test.Maps.M73EntryR\x03m73\x12,\n" +
+	"\x03m74\x18t \x03(\v2\x1a.fastpb.test.Maps.M74EntryR\x03m74\x12,\n" +
+	"\x03m75\x18u \x03(\v2\x1a.fastpb.test.Maps.M75EntryR\x03m75\x12,\n" +
+	"\x03m76\x18v \x03(\v2\x1a.fastpb.test.Maps.M76EntryR\x03m76\x12,\n" +
+	"\x03m77\x18w \x03(\v2\x1a.fastpb.test.Maps.M77EntryR\x03m77\x12,\n" +
+	"\x03m78\x18x \x03(\v2\x1a.fastpb.test.Maps.M78EntryR\x03m78\x12,\n" +
+	"\x03m79\x18y \x03(\v2\x1a.fastpb.test.Maps.M79EntryR\x03m79\x12,\n" +
+	"\x03m7a\x18z \x03(\v2\x1a.fastpb.test.Maps.M7aEntryR\x03m7a\x12,\n" +
+	"\x03m7b\x18{ \x03(\v2\x1a.fastpb.test.Maps.M7bEntryR\x03m7b\x12,\n" +
+	"\x03m7c\x18| \x03(\v2\x1a.fastpb.test.Maps.M7cEntryR\x03m7c\x12,\n" +
+	"\x03m7d\x18} \x03(\v2\x1a.fastpb.test.Maps.M7dEntryR\x03m7d\x12,\n" +
+	"\x03m7e\x18~ \x03(\v2\x1a.fastpb.test.Maps.M7eEntryR\x03m7e\x12,\n" +
+	"\x03m7f\x18\x7f \x03(\v2\x1a.fastpb.test.Maps.M7fEntryR\x03m7f\x12-\n" +
+	"\x03m80\x18\x80\x01 \x03(\v2\x1a.fastpb.test.Maps.M80EntryR\x03m80\x12-\n" +
+	"\x03m81\x18\x81\x01 \x03(\v2\x1a.fastpb.test.Maps.M81EntryR\x03m81\x12-\n" +
+	"\x03m82\x18\x82\x01 \x03(\v2\x1a.fastpb.test.Maps.M82EntryR\x03m82\x12-\n" +
+	"\x03m83\x18\x83\x01 \x03(\v2\x1a.fastpb.test.Maps.M83EntryR\x03m83\x12-\n" +
+	"\x03m84\x18\x84\x01 \x03(\v2\x1a.fastpb.test.Maps.M84EntryR\x03m84\x12-\n" +
+	"\x03m85\x18\x85\x01 \x03(\v2\x1a.fastpb.test.Maps.M85EntryR\x03m85\x12-\n" +
+	"\x03m86\x18\x86\x01 \x03(\v2\x1a.fastpb.test.Maps.M86EntryR\x03m86\x12-\n" +
+	"\x03m87\x18\x87\x01 \x03(\v2\x1a.fastpb.test.Maps.M87EntryR\x03m87\x12-\n" +
+	"\x03m88\x18\x88\x01 \x03(\v2\x1a.fastpb.test.Maps.M88EntryR\x03m88\x12-\n" +
+	"\x03m89\x18\x89\x01 \x03(\v2\x1a.fastpb.test.Maps.M89EntryR\x03m89\x12-\n" +
+	"\x03m8a\x18\x8a\x01 \x03(\v2\x1a.fastpb.test.Maps.M8aEntryR\x03m8a\x12-\n" +
+	"\x03m8b\x18\x8b\x01 \x03(\v2\x1a.fastpb.test.Maps.M8bEntryR\x03m8b\x12-\n" +
+	"\x03m8c\x18\x8c\x01 \x03(\v2\x1a.fastpb.test.Maps.M8cEntryR\x03m8c\x12-\n" +
+	"\x03m8d\x18\x8d\x01 \x03(\v2\x1a.fastpb.test.Maps.M8dEntryR\x03m8d\x12-\n" +
+	"\x03m8e\x18\x8e\x01 \x03(\v2\x1a.fastpb.test.Maps.M8eEntryR\x03m8e\x12-\n" +
+	"\x03m8f\x18\x8f\x01 \x03(\v2\x1a.fastpb.test.Maps.M8fEntryR\x03m8f\x12-\n" +
+	"\x03m90\x18\x90\x01 \x03(\v2\x1a.fastpb.test.Maps.M90EntryR\x03m90\x12-\n" +
+	"\x03m91\x18\x91\x01 \x03(\v2\x1a.fastpb.test.Maps.M91EntryR\x03m91\x12-\n" +
+	"\x03m92\x18\x92\x01 \x03(\v2\x1a.fastpb.test.Maps.M92EntryR\x03m92\x12-\n" +
+	"\x03m93\x18\x93\x01 \x03(\v2\x1a.fastpb.test.Maps.M93EntryR\x03m93\x12-\n" +
+	"\x03m94\x18\x94\x01 \x03(\v2\x1a.fastpb.test.Maps.M94EntryR\x03m94\x12-\n" +
+	"\x03m95\x18\x95\x01 \x03(\v2\x1a.fastpb.test.Maps.M95EntryR\x03m95\x12-\n" +
+	"\x03m96\x18\x96\x01 \x03(\v2\x1a.fastpb.test.Maps.M96EntryR\x03m96\x12-\n" +
+	"\x03m97\x18\x97\x01 \x03(\v2\x1a.fastpb.test.Maps.M97EntryR\x03m97\x12-\n" +
+	"\x03m98\x18\x98\x01 \x03(\v2\x1a.fastpb.test.Maps.M98EntryR\x03m98\x12-\n" +
+	"\x03m99\x18\x99\x01 \x03(\v2\x1a.fastpb.test.Maps.M99EntryR\x03m99\x12-\n" +
+	"\x03m9a\x18\x9a\x01 \x03(\v2\x1a.fastpb.test.Maps.M9aEntryR\x03m9a\x12-\n" +
+	"\x03m9b\x18\x9b\x01 \x03(\v2\x1a.fastpb.test.Maps.M9bEntryR\x03m9b\x12-\n" +
+	"\x03m9c\x18\x9c\x01 \x03(\v2\x1a.fastpb.test.Maps.M9cEntryR\x03m9c\x12-\n" +
+	"\x03m9d\x18\x9d\x01 \x03(\v2\x1a.fastpb.test.Maps.M9dEntryR\x03m9d\x12-\n" +
+	"\x03m9e\x18\x9e\x01 \x03(\v2\x1a.fastpb.test.Maps.M9eEntryR\x03m9e\x12-\n" +
+	"\x03m9f\x18\x9f\x01 \x03(\v2\x1a.fastpb.test.Maps.M9fEntryR\x03m9f\x12-\n" +
+	"\x03ma0\x18\xa0\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma0EntryR\x03ma0\x12-\n" +
+	"\x03ma1\x18\xa1\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma1EntryR\x03ma1\x12-\n" +
+	"\x03ma2\x18\xa2\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma2EntryR\x03ma2\x12-\n" +
+	"\x03ma3\x18\xa3\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma3EntryR\x03ma3\x12-\n" +
+	"\x03ma4\x18\xa4\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma4EntryR\x03ma4\x12-\n" +
+	"\x03ma5\x18\xa5\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma5EntryR\x03ma5\x12-\n" +
+	"\x03ma6\x18\xa6\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma6EntryR\x03ma6\x12-\n" +
+	"\x03ma7\x18\xa7\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma7EntryR\x03ma7\x12-\n" +
+	"\x03ma8\x18\xa8\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma8EntryR\x03ma8\x12-\n" +
+	"\x03ma9\x18\xa9\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma9EntryR\x03ma9\x12-\n" +
+	"\x03maa\x18\xaa\x01 \x03(\v2\x1a.fastpb.test.Maps.MaaEntryR\x03maa\x12-\n" +
+	"\x03mab\x18\xab\x01 \x03(\v2\x1a.fastpb.test.Maps.MabEntryR\x03mab\x12-\n" +
+	"\x03mac\x18\xac\x01 \x03(\v2\x1a.fastpb.test.Maps.MacEntryR\x03mac\x12-\n" +
+	"\x03mad\x18\xad\x01 \x03(\v2\x1a.fastpb.test.Maps.MadEntryR\x03mad\x12-\n" +
+	"\x03mae\x18\xae\x01 \x03(\v2\x1a.fastpb.test.Maps.MaeEntryR\x03mae\x12-\n" +
+	"\x03maf\x18\xaf\x01 \x03(\v2\x1a.fastpb.test.Maps.MafEntryR\x03maf\x12-\n" +
+	"\x03mb0\x18\xb0\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb0EntryR\x03mb0\x12-\n" +
+	"\x03mb1\x18\xb1\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb1EntryR\x03mb1\x12-\n" +
+	"\x03mb2\x18\xb2\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb2EntryR\x03mb2\x12-\n" +
+	"\x03mb3\x18\xb3\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb3EntryR\x03mb3\x12-\n" +
+	"\x03mb4\x18\xb4\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb4EntryR\x03mb4\x12-\n" +
+	"\x03mb5\x18\xb5\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb5EntryR\x03mb5\x12-\n" +
+	"\x03mb6\x18\xb6\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb6EntryR\x03mb6\x12-\n" +
+	"\x03mb7\x18\xb7\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb7EntryR\x03mb7\x12-\n" +
+	"\x03mb8\x18\xb8\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb8EntryR\x03mb8\x12-\n" +
+	"\x03mb9\x18\xb9\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb9EntryR\x03mb9\x12-\n" +
+	"\x03mba\x18\xba\x01 \x03(\v2\x1a.fastpb.test.Maps.MbaEntryR\x03mba\x12-\n" +
+	"\x03mbb\x18\xbb\x01 \x03(\v2\x1a.fastpb.test.Maps.MbbEntryR\x03mbb\x12-\n" +
+	"\x03mbc\x18\xbc\x01 \x03(\v2\x1a.fastpb.test.Maps.MbcEntryR\x03mbc\x12-\n" +
+	"\x03mbd\x18\xbd\x01 \x03(\v2\x1a.fastpb.test.Maps.MbdEntryR\x03mbd\x12-\n" +
+	"\x03mbe\x18\xbe\x01 \x03(\v2\x1a.fastpb.test.Maps.MbeEntryR\x03mbe\x12-\n" +
+	"\x03mbf\x18\xbf\x01 \x03(\v2\x1a.fastpb.test.Maps.MbfEntryR\x03mbf\x12-\n" +
+	"\x03mc0\x18\xc0\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc0EntryR\x03mc0\x12-\n" +
+	"\x03mc1\x18\xc1\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc1EntryR\x03mc1\x12-\n" +
+	"\x03mc2\x18\xc2\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc2EntryR\x03mc2\x12-\n" +
+	"\x03mc3\x18\xc3\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc3EntryR\x03mc3\x12-\n" +
+	"\x03mc4\x18\xc4\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc4EntryR\x03mc4\x12-\n" +
+	"\x03mc5\x18\xc5\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc5EntryR\x03mc5\x12-\n" +
+	"\x03mc6\x18\xc6\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc6EntryR\x03mc6\x12-\n" +
+	"\x03mc7\x18\xc7\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc7EntryR\x03mc7\x12-\n" +
+	"\x03mc8\x18\xc8\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc8EntryR\x03mc8\x12-\n" +
+	"\x03mc9\x18\xc9\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc9EntryR\x03mc9\x12-\n" +
+	"\x03mca\x18\xca\x01 \x03(\v2\x1a.fastpb.test.Maps.McaEntryR\x03mca\x12-\n" +
+	"\x03mcb\x18\xcb\x01 \x03(\v2\x1a.fastpb.test.Maps.McbEntryR\x03mcb\x12-\n" +
+	"\x03mcc\x18\xcc\x01 \x03(\v2\x1a.fastpb.test.Maps.MccEntryR\x03mcc\x12-\n" +
+	"\x03mcd\x18\xcd\x01 \x03(\v2\x1a.fastpb.test.Maps.McdEntryR\x03mcd\x12-\n" +
+	"\x03mce\x18\xce\x01 \x03(\v2\x1a.fastpb.test.Maps.MceEntryR\x03mce\x12-\n" +
+	"\x03mcf\x18\xcf\x01 \x03(\v2\x1a.fastpb.test.Maps.McfEntryR\x03mcf\x1a6\n" +
+	"\bM10Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM11Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM12Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM13Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM14Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM15Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM16Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM17Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM18Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM19Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM1aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM1bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM1cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM1dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM1eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM1fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM20Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM21Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM22Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM23Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM24Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM25Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM26Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM27Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM28Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM29Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM2aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM2bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM2cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM2dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM2eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM2fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM30Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM31Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM32Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM33Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM34Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM35Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM36Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM37Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM38Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM39Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM3aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM3bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM3cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM3dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM3eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM3fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM40Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM41Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM42Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM43Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM44Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM45Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM46Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM47Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM48Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM49Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM4aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM4bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM4cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM4dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM4eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM4fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM50Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM51Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM52Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM53Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM54Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM55Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM56Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM57Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM58Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM59Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM5aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM5bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM5cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM5dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM5eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM5fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM60Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM61Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM62Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM63Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM64Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM65Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM66Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM67Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM68Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM69Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM6aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM6bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM6cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM6dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM6eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM6fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM70Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM71Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM72Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM73Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM74Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM75Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM76Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM77Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM78Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM79Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM7aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM7bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM7cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM7dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM7eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM7fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM80Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM81Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM82Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM83Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM84Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM85Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM86Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM87Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM88Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM89Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM8aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM8bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM8cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM8dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM8eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM8fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bM90Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bM91Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bM92Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bM93Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bM94Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bM95Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bM96Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bM97Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bM98Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bM99Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bM9aEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bM9bEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bM9cEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bM9dEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bM9eEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bM9fEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bMa0Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bMa1Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bMa2Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bMa3Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bMa4Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bMa5Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bMa6Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bMa7Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bMa8Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bMa9Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bMaaEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bMabEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bMacEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bMadEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bMaeEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bMafEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bMb0Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bMb1Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bMb2Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bMb3Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bMb4Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bMb5Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bMb6Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bMb7Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bMb8Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bMb9Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bMbaEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bMbbEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bMbcEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bMbdEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bMbeEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bMbfEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\x1a6\n" +
+	"\bMc0Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
+	"\bMc1Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a6\n" +
+	"\bMc2Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a6\n" +
+	"\bMc3Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a6\n" +
+	"\bMc4Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x11R\x05value:\x028\x01\x1a6\n" +
+	"\bMc5Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x12R\x05value:\x028\x01\x1a6\n" +
+	"\bMc6Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\aR\x05value:\x028\x01\x1a6\n" +
+	"\bMc7Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x06R\x05value:\x028\x01\x1a6\n" +
+	"\bMc8Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a6\n" +
+	"\bMc9Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a6\n" +
+	"\bMcaEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\x1a6\n" +
+	"\bMcbEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
+	"\bMccEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\bMcdEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12'\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\bMceEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
+	"\bMcfEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01*@\n" +
+	"\x04Enum\x12\x14\n" +
+	"\x10ENUM_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ENUM_1\x10\x01\x12\n" +
+	"\n" +
+	"\x06ENUM_2\x10\x02\x12\n" +
+	"\n" +
+	"\x06ENUM_3\x10\x03B\x97\x01\n" +
 	"\x0fcom.fastpb.testB\tTestProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Testb\x06proto3"
 
 var (
@@ -761,22 +3162,421 @@ func file_test_test_proto_rawDescGZIP() []byte {
 	return file_test_test_proto_rawDescData
 }
 
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 197)
 var file_test_test_proto_goTypes = []any{
-	(*Scalars)(nil),  // 0: fastpb.test.Scalars
-	(*Repeated)(nil), // 1: fastpb.test.Repeated
-	(*Graph)(nil),    // 2: fastpb.test.Graph
-	(*Oneof)(nil),    // 3: fastpb.test.Oneof
+	(Enum)(0),        // 0: fastpb.test.Enum
+	(*Scalars)(nil),  // 1: fastpb.test.Scalars
+	(*Repeated)(nil), // 2: fastpb.test.Repeated
+	(*Graph)(nil),    // 3: fastpb.test.Graph
+	(*Oneof)(nil),    // 4: fastpb.test.Oneof
+	(*Maps)(nil),     // 5: fastpb.test.Maps
+	nil,              // 6: fastpb.test.Maps.M10Entry
+	nil,              // 7: fastpb.test.Maps.M11Entry
+	nil,              // 8: fastpb.test.Maps.M12Entry
+	nil,              // 9: fastpb.test.Maps.M13Entry
+	nil,              // 10: fastpb.test.Maps.M14Entry
+	nil,              // 11: fastpb.test.Maps.M15Entry
+	nil,              // 12: fastpb.test.Maps.M16Entry
+	nil,              // 13: fastpb.test.Maps.M17Entry
+	nil,              // 14: fastpb.test.Maps.M18Entry
+	nil,              // 15: fastpb.test.Maps.M19Entry
+	nil,              // 16: fastpb.test.Maps.M1aEntry
+	nil,              // 17: fastpb.test.Maps.M1bEntry
+	nil,              // 18: fastpb.test.Maps.M1cEntry
+	nil,              // 19: fastpb.test.Maps.M1dEntry
+	nil,              // 20: fastpb.test.Maps.M1eEntry
+	nil,              // 21: fastpb.test.Maps.M1fEntry
+	nil,              // 22: fastpb.test.Maps.M20Entry
+	nil,              // 23: fastpb.test.Maps.M21Entry
+	nil,              // 24: fastpb.test.Maps.M22Entry
+	nil,              // 25: fastpb.test.Maps.M23Entry
+	nil,              // 26: fastpb.test.Maps.M24Entry
+	nil,              // 27: fastpb.test.Maps.M25Entry
+	nil,              // 28: fastpb.test.Maps.M26Entry
+	nil,              // 29: fastpb.test.Maps.M27Entry
+	nil,              // 30: fastpb.test.Maps.M28Entry
+	nil,              // 31: fastpb.test.Maps.M29Entry
+	nil,              // 32: fastpb.test.Maps.M2aEntry
+	nil,              // 33: fastpb.test.Maps.M2bEntry
+	nil,              // 34: fastpb.test.Maps.M2cEntry
+	nil,              // 35: fastpb.test.Maps.M2dEntry
+	nil,              // 36: fastpb.test.Maps.M2eEntry
+	nil,              // 37: fastpb.test.Maps.M2fEntry
+	nil,              // 38: fastpb.test.Maps.M30Entry
+	nil,              // 39: fastpb.test.Maps.M31Entry
+	nil,              // 40: fastpb.test.Maps.M32Entry
+	nil,              // 41: fastpb.test.Maps.M33Entry
+	nil,              // 42: fastpb.test.Maps.M34Entry
+	nil,              // 43: fastpb.test.Maps.M35Entry
+	nil,              // 44: fastpb.test.Maps.M36Entry
+	nil,              // 45: fastpb.test.Maps.M37Entry
+	nil,              // 46: fastpb.test.Maps.M38Entry
+	nil,              // 47: fastpb.test.Maps.M39Entry
+	nil,              // 48: fastpb.test.Maps.M3aEntry
+	nil,              // 49: fastpb.test.Maps.M3bEntry
+	nil,              // 50: fastpb.test.Maps.M3cEntry
+	nil,              // 51: fastpb.test.Maps.M3dEntry
+	nil,              // 52: fastpb.test.Maps.M3eEntry
+	nil,              // 53: fastpb.test.Maps.M3fEntry
+	nil,              // 54: fastpb.test.Maps.M40Entry
+	nil,              // 55: fastpb.test.Maps.M41Entry
+	nil,              // 56: fastpb.test.Maps.M42Entry
+	nil,              // 57: fastpb.test.Maps.M43Entry
+	nil,              // 58: fastpb.test.Maps.M44Entry
+	nil,              // 59: fastpb.test.Maps.M45Entry
+	nil,              // 60: fastpb.test.Maps.M46Entry
+	nil,              // 61: fastpb.test.Maps.M47Entry
+	nil,              // 62: fastpb.test.Maps.M48Entry
+	nil,              // 63: fastpb.test.Maps.M49Entry
+	nil,              // 64: fastpb.test.Maps.M4aEntry
+	nil,              // 65: fastpb.test.Maps.M4bEntry
+	nil,              // 66: fastpb.test.Maps.M4cEntry
+	nil,              // 67: fastpb.test.Maps.M4dEntry
+	nil,              // 68: fastpb.test.Maps.M4eEntry
+	nil,              // 69: fastpb.test.Maps.M4fEntry
+	nil,              // 70: fastpb.test.Maps.M50Entry
+	nil,              // 71: fastpb.test.Maps.M51Entry
+	nil,              // 72: fastpb.test.Maps.M52Entry
+	nil,              // 73: fastpb.test.Maps.M53Entry
+	nil,              // 74: fastpb.test.Maps.M54Entry
+	nil,              // 75: fastpb.test.Maps.M55Entry
+	nil,              // 76: fastpb.test.Maps.M56Entry
+	nil,              // 77: fastpb.test.Maps.M57Entry
+	nil,              // 78: fastpb.test.Maps.M58Entry
+	nil,              // 79: fastpb.test.Maps.M59Entry
+	nil,              // 80: fastpb.test.Maps.M5aEntry
+	nil,              // 81: fastpb.test.Maps.M5bEntry
+	nil,              // 82: fastpb.test.Maps.M5cEntry
+	nil,              // 83: fastpb.test.Maps.M5dEntry
+	nil,              // 84: fastpb.test.Maps.M5eEntry
+	nil,              // 85: fastpb.test.Maps.M5fEntry
+	nil,              // 86: fastpb.test.Maps.M60Entry
+	nil,              // 87: fastpb.test.Maps.M61Entry
+	nil,              // 88: fastpb.test.Maps.M62Entry
+	nil,              // 89: fastpb.test.Maps.M63Entry
+	nil,              // 90: fastpb.test.Maps.M64Entry
+	nil,              // 91: fastpb.test.Maps.M65Entry
+	nil,              // 92: fastpb.test.Maps.M66Entry
+	nil,              // 93: fastpb.test.Maps.M67Entry
+	nil,              // 94: fastpb.test.Maps.M68Entry
+	nil,              // 95: fastpb.test.Maps.M69Entry
+	nil,              // 96: fastpb.test.Maps.M6aEntry
+	nil,              // 97: fastpb.test.Maps.M6bEntry
+	nil,              // 98: fastpb.test.Maps.M6cEntry
+	nil,              // 99: fastpb.test.Maps.M6dEntry
+	nil,              // 100: fastpb.test.Maps.M6eEntry
+	nil,              // 101: fastpb.test.Maps.M6fEntry
+	nil,              // 102: fastpb.test.Maps.M70Entry
+	nil,              // 103: fastpb.test.Maps.M71Entry
+	nil,              // 104: fastpb.test.Maps.M72Entry
+	nil,              // 105: fastpb.test.Maps.M73Entry
+	nil,              // 106: fastpb.test.Maps.M74Entry
+	nil,              // 107: fastpb.test.Maps.M75Entry
+	nil,              // 108: fastpb.test.Maps.M76Entry
+	nil,              // 109: fastpb.test.Maps.M77Entry
+	nil,              // 110: fastpb.test.Maps.M78Entry
+	nil,              // 111: fastpb.test.Maps.M79Entry
+	nil,              // 112: fastpb.test.Maps.M7aEntry
+	nil,              // 113: fastpb.test.Maps.M7bEntry
+	nil,              // 114: fastpb.test.Maps.M7cEntry
+	nil,              // 115: fastpb.test.Maps.M7dEntry
+	nil,              // 116: fastpb.test.Maps.M7eEntry
+	nil,              // 117: fastpb.test.Maps.M7fEntry
+	nil,              // 118: fastpb.test.Maps.M80Entry
+	nil,              // 119: fastpb.test.Maps.M81Entry
+	nil,              // 120: fastpb.test.Maps.M82Entry
+	nil,              // 121: fastpb.test.Maps.M83Entry
+	nil,              // 122: fastpb.test.Maps.M84Entry
+	nil,              // 123: fastpb.test.Maps.M85Entry
+	nil,              // 124: fastpb.test.Maps.M86Entry
+	nil,              // 125: fastpb.test.Maps.M87Entry
+	nil,              // 126: fastpb.test.Maps.M88Entry
+	nil,              // 127: fastpb.test.Maps.M89Entry
+	nil,              // 128: fastpb.test.Maps.M8aEntry
+	nil,              // 129: fastpb.test.Maps.M8bEntry
+	nil,              // 130: fastpb.test.Maps.M8cEntry
+	nil,              // 131: fastpb.test.Maps.M8dEntry
+	nil,              // 132: fastpb.test.Maps.M8eEntry
+	nil,              // 133: fastpb.test.Maps.M8fEntry
+	nil,              // 134: fastpb.test.Maps.M90Entry
+	nil,              // 135: fastpb.test.Maps.M91Entry
+	nil,              // 136: fastpb.test.Maps.M92Entry
+	nil,              // 137: fastpb.test.Maps.M93Entry
+	nil,              // 138: fastpb.test.Maps.M94Entry
+	nil,              // 139: fastpb.test.Maps.M95Entry
+	nil,              // 140: fastpb.test.Maps.M96Entry
+	nil,              // 141: fastpb.test.Maps.M97Entry
+	nil,              // 142: fastpb.test.Maps.M98Entry
+	nil,              // 143: fastpb.test.Maps.M99Entry
+	nil,              // 144: fastpb.test.Maps.M9aEntry
+	nil,              // 145: fastpb.test.Maps.M9bEntry
+	nil,              // 146: fastpb.test.Maps.M9cEntry
+	nil,              // 147: fastpb.test.Maps.M9dEntry
+	nil,              // 148: fastpb.test.Maps.M9eEntry
+	nil,              // 149: fastpb.test.Maps.M9fEntry
+	nil,              // 150: fastpb.test.Maps.Ma0Entry
+	nil,              // 151: fastpb.test.Maps.Ma1Entry
+	nil,              // 152: fastpb.test.Maps.Ma2Entry
+	nil,              // 153: fastpb.test.Maps.Ma3Entry
+	nil,              // 154: fastpb.test.Maps.Ma4Entry
+	nil,              // 155: fastpb.test.Maps.Ma5Entry
+	nil,              // 156: fastpb.test.Maps.Ma6Entry
+	nil,              // 157: fastpb.test.Maps.Ma7Entry
+	nil,              // 158: fastpb.test.Maps.Ma8Entry
+	nil,              // 159: fastpb.test.Maps.Ma9Entry
+	nil,              // 160: fastpb.test.Maps.MaaEntry
+	nil,              // 161: fastpb.test.Maps.MabEntry
+	nil,              // 162: fastpb.test.Maps.MacEntry
+	nil,              // 163: fastpb.test.Maps.MadEntry
+	nil,              // 164: fastpb.test.Maps.MaeEntry
+	nil,              // 165: fastpb.test.Maps.MafEntry
+	nil,              // 166: fastpb.test.Maps.Mb0Entry
+	nil,              // 167: fastpb.test.Maps.Mb1Entry
+	nil,              // 168: fastpb.test.Maps.Mb2Entry
+	nil,              // 169: fastpb.test.Maps.Mb3Entry
+	nil,              // 170: fastpb.test.Maps.Mb4Entry
+	nil,              // 171: fastpb.test.Maps.Mb5Entry
+	nil,              // 172: fastpb.test.Maps.Mb6Entry
+	nil,              // 173: fastpb.test.Maps.Mb7Entry
+	nil,              // 174: fastpb.test.Maps.Mb8Entry
+	nil,              // 175: fastpb.test.Maps.Mb9Entry
+	nil,              // 176: fastpb.test.Maps.MbaEntry
+	nil,              // 177: fastpb.test.Maps.MbbEntry
+	nil,              // 178: fastpb.test.Maps.MbcEntry
+	nil,              // 179: fastpb.test.Maps.MbdEntry
+	nil,              // 180: fastpb.test.Maps.MbeEntry
+	nil,              // 181: fastpb.test.Maps.MbfEntry
+	nil,              // 182: fastpb.test.Maps.Mc0Entry
+	nil,              // 183: fastpb.test.Maps.Mc1Entry
+	nil,              // 184: fastpb.test.Maps.Mc2Entry
+	nil,              // 185: fastpb.test.Maps.Mc3Entry
+	nil,              // 186: fastpb.test.Maps.Mc4Entry
+	nil,              // 187: fastpb.test.Maps.Mc5Entry
+	nil,              // 188: fastpb.test.Maps.Mc6Entry
+	nil,              // 189: fastpb.test.Maps.Mc7Entry
+	nil,              // 190: fastpb.test.Maps.Mc8Entry
+	nil,              // 191: fastpb.test.Maps.Mc9Entry
+	nil,              // 192: fastpb.test.Maps.McaEntry
+	nil,              // 193: fastpb.test.Maps.McbEntry
+	nil,              // 194: fastpb.test.Maps.MccEntry
+	nil,              // 195: fastpb.test.Maps.McdEntry
+	nil,              // 196: fastpb.test.Maps.MceEntry
+	nil,              // 197: fastpb.test.Maps.McfEntry
 }
 var file_test_test_proto_depIdxs = []int32{
-	2, // 0: fastpb.test.Graph.s:type_name -> fastpb.test.Graph
-	2, // 1: fastpb.test.Graph.r:type_name -> fastpb.test.Graph
-	3, // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3,   // 0: fastpb.test.Graph.s:type_name -> fastpb.test.Graph
+	3,   // 1: fastpb.test.Graph.r:type_name -> fastpb.test.Graph
+	4,   // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
+	6,   // 3: fastpb.test.Maps.m10:type_name -> fastpb.test.Maps.M10Entry
+	7,   // 4: fastpb.test.Maps.m11:type_name -> fastpb.test.Maps.M11Entry
+	8,   // 5: fastpb.test.Maps.m12:type_name -> fastpb.test.Maps.M12Entry
+	9,   // 6: fastpb.test.Maps.m13:type_name -> fastpb.test.Maps.M13Entry
+	10,  // 7: fastpb.test.Maps.m14:type_name -> fastpb.test.Maps.M14Entry
+	11,  // 8: fastpb.test.Maps.m15:type_name -> fastpb.test.Maps.M15Entry
+	12,  // 9: fastpb.test.Maps.m16:type_name -> fastpb.test.Maps.M16Entry
+	13,  // 10: fastpb.test.Maps.m17:type_name -> fastpb.test.Maps.M17Entry
+	14,  // 11: fastpb.test.Maps.m18:type_name -> fastpb.test.Maps.M18Entry
+	15,  // 12: fastpb.test.Maps.m19:type_name -> fastpb.test.Maps.M19Entry
+	16,  // 13: fastpb.test.Maps.m1a:type_name -> fastpb.test.Maps.M1aEntry
+	17,  // 14: fastpb.test.Maps.m1b:type_name -> fastpb.test.Maps.M1bEntry
+	18,  // 15: fastpb.test.Maps.m1c:type_name -> fastpb.test.Maps.M1cEntry
+	19,  // 16: fastpb.test.Maps.m1d:type_name -> fastpb.test.Maps.M1dEntry
+	20,  // 17: fastpb.test.Maps.m1e:type_name -> fastpb.test.Maps.M1eEntry
+	21,  // 18: fastpb.test.Maps.m1f:type_name -> fastpb.test.Maps.M1fEntry
+	22,  // 19: fastpb.test.Maps.m20:type_name -> fastpb.test.Maps.M20Entry
+	23,  // 20: fastpb.test.Maps.m21:type_name -> fastpb.test.Maps.M21Entry
+	24,  // 21: fastpb.test.Maps.m22:type_name -> fastpb.test.Maps.M22Entry
+	25,  // 22: fastpb.test.Maps.m23:type_name -> fastpb.test.Maps.M23Entry
+	26,  // 23: fastpb.test.Maps.m24:type_name -> fastpb.test.Maps.M24Entry
+	27,  // 24: fastpb.test.Maps.m25:type_name -> fastpb.test.Maps.M25Entry
+	28,  // 25: fastpb.test.Maps.m26:type_name -> fastpb.test.Maps.M26Entry
+	29,  // 26: fastpb.test.Maps.m27:type_name -> fastpb.test.Maps.M27Entry
+	30,  // 27: fastpb.test.Maps.m28:type_name -> fastpb.test.Maps.M28Entry
+	31,  // 28: fastpb.test.Maps.m29:type_name -> fastpb.test.Maps.M29Entry
+	32,  // 29: fastpb.test.Maps.m2a:type_name -> fastpb.test.Maps.M2aEntry
+	33,  // 30: fastpb.test.Maps.m2b:type_name -> fastpb.test.Maps.M2bEntry
+	34,  // 31: fastpb.test.Maps.m2c:type_name -> fastpb.test.Maps.M2cEntry
+	35,  // 32: fastpb.test.Maps.m2d:type_name -> fastpb.test.Maps.M2dEntry
+	36,  // 33: fastpb.test.Maps.m2e:type_name -> fastpb.test.Maps.M2eEntry
+	37,  // 34: fastpb.test.Maps.m2f:type_name -> fastpb.test.Maps.M2fEntry
+	38,  // 35: fastpb.test.Maps.m30:type_name -> fastpb.test.Maps.M30Entry
+	39,  // 36: fastpb.test.Maps.m31:type_name -> fastpb.test.Maps.M31Entry
+	40,  // 37: fastpb.test.Maps.m32:type_name -> fastpb.test.Maps.M32Entry
+	41,  // 38: fastpb.test.Maps.m33:type_name -> fastpb.test.Maps.M33Entry
+	42,  // 39: fastpb.test.Maps.m34:type_name -> fastpb.test.Maps.M34Entry
+	43,  // 40: fastpb.test.Maps.m35:type_name -> fastpb.test.Maps.M35Entry
+	44,  // 41: fastpb.test.Maps.m36:type_name -> fastpb.test.Maps.M36Entry
+	45,  // 42: fastpb.test.Maps.m37:type_name -> fastpb.test.Maps.M37Entry
+	46,  // 43: fastpb.test.Maps.m38:type_name -> fastpb.test.Maps.M38Entry
+	47,  // 44: fastpb.test.Maps.m39:type_name -> fastpb.test.Maps.M39Entry
+	48,  // 45: fastpb.test.Maps.m3a:type_name -> fastpb.test.Maps.M3aEntry
+	49,  // 46: fastpb.test.Maps.m3b:type_name -> fastpb.test.Maps.M3bEntry
+	50,  // 47: fastpb.test.Maps.m3c:type_name -> fastpb.test.Maps.M3cEntry
+	51,  // 48: fastpb.test.Maps.m3d:type_name -> fastpb.test.Maps.M3dEntry
+	52,  // 49: fastpb.test.Maps.m3e:type_name -> fastpb.test.Maps.M3eEntry
+	53,  // 50: fastpb.test.Maps.m3f:type_name -> fastpb.test.Maps.M3fEntry
+	54,  // 51: fastpb.test.Maps.m40:type_name -> fastpb.test.Maps.M40Entry
+	55,  // 52: fastpb.test.Maps.m41:type_name -> fastpb.test.Maps.M41Entry
+	56,  // 53: fastpb.test.Maps.m42:type_name -> fastpb.test.Maps.M42Entry
+	57,  // 54: fastpb.test.Maps.m43:type_name -> fastpb.test.Maps.M43Entry
+	58,  // 55: fastpb.test.Maps.m44:type_name -> fastpb.test.Maps.M44Entry
+	59,  // 56: fastpb.test.Maps.m45:type_name -> fastpb.test.Maps.M45Entry
+	60,  // 57: fastpb.test.Maps.m46:type_name -> fastpb.test.Maps.M46Entry
+	61,  // 58: fastpb.test.Maps.m47:type_name -> fastpb.test.Maps.M47Entry
+	62,  // 59: fastpb.test.Maps.m48:type_name -> fastpb.test.Maps.M48Entry
+	63,  // 60: fastpb.test.Maps.m49:type_name -> fastpb.test.Maps.M49Entry
+	64,  // 61: fastpb.test.Maps.m4a:type_name -> fastpb.test.Maps.M4aEntry
+	65,  // 62: fastpb.test.Maps.m4b:type_name -> fastpb.test.Maps.M4bEntry
+	66,  // 63: fastpb.test.Maps.m4c:type_name -> fastpb.test.Maps.M4cEntry
+	67,  // 64: fastpb.test.Maps.m4d:type_name -> fastpb.test.Maps.M4dEntry
+	68,  // 65: fastpb.test.Maps.m4e:type_name -> fastpb.test.Maps.M4eEntry
+	69,  // 66: fastpb.test.Maps.m4f:type_name -> fastpb.test.Maps.M4fEntry
+	70,  // 67: fastpb.test.Maps.m50:type_name -> fastpb.test.Maps.M50Entry
+	71,  // 68: fastpb.test.Maps.m51:type_name -> fastpb.test.Maps.M51Entry
+	72,  // 69: fastpb.test.Maps.m52:type_name -> fastpb.test.Maps.M52Entry
+	73,  // 70: fastpb.test.Maps.m53:type_name -> fastpb.test.Maps.M53Entry
+	74,  // 71: fastpb.test.Maps.m54:type_name -> fastpb.test.Maps.M54Entry
+	75,  // 72: fastpb.test.Maps.m55:type_name -> fastpb.test.Maps.M55Entry
+	76,  // 73: fastpb.test.Maps.m56:type_name -> fastpb.test.Maps.M56Entry
+	77,  // 74: fastpb.test.Maps.m57:type_name -> fastpb.test.Maps.M57Entry
+	78,  // 75: fastpb.test.Maps.m58:type_name -> fastpb.test.Maps.M58Entry
+	79,  // 76: fastpb.test.Maps.m59:type_name -> fastpb.test.Maps.M59Entry
+	80,  // 77: fastpb.test.Maps.m5a:type_name -> fastpb.test.Maps.M5aEntry
+	81,  // 78: fastpb.test.Maps.m5b:type_name -> fastpb.test.Maps.M5bEntry
+	82,  // 79: fastpb.test.Maps.m5c:type_name -> fastpb.test.Maps.M5cEntry
+	83,  // 80: fastpb.test.Maps.m5d:type_name -> fastpb.test.Maps.M5dEntry
+	84,  // 81: fastpb.test.Maps.m5e:type_name -> fastpb.test.Maps.M5eEntry
+	85,  // 82: fastpb.test.Maps.m5f:type_name -> fastpb.test.Maps.M5fEntry
+	86,  // 83: fastpb.test.Maps.m60:type_name -> fastpb.test.Maps.M60Entry
+	87,  // 84: fastpb.test.Maps.m61:type_name -> fastpb.test.Maps.M61Entry
+	88,  // 85: fastpb.test.Maps.m62:type_name -> fastpb.test.Maps.M62Entry
+	89,  // 86: fastpb.test.Maps.m63:type_name -> fastpb.test.Maps.M63Entry
+	90,  // 87: fastpb.test.Maps.m64:type_name -> fastpb.test.Maps.M64Entry
+	91,  // 88: fastpb.test.Maps.m65:type_name -> fastpb.test.Maps.M65Entry
+	92,  // 89: fastpb.test.Maps.m66:type_name -> fastpb.test.Maps.M66Entry
+	93,  // 90: fastpb.test.Maps.m67:type_name -> fastpb.test.Maps.M67Entry
+	94,  // 91: fastpb.test.Maps.m68:type_name -> fastpb.test.Maps.M68Entry
+	95,  // 92: fastpb.test.Maps.m69:type_name -> fastpb.test.Maps.M69Entry
+	96,  // 93: fastpb.test.Maps.m6a:type_name -> fastpb.test.Maps.M6aEntry
+	97,  // 94: fastpb.test.Maps.m6b:type_name -> fastpb.test.Maps.M6bEntry
+	98,  // 95: fastpb.test.Maps.m6c:type_name -> fastpb.test.Maps.M6cEntry
+	99,  // 96: fastpb.test.Maps.m6d:type_name -> fastpb.test.Maps.M6dEntry
+	100, // 97: fastpb.test.Maps.m6e:type_name -> fastpb.test.Maps.M6eEntry
+	101, // 98: fastpb.test.Maps.m6f:type_name -> fastpb.test.Maps.M6fEntry
+	102, // 99: fastpb.test.Maps.m70:type_name -> fastpb.test.Maps.M70Entry
+	103, // 100: fastpb.test.Maps.m71:type_name -> fastpb.test.Maps.M71Entry
+	104, // 101: fastpb.test.Maps.m72:type_name -> fastpb.test.Maps.M72Entry
+	105, // 102: fastpb.test.Maps.m73:type_name -> fastpb.test.Maps.M73Entry
+	106, // 103: fastpb.test.Maps.m74:type_name -> fastpb.test.Maps.M74Entry
+	107, // 104: fastpb.test.Maps.m75:type_name -> fastpb.test.Maps.M75Entry
+	108, // 105: fastpb.test.Maps.m76:type_name -> fastpb.test.Maps.M76Entry
+	109, // 106: fastpb.test.Maps.m77:type_name -> fastpb.test.Maps.M77Entry
+	110, // 107: fastpb.test.Maps.m78:type_name -> fastpb.test.Maps.M78Entry
+	111, // 108: fastpb.test.Maps.m79:type_name -> fastpb.test.Maps.M79Entry
+	112, // 109: fastpb.test.Maps.m7a:type_name -> fastpb.test.Maps.M7aEntry
+	113, // 110: fastpb.test.Maps.m7b:type_name -> fastpb.test.Maps.M7bEntry
+	114, // 111: fastpb.test.Maps.m7c:type_name -> fastpb.test.Maps.M7cEntry
+	115, // 112: fastpb.test.Maps.m7d:type_name -> fastpb.test.Maps.M7dEntry
+	116, // 113: fastpb.test.Maps.m7e:type_name -> fastpb.test.Maps.M7eEntry
+	117, // 114: fastpb.test.Maps.m7f:type_name -> fastpb.test.Maps.M7fEntry
+	118, // 115: fastpb.test.Maps.m80:type_name -> fastpb.test.Maps.M80Entry
+	119, // 116: fastpb.test.Maps.m81:type_name -> fastpb.test.Maps.M81Entry
+	120, // 117: fastpb.test.Maps.m82:type_name -> fastpb.test.Maps.M82Entry
+	121, // 118: fastpb.test.Maps.m83:type_name -> fastpb.test.Maps.M83Entry
+	122, // 119: fastpb.test.Maps.m84:type_name -> fastpb.test.Maps.M84Entry
+	123, // 120: fastpb.test.Maps.m85:type_name -> fastpb.test.Maps.M85Entry
+	124, // 121: fastpb.test.Maps.m86:type_name -> fastpb.test.Maps.M86Entry
+	125, // 122: fastpb.test.Maps.m87:type_name -> fastpb.test.Maps.M87Entry
+	126, // 123: fastpb.test.Maps.m88:type_name -> fastpb.test.Maps.M88Entry
+	127, // 124: fastpb.test.Maps.m89:type_name -> fastpb.test.Maps.M89Entry
+	128, // 125: fastpb.test.Maps.m8a:type_name -> fastpb.test.Maps.M8aEntry
+	129, // 126: fastpb.test.Maps.m8b:type_name -> fastpb.test.Maps.M8bEntry
+	130, // 127: fastpb.test.Maps.m8c:type_name -> fastpb.test.Maps.M8cEntry
+	131, // 128: fastpb.test.Maps.m8d:type_name -> fastpb.test.Maps.M8dEntry
+	132, // 129: fastpb.test.Maps.m8e:type_name -> fastpb.test.Maps.M8eEntry
+	133, // 130: fastpb.test.Maps.m8f:type_name -> fastpb.test.Maps.M8fEntry
+	134, // 131: fastpb.test.Maps.m90:type_name -> fastpb.test.Maps.M90Entry
+	135, // 132: fastpb.test.Maps.m91:type_name -> fastpb.test.Maps.M91Entry
+	136, // 133: fastpb.test.Maps.m92:type_name -> fastpb.test.Maps.M92Entry
+	137, // 134: fastpb.test.Maps.m93:type_name -> fastpb.test.Maps.M93Entry
+	138, // 135: fastpb.test.Maps.m94:type_name -> fastpb.test.Maps.M94Entry
+	139, // 136: fastpb.test.Maps.m95:type_name -> fastpb.test.Maps.M95Entry
+	140, // 137: fastpb.test.Maps.m96:type_name -> fastpb.test.Maps.M96Entry
+	141, // 138: fastpb.test.Maps.m97:type_name -> fastpb.test.Maps.M97Entry
+	142, // 139: fastpb.test.Maps.m98:type_name -> fastpb.test.Maps.M98Entry
+	143, // 140: fastpb.test.Maps.m99:type_name -> fastpb.test.Maps.M99Entry
+	144, // 141: fastpb.test.Maps.m9a:type_name -> fastpb.test.Maps.M9aEntry
+	145, // 142: fastpb.test.Maps.m9b:type_name -> fastpb.test.Maps.M9bEntry
+	146, // 143: fastpb.test.Maps.m9c:type_name -> fastpb.test.Maps.M9cEntry
+	147, // 144: fastpb.test.Maps.m9d:type_name -> fastpb.test.Maps.M9dEntry
+	148, // 145: fastpb.test.Maps.m9e:type_name -> fastpb.test.Maps.M9eEntry
+	149, // 146: fastpb.test.Maps.m9f:type_name -> fastpb.test.Maps.M9fEntry
+	150, // 147: fastpb.test.Maps.ma0:type_name -> fastpb.test.Maps.Ma0Entry
+	151, // 148: fastpb.test.Maps.ma1:type_name -> fastpb.test.Maps.Ma1Entry
+	152, // 149: fastpb.test.Maps.ma2:type_name -> fastpb.test.Maps.Ma2Entry
+	153, // 150: fastpb.test.Maps.ma3:type_name -> fastpb.test.Maps.Ma3Entry
+	154, // 151: fastpb.test.Maps.ma4:type_name -> fastpb.test.Maps.Ma4Entry
+	155, // 152: fastpb.test.Maps.ma5:type_name -> fastpb.test.Maps.Ma5Entry
+	156, // 153: fastpb.test.Maps.ma6:type_name -> fastpb.test.Maps.Ma6Entry
+	157, // 154: fastpb.test.Maps.ma7:type_name -> fastpb.test.Maps.Ma7Entry
+	158, // 155: fastpb.test.Maps.ma8:type_name -> fastpb.test.Maps.Ma8Entry
+	159, // 156: fastpb.test.Maps.ma9:type_name -> fastpb.test.Maps.Ma9Entry
+	160, // 157: fastpb.test.Maps.maa:type_name -> fastpb.test.Maps.MaaEntry
+	161, // 158: fastpb.test.Maps.mab:type_name -> fastpb.test.Maps.MabEntry
+	162, // 159: fastpb.test.Maps.mac:type_name -> fastpb.test.Maps.MacEntry
+	163, // 160: fastpb.test.Maps.mad:type_name -> fastpb.test.Maps.MadEntry
+	164, // 161: fastpb.test.Maps.mae:type_name -> fastpb.test.Maps.MaeEntry
+	165, // 162: fastpb.test.Maps.maf:type_name -> fastpb.test.Maps.MafEntry
+	166, // 163: fastpb.test.Maps.mb0:type_name -> fastpb.test.Maps.Mb0Entry
+	167, // 164: fastpb.test.Maps.mb1:type_name -> fastpb.test.Maps.Mb1Entry
+	168, // 165: fastpb.test.Maps.mb2:type_name -> fastpb.test.Maps.Mb2Entry
+	169, // 166: fastpb.test.Maps.mb3:type_name -> fastpb.test.Maps.Mb3Entry
+	170, // 167: fastpb.test.Maps.mb4:type_name -> fastpb.test.Maps.Mb4Entry
+	171, // 168: fastpb.test.Maps.mb5:type_name -> fastpb.test.Maps.Mb5Entry
+	172, // 169: fastpb.test.Maps.mb6:type_name -> fastpb.test.Maps.Mb6Entry
+	173, // 170: fastpb.test.Maps.mb7:type_name -> fastpb.test.Maps.Mb7Entry
+	174, // 171: fastpb.test.Maps.mb8:type_name -> fastpb.test.Maps.Mb8Entry
+	175, // 172: fastpb.test.Maps.mb9:type_name -> fastpb.test.Maps.Mb9Entry
+	176, // 173: fastpb.test.Maps.mba:type_name -> fastpb.test.Maps.MbaEntry
+	177, // 174: fastpb.test.Maps.mbb:type_name -> fastpb.test.Maps.MbbEntry
+	178, // 175: fastpb.test.Maps.mbc:type_name -> fastpb.test.Maps.MbcEntry
+	179, // 176: fastpb.test.Maps.mbd:type_name -> fastpb.test.Maps.MbdEntry
+	180, // 177: fastpb.test.Maps.mbe:type_name -> fastpb.test.Maps.MbeEntry
+	181, // 178: fastpb.test.Maps.mbf:type_name -> fastpb.test.Maps.MbfEntry
+	182, // 179: fastpb.test.Maps.mc0:type_name -> fastpb.test.Maps.Mc0Entry
+	183, // 180: fastpb.test.Maps.mc1:type_name -> fastpb.test.Maps.Mc1Entry
+	184, // 181: fastpb.test.Maps.mc2:type_name -> fastpb.test.Maps.Mc2Entry
+	185, // 182: fastpb.test.Maps.mc3:type_name -> fastpb.test.Maps.Mc3Entry
+	186, // 183: fastpb.test.Maps.mc4:type_name -> fastpb.test.Maps.Mc4Entry
+	187, // 184: fastpb.test.Maps.mc5:type_name -> fastpb.test.Maps.Mc5Entry
+	188, // 185: fastpb.test.Maps.mc6:type_name -> fastpb.test.Maps.Mc6Entry
+	189, // 186: fastpb.test.Maps.mc7:type_name -> fastpb.test.Maps.Mc7Entry
+	190, // 187: fastpb.test.Maps.mc8:type_name -> fastpb.test.Maps.Mc8Entry
+	191, // 188: fastpb.test.Maps.mc9:type_name -> fastpb.test.Maps.Mc9Entry
+	192, // 189: fastpb.test.Maps.mca:type_name -> fastpb.test.Maps.McaEntry
+	193, // 190: fastpb.test.Maps.mcb:type_name -> fastpb.test.Maps.McbEntry
+	194, // 191: fastpb.test.Maps.mcc:type_name -> fastpb.test.Maps.MccEntry
+	195, // 192: fastpb.test.Maps.mcd:type_name -> fastpb.test.Maps.McdEntry
+	196, // 193: fastpb.test.Maps.mce:type_name -> fastpb.test.Maps.MceEntry
+	197, // 194: fastpb.test.Maps.mcf:type_name -> fastpb.test.Maps.McfEntry
+	0,   // 195: fastpb.test.Maps.M1dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 196: fastpb.test.Maps.M2dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 197: fastpb.test.Maps.M3dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 198: fastpb.test.Maps.M4dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 199: fastpb.test.Maps.M5dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 200: fastpb.test.Maps.M6dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 201: fastpb.test.Maps.M7dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 202: fastpb.test.Maps.M8dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 203: fastpb.test.Maps.M9dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 204: fastpb.test.Maps.MadEntry.value:type_name -> fastpb.test.Enum
+	0,   // 205: fastpb.test.Maps.MbdEntry.value:type_name -> fastpb.test.Enum
+	0,   // 206: fastpb.test.Maps.McdEntry.value:type_name -> fastpb.test.Enum
+	207, // [207:207] is the sub-list for method output_type
+	207, // [207:207] is the sub-list for method input_type
+	207, // [207:207] is the sub-list for extension type_name
+	207, // [207:207] is the sub-list for extension extendee
+	0,   // [0:207] is the sub-list for field type_name
 }
 
 func init() { file_test_test_proto_init() }
@@ -803,13 +3603,14 @@ func file_test_test_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   4,
+			NumEnums:      1,
+			NumMessages:   197,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_test_test_proto_goTypes,
 		DependencyIndexes: file_test_test_proto_depIdxs,
+		EnumInfos:         file_test_test_proto_enumTypes,
 		MessageInfos:      file_test_test_proto_msgTypes,
 	}.Build()
 	File_test_test_proto = out.File

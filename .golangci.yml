@@ -90,6 +90,8 @@ issues:
     # The integer overflow is excessively noisy since it doesn't seem to
     # go away by adding appropriate range checks.
     - "G115: integer overflow conversion.*"
+    # There are, in fact, uses for weak random number generators.
+    - "G404: Use of weak random number generator.*"
     # We call this parameter `t`.
     - "parameter testing.TB should have name tb"
 

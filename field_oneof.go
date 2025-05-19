@@ -254,7 +254,7 @@ func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.utf8(p2)
-	p2.scratch = zc.pack()
+	p2.scratch = uint64(zc)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 
@@ -265,7 +265,7 @@ func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	p2.scratch = zc.pack()
+	p2.scratch = uint64(zc)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
 

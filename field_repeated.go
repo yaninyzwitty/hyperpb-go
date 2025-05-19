@@ -32,11 +32,11 @@ func isZC[T any](slice arena.Slice[T]) bool {
 }
 
 func wrapZC[T any](zc zc) arena.Slice[T] {
-	return arena.SliceFromParts[T](nil, zc.offset, zc.len)
+	return arena.SliceFromParts[T](nil, uint32(zc.start()), uint32(zc.len()))
 }
 
 func unwrapRawZC[T any](slice arena.Slice[T]) zc {
-	return zc{offset: uint32(slice.Len()), len: uint32(slice.Cap())}
+	return newRawZC(slice.Len(), slice.Cap())
 }
 
 func unwrapZC[T any](slice arena.Slice[T], src *byte) []T {
@@ -414,10 +414,7 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
 		case count == int(n):
-			*slot = wrapZC[T](zc{
-				offset: uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
-				len:    n,
-			}).Addr()
+			*slot = wrapZC[T](newZC(p1.c().src, p1.b(), int(n))).Addr()
 
 			if dbg.Enabled {
 				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
@@ -551,12 +548,12 @@ func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parse
 func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	if zc.len == 0 {
+	if zc.len() == 0 {
 		return p1, p2
 	}
 
 	size, _ := unsafe2.Layout[T]()
-	if int(zc.len)%size != 0 {
+	if zc.len()%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
@@ -581,8 +578,8 @@ func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	{
 		size, _ := unsafe2.Layout[T]()
 		borrowed := unsafe2.Slice(
-			unsafe2.Cast[T](unsafe2.Add(p1.c().src, zc.offset)),
-			int(zc.len)/size,
+			unsafe2.Cast[T](unsafe2.Add(p1.c().src, zc.start())),
+			zc.len()/size,
 		)
 
 		*slot = slice.Append(p1.arena(), borrowed...).Addr()

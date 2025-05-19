@@ -181,5 +181,5 @@ func (a *Arena) Grow(size int) {
 }
 
 func (a *Arena) Log(op, format string, args ...any) {
-	dbg.Log([]any{"%p", a}, op, format, args...)
+	dbg.Log([]any{"%p %v:%v", a, a.Next, a.End}, op, format, args...)
 }

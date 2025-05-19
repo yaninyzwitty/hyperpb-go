@@ -197,10 +197,7 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
 		case count == int(n):
-			*slot = wrapZC[uint8](zc{
-				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
-				len:	n,
-			}).Addr()
+			*slot = wrapZC[uint8](newZC(p1.c().src, p1.b(), int(n))).Addr()
 
 			if dbg.Enabled {
 				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
@@ -317,10 +314,7 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
 		case count == int(n):
-			*slot = wrapZC[uint32](zc{
-				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
-				len:	n,
-			}).Addr()
+			*slot = wrapZC[uint32](newZC(p1.c().src, p1.b(), int(n))).Addr()
 
 			if dbg.Enabled {
 				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
@@ -437,10 +431,7 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
 
 		case count == int(n):
-			*slot = wrapZC[uint64](zc{
-				offset:	uint32(p1.b_.Sub(unsafe2.AddrOf(p1.c().src))),
-				len:	n,
-			}).Addr()
+			*slot = wrapZC[uint64](newZC(p1.c().src, p1.b(), int(n))).Addr()
 
 			if dbg.Enabled {
 				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
@@ -580,12 +571,12 @@ func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint32]
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	if zc.len == 0 {
+	if zc.len() == 0 {
 		return p1, p2
 	}
 
 	size, _ := unsafe2.Layout[uint32]()
-	if int(zc.len)%size != 0 {
+	if zc.len()%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
@@ -608,8 +599,8 @@ func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	{
 		size, _ := unsafe2.Layout[uint32]()
 		borrowed := unsafe2.Slice(
-			unsafe2.Cast[uint32](unsafe2.Add(p1.c().src, zc.offset)),
-			int(zc.len)/size,
+			unsafe2.Cast[uint32](unsafe2.Add(p1.c().src, zc.start())),
+			zc.len()/size,
 		)
 
 		*slot = slice.Append(p1.arena(), borrowed...).Addr()
@@ -624,12 +615,12 @@ func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint64]
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	if zc.len == 0 {
+	if zc.len() == 0 {
 		return p1, p2
 	}
 
 	size, _ := unsafe2.Layout[uint64]()
-	if int(zc.len)%size != 0 {
+	if zc.len()%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
@@ -652,8 +643,8 @@ func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 	{
 		size, _ := unsafe2.Layout[uint64]()
 		borrowed := unsafe2.Slice(
-			unsafe2.Cast[uint64](unsafe2.Add(p1.c().src, zc.offset)),
-			int(zc.len)/size,
+			unsafe2.Cast[uint64](unsafe2.Add(p1.c().src, zc.start())),
+			zc.len()/size,
 		)
 
 		*slot = slice.Append(p1.arena(), borrowed...).Addr()

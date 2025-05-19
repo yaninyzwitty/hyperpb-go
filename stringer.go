@@ -67,10 +67,6 @@ func (ft fieldTag) Format(s fmt.State, verb rune) {
 	dbg.Fprintf("%#x:%d:%d", uint64(ft), n, t).Format(s, verb)
 }
 
-func (zc zc) Format(s fmt.State, verb rune) {
-	dbg.Fprintf("[%d:%d]", zc.offset, zc.offset+zc.len).Format(s, verb)
-}
-
 func (t *typeHeader) Format(s fmt.State, verb rune) {
 	dbg.Dict(
 		dbg.Fprintf("%p", t),
@@ -204,8 +200,7 @@ func (m *message) dump() string {
 
 			if field.size == uint32(zcSize) {
 				zc := unsafe2.ByteLoad[zc](data, 0)
-				start := int(zc.offset)
-				end := start + int(zc.len)
+				start, end := zc.start(), zc.end()
 				if start <= m.context.len && end <= m.context.len && start < end {
 					fmt.Fprintf(buf, " %q", zc.bytes(m.context.src))
 				}

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// gen_repeated is a script for generating blocks of repeated Protoscope fields.
+// gen is a script for generating blocks of repeated Protoscope fields.
 package main
 
 import (

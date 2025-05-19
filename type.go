@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 
 	"github.com/bufbuild/fastpb/internal/dbg"
-	"github.com/bufbuild/fastpb/internal/table"
+	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -106,7 +106,7 @@ func (t Type) byDescriptor(fd protoreflect.FieldDescriptor) *field {
 	case fd.ContainingMessage() != t.Descriptor():
 		return nil
 	case fd.IsExtension():
-		idx := t.raw.numbers.Lookup(int32(fd.Number()))
+		idx := swiss.LookupI32xU32(t.raw.numbers, int32(fd.Number()))
 		if idx == nil {
 			return nil
 		}
@@ -131,7 +131,7 @@ type typeHeader struct {
 	parser *typeParser
 
 	// Maps field numbers to offsets in fields.
-	numbers table.Table[uint32]
+	numbers *swiss.Table[int32, uint32]
 
 	// The number of count that follow this type, not including the special
 	// padding field with number equal to zero.
@@ -177,7 +177,7 @@ type typeParser struct {
 	tyOffset uint32
 
 	// Maps field tags to offsets in fields.
-	tags table.Table[uint32]
+	tags *swiss.Table[int32, uint32]
 
 	entry fieldParser
 

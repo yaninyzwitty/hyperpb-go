@@ -1,0 +1,96 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: fastpb.test.Maps
+protoscope:
+- |
+  0x70: { 1: 1i32 2: 2 }
+  0x70: { 1: 3i32 2: 4 }
+  0x70: { 1: 5i32 2: 0 }
+  0x70: { 1: 3i32 2: -1 }
+- |
+  0x71: { 1: 1i32 2: 2 }
+  0x71: { 1: 3i32 2: 4 }
+  0x71: { 1: 5i32 2: 0 }
+  0x71: { 1: 3i32 2: -1 }
+- |
+  0x72: { 1: 1i32 2: 2 }
+  0x72: { 1: 3i32 2: 4 }
+  0x72: { 1: 5i32 2: 0 }
+  0x72: { 1: 3i32 2: -1 }
+- |
+  0x73: { 1: 1i32 2: 2 }
+  0x73: { 1: 3i32 2: 4 }
+  0x73: { 1: 5i32 2: 0 }
+  0x73: { 1: 3i32 2: -1 }
+- |
+  0x74: { 1: 1i32 2: 2 }
+  0x74: { 1: 3i32 2: 4 }
+  0x74: { 1: 5i32 2: 0 }
+  0x74: { 1: 3i32 2: -1 }
+- |
+  0x75: { 1: 1i32 2: 2 }
+  0x75: { 1: 3i32 2: 4 }
+  0x75: { 1: 5i32 2: 0 }
+  0x75: { 1: 3i32 2: -1 }
+- |
+  0x76: { 1: 1i32 2: 2i32 }
+  0x76: { 1: 3i32 2: 4i32 }
+  0x76: { 1: 5i32 2: 0i32 }
+  0x76: { 1: 3i32 2: -1i32 }
+- |
+  0x77: { 1: 1i32 2: 2i64 }
+  0x77: { 1: 3i32 2: 4i64 }
+  0x77: { 1: 5i32 2: 0i64 }
+  0x77: { 1: 3i32 2: -1i64 }
+- |
+  0x78: { 1: 1i32 2: 2i32 }
+  0x78: { 1: 3i32 2: 4i32 }
+  0x78: { 1: 5i32 2: 0i32 }
+  0x78: { 1: 3i32 2: -1i32 }
+- |
+  0x79: { 1: 1i32 2: 2i64 }
+  0x79: { 1: 3i32 2: 4i64 }
+  0x79: { 1: 5i32 2: 0i64 }
+  0x79: { 1: 3i32 2: -1i64 }
+- |
+  0x7a: { 1: 1i32 2: 2i32 }
+  0x7a: { 1: 3i32 2: 4i32 }
+  0x7a: { 1: 5i32 2: 0i32 }
+  0x7a: { 1: 3i32 2: -1i32 }
+- |
+  0x7b: { 1: 1i32 2: 2i64 }
+  0x7b: { 1: 3i32 2: 4i64 }
+  0x7b: { 1: 5i32 2: 0i64 }
+  0x7b: { 1: 3i32 2: -1i64 }
+- |
+  0x7c: { 1: 1i32 2: 2 }
+  0x7c: { 1: 3i32 2: 4 }
+  0x7c: { 1: 5i32 2: 0 }
+  0x7c: { 1: 3i32 2: -1 }
+- |
+  0x7d: { 1: 1i32 2: 2 }
+  0x7d: { 1: 3i32 2: 4 }
+  0x7d: { 1: 5i32 2: 0 }
+  0x7d: { 1: 3i32 2: -1 }
+- |
+  0x7e: { 1: 1i32 2: {"foo"} }
+  0x7e: { 1: 3i32 2: {"barrrr"} }
+  0x7e: { 1: 5i32 2: {""} }
+  0x7e: { 1: 3i32 2: {"---"} }
+- |
+  0x7f: { 1: 1i32 2: {"foo"} }
+  0x7f: { 1: 3i32 2: {"barrrr"} }
+  0x7f: { 1: 5i32 2: {""} }
+  0x7f: { 1: 3i32 2: {"---"} }

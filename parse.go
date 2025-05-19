@@ -27,6 +27,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/sync2"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -533,7 +534,7 @@ func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc) {
 	var n uint32
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	zc := zc{offset: uint32(unsafe2.Sub(p1.b(), p1.c().src)), len: n}
+	zc := newZC(p1.c().src, p1.b(), int(n))
 	p1 = p1.advance(int(n))
 
 	if dbg.Enabled {
@@ -549,7 +550,7 @@ func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc) {
 	p1, p2, zc = p1.bytes(p2)
 
 	// TODO: need to inline utf8.Valid to avoid spilling p1/p2.
-	s := unsafe2.Slice(unsafe2.Add(p1.b(), -int32(zc.len)), zc.len)
+	s := unsafe2.Slice(unsafe2.Add(p1.b(), -int32(zc.len())), zc.len())
 	if false && !utf8.Valid(s) {
 		p1.fail(p2, errCodeUTF8)
 	}
@@ -595,7 +596,7 @@ func logMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 		p2.m().ty(),
 		p2.m().ty().raw,
 	)
-	p1.log(p2, "tags", "%v", p2.t().tags)
+	p1.log(p2, "tags", "%v%v\n", p2.t().tags.Dump(), p2.t().tags)
 	return p1, p2
 }
 
@@ -815,7 +816,7 @@ truncated:
 
 func (p1 parser1) byTag(p2 parser2, tag2 uint64) (parser1, parser2, uint64) {
 	t := p2.t()
-	p := t.tags.Lookup(int32(tag2))
+	p := swiss.LookupI32xU32(t.tags, int32(tag2))
 	if p == nil {
 		p2.f_ = 0
 		return p1, p2, tag2
@@ -854,15 +855,12 @@ func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
 	}
 	p1 = p1.advance(m)
 
-	zc := zc{
-		offset: uint32(start - unsafe2.AddrOf(p1.c().src)),
-		len:    uint32(p1.b_ - start),
-	}
+	zc := newZC(p1.c().src, start.AssertValid(), int(p1.b_-start))
 	cold := p2.m().mutableCold()
 	if cold.unknown.Len() > 0 {
 		last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
-		if zc.offset == last.offset+last.len {
-			last.len += zc.len
+		if zc.start() == last.end() {
+			*last = newRawZC(last.start(), last.len()+zc.len())
 			return p1, p2
 		}
 	}

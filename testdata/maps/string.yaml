@@ -1,0 +1,96 @@
+# Copyright 2020-2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: fastpb.test.Maps
+protoscope:
+- |
+  0xc0: { 1: {"a"} 2: 2 }
+  0xc0: { 1: {"aa"} 2: 4 }
+  0xc0: { 1: {""} 2: 0 }
+  0xc0: { 1: {"aa"} 2: -1 }
+- |
+  0xc1: { 1: {"a"} 2: 2 }
+  0xc1: { 1: {"aa"} 2: 4 }
+  0xc1: { 1: {""} 2: 0 }
+  0xc1: { 1: {"aa"} 2: -1 }
+- |
+  0xc2: { 1: {"a"} 2: 2 }
+  0xc2: { 1: {"aa"} 2: 4 }
+  0xc2: { 1: {""} 2: 0 }
+  0xc2: { 1: {"aa"} 2: -1 }
+- |
+  0xc3: { 1: {"a"} 2: 2 }
+  0xc3: { 1: {"aa"} 2: 4 }
+  0xc3: { 1: {""} 2: 0 }
+  0xc3: { 1: {"aa"} 2: -1 }
+- |
+  0xc4: { 1: {"a"} 2: 2 }
+  0xc4: { 1: {"aa"} 2: 4 }
+  0xc4: { 1: {""} 2: 0 }
+  0xc4: { 1: {"aa"} 2: -1 }
+- |
+  0xc5: { 1: {"a"} 2: 2 }
+  0xc5: { 1: {"aa"} 2: 4 }
+  0xc5: { 1: {""} 2: 0 }
+  0xc5: { 1: {"aa"} 2: -1 }
+- |
+  0xc6: { 1: {"a"} 2: 2i32 }
+  0xc6: { 1: {"aa"} 2: 4i32 }
+  0xc6: { 1: {""} 2: 0i32 }
+  0xc6: { 1: {"aa"} 2: -1i32 }
+- |
+  0xc7: { 1: {"a"} 2: 2i64 }
+  0xc7: { 1: {"aa"} 2: 4i64 }
+  0xc7: { 1: {""} 2: 0i64 }
+  0xc7: { 1: {"aa"} 2: -1i64 }
+- |
+  0xc8: { 1: {"a"} 2: 2i32 }
+  0xc8: { 1: {"aa"} 2: 4i32 }
+  0xc8: { 1: {""} 2: 0i32 }
+  0xc8: { 1: {"aa"} 2: -1i32 }
+- |
+  0xc9: { 1: {"a"} 2: 2i64 }
+  0xc9: { 1: {"aa"} 2: 4i64 }
+  0xc9: { 1: {""} 2: 0i64 }
+  0xc9: { 1: {"aa"} 2: -1i64 }
+- |
+  0xca: { 1: {"a"} 2: 2i32 }
+  0xca: { 1: {"aa"} 2: 4i32 }
+  0xca: { 1: {""} 2: 0i32 }
+  0xca: { 1: {"aa"} 2: -1i32 }
+- |
+  0xcb: { 1: {"a"} 2: 2i64 }
+  0xcb: { 1: {"aa"} 2: 4i64 }
+  0xcb: { 1: {""} 2: 0i64 }
+  0xcb: { 1: {"aa"} 2: -1i64 }
+- |
+  0xcc: { 1: {"a"} 2: 2 }
+  0xcc: { 1: {"aa"} 2: 4 }
+  0xcc: { 1: {""} 2: 0 }
+  0xcc: { 1: {"aa"} 2: -1 }
+- |
+  0xcd: { 1: {"a"} 2: 2 }
+  0xcd: { 1: {"aa"} 2: 4 }
+  0xcd: { 1: {""} 2: 0 }
+  0xcd: { 1: {"aa"} 2: -1 }
+- |
+  0xce: { 1: {"a"} 2: {"foo"} }
+  0xce: { 1: {"aa"} 2: {"barrrr"} }
+  0xce: { 1: {""} 2: {""} }
+  0xce: { 1: {"aa"} 2: {"---"} }
+- |
+  0xcf: { 1: {"a"} 2: {"foo"} }
+  0xcf: { 1: {"aa"} 2: {"barrrr"} }
+  0xcf: { 1: {""} 2: {""} }
+  0xcf: { 1: {"aa"} 2: {"---"} }

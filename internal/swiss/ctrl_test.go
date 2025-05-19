@@ -12,19 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build !debug
+package swiss
 
-package dbg
+import (
+	"testing"
 
-const Enabled = false
+	"github.com/stretchr/testify/assert"
+)
 
-func Log([]any, string, string, ...any) {}
-func Assert(bool, string, ...any)       {}
+func TestCtrl(t *testing.T) {
+	t.Parallel()
 
-type Value[T any] struct {
-	_ struct{}
-}
+	var a ctrl = 0x0123456789abcdef
+	b := broadcast(0x67)
+	c := a.matches(b)
+	t.Log(a, b, c)
 
-func (v *Value[T]) Get() *T {
-	panic("called Value.Get() when not in debug mode")
+	for i := range 8 {
+		var set bool
+		c, set = c.next()
+		assert.Equal(t, i == 4, set)
+	}
 }

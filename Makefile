@@ -48,7 +48,7 @@ bench: build ## Run benchmarks
 
 .PHONY: profile
 profile: build ## Profile benchmarks and open them in pprof
-	$(GO_CMD) test -bench '$(BENCHMARK)' -benchmem -run '^B' -v \
+	$(GO_CMD) test -bench '$(BENCHMARK)' -benchmem -run '^B' \
 		-benchtime 3s \
 		-o fastpb.test -cpuprofile fastpb.prof
 	$(GO_CMD) tool pprof -http localhost:8000 fastpb.test fastpb.prof

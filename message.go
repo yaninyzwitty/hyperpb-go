@@ -379,9 +379,33 @@ func (m *message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 	f := m.ty().byIndex(0)
 	i := 0
 	for f.valid() {
-		if v := f.get(m); v.IsValid() && !yield(m.ty().raw.aux.fds[i], v) {
+		fd := m.ty().raw.aux.fds[i]
+		v := f.get(m)
+		switch {
+		case !v.IsValid():
+			goto skip
+
+		case fd.IsList():
+			if v.List().Len() == 0 {
+				goto skip
+			}
+
+		case fd.IsMap():
+			if v.Map().Len() == 0 {
+				goto skip
+			}
+
+		case fd.Message() != nil:
+			if _, empty := v.Interface().(empty); empty {
+				goto skip
+			}
+		}
+
+		if !yield(m.ty().raw.aux.fds[i], v) {
 			return
 		}
+
+	skip:
 		f = unsafe2.Add(f, 1)
 		i++
 	}
@@ -404,10 +428,10 @@ func (m *message) Has(fd protoreflect.FieldDescriptor) bool {
 		return false
 
 	case fd.IsList():
-		return v.List().Len() != 0
+		return v.List().Len() > 0
 
 	case fd.IsMap():
-		panic(dbg.Unsupported())
+		return v.Map().Len() > 0
 
 	case fd.Message() != nil:
 		_, empty := v.Interface().(empty)

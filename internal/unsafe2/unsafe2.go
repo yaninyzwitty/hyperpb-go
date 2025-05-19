@@ -91,7 +91,7 @@ func StoreNoWB[E any](p **E, q *E) {
 
 // ByteAdd adds the given offset to p, without scaling.
 func ByteAdd[P ~*E, E any, I Int](p P, n I) P {
-	return P(unsafe.Add(unsafe.Pointer(p), uintptr(n)))
+	return P(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + uintptr(n)))
 }
 
 // ByteLoad loads a value of the given type at the given byte offset.
@@ -186,12 +186,26 @@ func SliceToString[S ~[]T, T any](s S) string {
 	return BitCast[string](str)
 }
 
+// StringToSlice converts a string into a slice, multiplying the slice length
+// as appropriate.
+func StringToSlice[S ~[]T, T any](s string) S {
+	size, _ := Layout[T]()
+	return unsafe.Slice(Cast[T](unsafe.StringData(s)), len(s)/size)
+}
+
+type iface struct {
+	itab uintptr
+	data *byte
+}
+
 // AnyData extracts the pointer value from an any.
 func AnyData(v any) *byte {
-	type iface struct {
-		_, data *byte
-	}
 	return Cast[iface](&v).data
+}
+
+// AnyData extracts the opaque type from an any.
+func AnyType(v any) uintptr {
+	return Cast[iface](&v).itab
 }
 
 // AnyBytes extracts a slice pointing to the variable-length data of an any.
@@ -260,15 +274,30 @@ type VLA[T any] [0]T
 
 // Beyond obtains the VLA past the end of p.
 func Beyond[T, Header any](p *Header) *VLA[T] {
-	return &Cast[struct {
-		_   Header
-		VLA VLA[T]
-	}](p).VLA
+	// The below code performs the following address calculation without
+	// triggering a load (Go likes to perform loads of the result of pointer
+	// arithmetic like the following).
+	//
+	//  &Cast[struct {
+	//    _   Header
+	//    VLA VLA[T]
+	//  }](p).VLA
+
+	size, _ := Layout[Header]()
+	_, align := Layout[T]()
+	size = (size + align - 1) &^ (align - 1)
+
+	return Cast[VLA[T]](ByteAdd(p, size))
 }
 
 // Get returns a pointer to the nth element of this array.
 func (a *VLA[T]) Get(n int) *T {
 	return Add(Cast[T](a), n)
+}
+
+// Get returns a pointer to the element of this array at the given byte offset.
+func (a *VLA[T]) ByteGet(n int) *T {
+	return ByteAdd(Cast[T](a), n)
 }
 
 // Slice converts this VLA into a slice of the given length.

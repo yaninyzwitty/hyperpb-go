@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build !debug
+package flag2
 
-package dbg
+import "flag"
 
-const Enabled = false
-
-func Log([]any, string, string, ...any) {}
-func Assert(bool, string, ...any)       {}
-
-type Value[T any] struct {
-	_ struct{}
-}
-
-func (v *Value[T]) Get() *T {
-	panic("called Value.Get() when not in debug mode")
+// Lookup looks up a flag by name of the given type.
+//
+// Panics if this flag is of the wrong type, or if the flag value is not a
+// [flag.Getter].
+func Lookup[T any](name string) T {
+	return flag.Lookup(name).Value.(flag.Getter).Get().(T) //nolint:errcheck
 }

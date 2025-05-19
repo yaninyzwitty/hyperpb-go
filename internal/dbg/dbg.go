@@ -53,9 +53,18 @@ func init() {
 // before operation does.
 func Log(context []any, operation string, format string, args ...any) {
 	// Determine the package and file which called us.
-	pc, file, _, _ := runtime.Caller(1)
+	skip := 1
+again:
+	pc, file, line, _ := runtime.Caller(skip)
 
 	fn := runtime.FuncForPC(pc)
+	name := fn.Name()
+	name = name[strings.LastIndex(name, ".")+1:]
+	if strings.HasPrefix(name, "log") || strings.Contains(name, "Log") {
+		skip++
+		goto again
+	}
+
 	pkg := fn.Name()
 	pkg = strings.TrimPrefix(pkg, "github.com/bufbuild/")
 	pkg = strings.TrimPrefix(pkg, "fastpb/internal/")
@@ -65,7 +74,7 @@ func Log(context []any, operation string, format string, args ...any) {
 
 	buf := new(strings.Builder)
 
-	_, _ = fmt.Fprintf(buf, "%s/%s [g%04d", pkg, file, routine.Goid())
+	_, _ = fmt.Fprintf(buf, "%s/%s:%d [g%04d", pkg, file, line, routine.Goid())
 	if len(context) >= 1 {
 		_, _ = fmt.Fprintf(buf, ", "+context[0].(string), context[1:]...)
 	}
@@ -86,6 +95,13 @@ func Log(context []any, operation string, format string, args ...any) {
 	_, _ = buf.Write([]byte{'\n'})
 	_, _ = os.Stderr.WriteString(buf.String())
 	_ = os.Stderr.Sync()
+}
+
+// Assert panics if cond is false, but only in debug mode.
+func Assert(cond bool, format string, args ...any) {
+	if !cond {
+		panic(fmt.Errorf("fastpb: internal assertion failed: "+format, args...))
+	}
 }
 
 // Value is a value of any type that only exists when the debug tag is

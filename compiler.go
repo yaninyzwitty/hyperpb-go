@@ -30,7 +30,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
-	"github.com/bufbuild/fastpb/internal/table"
+	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -382,6 +382,9 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 	nextWhichWord := uint32(ir.hot - whichWords*4)
 	for i := range ir.s {
 		sf := &ir.s[i]
+		if sf.align == 0 {
+			continue
+		}
 
 		// Allocate bit and byte storage for this field.
 		size := &ir.hot
@@ -452,49 +455,50 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 
 	if dbg.Enabled {
 		// Print the resulting layout for this struct.
-		c.log("layout", "%s\n%v", ir.d.FullName(), dbg.Formatter(func(buf fmt.State) {
-			start, _ := unsafe2.Layout[message]()
-			fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.bitWords, ir.layout.bitWords)
-			for _, sf := range ir.s {
-				if sf.tIdx == nil {
-					continue
-				}
-
-				tf := ir.t[sf.tIdx[0]]
-				name := tf.d.Name()
-				if tf.arch.oneof {
-					name = "oneof:" + tf.d.ContainingOneof().Name()
-				}
-
-				fmt.Fprintf(buf, "  %#04x", sf.offset.data)
-				if sf.bits > 0 {
-					fmt.Fprintf(buf, "(%v)", sf.offset.bit)
-				} else {
-					fmt.Fprint(buf, "(-)")
-				}
-				fmt.Fprintf(buf, "[%d:%d:%d]", sf.size, sf.align, sf.bits)
-
-				fmt.Fprintf(buf, " %s: ", name)
-				switch tf.d.Cardinality() {
-				case protoreflect.Optional:
-					if tf.d.HasOptionalKeyword() {
-						fmt.Fprint(buf, "optional ")
+		c.log("layout", "%s, %d/%d\n%v", ir.d.FullName(), ir.hot, ir.cold,
+			dbg.Formatter(func(buf fmt.State) {
+				start, _ := unsafe2.Layout[message]()
+				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.bitWords, ir.layout.bitWords)
+				for _, sf := range ir.s {
+					if sf.tIdx == nil {
+						continue
 					}
-				case protoreflect.Repeated:
-					fmt.Fprint(buf, "repeated ")
-				case protoreflect.Required:
-					fmt.Fprint(buf, "required ")
+
+					tf := ir.t[sf.tIdx[0]]
+					name := tf.d.Name()
+					if tf.arch.oneof {
+						name = "oneof:" + tf.d.ContainingOneof().Name()
+					}
+
+					fmt.Fprintf(buf, "  %#04x", sf.offset.data)
+					if sf.bits > 0 {
+						fmt.Fprintf(buf, "(%v)", sf.offset.bit)
+					} else {
+						fmt.Fprint(buf, "(-)")
+					}
+					fmt.Fprintf(buf, "[%d:%d:%d]", sf.size, sf.align, sf.bits)
+
+					fmt.Fprintf(buf, " %s: ", name)
+					switch tf.d.Cardinality() {
+					case protoreflect.Optional:
+						if tf.d.HasOptionalKeyword() {
+							fmt.Fprint(buf, "optional ")
+						}
+					case protoreflect.Repeated:
+						fmt.Fprint(buf, "repeated ")
+					case protoreflect.Required:
+						fmt.Fprint(buf, "required ")
+					}
+					if m := tf.d.Message(); m != nil {
+						fmt.Fprintf(buf, "%v (%v) ", m.FullName(), tf.d.Kind())
+					} else if e := tf.d.Enum(); e != nil {
+						fmt.Fprintf(buf, "%v (%v) ", e.FullName(), tf.d.Kind())
+					} else {
+						fmt.Fprintf(buf, "%v ", tf.d.Kind())
+					}
+					fmt.Fprintln(buf)
 				}
-				if m := tf.d.Message(); m != nil {
-					fmt.Fprintf(buf, "%v (%v) ", m.FullName(), tf.d.Kind())
-				} else if e := tf.d.Enum(); e != nil {
-					fmt.Fprintf(buf, "%v (%v) ", e.FullName(), tf.d.Kind())
-				} else {
-					fmt.Fprintf(buf, "%v ", tf.d.Kind())
-				}
-				fmt.Fprintln(buf)
-			}
-		}))
+			}))
 	}
 
 	// Now, sort the parsers into the hot and cold sides. Stable sort is
@@ -614,7 +618,7 @@ func (c *compiler) codegen(ir *ir) {
 		},
 	)
 
-	numbers := make([]table.Entry[uint32], 0, len(ir.t))
+	numbers := make([]swiss.Entry[int32, uint32], 0, len(ir.t))
 	for i, tf := range ir.t {
 		var relos []relo
 		if md := tf.d.Message(); md != nil {
@@ -635,10 +639,7 @@ func (c *compiler) codegen(ir *ir) {
 			relos...,
 		)
 
-		numbers = append(numbers, table.Entry[uint32]{
-			Key:   int32(tf.d.Number()),
-			Value: uint32(i),
-		})
+		numbers = append(numbers, swiss.KV(int32(tf.d.Number()), uint32(i)))
 	}
 	// Append the dummy end field.
 	c.write(nil, field{})
@@ -673,10 +674,10 @@ func (c *compiler) codegen(ir *ir) {
 		var tag fieldTag
 		tag.encode(tf.d.Number(), p.kind)
 
-		numbers = append(numbers, table.Entry[uint32]{
-			Key:   int32(protowire.EncodeTag(tf.d.Number(), p.kind)),
-			Value: uint32(i),
-		})
+		numbers = append(numbers, swiss.KV(
+			int32(protowire.EncodeTag(tf.d.Number(), p.kind)),
+			uint32(i),
+		))
 
 		nextOk := pf.next
 		nextErr := i + 1
@@ -792,10 +793,10 @@ func (c *compiler) write(symbol, v any, relos ...relo) int {
 	}, relos...)
 }
 
-func writeTable[V comparable](c *compiler, symbol any, entries []table.Entry[V]) int {
+func writeTable[V comparable](c *compiler, symbol any, entries []swiss.Entry[int32, V]) int {
 	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
-		b, t := table.New(b, entries...)
-		return unsafe2.Sub(t.Data, unsafe.SliceData(b)), b
+		b, t := swiss.New(b, nil, entries...)
+		return unsafe2.Sub(unsafe2.Cast[byte](t), unsafe.SliceData(b)), b
 	})
 }
 

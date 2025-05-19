@@ -289,7 +289,7 @@ func parseFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseString(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.utf8(p2)
-	p2.scratch = zc.pack()
+	p2.scratch = uint64(zc)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -298,7 +298,7 @@ func parseString(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var zc zc
 	p1, p2, zc = p1.bytes(p2)
-	p2.scratch = zc.pack()
+	p2.scratch = uint64(zc)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
