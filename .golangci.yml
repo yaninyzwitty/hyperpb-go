@@ -92,6 +92,7 @@ issues:
     - "G115: integer overflow conversion.*"
     # There are, in fact, uses for weak random number generators.
     - "G404: Use of weak random number generator.*"
+    - "G306: Expect WriteFile permissions to be 0600 or less.*"
     # We call this parameter `t`.
     - "parameter testing.TB should have name tb"
 
@@ -104,7 +105,7 @@ issues:
         - gosec
 
     # Disable import formatting in generated stencil files.
-    - path: _stencil\.go
-      linters: [gci]
+    - path: '(^|/)stencils\.go'
+      linters: [gofumpt, goimports, gci, whitespace, unconvert]
     - path: arena/shapes.go
       linters: [gci, gofmt, gofumpt, goimports]

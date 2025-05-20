@@ -37,3 +37,5 @@
 //   - Maps (currently they are rendered as repeated fields).
 //   - Groups (groups will parse as unknown fields).
 package fastpb
+
+//go:generate go run ./internal/stencil

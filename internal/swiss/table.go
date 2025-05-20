@@ -29,6 +29,8 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
+//go:generate go run ../stencil
+
 const maxEntries = math.MaxInt32 / 8
 
 // Key is one of the allowed keys for [Table].
@@ -464,8 +466,6 @@ func (t *Table[K, V]) Dump() string {
 	return buf.String()
 }
 
-//go:generate go run ../stencil
-
 //fastpb:stencil InitU8xU8 Table.Init[uint8, uint8] search -> searchU8xU8 searchFunc -> searchFuncU8xU8
 //fastpb:stencil InitU32xU8 Table.Init[uint32, uint8] search -> searchU32xU8 searchFunc -> searchFuncU32xU8
 //fastpb:stencil InitU64xU8 Table.Init[uint64, uint8] search -> searchU64xU8 searchFunc -> searchFuncU64xU8
@@ -506,6 +506,5 @@ func (t *Table[K, V]) Dump() string {
 //fastpb:stencil searchFuncU32xU64 Table.searchFunc[uint32, uint64]
 //fastpb:stencil searchFuncU64xU64 Table.searchFunc[uint64, uint64]
 
-//fastpb:stencil LookupI32xU32 Table.Lookup[int32, uint32] search -> searchI32xU32 searchFunc -> searchFuncI32xU32
+//fastpb:stencil LookupI32xU32 Table.Lookup[int32, uint32] search -> searchI32xU32
 //fastpb:stencil searchI32xU32 Table.search[int32, uint32]
-//fastpb:stencil searchFuncI32xU32 Table.searchFunc[int32, uint32]

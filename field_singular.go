@@ -23,7 +23,14 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ./internal/stencil
+// Singular fields are implemented as a single field of the appropriate type.
+// For integers (and floats, which we never materialize as floats in the parser)
+// this is either uint32 or uint64. For bool, this is uint8.
+//
+// Strings and bytes are stored as a [zc].
+//
+// Messages, which are optional even when singular, are stored as a *message
+// pointer. The pointer is nil when the field is not set.
 
 // singularFields consists of archetypes for singular (i.e., non-optional)
 // fields of each field type.

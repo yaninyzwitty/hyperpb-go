@@ -28,6 +28,29 @@ The benchmarks are also run against `protobuf-go`'s generated code, and
 When filing a PR, it is recommended that it include a before/after comparison
 of the benchmarks.
 
+## File Structure
+
+The main package, `fastpb`, is relatively large. The files contain roughly
+the following:
+
+* `compiler.go`, `type.go` - Compiler stuff.
+* `error.go`, `parse.go` - Exclusively parser-related stuff.
+* `field_*.go` - Field archetype definitions. There's a lot of them.
+   * `field_map_*.go` - Includes `protoreflect.Map` implementations.
+   * `field_repeated_*.go` - Includes `protoreflect.List` implementations.
+* `message.go` - `protoreflect.Message` implementation.
+* `stringer.go` - Pretty-printers for debugging.
+* `reflect.go`, `zc.go` - Utilities.
+
+The most important internal packages are:
+
+* `internal/arena` - All allocations go through here. See
+  <https://mcyoung.xyz/2025/04/21/go-arenas/> for an introduction.
+* `internal/dbg` - Debugging utilities. Enable with `-tags debug`.
+* `internal/stencil` - Code generator for manually specializing generic functions.
+* `internal/swiss` - Full-fledged Swisstable implementation.
+* `internal/unsafe2` - Unsafe helpers.
+
 # Implementation Details
 
 ## A Brief Primer on Go's Memory Semantics
@@ -127,7 +150,7 @@ which is stored in an unusual form described in the parser. The compiler
 is responsible for assembling this key.
 
 This compiler's equivalent of instruction selection (which we call archetype
-selection) is the mechanism by which a FieldDescriptor is associated with one
+selection) is the mechanism by which a `FieldDescriptor` is associated with one
 of dozens of `archetype`s, which represent the various ways in which a field
 can be parsed and accessed. For example, for each `protoreflect.Kind`, there
 is an archetype for that field appearing as implicit presence (called
@@ -193,7 +216,7 @@ across calls (regardless, Go's mediocre register allocator still
 unnecessarily spills a lot of state).
 
 The parser state is split across three types, `parser1`, `parser2`, and
-`parser3`, to work around various bugs in Go's codegen that would result in
+`parserP`, to work around various bugs in Go's codegen that would result in
 worse performance. These structs should be thought of as being the same
 entity.
 
@@ -207,8 +230,11 @@ to be able to jump to from any other section. These are:
   2. Matching the partially decoded tag against the parsers for the current
      field.
 
-  3. Resynchronizing the field pointer in the event of failing to make\
+  3. Resynchronizing the field pointer in the event of failing to make
      progress in (2) enough times.
+
+The core parser loop isn't even recursive; we manage our own message recursion
+stack instead.
 
 We will now dive into each of these components separately.
 
@@ -237,7 +263,7 @@ This step also advances the parser past the varint, so there's no need to
 store the length of the varint anymore past this point.
 
 This step only needs to be performed once per record, and the resulting
-partially decoded value is cached to compare against the `parserF`.tag values
+partially decoded value is cached to compare against the `fieldTag` values
 in the next phase. The interpreter only jumps to this block when it is ready
 to start parsing a new record.
 
@@ -282,6 +308,9 @@ is beneficial to do so as a matter of instruction cache friendliness. For
 example, int32, uint32, and enum fields of the same presence discipline will
 use the same thunk, because they're all parsed and stored as 32-bit varints.
 The same is true of fixed32, sfixed32, and float32.
+
+To learn more about a particular archetype's implementation choices, look at
+the `field_*.go` files.
 
 ## Parser Threading And Inlining
 

@@ -25,20 +25,37 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ./internal/stencil
+// Repeated fields are implemented as one an arena.Slice for some element
+// type, with various optimizations to avoid materializing a slice in cases
+// where we can zero-copy.
+//
+// If the pointer part of an arena.Slice is nil, that means that its length
+// and capacity are actually the contents of a [zc], and the slice is actually
+// a zero-copy alias of the input buffer. This is most notable for fixed-size
+// fields, which we can almost always zero-copy.
+//
+// Packed varint fields also make this optimization, but only when every element
+// of the packed field is one byte long. There is a special list implementation
+// that handles this case.
 
+// isZC returns whether a slice is secretly a [zc].
 func isZC[T any](slice arena.Slice[T]) bool {
 	return slice.Ptr() == nil
 }
 
+// wrapZC wraps a [zc] up as an arena slice.
 func wrapZC[T any](zc zc) arena.Slice[T] {
 	return arena.SliceFromParts[T](nil, uint32(zc.start()), uint32(zc.len()))
 }
 
+// unwrapRawZC is like unwrapZC, but it does not dereference the zc into a
+// slice.
 func unwrapRawZC[T any](slice arena.Slice[T]) zc {
 	return newRawZC(slice.Len(), slice.Cap())
 }
 
+// unwrapZC unwraps a slice that is secretly a [zc], and uses it to obtain a
+// slice of T values from src.
 func unwrapZC[T any](slice arena.Slice[T], src *byte) []T {
 	size, _ := unsafe2.Layout[T]()
 	// This is a borrow from src, and len and cap are a zc. Note that both
@@ -196,7 +213,7 @@ var repeatedFields = [...]archetype{
 	protoreflect.BytesKind: {
 		size:    uint32(arena.SliceSize),
 		align:   uint32(arena.SliceAlign),
-		getter:  getRepeatedBytes,
+		getter:  repeatedBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 
@@ -214,7 +231,7 @@ var repeatedFields = [...]archetype{
 func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[T]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(scalarList[T]{raw: nil})
+		return protoreflect.ValueOf(repeatedScalar[T]{raw: nil})
 	}
 
 	v := *p
@@ -224,43 +241,94 @@ func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect
 	} else {
 		raw = v.Raw()
 	}
-	return protoreflect.ValueOf(scalarList[T]{raw: raw})
+	return protoreflect.ValueOf(repeatedScalar[T]{raw: raw})
+}
+
+// repeatedScalar is a [protoreflect.List] implementation for non-bool scalar
+// types.
+type repeatedScalar[E any] struct {
+	unimplementedList
+	raw []E
+}
+
+var _ protoreflect.List = repeatedScalar[int32]{}
+
+func (l repeatedScalar[E]) Len() int { return len(l.raw) }
+func (l repeatedScalar[E]) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(l.raw[n])
 }
 
 func getRepeatedScalarMaybeBytes[T integer](m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[T]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(scalarList[T]{raw: nil})
+		return protoreflect.ValueOf(repeatedScalar[T]{raw: nil})
 	}
 
 	v := *p
 	if isZC(v) {
 		raw := unwrapRawZC(v).bytes(m.context.src)
-		return protoreflect.ValueOf(byteScalarList[T]{raw: raw})
+		return protoreflect.ValueOf(repeatedScalarBytes[T]{raw: raw})
 	}
 
-	return protoreflect.ValueOf(scalarList[T]{raw: v.Raw()})
+	return protoreflect.ValueOf(repeatedScalar[T]{raw: v.Raw()})
+}
+
+// repeatedScalarBytes is a [protoreflect.List] implementation for non-bool scalar
+// types, where each value fits in a single byte.
+type repeatedScalarBytes[E integer] struct {
+	unimplementedList
+	raw []byte
+}
+
+var _ protoreflect.List = repeatedScalar[int32]{}
+
+func (l repeatedScalarBytes[E]) Len() int { return len(l.raw) }
+func (l repeatedScalarBytes[E]) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(E(l.raw[n]))
 }
 
 func getRepeatedZigZag[T integer](m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[T]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(zigzagList[T]{raw: nil})
+		return protoreflect.ValueOf(repeatedZigZag[T]{raw: nil})
 	}
 
 	v := *p
 	if isZC(v) {
 		raw := unwrapRawZC(v).bytes(m.context.src)
-		return protoreflect.ValueOf(byteZigZagList[T]{raw: raw})
+		return protoreflect.ValueOf(repeatedZigZagBytes[T]{raw: raw})
 	}
 
-	return protoreflect.ValueOf(zigzagList[T]{raw: v.Raw()})
+	return protoreflect.ValueOf(repeatedZigZag[T]{raw: v.Raw()})
+}
+
+// scalarList is a [protoreflect.List] implementation for integer types that
+// zig-zag decodes them on-demand.
+type repeatedZigZag[E integer] struct {
+	unimplementedList
+	raw []E
+}
+
+func (l repeatedZigZag[E]) Len() int { return len(l.raw) }
+func (l repeatedZigZag[E]) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(zigzag(l.raw[n]))
+}
+
+// repeatedZigZagBytes is a zigzag version of byteScalarList.
+type repeatedZigZagBytes[E integer] struct {
+	unimplementedList
+	raw []byte
+}
+
+func (l repeatedZigZagBytes[E]) Len() int { return len(l.raw) }
+func (l repeatedZigZagBytes[E]) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(zigzag(E(l.raw[n])))
 }
 
 func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[byte]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(boolList{raw: nil})
+		return protoreflect.ValueOf(repeatedBool{raw: nil})
 	}
 
 	v := *p
@@ -271,55 +339,65 @@ func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
 		raw = v.Raw()
 	}
 
-	return protoreflect.ValueOf(boolList{raw: raw})
+	return protoreflect.ValueOf(repeatedBool{raw: raw})
+}
+
+// repeatedBool is a [protoreflect.List] implementation for bool.
+type repeatedBool struct {
+	unimplementedList
+	raw []byte
+}
+
+func (l repeatedBool) Len() int { return len(l.raw) }
+func (l repeatedBool) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(l.raw[n] != 0)
 }
 
 func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[zc]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(boolList{raw: nil})
+		return protoreflect.ValueOf(repeatedBool{raw: nil})
 	}
 
 	v := *p
-	return protoreflect.ValueOf(stringList{raw: v.Raw(), shared: m.context})
+	return protoreflect.ValueOf(repeatedString{raw: v.Raw(), shared: m.context})
 }
 
-func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
+// repeatedString is a [protoreflect.List] implementation for string.
+type repeatedString struct {
+	unimplementedList
+	raw    []zc
+	shared *Context
+}
+
+func (l repeatedString) Len() int { return len(l.raw) }
+func (l repeatedString) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(l.raw[n].utf8(l.shared.src))
+}
+
+func repeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	p := getField[arena.Slice[zc]](m, getter.offset)
 	if p == nil {
-		return protoreflect.ValueOf(boolList{raw: nil})
+		return protoreflect.ValueOf(repeatedBool{raw: nil})
 	}
 
 	v := *p
 	return protoreflect.ValueOf(bytesList{raw: v.Raw(), shared: m.context})
 }
 
-func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
-	if m.getBit(getter.offset.bit) {
-		raw := *getField[arena.Slice[*message]](m, getter.offset)
-		return protoreflect.ValueOf(messageList{raw: raw.Raw()})
-	}
+// bytesList is a [protoreflect.List] implementation for bytes.
+type bytesList struct {
+	unimplementedList
+	raw    []zc
+	shared *Context
+}
 
-	p := getField[arena.Slice[byte]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(boolList{raw: nil})
-	}
-
-	v := *p
-	if v.Ptr() == nil {
-		return protoreflect.ValueOf(emptyList{})
-	}
-
-	first := unsafe2.Cast[message](v.Ptr()) // Get the type from the first element of the list.
-	return protoreflect.ValueOf(inlineMessageList{
-		ty:    first.ty(),
-		raw:   first,
-		dummy: make([]struct{}, v.Len()/int(first.ty().raw.size)),
-	})
+func (l bytesList) Len() int { return len(l.raw) }
+func (l bytesList) Get(n int) protoreflect.Value {
+	return protoreflect.ValueOf(l.raw[n].bytes(l.shared.src))
 }
 
 //go:nosplit
-//fastpb:stencil spillArena8 spillArena[uint8]
 //fastpb:stencil spillArena32 spillArena[uint32]
 //fastpb:stencil spillArena64 spillArena[uint64]
 func spillArena[T any](p1 parser1, p2 parser2, rep arena.Slice[T]) (parser1, parser2, arena.Slice[T]) {
@@ -611,110 +689,4 @@ func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
 	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
 
 	return p1, p2
-}
-
-//go:nosplit
-func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
-	p1, p2, n = p1.lengthPrefix(p2)
-
-	var slot *arena.SliceAddr[byte]
-	p1, p2, slot = getMutableField[arena.SliceAddr[byte]](p1, p2)
-	slice := slot.AssertValid()
-	p1.log(p2, "repeated message", "%v", slice.Addr())
-
-	var m *message
-
-	if p2.m().getBit(p2.f().offset.bit) {
-		goto pointers
-	}
-
-	{
-		ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-		size := int(ty.raw.size)
-		if slice.Ptr() == nil {
-			p1, p2, slot = newInlineRepeatedField(p1, p2, slot)
-		} else if slice.Len()+size > slice.Cap() {
-			p1, p2 = spillInlineRepeatedField(p1, p2, slot)
-			p1.log(p2, "repeated message spill", "%v->%v", slice.Addr(), *slot)
-
-			goto pointers
-		}
-
-		slice = slot.AssertValid()
-		p := unsafe2.Add(slice.Ptr(), slice.Len())
-		slice = slice.SetLen(slice.Len() + size)
-		*slot = slice.Addr()
-
-		p1.log(p2, "inline repeated message", "%v, %p/%d", slice.Addr(), p, size)
-		p1, p2, m = p1.allocInPlace(p2, p)
-		goto exit
-	}
-
-pointers:
-	{
-		p1, p2, m = p1.alloc(p2)
-
-		slot := unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot)
-		slice := slot.AssertValid()
-		if slice.Len() == slice.Cap() {
-			p1, p2, m = appendOneMessage(p1, p2, m)
-			p1.log(p2, "outline repeated message", "%v, %p", *slot, m)
-			goto exit
-		}
-
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, unsafe2.AddrOf(m))
-		p1.log(p2, "outline repeated message", "%v, %p", slice.Addr(), m)
-		*slot = slice.Addr()
-	}
-
-exit:
-	return p1.message(p2, int(n), m)
-}
-
-//go:noinline
-func newInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2, *arena.SliceAddr[byte]) {
-	// First element of this field. Allocate a byte array large enough to
-	// hold one element.
-	//
-	// TODO: Add a profiling knob for setting the default number of
-	// elements.
-	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	size := ty.raw.size
-	slice := arena.NewSlice[byte](p1.arena(), int(size))
-	slice = slice.SetLen(0)
-	*slot = slice.Addr()
-
-	return p1, p2, slot
-}
-
-//go:noinline
-func spillInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2) {
-	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	size := int(ty.raw.size)
-	slice := slot.AssertValid()
-
-	// Spill all of the messages onto a pointer slice.
-	spill := arena.NewSlice[unsafe2.Addr[message]](p1.arena(), slice.Cap()/size*2)
-	var spillIdx int
-	for i := 0; i < slice.Len(); i += size {
-		m := unsafe2.Cast[message](unsafe2.Add(slice.Ptr(), i))
-		spill.Store(spillIdx, unsafe2.AddrOf(m))
-		spillIdx++
-	}
-	spill = spill.SetLen(spillIdx)
-
-	*unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot) = spill.Addr()
-	p1, p2 = p1.setBit(p2) // Mark this as an outlined message.
-
-	return p1, p2
-}
-
-//go:noinline
-func appendOneMessage(p1 parser1, p2 parser2, m *message) (parser1, parser2, *message) {
-	var slot *arena.SliceAddr[unsafe2.Addr[message]]
-	p1, p2, slot = getMutableField[arena.SliceAddr[unsafe2.Addr[message]]](p1, p2)
-	*slot = slot.AssertValid().AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr()
-	return p1, p2, m
 }

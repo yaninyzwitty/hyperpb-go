@@ -21,7 +21,22 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ./internal/stencil
+// Oneofs are implemented as an actual union. The tag (or "which word") lives
+// after the hasbits array in the message; each oneof's field offset has the
+// offset for its which word baked into it. Only oneofs with at least two
+// variants are turned into a tagged union; otherwise they use an optional
+// field archetype.
+//
+// A oneof variant is active when its which word contains the oneof's number.
+// Note that we never give out a pointer to a oneof's union storage, which
+// avoids potential temporal memory safety issues with concurrent mutation.
+//
+// Aliasing a region between integer and pointer memory is safe because we only
+// ever place arena pointers into that memory, which do not need to be scanned
+// by the garbage collector.
+//
+// Bool-valued oneof members are stored as a uint8, not a bool or an element of
+// a bitset or anything like that.
 
 var oneofFields = [...]archetype{
 	// 32-bit varint types.

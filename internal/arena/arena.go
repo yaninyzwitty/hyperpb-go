@@ -17,6 +17,8 @@
 //
 // # Design
 //
+// See <https://mcyoung.xyz/2025/04/21/go-arenas/>.
+//
 // Arenas are designed to only return pointers to data with pointer-free shape.
 // However, we would like to store pointers in this data, so that the arena can
 // point to itself (and to no other memory)
@@ -32,8 +34,8 @@
 // shape
 //
 //	type chunk struct {
-//	  arena *Arena
 //	  memory [N]uint64
+//	  arena *Arena
 //	}
 //
 // By holding a pointer into chunk.memory anywhere reachable by a GC root (such
@@ -42,7 +44,8 @@
 // chunk.arena.chunks will mark all the other chunks as alive.
 //
 // Memory not directly allocated by an arena can be tied to it using
-// [Arena.KeepAlive].
+// [Arena.KeepAlive]. Using this operation is very slow, since this is the one
+// part of the arena that is not re-used when calling [Arena.Free].
 package arena
 
 import (

@@ -21,7 +21,11 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ./internal/stencil
+// Optionals are implemented as one bit for presence in the hasbits array, and
+// storage for the singular equivalent (see field_singular.go).
+//
+// Optional bool is two bits; one hasbit and one value. Optional message is
+// equivalent to singular message.
 
 var optionalFields = [...]archetype{
 	// 32-bit varint types.
