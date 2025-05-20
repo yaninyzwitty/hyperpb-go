@@ -20,6 +20,10 @@ import (
 	"fmt"
 	"math/bits"
 	"math/rand/v2"
+	"strings"
+	"unicode"
+
+	"github.com/rivo/uniseg"
 )
 
 var (
@@ -29,39 +33,98 @@ var (
 	row = flag.Int("row", 16, "the number of elements to a row")
 
 	format = flag.String("f", "", "the format to print each value in")
-	zipf   = flag.Bool("zipf", false, "use a Zipf distribution rather than a uniform one")
+
+	ascii = flag.Bool("ascii", false, "generate ASCII strings instead")
+	uni   = flag.Bool("unicode", false, "generate Unicode strings instead")
+	bytes = flag.Bool("bytes", false, "generate byte strings instead")
+	zipf  = flag.Bool("zipf", false, "use a Zipf distribution rather than a uniform one")
 )
+
+func makeString[T byte | rune](char func() T) string {
+	var n int
+	if *zipf {
+		n = int(rand.Uint64N(*hi-*lo) + *lo)
+	} else {
+		hi := uint64(1) << *hi
+		lo := uint64(1) << *lo
+		n = bits.Len64(rand.Uint64N(hi-lo) + lo)
+	}
+
+	buf := new(strings.Builder)
+	for range n {
+		buf.WriteString(string(char()))
+	}
+	return buf.String()
+}
 
 func main() {
 	flag.Parse()
 
 	var cells [][]string
+	var widths [][]int
 	for i := range *n {
 		if i%*row == 0 {
 			cells = append(cells, nil)
+			widths = append(widths, nil)
 		}
 
-		v := rand.Uint64N(*hi-*lo) + *lo
-		if *zipf {
-			// We don't bother with rand.Zipf. Instead, we pick a random bit
-			// length between 0 and the bit length of hi and truncate v to that.
-			k := bits.Len64(*hi)
-			k = rand.IntN(k) + 1
-			v &= (uint64(1) << k) - 1
+		var value any
+		switch {
+		case *ascii:
+			value = makeString(func() rune {
+				for {
+					r := rand.Int32N(0x7f)
+					if unicode.IsGraphic(r) {
+						return r
+					}
+				}
+			})
+		case *uni:
+			value = makeString(func() rune {
+				for {
+					r := rand.Int32N(unicode.MaxRune + 1)
+					// Uniformly distribute encoded lengths.
+					switch rand.IntN(4) {
+					case 0:
+						r &= 0x7f
+					case 1:
+						r &= 0x7ff
+					case 2:
+						r &= 0xffff
+					}
+					if unicode.IsGraphic(r) && !unicode.IsMark(r) && !unicode.IsSpace(r) {
+						return r
+					}
+				}
+			})
+		case *bytes:
+			value = makeString(func() byte { return byte(rand.IntN(0xff)) })
+		default:
+			v := rand.Uint64N(*hi-*lo) + *lo
+			if *zipf {
+				// We don't bother with rand.Zipf. Instead, we pick a random bit
+				// length between 0 and the bit length of hi and truncate v to that.
+				k := bits.Len64(*hi)
+				k = rand.IntN(k) + 1
+				v &= (uint64(1) << k) - 1
+			}
+			value = v
 		}
 
-		cells[len(cells)-1] = append(cells[len(cells)-1], fmt.Sprintf(*format, v))
+		cell := fmt.Sprintf(*format, value)
+		cells[len(cells)-1] = append(cells[len(cells)-1], cell)
+		widths[len(widths)-1] = append(widths[len(widths)-1], uniseg.StringWidth(cell))
 	}
 
 	// Discover the widest cell in each column.
 	var maxima []int
-	for _, row := range cells {
-		for col, cell := range row {
+	for _, row := range widths {
+		for col, width := range row {
 			if len(maxima) <= col {
 				maxima = append(maxima, 0)
 			}
 
-			maxima[col] = max(maxima[col], len(cell))
+			maxima[col] = max(maxima[col], width)
 		}
 	}
 
@@ -73,9 +136,13 @@ func main() {
 	maxima[len(maxima)-1] = 0 // No need to pad the final cell.
 
 	// Render each row with the appropriate padding between them.
-	for _, row := range cells {
-		for col, cell := range row {
-			fmt.Printf("%-*s", maxima[col], cell)
+	for i, row := range cells {
+		for j, cell := range row {
+			fmt.Print(cell)
+
+			if pad := maxima[j] - widths[i][j]; pad > 0 {
+				fmt.Print(strings.Repeat(" ", pad))
+			}
 		}
 		fmt.Println()
 	}

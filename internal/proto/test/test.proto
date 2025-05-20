@@ -39,6 +39,8 @@ message Scalars {
     float a11 = 11;
     double a12 = 12;
     bool a13 = 13;
+    string a14 = 14;
+    bytes a15 = 15;
 
     optional int32 b1 = 21;
     optional int64 b2 = 22;
@@ -53,6 +55,8 @@ message Scalars {
     optional float b11 = 31;
     optional double b12 = 32;   
     optional bool b13 = 33;
+    optional string b14 = 34;
+    optional bytes b15 = 35;
 }
 
 message Repeated {
@@ -62,6 +66,8 @@ message Repeated {
     repeated sint64 r4 = 4;
     repeated fixed32 r5 = 5;
     repeated fixed64 r6 = 6;
+    repeated string r7 = 7;
+    repeated bytes r8 = 8;
 }
 
 message Graph {

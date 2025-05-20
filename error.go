@@ -31,6 +31,7 @@ const (
 	errCodeRecursionDepth
 
 	errCodeUTF8
+	errCodeTooBig
 )
 
 type errCode int
@@ -43,6 +44,7 @@ var errs = [...]error{
 	errCodeReserved:    errors.New("cannot parse reserved wire type"),
 	errCodeEndGroup:    errors.New("mismatching end group marker"),
 	errCodeUTF8:        errors.New("invalid UTF-8 in string"),
+	errCodeTooBig:      errors.New("input was larger than 4GB"),
 }
 
 // errParse is an error returned by the TDP parser.

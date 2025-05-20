@@ -78,6 +78,9 @@ func parseScalarMapV32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -162,6 +165,9 @@ func parseScalarMapV32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -246,6 +252,9 @@ func parseScalarMapV32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -330,6 +339,9 @@ func parseScalarMapV32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -414,6 +426,9 @@ func parseScalarMapV32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -498,6 +513,9 @@ func parseScalarMapV32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -582,6 +600,9 @@ func parseScalarMapV32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -666,6 +687,9 @@ func parseScalarMapV32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -750,6 +774,9 @@ func parseScalarMapV32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -834,6 +861,9 @@ func parseScalarMapV64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -918,6 +948,9 @@ func parseScalarMapV64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1002,6 +1035,9 @@ func parseScalarMapV64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1086,6 +1122,9 @@ func parseScalarMapV64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1170,6 +1209,9 @@ func parseScalarMapV64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1254,6 +1296,9 @@ func parseScalarMapV64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1338,6 +1383,9 @@ func parseScalarMapV64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1422,6 +1470,9 @@ func parseScalarMapV64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1506,6 +1557,9 @@ func parseScalarMapV64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1590,6 +1644,9 @@ func parseScalarMapZ32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1674,6 +1731,9 @@ func parseScalarMapZ32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1758,6 +1818,9 @@ func parseScalarMapZ32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1842,6 +1905,9 @@ func parseScalarMapZ32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -1926,6 +1992,9 @@ func parseScalarMapZ32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2010,6 +2079,9 @@ func parseScalarMapZ32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2094,6 +2166,9 @@ func parseScalarMapZ32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2178,6 +2253,9 @@ func parseScalarMapZ32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2262,6 +2340,9 @@ func parseScalarMapZ32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2346,6 +2427,9 @@ func parseScalarMapZ64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2430,6 +2514,9 @@ func parseScalarMapZ64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2514,6 +2601,9 @@ func parseScalarMapZ64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2598,6 +2688,9 @@ func parseScalarMapZ64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2682,6 +2775,9 @@ func parseScalarMapZ64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2766,6 +2862,9 @@ func parseScalarMapZ64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2850,6 +2949,9 @@ func parseScalarMapZ64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -2934,6 +3036,9 @@ func parseScalarMapZ64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3018,6 +3123,9 @@ func parseScalarMapZ64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3102,6 +3210,9 @@ func parseScalarMapF32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3186,6 +3297,9 @@ func parseScalarMapF32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3270,6 +3384,9 @@ func parseScalarMapF32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3354,6 +3471,9 @@ func parseScalarMapF32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3438,6 +3558,9 @@ func parseScalarMapF32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3522,6 +3645,9 @@ func parseScalarMapF32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3606,6 +3732,9 @@ func parseScalarMapF32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3690,6 +3819,9 @@ func parseScalarMapF32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3774,6 +3906,9 @@ func parseScalarMapF32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3858,6 +3993,9 @@ func parseScalarMapF64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -3942,6 +4080,9 @@ func parseScalarMapF64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4026,6 +4167,9 @@ func parseScalarMapF64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4110,6 +4254,9 @@ func parseScalarMapF64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4194,6 +4341,9 @@ func parseScalarMapF64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4278,6 +4428,9 @@ func parseScalarMapF64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4362,6 +4515,9 @@ func parseScalarMapF64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4446,6 +4602,9 @@ func parseScalarMapF64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4530,6 +4689,9 @@ func parseScalarMapF64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4614,6 +4776,9 @@ func parseScalarMapSxV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4698,6 +4863,9 @@ func parseScalarMapSxV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4782,6 +4950,9 @@ func parseScalarMapSxZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4866,6 +5037,9 @@ func parseScalarMapSxZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -4950,6 +5124,9 @@ func parseScalarMapSxF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5034,6 +5211,9 @@ func parseScalarMapSxF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5118,6 +5298,9 @@ func parseScalarMapSxV1(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5202,6 +5385,9 @@ func parseScalarMapSxS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5286,6 +5472,792 @@ func parseScalarMapSxB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint64]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint64]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint64](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU64(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU64(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU64(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxV32(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, varintItem[uint32], uint64, uint32]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi varintItem[uint32]
+	var k uint64
+	var v uint32
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint32]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint32]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint32](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU32(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU32(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU32(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxV64(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, varintItem[uint64], uint64, uint64]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi varintItem[uint64]
+	var k uint64
+	var v uint64
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint64]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint64]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint64](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU64(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU64(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU64(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxZ32(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, zigzagItem[uint32], uint64, uint32]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi zigzagItem[uint32]
+	var k uint64
+	var v uint32
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint32]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint32]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint32](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU32(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU32(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU32(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxZ64(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, zigzagItem[uint64], uint64, uint64]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi zigzagItem[uint64]
+	var k uint64
+	var v uint64
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint64]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint64]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint64](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU64(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU64(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU64(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxF32(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, fixed32Item, uint64, uint32]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi fixed32Item
+	var k uint64
+	var v uint32
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint32]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint32]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint32](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU32(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU32(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU32(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxF64(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, fixed64Item, uint64, uint64]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi fixed64Item
+	var k uint64
+	var v uint64
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint64]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint64]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint64](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU64(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU64(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU64(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxV1(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, boolItem, uint64, uint8]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi boolItem
+	var k uint64
+	var v uint8
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint8]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint8]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint8](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU8(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU8(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU8(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxS(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, stringItem, uint64, uint64]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi stringItem
+	var k uint64
+	var v uint64
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+insert:
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[uint64, uint64]
+	p1, p2, mp = getMutableField[*swiss.Table[uint64, uint64]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[uint64, uint64](1)
+		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		swiss.InitU64xU64(m, 1, nil, extract)
+	}
+
+	vp := swiss.InsertU64xU64(m, k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		vp = swiss.InsertU64xU64(m2, k, extract)
+	}
+
+	*vp = v
+
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	return p1, p2
+}
+func parseScalarMapBxB(p1 parser1, p2 parser2) (parser1, parser2) {
+	_ = parseScalarMap[bytesItem, bytesItem, uint64, uint64]
+
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki bytesItem
+	var vi bytesItem
+	var k uint64
+	var v uint64
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(2, vi.kind())
+
+	if p1.len() == 0 {
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			p1, p2, v = vi.parse(p1, p2)
+			p1.log(p2, "map done?",
+				"%v:%v, %v/%x: %v/%x",
+				p1.b_, p1.e_,
+				k, unsafe2.Bytes(&k),
+				v, unsafe2.Bytes(&v))
+			if p1.b_ == p1.e_ {
+				goto insert
+			}
+		}
+	}
+
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		case vTag:
+			p1, p2, v = vi.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5376,6 +6348,9 @@ func parseBoolScalarMapV32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5451,6 +6426,9 @@ func parseBoolScalarMapV64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5526,6 +6504,9 @@ func parseBoolScalarMapZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5601,6 +6582,9 @@ func parseBoolScalarMapZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5676,6 +6660,9 @@ func parseBoolScalarMapF32(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5751,6 +6738,9 @@ func parseBoolScalarMapF64(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5826,6 +6816,9 @@ func parseBoolScalarMapS(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}
@@ -5901,6 +6894,9 @@ func parseBoolScalarMapB(p1 parser1, p2 parser2) (parser1, parser2) {
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}

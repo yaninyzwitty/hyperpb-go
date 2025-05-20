@@ -19,6 +19,7 @@ import (
 	"embed"
 	"encoding/hex"
 	"flag"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"regexp"
@@ -51,6 +52,12 @@ var verbose bool
 func TestMain(m *testing.M) {
 	flag.Parse()
 	verbose = flag2.Lookup[bool]("test.v")
+
+	if flag2.Lookup[string]("test.bench") != "" {
+		// Annoyingly, benchmarking won't print the compiler used...
+		fmt.Printf("compiler: %v %v\n", runtime.Compiler, runtime.Version())
+	}
+
 	m.Run()
 }
 
@@ -262,11 +269,14 @@ func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 		m2 := ctx.New(test.Type.Fast)
 		err2 := proto.Unmarshal(specimen, m2)
 
+		if verbose {
+			t.Logf("theirs: %v, ours: %v", err1, err2)
+		}
+
 		if err1 != nil {
 			require.Error(t, err2, "gencode error: %v", err1)
 			return
 		}
-
 		require.NoError(t, err2)
 
 		runtime.GC()

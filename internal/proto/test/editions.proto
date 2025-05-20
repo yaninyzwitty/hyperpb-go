@@ -12,32 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-syntax = "proto2";
+edition = "2023";
 
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
 // buf:lint:ignore PACKAGE_DIRECTORY_MATCH
 package fastpb.test;
 
-message Extensions {
-    extensions 1 to max;
-}
+message Proto2Strings {
+    string s1 = 1 [features.utf8_validation = NONE];
+    repeated string s2 = 2 [features.utf8_validation = NONE];
+    map<string, string> s3 = 3 [features.utf8_validation = NONE];
 
-extend Extensions {
-    optional int32 b1 = 21;
-    optional int64 b2 = 22;
-    optional uint32 b3 = 23;
-    optional uint64 b4 = 24;
-    optional sint32 b5 = 25;
-    optional sint64 b6 = 26;
-    optional fixed32 b7 = 27;
-    optional fixed64 b8 = 28;
-    optional sfixed32 b9 = 29;
-    optional sfixed64 b10 = 30;
-    optional float b11 = 31;
-    optional double b12 = 32;   
-    optional bool b13 = 33;
-    optional string b14 = 34;   
-    optional bytes b15 = 35;
-
-    repeated Extensions z = 50;
+    oneof o {
+        string s4 = 4 [features.utf8_validation = NONE];
+        int32 z = 5;
+    }
 }

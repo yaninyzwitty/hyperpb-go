@@ -105,6 +105,8 @@ type Scalars struct {
 	A11           float32                `protobuf:"fixed32,11,opt,name=a11,proto3" json:"a11,omitempty"`
 	A12           float64                `protobuf:"fixed64,12,opt,name=a12,proto3" json:"a12,omitempty"`
 	A13           bool                   `protobuf:"varint,13,opt,name=a13,proto3" json:"a13,omitempty"`
+	A14           string                 `protobuf:"bytes,14,opt,name=a14,proto3" json:"a14,omitempty"`
+	A15           []byte                 `protobuf:"bytes,15,opt,name=a15,proto3" json:"a15,omitempty"`
 	B1            *int32                 `protobuf:"varint,21,opt,name=b1,proto3,oneof" json:"b1,omitempty"`
 	B2            *int64                 `protobuf:"varint,22,opt,name=b2,proto3,oneof" json:"b2,omitempty"`
 	B3            *uint32                `protobuf:"varint,23,opt,name=b3,proto3,oneof" json:"b3,omitempty"`
@@ -118,6 +120,8 @@ type Scalars struct {
 	B11           *float32               `protobuf:"fixed32,31,opt,name=b11,proto3,oneof" json:"b11,omitempty"`
 	B12           *float64               `protobuf:"fixed64,32,opt,name=b12,proto3,oneof" json:"b12,omitempty"`
 	B13           *bool                  `protobuf:"varint,33,opt,name=b13,proto3,oneof" json:"b13,omitempty"`
+	B14           *string                `protobuf:"bytes,34,opt,name=b14,proto3,oneof" json:"b14,omitempty"`
+	B15           []byte                 `protobuf:"bytes,35,opt,name=b15,proto3,oneof" json:"b15,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -243,6 +247,20 @@ func (x *Scalars) GetA13() bool {
 	return false
 }
 
+func (x *Scalars) GetA14() string {
+	if x != nil {
+		return x.A14
+	}
+	return ""
+}
+
+func (x *Scalars) GetA15() []byte {
+	if x != nil {
+		return x.A15
+	}
+	return nil
+}
+
 func (x *Scalars) GetB1() int32 {
 	if x != nil && x.B1 != nil {
 		return *x.B1
@@ -334,6 +352,20 @@ func (x *Scalars) GetB13() bool {
 	return false
 }
 
+func (x *Scalars) GetB14() string {
+	if x != nil && x.B14 != nil {
+		return *x.B14
+	}
+	return ""
+}
+
+func (x *Scalars) GetB15() []byte {
+	if x != nil {
+		return x.B15
+	}
+	return nil
+}
+
 type Repeated struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	R1            []int32                `protobuf:"varint,1,rep,packed,name=r1,proto3" json:"r1,omitempty"`
@@ -342,6 +374,8 @@ type Repeated struct {
 	R4            []int64                `protobuf:"zigzag64,4,rep,packed,name=r4,proto3" json:"r4,omitempty"`
 	R5            []uint32               `protobuf:"fixed32,5,rep,packed,name=r5,proto3" json:"r5,omitempty"`
 	R6            []uint64               `protobuf:"fixed64,6,rep,packed,name=r6,proto3" json:"r6,omitempty"`
+	R7            []string               `protobuf:"bytes,7,rep,name=r7,proto3" json:"r7,omitempty"`
+	R8            [][]byte               `protobuf:"bytes,8,rep,name=r8,proto3" json:"r8,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -414,6 +448,20 @@ func (x *Repeated) GetR5() []uint32 {
 func (x *Repeated) GetR6() []uint64 {
 	if x != nil {
 		return x.R6
+	}
+	return nil
+}
+
+func (x *Repeated) GetR7() []string {
+	if x != nil {
+		return x.R7
+	}
+	return nil
+}
+
+func (x *Repeated) GetR8() [][]byte {
+	if x != nil {
+		return x.R8
 	}
 	return nil
 }
@@ -2302,7 +2350,7 @@ var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
 	"\n" +
-	"\x0ftest/test.proto\x12\vfastpb.test\"\xd9\x04\n" +
+	"\x0ftest/test.proto\x12\vfastpb.test\"\xbb\x05\n" +
 	"\aScalars\x12\x0e\n" +
 	"\x02a1\x18\x01 \x01(\x05R\x02a1\x12\x0e\n" +
 	"\x02a2\x18\x02 \x01(\x03R\x02a2\x12\x0e\n" +
@@ -2317,7 +2365,9 @@ const file_test_test_proto_rawDesc = "" +
 	" \x01(\x10R\x03a10\x12\x10\n" +
 	"\x03a11\x18\v \x01(\x02R\x03a11\x12\x10\n" +
 	"\x03a12\x18\f \x01(\x01R\x03a12\x12\x10\n" +
-	"\x03a13\x18\r \x01(\bR\x03a13\x12\x13\n" +
+	"\x03a13\x18\r \x01(\bR\x03a13\x12\x10\n" +
+	"\x03a14\x18\x0e \x01(\tR\x03a14\x12\x10\n" +
+	"\x03a15\x18\x0f \x01(\fR\x03a15\x12\x13\n" +
 	"\x02b1\x18\x15 \x01(\x05H\x00R\x02b1\x88\x01\x01\x12\x13\n" +
 	"\x02b2\x18\x16 \x01(\x03H\x01R\x02b2\x88\x01\x01\x12\x13\n" +
 	"\x02b3\x18\x17 \x01(\rH\x02R\x02b3\x88\x01\x01\x12\x13\n" +
@@ -2331,7 +2381,9 @@ const file_test_test_proto_rawDesc = "" +
 	"\x03b11\x18\x1f \x01(\x02H\n" +
 	"R\x03b11\x88\x01\x01\x12\x15\n" +
 	"\x03b12\x18  \x01(\x01H\vR\x03b12\x88\x01\x01\x12\x15\n" +
-	"\x03b13\x18! \x01(\bH\fR\x03b13\x88\x01\x01B\x05\n" +
+	"\x03b13\x18! \x01(\bH\fR\x03b13\x88\x01\x01\x12\x15\n" +
+	"\x03b14\x18\" \x01(\tH\rR\x03b14\x88\x01\x01\x12\x15\n" +
+	"\x03b15\x18# \x01(\fH\x0eR\x03b15\x88\x01\x01B\x05\n" +
 	"\x03_b1B\x05\n" +
 	"\x03_b2B\x05\n" +
 	"\x03_b3B\x05\n" +
@@ -2344,14 +2396,18 @@ const file_test_test_proto_rawDesc = "" +
 	"\x04_b10B\x06\n" +
 	"\x04_b11B\x06\n" +
 	"\x04_b12B\x06\n" +
-	"\x04_b13\"j\n" +
+	"\x04_b13B\x06\n" +
+	"\x04_b14B\x06\n" +
+	"\x04_b15\"\x8a\x01\n" +
 	"\bRepeated\x12\x0e\n" +
 	"\x02r1\x18\x01 \x03(\x05R\x02r1\x12\x0e\n" +
 	"\x02r2\x18\x02 \x03(\x03R\x02r2\x12\x0e\n" +
 	"\x02r3\x18\x03 \x03(\x11R\x02r3\x12\x0e\n" +
 	"\x02r4\x18\x04 \x03(\x12R\x02r4\x12\x0e\n" +
 	"\x02r5\x18\x05 \x03(\aR\x02r5\x12\x0e\n" +
-	"\x02r6\x18\x06 \x03(\x06R\x02r6\"Y\n" +
+	"\x02r6\x18\x06 \x03(\x06R\x02r6\x12\x0e\n" +
+	"\x02r7\x18\a \x03(\tR\x02r7\x12\x0e\n" +
+	"\x02r8\x18\b \x03(\fR\x02r8\"Y\n" +
 	"\x05Graph\x12\f\n" +
 	"\x01v\x18\x01 \x01(\x05R\x01v\x12 \n" +
 	"\x01s\x18\x02 \x01(\v2\x12.fastpb.test.GraphR\x01s\x12 \n" +

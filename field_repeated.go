@@ -66,7 +66,7 @@ func unwrapZC[T any](slice arena.Slice[T], src *byte) []T {
 	)
 }
 
-var repeatedFields = [...]archetype{
+var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		size:   uint32(arena.SliceSize),
@@ -209,6 +209,12 @@ var repeatedFields = [...]archetype{
 		align:   uint32(arena.SliceAlign),
 		getter:  getRepeatedString,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedUTF8}},
+	},
+	proto2StringKind: {
+		size:    uint32(arena.SliceSize),
+		align:   uint32(arena.SliceAlign),
+		getter:  getRepeatedString,
+		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 	protoreflect.BytesKind: {
 		size:    uint32(arena.SliceSize),

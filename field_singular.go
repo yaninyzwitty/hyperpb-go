@@ -34,7 +34,7 @@ import (
 
 // singularFields consists of archetypes for singular (i.e., non-optional)
 // fields of each field type.
-var singularFields = [...]archetype{
+var singularFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		size:    uint32(unsafe2.Int32Size),
@@ -134,6 +134,12 @@ var singularFields = [...]archetype{
 		align:   uint32(zcAlign),
 		getter:  getString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseString}},
+	},
+	proto2StringKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		getter:  getString,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
 	protoreflect.BytesKind: {
 		size:    uint32(zcSize),

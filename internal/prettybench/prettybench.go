@@ -136,11 +136,15 @@ func main() {
 				}
 
 				// Pick the largest unit prefix smaller than field.units.
-				for _, prefix := range prefixes {
-					if prefix.mult < value {
-						value /= prefix.mult
-						units = prefix.prefix + units
-						break
+				if value == 0 {
+					units = " " + units
+				} else {
+					for _, prefix := range prefixes {
+						if prefix.mult <= value {
+							value /= prefix.mult
+							units = prefix.prefix + units
+							break
+						}
 					}
 				}
 

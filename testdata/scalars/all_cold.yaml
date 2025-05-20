@@ -31,6 +31,8 @@ textproto:
   a11: -inf
   a12: 3.14159265359
   a13: true
+  a14: "foo"
+  a15: "bar"
 
   b1: -1
   b2: 43
@@ -45,4 +47,6 @@ textproto:
   b11: -inf
   b12: 3.14159265359
   b13: true
+  b14: "foo"
+  b15: "bar"
   

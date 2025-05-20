@@ -38,7 +38,7 @@ import (
 // Bool-valued oneof members are stored as a uint8, not a bool or an element of
 // a bitset or anything like that.
 
-var oneofFields = [...]archetype{
+var oneofFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		size:    uint32(unsafe2.Int32Size),
@@ -153,6 +153,13 @@ var oneofFields = [...]archetype{
 		oneof:   true,
 		getter:  getOneofString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofString}},
+	},
+	proto2StringKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		oneof:   true,
+		getter:  getOneofString,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
 	},
 	protoreflect.BytesKind: {
 		size:    uint32(zcSize),

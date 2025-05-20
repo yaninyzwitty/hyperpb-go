@@ -182,6 +182,22 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 	},
 	{
 		ExtendedType:  (*Extensions)(nil),
+		ExtensionType: (*string)(nil),
+		Field:         34,
+		Name:          "fastpb.test.b14",
+		Tag:           "bytes,34,opt,name=b14",
+		Filename:      "test/proto2.proto",
+	},
+	{
+		ExtendedType:  (*Extensions)(nil),
+		ExtensionType: ([]byte)(nil),
+		Field:         35,
+		Name:          "fastpb.test.b15",
+		Tag:           "bytes,35,opt,name=b15",
+		Filename:      "test/proto2.proto",
+	},
+	{
+		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: ([]*Extensions)(nil),
 		Field:         50,
 		Name:          "fastpb.test.z",
@@ -218,8 +234,12 @@ var (
 	E_B12 = &file_test_proto2_proto_extTypes[11]
 	// optional bool b13 = 33;
 	E_B13 = &file_test_proto2_proto_extTypes[12]
+	// optional string b14 = 34;
+	E_B14 = &file_test_proto2_proto_extTypes[13]
+	// optional bytes b15 = 35;
+	E_B15 = &file_test_proto2_proto_extTypes[14]
 	// repeated fastpb.test.Extensions z = 50;
-	E_Z = &file_test_proto2_proto_extTypes[13]
+	E_Z = &file_test_proto2_proto_extTypes[15]
 )
 
 var File_test_proto2_proto protoreflect.FileDescriptor
@@ -241,7 +261,9 @@ const file_test_proto2_proto_rawDesc = "" +
 	"\x03b10\x12\x17.fastpb.test.Extensions\x18\x1e \x01(\x10R\x03b10:)\n" +
 	"\x03b11\x12\x17.fastpb.test.Extensions\x18\x1f \x01(\x02R\x03b11:)\n" +
 	"\x03b12\x12\x17.fastpb.test.Extensions\x18  \x01(\x01R\x03b12:)\n" +
-	"\x03b13\x12\x17.fastpb.test.Extensions\x18! \x01(\bR\x03b13:>\n" +
+	"\x03b13\x12\x17.fastpb.test.Extensions\x18! \x01(\bR\x03b13:)\n" +
+	"\x03b14\x12\x17.fastpb.test.Extensions\x18\" \x01(\tR\x03b14:)\n" +
+	"\x03b15\x12\x17.fastpb.test.Extensions\x18# \x01(\fR\x03b15:>\n" +
 	"\x01z\x12\x17.fastpb.test.Extensions\x182 \x03(\v2\x17.fastpb.test.ExtensionsR\x01zB\x99\x01\n" +
 	"\x0fcom.fastpb.testB\vProto2ProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Test"
 
@@ -275,12 +297,14 @@ var file_test_proto2_proto_depIdxs = []int32{
 	0,  // 10: fastpb.test.b11:extendee -> fastpb.test.Extensions
 	0,  // 11: fastpb.test.b12:extendee -> fastpb.test.Extensions
 	0,  // 12: fastpb.test.b13:extendee -> fastpb.test.Extensions
-	0,  // 13: fastpb.test.z:extendee -> fastpb.test.Extensions
-	0,  // 14: fastpb.test.z:type_name -> fastpb.test.Extensions
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	14, // [14:15] is the sub-list for extension type_name
-	0,  // [0:14] is the sub-list for extension extendee
+	0,  // 13: fastpb.test.b14:extendee -> fastpb.test.Extensions
+	0,  // 14: fastpb.test.b15:extendee -> fastpb.test.Extensions
+	0,  // 15: fastpb.test.z:extendee -> fastpb.test.Extensions
+	0,  // 16: fastpb.test.z:type_name -> fastpb.test.Extensions
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	16, // [16:17] is the sub-list for extension type_name
+	0,  // [0:16] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
 }
 
@@ -296,7 +320,7 @@ func file_test_proto2_proto_init() {
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_proto2_proto_rawDesc), len(file_test_proto2_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
-			NumExtensions: 14,
+			NumExtensions: 16,
 			NumServices:   0,
 		},
 		GoTypes:           file_test_proto2_proto_goTypes,

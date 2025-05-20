@@ -26,7 +26,7 @@ import (
 // map<bool, V> is implemented as a pair of V-typed optional fields. The first
 // one is the entry for false, and the second is the entry for true.
 
-var boolMapFields = [...]archetype{
+var boolMapFields = map[protoreflect.Kind]*archetype{
 	protoreflect.Int32Kind: {
 		size:    2 * uint32(unsafe2.Int32Size),
 		align:   uint32(unsafe2.Int32Align),
@@ -449,6 +449,9 @@ func parseBoolScalarMap[
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}

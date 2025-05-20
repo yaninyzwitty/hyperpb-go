@@ -20,7 +20,6 @@ import (
 	"math/bits"
 	"runtime"
 	"strings"
-	"unicode/utf8"
 	"unsafe"
 
 	"google.golang.org/protobuf/encoding/protowire"
@@ -74,6 +73,10 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 		panic("fastpb: attempted to parse message using in-use Context")
 	}
 
+	if len(data) > math.MaxUint32 {
+		return &errParse{code: errCodeTooBig}
+	}
+
 	m.context.lock.Lock()
 
 	pp := ppPool.Get()
@@ -106,7 +109,10 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 
 	defer func() {
 		if pp.err.code != 0 && recover() != nil {
-			err = &pp.err
+			// Make a copy of the error, since pp will get re-used by a future
+			// run of this function.
+			parseErr := pp.err
+			err = &parseErr
 
 			if dbg.Enabled {
 				buf := new(strings.Builder)
@@ -546,7 +552,8 @@ func (p1 parser1) lengthPrefix(p2 parser2) (parser1, parser2, uint32) {
 	p1, p2, n = p1.varint(p2)
 
 	{
-		// Explicit inlining of atLeast().
+		// Explicit inlining of atLeast(). len() is guaranteed to fit in a
+		// uint32.
 		if n <= uint64(p1.len()) {
 			return p1, p2, uint32(n)
 		}
@@ -572,17 +579,127 @@ func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc) {
 	return p1, p2, zc
 }
 
-// bytes parses a length-delimited byte buffer, and validates it for UTF8.
+// utf8 parses a length-delimited byte buffer, and validates it for UTF8.
 func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc) {
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
 
-	// TODO: need to inline utf8.Valid to avoid spilling p1/p2.
-	s := unsafe2.Slice(p1.b_.Add(-zc.len()).AssertValid(), zc.len())
-	if false && !utf8.Valid(s) {
-		p1.fail(p2, errCodeUTF8)
+	e := p1.b_.Add(int(n))
+
+	// All non-spatial errors are accumulated so we only have to do one branch
+	// at the end.
+	ok := true
+	for p := p1.b_; p < e; {
+		n := min(8, e-p)
+		// Fast path for ASCII: simply check that all of the bytes don't have
+		// their sign bits set.
+		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		mask := uint64(signBits) >> ((8 - n) * 8)
+		ascii := bits.TrailingZeros64(bytes&mask) / 8
+		p1.log(p2, "ascii bytes", "%016x, %d bytes", bytes, ascii)
+		p = p.Add(ascii)
+
+		if ascii == 8 {
+			continue
+		}
+
+		// Need to parse a multi-byte rune.
+		// The possible encodings are like this:
+		//
+		// 110xxxxx 10xxxxxx
+		// 1110xxxx 10xxxxxx 10xxxxxx
+		// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+		//
+		// We can use LeadingZeros8 to find which of these cases we're in.
+
+		first := *p.AssertValid()
+		count := uint(bits.LeadingZeros8(^first)) // Total # of bytes.
+		p1.log(p2, "wide rune", "%#08b, %d bytes", first, count)
+		if count-2 > 2 || uint(e-p) < count {
+			// In the above, counts of 0, 1, 2, 3, 4, 5, 6, 7, and 8 map
+			// to -2, -1, 0, 1, 2, 3, 4, 5, 6. All of these except 0, 1, and
+			// 2 compare as >2, since count is unsigned.
+			goto fail
+		}
+
+		// Bounds check is complete here. We are free to load four bytes
+		// and mask off what we don't need. We can't re-use bytes here
+		// because the rune might straddle a boundary.
+		raw := *unsafe2.Cast[uint32](p.AssertValid())
+		p1.log(p2, "wide rune bits", "%08b, %d bytes", unsafe2.Bytes(&raw), count)
+
+		// This puts the contents of the first byte into r.
+		r := rune(raw & ((1 << (8 - count)) - 1))
+
+		i := count - 1
+	decode:
+		r <<= 6
+		raw >>= 8
+		r |= rune(raw & 0b111111)
+
+		if raw&0b11_000000 != 0b10_000000 {
+			ok = false
+		}
+
+		i--
+		if i > 0 {
+			goto decode
+		}
+
+		p1.log(p2, "decoded rune", "U+%04x (%q)", r, r)
+
+		// Next we check that the length is correct. To do this, we need
+		// to map the following ranges like so (note that we don't need to
+		// worry about ASCII, as above):
+		//
+		// U+0080..U+07FF -> 2
+		// U+0800..U+FFFF -> 3
+		// U+FFFF...      -> 4
+		//
+		// bits.Len / 4 will map each of these to ranges as follows:
+		//
+		// U+0080..U+07FF -> 8..11 -> 2
+		// U+0800..U+FFFF -> 12..16 -> 3..4
+		// U+10000...     -> 17...  -> 4
+		//
+		// This is almost correct. We just need to subtract 1 in the case
+		// that bits.Len returns 16.
+		wantCount := bits.Len32(uint32(r))
+		if wantCount == 16 {
+			wantCount--
+		}
+		wantCount /= 4
+
+		p1.log(p2, "rune size", "want: %d, got: %d", wantCount, count)
+		if wantCount != int(count) {
+			ok = false
+		}
+
+		// Finally, we can check that this rune is in the valid range.
+		if r&^0x7ff == 0xd800 { // This checks for the surrogate range.
+			ok = false
+		}
+		if r > 0x10ffff {
+			ok = false
+		}
+
+		p = p.Add(int(count))
 	}
-	return p1, p2, zc
+
+	if ok {
+		zc := newRawZC(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), int(n))
+		p1 = p1.advance(int(n))
+
+		if dbg.Enabled {
+			text := zc.bytes(p1.c().src)
+			p1.log(p2, "utf8", "%#v, %q", zc, text)
+		}
+		return p1, p2, zc
+	}
+
+fail:
+	p1.fail(p2, errCodeUTF8)
+	return p1, p2, 0
 }
 
 // message pushes a new message to be parsed onto the parser stack.

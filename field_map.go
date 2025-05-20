@@ -30,7 +30,7 @@ import (
 
 // mapFields consists of archetypes for map fields. The first index is the key,
 // the second is the value.
-var mapFields = [19][19]archetype{
+var mapFields = map[protoreflect.Kind]map[protoreflect.Kind]*archetype{
 	protoreflect.Int32Kind: {
 		// 32-bit varint types.
 		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseScalarMapV32xV32),
@@ -480,12 +480,60 @@ var mapFields = [19][19]archetype{
 			// Not implemented.
 		},
 	},
+
+	proto2StringKind: {
+		// 32-bit varint types.
+		protoreflect.Int32Kind:  mapArch(getMapSxI[int32], parseScalarMapBxV32),
+		protoreflect.Uint32Kind: mapArch(getMapSxI[uint32], parseScalarMapBxV32),
+		protoreflect.Sint32Kind: mapArch(getMapSxI[int32], parseScalarMapBxZ32),
+
+		// 64-bit varint types.
+		protoreflect.Int64Kind:  mapArch(getMapSxI[int64], parseScalarMapBxV64),
+		protoreflect.Uint64Kind: mapArch(getMapSxI[uint64], parseScalarMapBxV64),
+		protoreflect.Sint64Kind: mapArch(getMapSxI[int64], parseScalarMapBxZ64),
+
+		// 32-bit fixed types.
+		protoreflect.Fixed32Kind:  mapArch(getMapSxI[uint32], parseScalarMapBxF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapSxI[int32], parseScalarMapBxF32),
+		protoreflect.FloatKind:    mapArch(getMapSxI[float32], parseScalarMapBxF32),
+
+		// 64-bit fixed types.
+		protoreflect.Fixed64Kind:  mapArch(getMapSxI[uint64], parseScalarMapBxF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapSxI[int64], parseScalarMapBxF64),
+		protoreflect.DoubleKind:   mapArch(getMapSxI[float64], parseScalarMapBxF64),
+
+		// Special scalar types.
+		protoreflect.BoolKind: mapArch(getMapSxI[bool], parseScalarMapBxV1),
+		protoreflect.EnumKind: mapArch(getMapSxI[protoreflect.EnumNumber], parseScalarMapBxV32),
+
+		// String types.
+		protoreflect.StringKind: mapArch(getMapSxS, parseScalarMapBxS),
+		protoreflect.BytesKind:  mapArch(getMapSxB, parseScalarMapBxB),
+
+		// Message types.
+		protoreflect.MessageKind: {
+			// Not implemented.
+		},
+		protoreflect.GroupKind: {
+			// Not implemented.
+		},
+	},
+}
+
+func init() {
+	// Generate each of the entries for proto2StringKind by making copies of
+	// the string archetype and using the bytes archetype's parser.
+	for _, archs := range mapFields {
+		arch := *archs[protoreflect.StringKind]
+		arch.parsers = archs[protoreflect.BytesKind].parsers
+		archs[proto2StringKind] = &arch
+	}
 }
 
 // mapArch is a helper for constructing map<K, V> archetypes, where K is not
 // bool.
-func mapArch(getter getterThunk, parser parserThunk) archetype {
-	return archetype{
+func mapArch(getter getterThunk, parser parserThunk) *archetype {
+	return &archetype{
 		size: uint32(unsafe2.PointerSize), align: uint32(unsafe2.PointerAlign),
 		getter:  getter,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parser}},
@@ -578,14 +626,20 @@ func (varintItem[T]) extract(parser1, parser2) func(T) []byte    { return nil }
 func (zigzagItem[T]) extract(parser1, parser2) func(T) []byte    { return nil }
 func (fixed32Item) extract(parser1, parser2) func(uint32) []byte { return nil }
 func (fixed64Item) extract(parser1, parser2) func(uint64) []byte { return nil }
+func (boolItem) extract(parser1, parser2) func(uint8) []byte     { return nil }
 func (stringItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
 	src := p1.c().src
 	return func(u uint64) []byte {
 		return zc(u).bytes(src)
 	}
 }
-func (boolItem) extract(parser1, parser2) func(uint8) []byte   { return nil }
-func (bytesItem) extract(parser1, parser2) func(uint64) []byte { return nil }
+
+func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
+	src := p1.c().src
+	return func(u uint64) []byte {
+		return zc(u).bytes(src)
+	}
+}
 
 //fastpb:stencil parseScalarMapV32xV32 parseScalarMap[varintItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
 //fastpb:stencil parseScalarMapV32xV64 parseScalarMap[varintItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
@@ -657,6 +711,16 @@ func (bytesItem) extract(parser1, parser2) func(uint64) []byte { return nil }
 //fastpb:stencil parseScalarMapSxS   parseScalarMap[stringItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 //fastpb:stencil parseScalarMapSxB   parseScalarMap[stringItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
+//fastpb:stencil parseScalarMapBxV32 parseScalarMap[bytesItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseScalarMapBxV64 parseScalarMap[bytesItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseScalarMapBxZ32 parseScalarMap[bytesItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseScalarMapBxZ64 parseScalarMap[bytesItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseScalarMapBxF32 parseScalarMap[bytesItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseScalarMapBxF64 parseScalarMap[bytesItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseScalarMapBxV1  parseScalarMap[bytesItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseScalarMapBxS   parseScalarMap[bytesItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseScalarMapBxB   parseScalarMap[bytesItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+
 // parseScalarMap parses a map type whose value is a non-message type.
 func parseScalarMap[
 	KI mapItem[K], VI mapItem[V],
@@ -716,6 +780,9 @@ func parseScalarMap[
 		default:
 			n, t := protowire.DecodeTag(tag)
 			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
 			p1.b_ = p1.b_.Add(m)
 		}
 	}

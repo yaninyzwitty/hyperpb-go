@@ -27,7 +27,7 @@ import (
 // Optional bool is two bits; one hasbit and one value. Optional message is
 // equivalent to singular message.
 
-var optionalFields = [...]archetype{
+var optionalFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		size:    uint32(unsafe2.Int32Size),
@@ -141,6 +141,13 @@ var optionalFields = [...]archetype{
 		bits:    1,
 		getter:  getOptionalString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalString}},
+	},
+	proto2StringKind: {
+		size:    uint32(zcSize),
+		align:   uint32(zcAlign),
+		bits:    1,
+		getter:  getOptionalString,
+		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalBytes}},
 	},
 	protoreflect.BytesKind: {
 		size:    uint32(zcSize),

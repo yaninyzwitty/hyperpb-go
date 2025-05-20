@@ -23,6 +23,11 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
+const (
+	// Custom field kinds used by archetype selection; they're all negative.
+	proto2StringKind protoreflect.Kind = ^iota
+)
+
 // scalar is a Protobuf scalar type.
 type scalar interface {
 	int32 | int64 |
@@ -220,19 +225,36 @@ func selectArchetype(
 	od := fd.ContainingOneof()
 	switch {
 	case fd.IsMap():
-		k := fd.MapKey().Kind()
-		v := fd.MapValue().Kind()
-		a = &mapFields[k][v]
+		k := fieldKind(fd.MapKey())
+		v := fieldKind(fd.MapValue())
+		a = mapFields[k][v]
 	case fd.IsList():
-		a = &repeatedFields[fd.Kind()]
+		a = repeatedFields[fieldKind(fd)]
 	case od != nil && od.Fields().Len() > 1:
 		// One-element oneofs are treated like optional fields.
-		a = &oneofFields[fd.Kind()]
+		a = oneofFields[fieldKind(fd)]
 	case fd.HasPresence():
-		a = &optionalFields[fd.Kind()]
+		a = optionalFields[fieldKind(fd)]
 	default:
-		a = &singularFields[fd.Kind()]
+		a = singularFields[fieldKind(fd)]
 	}
 
 	return a
+}
+
+// fieldKind extracts the field kind from a descriptor.
+//
+// This returns negative values for "custom" kinds.
+func fieldKind(fd protoreflect.FieldDescriptor) protoreflect.Kind {
+	switch k := fd.Kind(); k {
+	case protoreflect.StringKind:
+		fd2, ok := fd.(interface{ EnforceUTF8() bool })
+		if fd.Syntax() == protoreflect.Proto3 || (ok && fd2.EnforceUTF8()) {
+			return protoreflect.StringKind
+		}
+		return proto2StringKind
+
+	default:
+		return k
+	}
 }
