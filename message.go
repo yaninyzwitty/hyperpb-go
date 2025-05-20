@@ -30,6 +30,8 @@ import (
 // Message is a dynamic message value constructed with this package.
 //
 // Messages types returned by this package implement this interface.
+// The Type() function on [Message] will return a [fastpb.Type]. Any functions
+// that mutate the underlying message may panic.
 type Message interface {
 	proto.Message
 
@@ -38,6 +40,10 @@ type Message interface {
 
 	// Unmarshal is like [proto.Unmarshal], but permits fastpb-specific
 	// tuning options to be set.
+	//
+	// Calling this function may be much faster than calling proto.Unmarshal if
+	// the message is small; proto.Unmarshal includes several nanoseconds of
+	// overhead that can become noticeable for message in the 16 byte regime.
 	//
 	// The returned error may additionally implement a method with the signature
 	//
@@ -258,13 +264,18 @@ func (c *Context) New(ty Type) Message {
 		c = new(Context)
 	}
 
-	// Easy mistake to make: the memory allocated in alloc() contains no
-	// pointers, so even though ty is "reachable" through m, it's not reachable
-	// from the GC's perspective, so we need to mark it as alive here.
+	// Previously, this code was here:
 	//
-	// This implicitly marks all other types reachable from ty as alive, meaning
-	// we only need to do this for top-level calls to New().
-	c.arena.KeepAlive(ty)
+	// // Easy mistake to make: the memory allocated in alloc() contains no
+	// // pointers, so even though ty is "reachable" through m, it's not reachable
+	// // from the GC's perspective, so we need to mark it as alive here.
+	// //
+	// // This implicitly marks all other types reachable from ty as alive, meaning
+	// // we only need to do this for top-level calls to New().
+	// c.arena.KeepAlive(ty)
+	//
+	// It is now redundant, because Context stores ty.Library(). The comment is
+	// kept for posterity about a nasty bug.
 
 	return c.alloc(ty)
 }
@@ -449,6 +460,9 @@ func (m *message) Clear(protoreflect.FieldDescriptor) {
 	}
 	panic(dbg.Unsupported())
 }
+
+// Reset just calls [Clear]. This exists to speed up [proto.Reset].
+func (m *message) Reset() { m.Clear(nil) }
 
 // Get implements [protoreflect.Message].
 func (m *message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {

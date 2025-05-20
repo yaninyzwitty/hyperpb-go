@@ -17,6 +17,8 @@ benchmark: true
 textproto:
 - |
   r: { v: 1 }
+- |
+  r: { v: 1 }
   r: { v: 1 }
   r: { v: 1 }
   r: { v: 1 }

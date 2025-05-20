@@ -19,7 +19,6 @@ import (
 	"cmp"
 	"fmt"
 	"reflect"
-	"runtime/debug"
 	"slices"
 	"strings"
 	"testing"
@@ -37,13 +36,15 @@ func Equal(t testing.TB, expect, got proto.Message) {
 	t.Helper()
 	e := &equal{TB: t}
 
+	panicked := true
 	defer func() {
-		if err := recover(); err != nil {
-			t.Fatalf("panicked at %s: %v\n%s", e.formatPath(), err, debug.Stack())
+		if panicked {
+			t.Errorf("panicked at %s", e.formatPath())
 		}
 	}()
 
 	e.message(expect.ProtoReflect(), got.ProtoReflect(), true)
+	panicked = false
 }
 
 type equal struct {

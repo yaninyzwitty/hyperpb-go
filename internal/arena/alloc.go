@@ -17,8 +17,10 @@ package arena
 import (
 	"math/bits"
 	"reflect"
+	"runtime"
 	"unsafe"
 
+	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -48,7 +50,17 @@ func (a *Arena) allocChunk(size int) (*byte, int) {
 	}
 
 	p := AllocTraceable(n, unsafe.Pointer(a))
-	a.blocks = append(a.blocks, make([]*byte, int(log+1)-len(a.blocks))...)
+	if a.blocks == nil {
+		a.blocks = make([]*byte, 64)
+		if dbg.Enabled {
+			addr := unsafe2.AddrOf(a)
+			runtime.SetFinalizer(unsafe.SliceData(a.blocks), func(**byte) {
+				dbg.Log(nil, "arena collected", "addr: %v", addr)
+			})
+		}
+	}
+	a.blocks = a.blocks[:log+1]
+	dbg.Log(nil, "saving block", "a.blocks[%d] = %p -> %p", log, a.blocks[log], p)
 	a.blocks[log] = p
 
 	return p, n
@@ -73,32 +85,21 @@ func AllocTraceable(size int, ptr unsafe.Pointer) *byte {
 	size += up
 
 	if isPow2(size) {
+		// Power-of-two shapes avoid needing to take a trip through reflection.
+		// Calling reflect.New() on one of these types will immediately go to
+		// runtime.mallocgc(), as if by new().
 		shape = shapes[bits.TrailingZeros(uint(size))]
 	} else {
-		shape = chunkShape(size)
+		shape = reflect.StructOf([]reflect.StructField{
+			{Name: "Data", Type: reflect.ArrayOf(size, reflect.TypeFor[byte]())},
+			{Name: "Arena", Type: reflect.TypeFor[*Arena]()},
+		})
 	}
 
 	p := (*byte)(reflect.New(shape).UnsafePointer())
-	unsafe2.ByteStore(p, size, ptr)
+	unsafe2.ByteStore(p, size, ptr) // Store the tracee pointer at the end.
 
-	// Skip over the arena pointer and return the data pointer.
 	return p
-}
-
-// Pre-allocate a shape for every power of 2.
-var shapes [bits.UintSize - 1]reflect.Type
-
-func init() {
-	for i := range shapes {
-		shapes[i] = chunkShape(1 << i)
-	}
-}
-
-func chunkShape(size int) reflect.Type {
-	return reflect.StructOf([]reflect.StructField{
-		{Name: "Data", Type: reflect.ArrayOf(size, reflect.TypeFor[byte]())},
-		{Name: "Arena", Type: reflect.TypeFor[*Arena]()},
-	})
 }
 
 func isPow2(n int) bool {

@@ -25,15 +25,11 @@ type Pool[T any] struct {
 	impl sync.Pool
 }
 
-// Get returns a cached value of type T, and a function that should be called
-// once the use of the value is complete.
+// Get returns a cached value of type T.
 //
-// Use like this:
-//
-//	v, drop := cache.Get()
-//	defer drop()
-func (p *Pool[T]) Get() (v *T, drop func()) {
-	v, _ = p.impl.Get().(*T)
+//go:nosplit
+func (p *Pool[T]) Get() *T {
+	v, _ := p.impl.Get().(*T)
 	if v == nil {
 		switch p.New {
 		case nil:
@@ -42,11 +38,15 @@ func (p *Pool[T]) Get() (v *T, drop func()) {
 			v = p.New()
 		}
 	}
+	return v
+}
 
-	return v, func() {
-		if p.Reset != nil {
-			p.Reset(v)
-		}
-		p.impl.Put(v)
+// Put returns a cached value of type T.
+//
+//go:nosplit
+func (p *Pool[T]) Put(v *T) {
+	if p.Reset != nil {
+		p.Reset(v)
 	}
+	p.impl.Put(v)
 }

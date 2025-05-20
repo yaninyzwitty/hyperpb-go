@@ -172,7 +172,8 @@ func (a *Arena) realloc(newSize, oldSize int, p *byte) *byte {
 func (a *Arena) Grow(size int) {
 	unsafe2.Escape(a)
 	p, n := a.allocChunk(max(size, a.Cap*2))
-	a.KeepAlive(p)
+	// No need to KeepAlive(p) this pointer, since allocChunk sticks it in the
+	// dedicated memory block array.
 
 	a.Next = unsafe2.AddrOf(p)
 	a.End = a.Next.Add(n)

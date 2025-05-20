@@ -105,5 +105,6 @@ issues:
 
     # Disable import formatting in generated stencil files.
     - path: _stencil\.go
-      linters:
-        - gci
+      linters: [gci]
+    - path: arena/shapes.go
+      linters: [gci, gofmt, gofumpt, goimports]

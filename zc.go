@@ -65,11 +65,17 @@ func (zc zc) len() int { return int(zc >> 32) }
 
 // bytes converts this zc into a byte slice, given the message source.
 func (zc zc) bytes(src *byte) []byte {
+	if zc.len() == 0 {
+		return nil
+	}
 	return unsafe2.Slice(unsafe2.Add(src, zc.start()), zc.len())
 }
 
 // utf8 converts this zc into a string, given the message source.
 func (zc zc) utf8(src *byte) string {
+	if zc.len() == 0 {
+		return ""
+	}
 	return unsafe2.String(unsafe2.Add(src, zc.start()), zc.len())
 }
 

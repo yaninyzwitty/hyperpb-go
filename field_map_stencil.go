@@ -39,10 +39,16 @@ func parseScalarMapV32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -118,10 +124,16 @@ func parseScalarMapV32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -197,10 +209,16 @@ func parseScalarMapV32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -276,10 +294,16 @@ func parseScalarMapV32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -355,10 +379,16 @@ func parseScalarMapV32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -434,10 +464,16 @@ func parseScalarMapV32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -513,10 +549,16 @@ func parseScalarMapV32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -592,10 +634,16 @@ func parseScalarMapV32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -671,10 +719,16 @@ func parseScalarMapV32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -750,10 +804,16 @@ func parseScalarMapV64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -829,10 +889,16 @@ func parseScalarMapV64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -908,10 +974,16 @@ func parseScalarMapV64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -987,10 +1059,16 @@ func parseScalarMapV64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1066,10 +1144,16 @@ func parseScalarMapV64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1145,10 +1229,16 @@ func parseScalarMapV64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1224,10 +1314,16 @@ func parseScalarMapV64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1303,10 +1399,16 @@ func parseScalarMapV64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1382,10 +1484,16 @@ func parseScalarMapV64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1461,10 +1569,16 @@ func parseScalarMapZ32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1540,10 +1654,16 @@ func parseScalarMapZ32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1619,10 +1739,16 @@ func parseScalarMapZ32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1698,10 +1824,16 @@ func parseScalarMapZ32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1777,10 +1909,16 @@ func parseScalarMapZ32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1856,10 +1994,16 @@ func parseScalarMapZ32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1935,10 +2079,16 @@ func parseScalarMapZ32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2014,10 +2164,16 @@ func parseScalarMapZ32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2093,10 +2249,16 @@ func parseScalarMapZ32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2172,10 +2334,16 @@ func parseScalarMapZ64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2251,10 +2419,16 @@ func parseScalarMapZ64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2330,10 +2504,16 @@ func parseScalarMapZ64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2409,10 +2589,16 @@ func parseScalarMapZ64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2488,10 +2674,16 @@ func parseScalarMapZ64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2567,10 +2759,16 @@ func parseScalarMapZ64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2646,10 +2844,16 @@ func parseScalarMapZ64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2725,10 +2929,16 @@ func parseScalarMapZ64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2804,10 +3014,16 @@ func parseScalarMapZ64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2883,10 +3099,16 @@ func parseScalarMapF32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -2962,10 +3184,16 @@ func parseScalarMapF32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3041,10 +3269,16 @@ func parseScalarMapF32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3120,10 +3354,16 @@ func parseScalarMapF32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3199,10 +3439,16 @@ func parseScalarMapF32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3278,10 +3524,16 @@ func parseScalarMapF32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3357,10 +3609,16 @@ func parseScalarMapF32xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3436,10 +3694,16 @@ func parseScalarMapF32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3515,10 +3779,16 @@ func parseScalarMapF32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3594,10 +3864,16 @@ func parseScalarMapF64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3673,10 +3949,16 @@ func parseScalarMapF64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3752,10 +4034,16 @@ func parseScalarMapF64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3831,10 +4119,16 @@ func parseScalarMapF64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3910,10 +4204,16 @@ func parseScalarMapF64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -3989,10 +4289,16 @@ func parseScalarMapF64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4068,10 +4374,16 @@ func parseScalarMapF64xV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4147,10 +4459,16 @@ func parseScalarMapF64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4226,10 +4544,16 @@ func parseScalarMapF64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4305,10 +4629,16 @@ func parseScalarMapSxV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4384,10 +4714,16 @@ func parseScalarMapSxV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4463,10 +4799,16 @@ func parseScalarMapSxZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4542,10 +4884,16 @@ func parseScalarMapSxZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4621,10 +4969,16 @@ func parseScalarMapSxF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4700,10 +5054,16 @@ func parseScalarMapSxF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4779,10 +5139,16 @@ func parseScalarMapSxV1(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4858,10 +5224,16 @@ func parseScalarMapSxS(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -4937,10 +5309,16 @@ func parseScalarMapSxB(p1 parser1, p2 parser2) (parser1, parser2) {
 	kTag := protowire.EncodeTag(1, ki.kind())
 	vTag := protowire.EncodeTag(2, vi.kind())
 
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++

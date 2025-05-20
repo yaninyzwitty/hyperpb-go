@@ -46,8 +46,8 @@ func fuzz[M proto.Message](f *testing.F) {
 	test.Type.Fast = fastpb.Compile(test.Type.Gencode.Descriptor())
 
 	f.Fuzz(func(t *testing.T, b []byte) {
-		ctx, drop := contexts.Get()
-		defer drop()
+		ctx := contexts.Get()
+		defer contexts.Put(ctx)
 
 		test := *test
 		test.Specimens = [][]byte{b}

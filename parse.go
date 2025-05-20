@@ -41,7 +41,12 @@ const (
 	maxFieldTag = 0b00001111_01111111_01111111_01111111_01111111
 )
 
-var stackPool sync2.Pool[[]parserFrame]
+var (
+	stackPool = sync2.Pool[[]parserFrame]{}
+	ppPool    = sync2.Pool[parserP]{
+		Reset: func(pp *parserP) { *pp = parserP{} },
+	}
+)
 
 // CompileOption is a configuration setting for [Type.Unmarshal].
 type UnmarshalOption func(*parserP)
@@ -70,12 +75,10 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 	}
 
 	m.context.lock.Lock()
-	defer m.context.lock.Unlock()
 
-	pp := &parserP{
-		maxMisses: defaultMaxMisses,
-		maxDepth:  defaultMaxDepth,
-	}
+	pp := ppPool.Get()
+	pp.maxMisses = defaultMaxMisses
+	pp.maxDepth = defaultMaxDepth
 
 	for _, opt := range options {
 		if opt != nil {
@@ -85,14 +88,13 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 
 	m.context.src = ensure9BytesPastEnd(data, false)
 	m.context.len = len(data)
-	m.context.arena.KeepAlive(m.context.src)
+	// The arena keeps m.context alive, so we don't need to KeepAlive src.
 
 	if len(data) == 0 {
 		return nil
 	}
 
-	stack, drop := stackPool.Get()
-	defer drop()
+	stack := stackPool.Get()
 	if cap(*stack) < pp.maxDepth {
 		*stack = make([]parserFrame, pp.maxDepth)
 	}
@@ -119,10 +121,11 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 			}
 		}
 
-		// Ensure that the GC does not move or collect any of these values,
-		// so that we can replace pointers to them with integers for speed.
-		runtime.KeepAlive(m)
-		runtime.KeepAlive(pp)
+		// These would all normally go in their own defers, but having a single
+		// defer is noticeably faster.
+		stackPool.Put(stack)
+		ppPool.Put(pp)
+		m.context.lock.Unlock()
 	}()
 
 	p1 := parser1{
@@ -249,6 +252,20 @@ func (p1 parser1) arena() *arena.Arena {
 }
 
 func (p1 parser1) b() *byte {
+	// There is an exciting bug that can occur where we dereference p1.b_
+	// while it points to the end of the input slice. Being able to do have
+	// p1.b_ equal the one-past-the-end spot is nice, but if we dereference it,
+	// Go may scan through this pointer, and mark the allocation it points to.
+	// If it happens to point to freed memory, the GC panics, because this is
+	// an unrecoverable constraint violation.
+	//
+	// This assert makes sure that none of our large test suite accidentally
+	// performs this illegal maneuver.
+	//
+	// Annoyingly this means we also need to be careful in parser1.buf(),
+	// because we cannot form a zero-sized slice to the end of an allocation.
+	dbg.Assert(p1.b_ < p1.e_,
+		"p1.b_ cannot point one past the end: need %v < %v", p1.b_, p1.e_)
 	return p1.b_.AssertValid()
 }
 
@@ -276,7 +293,7 @@ func (p1 parser1) len() int {
 func (p1 parser1) fail(p2 parser2, err errCode) {
 	p2.pp().err = errParse{
 		code:   err,
-		offset: unsafe2.Sub(p1.b(), p1.c().src),
+		offset: p1.b_.Sub(unsafe2.AddrOf(p1.c().src)),
 	}
 
 	_ = *(*byte)(nil) // Trigger a panic without calling runtime.gopanic. Linters hate this!
@@ -360,6 +377,9 @@ func (p1 parser1) atLeast(p2 parser2, n uint64) (parser1, parser2) {
 
 // buf returns the data left to parse.
 func (p1 parser1) buf() []byte {
+	if p1.len() == 0 {
+		return nil
+	}
 	return unsafe2.Slice(p1.b(), p1.len())
 }
 
@@ -370,6 +390,23 @@ func (p1 parser1) advance(n int) parser1 {
 
 //go:nosplit
 func (p1 parser1) varint(p2 parser2) (parser1, parser2, uint64) {
+	if dbg.Enabled {
+		// Force this function to behave as if it is not nosplit in debug mode,
+		// so that we don't overflow the nosplit stack when we turn on
+		// debugging.
+		return p1.varintYesSplit(p2)
+	}
+
+	return p1.varintNoSplit(p2)
+}
+
+//go:noinline
+func (p1 parser1) varintYesSplit(p2 parser2) (parser1, parser2, uint64) {
+	return p1.varintNoSplit(p2)
+}
+
+//go:nosplit
+func (p1 parser1) varintNoSplit(p2 parser2) (parser1, parser2, uint64) {
 	// Inlined from protowire.ConsumeVarint to minimize spills and remove
 	// bounds checks.
 	var b byte
@@ -469,10 +506,8 @@ func (p1 parser1) varint(p2 parser2) (parser1, parser2, uint64) {
 
 exit:
 	if dbg.Enabled {
-		func() {
-			len := int(unsafe2.AddrOf(p) - p1.b_) // For debug only.
-			logVarint(p1, p2, x, len)
-		}()
+		len := int(unsafe2.AddrOf(p) - p1.b_) // For debug only.
+		p1.log(p2, "varint", "%d:%#x (%d bytes)", x, x, len)
 	}
 
 	p1.b_ = unsafe2.AddrOf(p)
@@ -481,13 +516,6 @@ exit:
 	}
 
 	return p1, p2, x
-}
-
-// This is outlined to avoid nosplit stack overflow in varint().
-//
-//go:noinline
-func logVarint(p1 parser1, p2 parser2, x uint64, len int) {
-	p1.log(p2, "varint", "%d:%#x (%d bytes)", x, x, len)
 }
 
 // fixed32 parses a 32-bit fixed-width integer.
@@ -534,7 +562,7 @@ func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc) {
 	var n uint32
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	zc := newZC(p1.c().src, p1.b(), int(n))
+	zc := newRawZC(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), int(n))
 	p1 = p1.advance(int(n))
 
 	if dbg.Enabled {
@@ -550,7 +578,7 @@ func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc) {
 	p1, p2, zc = p1.bytes(p2)
 
 	// TODO: need to inline utf8.Valid to avoid spilling p1/p2.
-	s := unsafe2.Slice(unsafe2.Add(p1.b(), -int32(zc.len())), zc.len())
+	s := unsafe2.Slice(p1.b_.Add(-zc.len()).AssertValid(), zc.len())
 	if false && !utf8.Valid(s) {
 		p1.fail(p2, errCodeUTF8)
 	}
@@ -693,6 +721,12 @@ field:
 		tag := fieldTag(p2.scratch)
 		for {
 			p1.log(p2, "try", "%v, %v, %v", tag, tries, p2.f())
+
+			if dbg.Enabled {
+				// Run the GC frequently in debug mode to smoke out bugs where
+				// we've left a stack root unmarked.
+				runtime.GC()
+			}
 
 			if p2.f().tag == tag {
 				// Try to keep the Context in L1 cache by loading a byte from it
@@ -893,13 +927,17 @@ func (p1 parser1) log(p2 parser2, op, format string, args ...any) {
 		return
 	}
 
-	start := unsafe2.Sub(p1.b(), p1.c().src)
-	end := p1.e_ - unsafe2.AddrOf(p1.c().src)
+	start := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
+	end := p1.e_.Sub(unsafe2.AddrOf(p1.c().src))
 	height := p2.pp().stack.bottom.Sub(p2.pp().stack.ptr)
+	var b byte
+	if p1.b_ < p1.e_ {
+		b = *p1.b()
+	}
 	dbg.Log(
 		[]any{
 			"%p:%p:%d [%d:%d] = 0x%02x",
-			p1.c, p2.m, height, start, int(end), unsafe2.Load(p1.b(), 0),
+			p1.c(), p2.m(), height, start, end, b,
 		},
 		op, format, args...,
 	)

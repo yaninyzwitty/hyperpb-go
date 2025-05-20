@@ -1236,10 +1236,16 @@ func parseScalarMap[
 
 	// Basically every map ever encodes its fields in order and does not
 	// have duplicate fields, so this is a hot fast path.
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++
@@ -1400,12 +1406,18 @@ func parseBoolBoolMap(p1 parser1, p2 parser2) (parser1, parser2) {
 
 	// Basically every map ever encodes its fields in order and does not
 	// have duplicate fields, so this is a hot fast path.
+	if p1.len() == 0 {
+		goto insert
+	}
 	p1.log(p2, "first byte", "%#02x", *p1.b())
 	if *p1.b() == byte(kTag) {
 		p1.b_++
 		var n uint64
 		p1, p2, n = p1.varint(p2)
 		k = n != 0
+		if p1.len() == 0 {
+			goto insert
+		}
 		p1.log(p2, "second byte", "%#02x", *p1.b())
 		if *p1.b() == byte(vTag) {
 			p1.b_++

@@ -22,6 +22,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"runtime/debug"
 	"strings"
 	"sync/atomic"
@@ -267,6 +268,8 @@ func (test *test) run(t *testing.T, ctx *fastpb.Context) {
 		}
 
 		require.NoError(t, err2)
+
+		runtime.GC()
 		prototest.Equal(t, m1, m2)
 
 		if verbose {
