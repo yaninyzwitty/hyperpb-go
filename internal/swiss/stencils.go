@@ -26,7 +26,7 @@ import (
 func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extract func(uint8) []byte) *Table[uint8, uint8] {
 	_ = (*Table[uint8, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -99,7 +99,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], extract func(uint32) []byte) *Table[uint32, uint8] {
 	_ = (*Table[uint32, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -172,7 +172,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], extract func(uint64) []byte) *Table[uint64, uint8] {
 	_ = (*Table[uint64, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -245,7 +245,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], extract func(uint8) []byte) *Table[uint8, uint32] {
 	_ = (*Table[uint8, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -318,7 +318,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32], extract func(uint32) []byte) *Table[uint32, uint32] {
 	_ = (*Table[uint32, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -391,7 +391,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32], extract func(uint64) []byte) *Table[uint64, uint32] {
 	_ = (*Table[uint64, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -464,7 +464,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], extract func(uint8) []byte) *Table[uint8, uint64] {
 	_ = (*Table[uint8, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -537,7 +537,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64], extract func(uint32) []byte) *Table[uint32, uint64] {
 	_ = (*Table[uint32, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -610,7 +610,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64], extract func(uint64) []byte) *Table[uint64, uint64] {
 	_ = (*Table[uint64, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 
 	if from == nil || from.len == 0 {
 		return t
@@ -689,7 +689,7 @@ func InsertU8xU8(t *Table[uint8, uint8], k uint8, extract func(uint8) []byte) *u
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU8xU8(t, h, k)
@@ -714,7 +714,7 @@ func InsertU32xU8(t *Table[uint32, uint8], k uint32, extract func(uint32) []byte
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU32xU8(t, h, k)
@@ -739,7 +739,7 @@ func InsertU64xU8(t *Table[uint64, uint8], k uint64, extract func(uint64) []byte
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU64xU8(t, h, k)
@@ -764,7 +764,7 @@ func InsertU8xU32(t *Table[uint8, uint32], k uint8, extract func(uint8) []byte) 
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU8xU32(t, h, k)
@@ -789,7 +789,7 @@ func InsertU32xU32(t *Table[uint32, uint32], k uint32, extract func(uint32) []by
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU32xU32(t, h, k)
@@ -814,7 +814,7 @@ func InsertU64xU32(t *Table[uint64, uint32], k uint64, extract func(uint64) []by
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU64xU32(t, h, k)
@@ -839,7 +839,7 @@ func InsertU8xU64(t *Table[uint8, uint64], k uint8, extract func(uint8) []byte) 
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU8xU64(t, h, k)
@@ -864,7 +864,7 @@ func InsertU32xU64(t *Table[uint32, uint64], k uint32, extract func(uint32) []by
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU32xU64(t, h, k)
@@ -889,7 +889,7 @@ func InsertU64xU64(t *Table[uint64, uint64], k uint64, extract func(uint64) []by
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = searchU64xU64(t, h, k)
@@ -907,7 +907,7 @@ func InsertU64xU64(t *Table[uint64, uint64], k uint64, extract func(uint64) []by
 	return t.values().Get(idx)
 }
 
-func searchU8xU8(t *Table[uint8, uint8], h fxhash, k uint8) (idx int, occupied bool) {
+func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint8]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -951,7 +951,7 @@ func searchU8xU8(t *Table[uint8, uint8], h fxhash, k uint8) (idx int, occupied b
 		}
 	}
 }
-func searchU32xU8(t *Table[uint32, uint8], h fxhash, k uint32) (idx int, occupied bool) {
+func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint8]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -995,7 +995,7 @@ func searchU32xU8(t *Table[uint32, uint8], h fxhash, k uint32) (idx int, occupie
 		}
 	}
 }
-func searchU64xU8(t *Table[uint64, uint8], h fxhash, k uint64) (idx int, occupied bool) {
+func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint8]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1039,7 +1039,7 @@ func searchU64xU8(t *Table[uint64, uint8], h fxhash, k uint64) (idx int, occupie
 		}
 	}
 }
-func searchU8xU32(t *Table[uint8, uint32], h fxhash, k uint8) (idx int, occupied bool) {
+func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint32]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1083,7 +1083,7 @@ func searchU8xU32(t *Table[uint8, uint32], h fxhash, k uint8) (idx int, occupied
 		}
 	}
 }
-func searchU32xU32(t *Table[uint32, uint32], h fxhash, k uint32) (idx int, occupied bool) {
+func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint32]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1127,7 +1127,7 @@ func searchU32xU32(t *Table[uint32, uint32], h fxhash, k uint32) (idx int, occup
 		}
 	}
 }
-func searchU64xU32(t *Table[uint64, uint32], h fxhash, k uint64) (idx int, occupied bool) {
+func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint32]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1171,7 +1171,7 @@ func searchU64xU32(t *Table[uint64, uint32], h fxhash, k uint64) (idx int, occup
 		}
 	}
 }
-func searchU8xU64(t *Table[uint8, uint64], h fxhash, k uint8) (idx int, occupied bool) {
+func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint64]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1215,7 +1215,7 @@ func searchU8xU64(t *Table[uint8, uint64], h fxhash, k uint8) (idx int, occupied
 		}
 	}
 }
-func searchU32xU64(t *Table[uint32, uint64], h fxhash, k uint32) (idx int, occupied bool) {
+func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint64]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1259,7 +1259,7 @@ func searchU32xU64(t *Table[uint32, uint64], h fxhash, k uint32) (idx int, occup
 		}
 	}
 }
-func searchU64xU64(t *Table[uint64, uint64], h fxhash, k uint64) (idx int, occupied bool) {
+func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint64]).search
 	t.log("search", "h: %v, k: %v", h, k)
 
@@ -1304,7 +1304,7 @@ func searchU64xU64(t *Table[uint64, uint64], h fxhash, k uint64) (idx int, occup
 	}
 }
 
-func searchFuncU8xU8(t *Table[uint8, uint8], h fxhash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
+func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint8]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1345,7 +1345,7 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h fxhash, k []byte, extract func(ui
 		}
 	}
 }
-func searchFuncU32xU8(t *Table[uint32, uint8], h fxhash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
+func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint8]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1386,7 +1386,7 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h fxhash, k []byte, extract func(
 		}
 	}
 }
-func searchFuncU64xU8(t *Table[uint64, uint8], h fxhash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
+func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint8]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1427,7 +1427,7 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h fxhash, k []byte, extract func(
 		}
 	}
 }
-func searchFuncU8xU32(t *Table[uint8, uint32], h fxhash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
+func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint32]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1468,7 +1468,7 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h fxhash, k []byte, extract func(
 		}
 	}
 }
-func searchFuncU32xU32(t *Table[uint32, uint32], h fxhash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
+func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint32]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1509,7 +1509,7 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h fxhash, k []byte, extract fun
 		}
 	}
 }
-func searchFuncU64xU32(t *Table[uint64, uint32], h fxhash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
+func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint32]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1550,7 +1550,7 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h fxhash, k []byte, extract fun
 		}
 	}
 }
-func searchFuncU8xU64(t *Table[uint8, uint64], h fxhash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
+func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(uint8) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint8, uint64]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1591,7 +1591,7 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h fxhash, k []byte, extract func(
 		}
 	}
 }
-func searchFuncU32xU64(t *Table[uint32, uint64], h fxhash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
+func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(uint32) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint32, uint64]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1632,7 +1632,7 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h fxhash, k []byte, extract fun
 		}
 	}
 }
-func searchFuncU64xU64(t *Table[uint64, uint64], h fxhash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
+func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(uint64) []byte) (idx int, occupied bool) {
 	_ = (*Table[uint64, uint64]).searchFunc
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
@@ -1683,7 +1683,7 @@ func LookupI32xU32(t *Table[int32, uint32], k int32) *uint32 {
 	return t.values().Get(idx)
 }
 
-func searchI32xU32(t *Table[int32, uint32], h fxhash, k int32) (idx int, occupied bool) {
+func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied bool) {
 	_ = (*Table[int32, uint32]).search
 	t.log("search", "h: %v, k: %v", h, k)
 

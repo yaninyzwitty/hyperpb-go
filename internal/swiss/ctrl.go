@@ -34,7 +34,7 @@ type prober struct {
 	h1      int
 }
 
-func newProber(ctrlWords *unsafe2.VLA[ctrl], words int, hash fxhash) prober {
+func newProber(ctrlWords *unsafe2.VLA[ctrl], words int, hash hash) prober {
 	return prober{
 		ctrl: ctrlWords,
 		mask: words - 1,

@@ -12,7 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package swiss provides arena-friendly swisstable implementations.
+// Package swiss provides arena-friendly Swisstable implementations.
+//
+// The aim of this package is not to provide a better generic map type; Go's
+// map type as of 1.24 is itself a high-quality Swisstable, with access to
+// compiler intrinsics we do not have. Instead, it is to provide comparable
+// performance without requiring the use of Go's maps, which require hitting the
+// Go heap instead of using our arenas.
 package swiss
 
 import (
@@ -49,7 +55,7 @@ type Table[K Key, V any] struct {
 
 	// We can't use the address of a table as the seed, because the compiler
 	// wants to be able to copy tables byte-wise in memory.
-	seed fxhash
+	seed hash
 
 	// ctrl   [cap/8]ctrl
 	// keys   [cap]K
@@ -95,7 +101,7 @@ func Layout[K Key, V any](len int) (size, align int) {
 // data is assumed to point zeroed memory.
 func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *Table[K, V] {
 	t.soft, t.hard = loadFactor(len)
-	t.seed = fxhash(rand.Uint64())
+	t.seed = hash(rand.Uint64())
 	// empty is chosen to be zero so that we do not need to initialize the
 	// control bytes.
 
@@ -208,7 +214,7 @@ func (t *Table[K, V]) Insert(k K, extract func(K) []byte) *V {
 
 	var idx int
 	var occupied bool
-	var h fxhash
+	var h hash
 	if extract == nil {
 		h = t.seed.u64(zext(k))
 		idx, occupied = t.search(h, k)
@@ -260,7 +266,7 @@ func (t *Table[K, V]) All() iter.Seq2[K, V] {
 // slot where it could be inserted at.
 //
 // Returns the index of the bucket and whether it is already occupied.
-func (t *Table[K, V]) search(h fxhash, k K) (idx int, occupied bool) {
+func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 	t.log("search", "h: %v, k: %v", h, k)
 
 	h2 := broadcast(h.h2())
@@ -309,7 +315,7 @@ func (t *Table[K, V]) search(h fxhash, k K) (idx int, occupied bool) {
 }
 
 // searchFunc is like search, but takes a function for extracting a variable-length key.
-func (t *Table[K, V]) searchFunc(h fxhash, k []byte, extract func(K) []byte) (idx int, occupied bool) {
+func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx int, occupied bool) {
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
@@ -372,7 +378,7 @@ func (t *Table[K, V]) values() *unsafe2.VLA[V] {
 	return unsafe2.Beyond[V](last2)
 }
 
-func (t *Table[K, V]) probe(hash fxhash) prober {
+func (t *Table[K, V]) probe(hash hash) prober {
 	return newProber(t.ctrl(), int(t.hard)/8, hash)
 }
 
