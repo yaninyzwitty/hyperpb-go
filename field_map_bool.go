@@ -21,8 +21,6 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ./internal/stencil
-
 // map<bool, V> is implemented as a pair of V-typed optional fields. The first
 // one is the entry for false, and the second is the entry for true.
 
@@ -373,8 +371,6 @@ func (m boolBoolMap) Range(yield func(protoreflect.MapKey, protoreflect.Value) b
 		return
 	}
 }
-
-//go:generate go run ./internal/stencil
 
 //fastpb:stencil parseBoolScalarMapV32 parseBoolScalarMap[varintItem[uint32], uint32]
 //fastpb:stencil parseBoolScalarMapV64 parseBoolScalarMap[varintItem[uint64], uint64]
