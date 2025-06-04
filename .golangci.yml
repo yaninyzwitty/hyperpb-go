@@ -105,7 +105,7 @@ issues:
         - gosec
 
     # Disable import formatting in generated stencil files.
-    - path: '(^|/)stencils\.go'
-      linters: [gofumpt, goimports, gci, whitespace, unconvert]
+    - path: '(^|/)stencils(_test)?\.go'
+      linters: [gofumpt, goimports, gci, whitespace, unconvert, thelper]
     - path: arena/shapes.go
       linters: [gci, gofmt, gofumpt, goimports]

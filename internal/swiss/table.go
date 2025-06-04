@@ -29,15 +29,20 @@ import (
 	"math/bits"
 	"math/rand/v2"
 	"strings"
+	"testing"
 	"unsafe"
 
 	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/stats"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 //go:generate go run ../stencil
 
-const maxEntries = math.MaxInt32 / 8
+const (
+	minEntires = ctrlSize * 7 / 8
+	maxEntries = math.MaxInt32 / 8
+)
 
 // Key is one of the allowed keys for [Table].
 type Key interface {
@@ -48,16 +53,21 @@ type Key interface {
 
 // Table is a swisstable.
 type Table[K Key, V any] struct {
+	_ [0]ctrl // Ensure the end of the struct is ctrl-aligned.
+
 	// There is a soft and a hard cap. The soft cap is how many elements can be
 	// inserted before the table needs to be rehashed, while hard is the actual
 	// allocated limit.
 	len, soft, hard uint32
 
+	// Instrumentation stats.
+	metrics *Metrics
+
 	// We can't use the address of a table as the seed, because the compiler
 	// wants to be able to copy tables byte-wise in memory.
 	seed hash
 
-	// ctrl   [cap/8]ctrl
+	// ctrl   [cap/ctrlSize]ctrl
 	// keys   [cap]K
 	// values [cap]V
 }
@@ -78,10 +88,6 @@ func Layout[K Key, V any](len int) (size, align int) {
 
 	size = int(unsafe.Sizeof(t))
 	size += int(cap) // Control bytes.
-
-	if diff := unsafe.Alignof(ctrl(0)) - unsafe.Alignof(k); diff > 0 {
-		size += int(diff)
-	}
 	size += int(unsafe.Sizeof(k)) * int(cap)
 
 	if diff := unsafe.Alignof(v) - unsafe.Alignof(k); diff > 0 {
@@ -101,6 +107,10 @@ func Layout[K Key, V any](len int) (size, align int) {
 // data is assumed to point zeroed memory.
 func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *Table[K, V] {
 	t.soft, t.hard = loadFactor(len)
+	if dbg.Enabled {
+		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+	}
+
 	t.seed = hash(rand.Uint64())
 	// empty is chosen to be zero so that we do not need to initialize the
 	// control bytes.
@@ -121,16 +131,17 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 	// loop.
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard/8), "infinite loop during copy")
+			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
-			for j := range 8 {
-				if ctrl&0xff == empty {
+			for j := range ctrlSize {
+				var ok bool
+				ctrl, ok = ctrl.next()
+				if !ok {
 					continue
 				}
-				ctrl >>= 8
 
-				n := i*8 + j
+				n := i*ctrlSize + j
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := t.search(h, k)
@@ -148,16 +159,17 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard/8), "infinite loop during copy")
+			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
-				if ctrl&0xff == empty {
+				var ok bool
+				ctrl, ok = ctrl.next()
+				if !ok {
 					continue
 				}
-				ctrl >>= 8
 
-				n := i*8 + j
+				n := i*ctrlSize + j
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := t.searchFunc(h, k, extract)
@@ -179,6 +191,13 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 // Len returns this table's length.
 func (t *Table[K, V]) Len() int {
 	return int(t.len)
+}
+
+// Record sets a metrics object to record events to.
+//
+// This function may not be called concurrently with any table operations.
+func (t *Table[K, V]) Record(m *Metrics) {
+	t.metrics = m
 }
 
 // Lookup looks up the given key and returns it, or nil if no such key.
@@ -223,13 +242,19 @@ func (t *Table[K, V]) Insert(k K, extract func(K) []byte) *V {
 		h = t.seed.bytes(k)
 		idx, occupied = t.searchFunc(h, k, extract)
 	}
+
+	ctrl := unsafe2.Beyond[ctrl](t)
+	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	keys := unsafe2.Beyond[K](last)
+	last2 := keys.Get(int(t.hard) - 1)
+	values := unsafe2.Beyond[V](last2)
+
 	if !occupied {
-		ctrl := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
-		*ctrl.Get(idx) = h.h2()
-		*t.keys().Get(idx) = k
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*keys.Get(idx) = k
 		t.len++
 	}
-	return t.values().Get(idx)
+	return values.Get(idx)
 }
 
 // All ranges over a table.
@@ -244,15 +269,16 @@ func (t *Table[K, V]) All() iter.Seq2[K, V] {
 		vals := t.values()
 
 		len := t.len
-		for i := range int(t.hard) / 8 {
+		for i := range int(t.hard) / ctrlSize {
 			ctrl := *ctrl.Get(i)
 			for j := range 8 {
-				if ctrl&0xff == empty {
+				var ok bool
+				ctrl, ok = ctrl.next()
+				if !ok {
 					continue
 				}
-				ctrl >>= 8
 
-				k := i*8 + j
+				k := i*ctrlSize + j
 				len--
 				if !yield(*keys.Get(k), *vals.Get(k)) || len == 0 {
 					return
@@ -260,6 +286,28 @@ func (t *Table[K, V]) All() iter.Seq2[K, V] {
 			}
 		}
 	}
+}
+
+// Metrics contains instrumentation statistics about a table.
+type Metrics struct {
+	// The average length of a probe sequence.
+	Probes stats.Mean
+}
+
+// Reset resets all the metrics back to zero.
+func (m *Metrics) Reset() {
+	*m = Metrics{}
+}
+
+// Report reports metrics to a benchmark.
+func (m *Metrics) Report(b *testing.B) {
+	b.Helper()
+	b.ReportMetric(m.Probes.Get(), "probes/seq")
+}
+
+// Merge merges each metric in that into m.
+func (m *Metrics) Merge(that *Metrics) {
+	m.Probes.Merge(&that.Probes)
 }
 
 // search searches for a key's bucket: either an occupied slot, or an empty
@@ -272,13 +320,17 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := t.probe(h)
-	keys := t.keys()
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	ctrls := unsafe2.Beyond[ctrl](t)
+	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	keys := unsafe2.Beyond[K](last)
+	len := 0
 	for {
 		// Guaranteed to terminate because there's always going to be an open
 		// spot to insert. We include a debug assert for catching when this
 		// fails to happen.
-		dbg.Assert(p.i <= p.mask, "full table")
+		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		len++
 
 		var i int
 		var ctrl ctrl
@@ -287,9 +339,9 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 		// First, check for any hits.
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
-		if mask != 0 {
-			n := i * 8
-			for j := range 8 {
+		if mask.nonempty() {
+			n := i * ctrlSize
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
@@ -297,6 +349,7 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
 						t.log("found occupied", "%v,%v = %v", i, j, n)
+						t.recordProbeSeq(len)
 						return n, true
 					}
 				}
@@ -306,9 +359,10 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 
 		// Otherwise, check for empties.
 		j := ctrl.first(empty)
-		if j < 8 {
-			n := i*8 + j
+		if j < ctrlSize {
+			n := i*ctrlSize + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
+			t.recordProbeSeq(len)
 			return n, false
 		}
 	}
@@ -316,16 +370,20 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 
 // searchFunc is like search, but takes a function for extracting a variable-length key.
 func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx int, occupied bool) {
+	t.log("search", "h: %v, k: %v", h, k)
+
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := t.probe(h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
 	keys := t.keys()
+	len := 0
 	for {
 		// Guaranteed to terminate because there's always going to be an open
 		// spot to insert. We include a debug assert for catching when this
 		// fails to happen.
-		dbg.Assert(p.i <= p.mask, "full table")
+		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		len++
 
 		var i int
 		var ctrl ctrl
@@ -333,7 +391,8 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 
 		// First, check for any hits.
 		mask := ctrl.matches(h2)
-		if mask != 0 {
+		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
+		if mask.nonempty() {
 			n := i * 8
 			for j := range 8 {
 				var eq bool
@@ -343,6 +402,7 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
 						t.log("found occupied", "%v,%v = %v", i, j, n)
+						t.recordProbeSeq(len)
 						return n, true
 					}
 				}
@@ -352,13 +412,18 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 
 		// Otherwise, check for empties.
 		j := ctrl.first(empty)
-		if j < 8 {
-			n := i*8 + j
+		if j < ctrlSize {
+			n := i*ctrlSize + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
+			t.recordProbeSeq(len)
+
 			return n, false
 		}
 	}
 }
+
+// XXX: Go bizarrely does not inline the below functions, so they are manually
+// inlined in some places above.
 
 func (t *Table[K, V]) ctrl() *unsafe2.VLA[ctrl] {
 	return unsafe2.Beyond[ctrl](t)
@@ -366,24 +431,26 @@ func (t *Table[K, V]) ctrl() *unsafe2.VLA[ctrl] {
 
 func (t *Table[K, V]) keys() *unsafe2.VLA[K] {
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard/8) - 1)
+	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
 	return unsafe2.Beyond[K](last)
 }
 
 func (t *Table[K, V]) values() *unsafe2.VLA[V] {
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard/8) - 1)
+	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
 	keys := unsafe2.Beyond[K](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	return unsafe2.Beyond[V](last2)
 }
 
-func (t *Table[K, V]) probe(hash hash) prober {
-	return newProber(t.ctrl(), int(t.hard)/8, hash)
-}
-
 func (t *Table[K, V]) log(op, format string, args ...any) {
 	dbg.Log([]any{"%p", t}, op, format, args...)
+}
+
+func (t *Table[K, V]) recordProbeSeq(len int) {
+	if t.metrics != nil {
+		t.metrics.Probes.Record(float64(len))
+	}
 }
 
 // loadFactor calculates the capacity of a table with n elements, implementing
@@ -391,12 +458,8 @@ func (t *Table[K, V]) log(op, format string, args ...any) {
 //
 // The returned value is always a power of two divisible by 8.
 func loadFactor(len int) (soft, hard uint32) {
-	if len < 8 {
-		len = 7
-	}
-
 	// Go generates better code for unsigned arithmetic here.
-	e := uint(len)
+	e := uint(max(minEntires, len))
 	n := e * 8 / 7
 	// Make sure that n is a power of two. Pick the next power of
 	// two after n.
@@ -427,6 +490,10 @@ func (t *Table[K, V]) Dump() string {
 	var k K
 	var v V
 
+	if t == nil {
+		return fmt.Sprintf("0x0:0x0: Table[%T, %T]\n", k, v)
+	}
+
 	buf := new(strings.Builder)
 	size, align := Layout[K, V](int(t.len))
 	end := unsafe2.Addr[byte](unsafe2.AddrOf(t)).Add(size)
@@ -437,11 +504,8 @@ func (t *Table[K, V]) Dump() string {
 	fmt.Fprintf(buf, "ctrl:")
 	ctrl := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
 	for i := range int(t.hard) {
-		switch i % 16 {
-		case 0:
+		if i%ctrlSize == 0 {
 			fmt.Fprintf(buf, "\n  %p:%04d", ctrl.Get(i), i)
-		case 8:
-			fmt.Fprint(buf, " ")
 		}
 		fmt.Fprintf(buf, " %02x", *ctrl.Get(i))
 	}
@@ -513,4 +577,7 @@ func (t *Table[K, V]) Dump() string {
 //fastpb:stencil searchFuncU64xU64 Table.searchFunc[uint64, uint64]
 
 //fastpb:stencil LookupI32xU32 Table.Lookup[int32, uint32] search -> searchI32xU32
+//fastpb:stencil LookupU32xU32 Table.Lookup[uint32, uint32] search -> searchU32xU32
+//fastpb:stencil LookupFuncU32xU32 Table.LookupFunc[uint32, uint32] searchFunc -> searchFuncU32xU32
+//fastpb:stencil LookupU64xU32 Table.Lookup[uint64, uint32] search -> searchU64xU32
 //fastpb:stencil searchI32xU32 Table.search[int32, uint32]

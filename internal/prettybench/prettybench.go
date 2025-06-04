@@ -17,6 +17,7 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
 	"io"
 	"os"
@@ -44,6 +45,13 @@ var prefixes = []struct {
 	{"p", 1e-12},
 }
 
+func common(a, b string) int {
+	var i int
+	for ; i < min(len(a), len(b)) && a[i] == b[i]; i++ {
+	}
+	return i
+}
+
 func main() {
 	argv0, ok := os.LookupEnv("GO_CMD")
 	if !ok {
@@ -69,8 +77,16 @@ func main() {
 
 	// Extract all lines from stdout that begin with Benchmark. These are
 	// benchmark results.
-	names := []string{""}
-	benchmarks := [][]string{{"", "time", "thoughput", "memory", "allocations"}}
+	type key struct {
+		column string
+		row    int
+	}
+
+	names := []string{}
+	values := map[key]string{}
+	order := map[string]int{}
+	units := map[string]string{}
+	var i int
 	for _, line := range strings.Split(stdout.String(), "\n") {
 		if !strings.HasPrefix(line, "Benchmark") {
 			continue
@@ -78,42 +94,47 @@ func main() {
 		// Split each benchmark into fields. Each field is separated by tabs.
 		fields := strings.Split(line, "\t")
 		fields = slices.Delete(fields, 1, 2) // Delete the trial count.
-		for i := range fields {
-			fields[i] = strings.TrimSpace(fields[i])
-			if fields[i] == "" {
+		for j := range fields {
+			fields[j] = strings.TrimSpace(fields[j])
+			if fields[j] == "" {
 				continue
 			}
 
 			switch {
-			case i == 0:
+			case j == 0:
+				name := fields[0]
 				// Trim off a trailing -n, since it's not especially
 				// interesting.
-				fields[i] = fields[i][:strings.LastIndex(fields[i], "-")]
+				name = name[:strings.LastIndex(fields[j], "-")]
 
 				// Replace everything up to the first / with a .
-				fields[i] = "." + fields[i][strings.Index(fields[i], "/"):] //nolint:gocritic
+				name = "." + name[strings.Index(fields[j], "/"):]
 
 				// Delete all occurrences of .yaml.
-				fields[i] = strings.ReplaceAll(fields[i], ".yaml", "")
+				name = strings.ReplaceAll(name, ".yaml", "")
 
 				// Replace the common prefix of this and the previous
 				// benchmark with dashes.
-				names = append(names, fields[0])
-				prev := names[len(benchmarks)-1]
-				if prev != "" && fields[i] != "" {
-					var k int
-					for ; prev[k] == fields[i][k]; k++ {
-					}
-					if k > 0 && fields[i][k-1] == '/' {
-						k--
-					}
-					if k >= 4 {
-						fields[i] = " '' " + strings.Repeat(" ", k-4) + fields[i][k:]
+				if len(names) > 0 {
+					prev := names[len(names)-1]
+					k := common(prev, name)
+					k = strings.LastIndexByte(name[:k], '/')
+
+					if k > 0 {
+						bytes := []byte(name)
+						for i, b := range bytes[1:k] {
+							if b != '/' {
+								bytes[i+1] = '\''
+							}
+						}
+						name = string(bytes)
 					}
 				}
 
-			case fields[i][0] <= 0 || fields[i][0] >= 9:
-				num, units, ok := strings.Cut(fields[i], " ")
+				names = append(names, name)
+
+			case fields[j][0] <= 0 || fields[j][0] >= 9:
+				num, unit, ok := strings.Cut(fields[j], " ")
 				if !ok {
 					continue
 				}
@@ -123,40 +144,80 @@ func main() {
 					panic(err)
 				}
 
-				units = strings.TrimSuffix(units, "/op")
-				switch units {
+				unit = strings.TrimSuffix(unit, "/op")
+				column := unit
+				switch unit {
 				// Normalize some units.
 				case "ns":
-					units = "s"
+					column = "time"
+					unit = "s"
 					value *= 1e-9
 				case "MB/s":
-					units = "B/s"
+					column = "throughput"
+					unit = "B/s"
 					value *= 1e6
+				case "B":
+					column = "memory"
 				case "allocs":
+					column = "allocations"
+				default:
+					idx := strings.LastIndex(unit, "/")
+					if idx > 0 {
+						unit = unit[:idx]
+					}
 				}
+				units[column] = unit
 
 				// Pick the largest unit prefix smaller than field.units.
 				if value == 0 {
-					units = " " + units
+					unit = " " + unit
 				} else {
 					for _, prefix := range prefixes {
 						if prefix.mult <= value {
 							value /= prefix.mult
-							units = prefix.prefix + units
+							unit = prefix.prefix + unit
 							break
 						}
 					}
 				}
 
-				fields[i] = fmt.Sprintf("%.03f %v", value, units)
+				cell := fmt.Sprintf("%.03f %v", value, unit)
+				values[key{column, i}] = cell
+				order[column] = max(j, order[column])
 			}
 		}
-		benchmarks = append(benchmarks, fields)
+
+		i++
 	}
 
 	// Lay out the table.
-	widths := make([]int, len(benchmarks[0]))
-	for _, fields := range benchmarks {
+	header := []string{""}
+	for k := range order {
+		header = append(header, k)
+	}
+	slices.SortStableFunc(header[1:], func(a, b string) int {
+		x, y := order[a], order[b]
+		if x != y {
+			return x - y
+		}
+		return cmp.Compare(a, b)
+	})
+
+	table := [][]string{header}
+	for i, name := range names {
+		fields := []string{name}
+		for _, k := range header[1:] {
+			value := values[key{k, i}]
+			if value == "" {
+				value = "n/a  " + units[k]
+			}
+			fields = append(fields, value)
+		}
+		table = append(table, fields)
+	}
+
+	widths := make([]int, len(table[0]))
+	for _, fields := range table {
 		for i, field := range fields {
 			widths[i] = max(widths[i], utf8.RuneCountInString(field))
 		}
@@ -169,7 +230,7 @@ func main() {
 	}
 
 	// Print the table.
-	for _, fields := range benchmarks {
+	for _, fields := range table {
 		for i, field := range fields {
 			if i == 0 {
 				fmt.Printf("%s", field)

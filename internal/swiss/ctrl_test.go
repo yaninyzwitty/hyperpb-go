@@ -23,7 +23,7 @@ import (
 func TestCtrl(t *testing.T) {
 	t.Parallel()
 
-	var a ctrl = 0x0123456789abcdef
+	a := ctrl{x0: 0x0123456789abcdef}
 	b := broadcast(0x67)
 	c := a.matches(b)
 	t.Log(a, b, c)

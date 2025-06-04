@@ -50,32 +50,37 @@ func (h hash) u64(n uint64) hash {
 
 	// Older versions of this used ^ instead of +. Addition seems to produce
 	// a higher-quality hash, resulting in better latency overall.
-	x := (uint64(h) + n) * key
+	x := mix((uint64(h) + n), key)
 	return hash(bits.RotateLeft64(x, rotate))
 }
 
-// u64 writes an arbitrary byte array to this hash's state.
+// bytes writes an arbitrary byte array to this hash's state.
 //
 //go:nosplit
 func (h hash) bytes(in []byte) hash {
 	const (
-		y0 uint64 = 0x243f6a8885a308d3
-		y1 uint64 = 0x13198a2e03707344
-		y2 uint64 = 0xa4093822299f31d0
+		// Digits of pi in hex.
+		c0 uint64 = 0x243f6a8885a308d3
+		c1 uint64 = 0x13198a2e03707344
+		c2 uint64 = 0xa4093822299f31d0
 	)
 
-	x0, x1 := y0, y1
+	x0, x1 := c0, c1
 	p := unsafe.SliceData(in)
 	n := uint64(len(in))
+
+	// The branches below implement binary search on the size of the input
+	// buffer to select the best hash for that size.
 	if n <= 16 {
-		switch {
-		case n >= 8:
-			x0 ^= unsafe2.ByteLoad[uint64](p, 0)
-			x1 ^= unsafe2.ByteLoad[uint64](p, n-8)
-		case n >= 4:
-			x0 ^= uint64(unsafe2.ByteLoad[uint32](p, 0))
-			x1 ^= uint64(unsafe2.ByteLoad[uint32](p, n-4))
-		case n > 0:
+		if n >= 4 {
+			if n >= 8 {
+				x0 ^= unsafe2.ByteLoad[uint64](p, 0)
+				x1 ^= unsafe2.ByteLoad[uint64](p, n-8)
+			} else {
+				x0 ^= uint64(unsafe2.ByteLoad[uint32](p, 0))
+				x1 ^= uint64(unsafe2.ByteLoad[uint32](p, n-4))
+			}
+		} else if n > 0 {
 			x0 ^= uint64(unsafe2.ByteLoad[uint8](p, 0))
 			x1 ^= uint64(unsafe2.ByteLoad[uint8](p, n-1))
 			x1 ^= uint64(unsafe2.ByteLoad[uint8](p, n/2)) << 8
@@ -83,9 +88,12 @@ func (h hash) bytes(in []byte) hash {
 	} else {
 		end := unsafe2.AddrOf(p).Add(int(n) - 16)
 		for unsafe2.AddrOf(p) < end {
-			a := unsafe2.ByteLoad[uint64](p, 0)
-			b := unsafe2.ByteLoad[uint64](p, 8)
-			x0, x1 = x1, mulmix(x0^a, y2^b)
+			// TODO: Go does not know how to unroll this loop (Go is bad
+			// at unroll-and-jam), so in the future we can probably get better
+			// perf for large buffers by unroll-and-jamming this loop ourselves.
+			y0 := unsafe2.ByteLoad[uint64](p, 0)
+			y1 := unsafe2.ByteLoad[uint64](p, 8)
+			x0, x1 = x1, mix(x0^y0, c2^y1)
 			p = unsafe2.Add(p, 16)
 		}
 
@@ -93,7 +101,7 @@ func (h hash) bytes(in []byte) hash {
 		x1 ^= unsafe2.ByteLoad[uint64](end.AssertValid(), 8)
 	}
 
-	return h.u64(mulmix(x0, x1) ^ n)
+	return h.u64(mix(x0, x1) ^ n)
 }
 
 // String implements [fmt.Stringer].
@@ -101,7 +109,8 @@ func (h hash) String() string {
 	return fmt.Sprintf("%015x:%02x", h.h1(), h.h2())
 }
 
-func mulmix(a, b uint64) uint64 {
+// mix mixes together the bits of a and b.
+func mix(a, b uint64) uint64 {
 	a, b = bits.Mul64(a, b)
 	return a ^ b
 }

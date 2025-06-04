@@ -15,8 +15,10 @@
 package swiss
 
 import (
+	"reflect"
 	"unsafe"
 
+	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -49,27 +51,27 @@ func New[K Key, V any](out []byte, extract func(K) []byte, entries ...Entry[K, V
 		*t.Insert(e.Key, extract) = e.Value
 	}
 
-	// if dbg.Enabled && reflect.TypeOf(*new(V)).Comparable() {
-	// 	// Perform a self-test to make sure that everything is ok.
-	// 	var failed bool
-	// 	for _, e := range entries {
-	// 		var v *V
-	// 		if extract == nil {
-	// 			v = t.Lookup(e.Key)
-	// 		} else {
-	// 			v = t.LookupFunc(extract(e.Key), extract)
-	// 		}
+	if dbg.Enabled && reflect.TypeOf(*new(V)).Comparable() {
+		// Perform a self-test to make sure that everything is ok.
+		var failed bool
+		for _, e := range entries {
+			var v *V
+			if extract == nil {
+				v = t.Lookup(e.Key)
+			} else {
+				v = t.LookupFunc(extract(e.Key), extract)
+			}
 
-	// 		t.log("self test", "%v: %v == %v", e.Key, e.Value, v)
-	// 		if v == nil || any(v) != any(e.Value) {
-	// 			t.log("self test failed", "key: %v", e.Key)
-	// 		}
-	// 	}
+			t.log("self test", "%v: %v == %v", e.Key, e.Value, v)
+			if v == nil || any(v) != any(e.Value) {
+				t.log("self test failed", "key: %v", e.Key)
+			}
+		}
 
-	// 	if failed {
-	// 		panic("self-test failed")
-	// 	}
-	// }
+		if failed {
+			panic("self-test failed")
+		}
+	}
 
 	t.log("new", "%v", t.Dump())
 
