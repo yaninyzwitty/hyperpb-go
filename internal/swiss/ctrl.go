@@ -31,23 +31,23 @@ const (
 )
 
 type prober struct {
-	ctrl    *unsafe2.VLA[ctrl]
+	words   *unsafe2.VLA[ctrl]
 	i, mask int
 	h1      int
 }
 
-func newProber(ctrlWords *unsafe2.VLA[ctrl], words int, hash hash) prober {
+func newProber(words *unsafe2.VLA[ctrl], hard int, hash hash) prober {
 	return prober{
-		ctrl: ctrlWords,
-		mask: words - 1,
-		h1:   int(hash.h1()) & (words - 1),
+		words: words,
+		mask:  hard - 1,
+		h1:    int(hash.h1()) & (hard - 1),
 	}
 }
 
 // next returns the next control word and its index.
 func (p prober) next() (prober, int, ctrl) {
 	n := p.h1
-	ctrl := *p.ctrl.Get(n)
+	ctrl := *p.words.ByteGet(n)
 
 	// We evaluate f(i) = (i^2 + i)/2 mod buckets recursively, noting that for
 	// j = i+1,
@@ -57,7 +57,7 @@ func (p prober) next() (prober, int, ctrl) {
 	//       = (i^2 + i)/2 + (2i+2)/2
 	//       = f(i) + i + 1
 	//       = f(i) + j
-	p.i++
+	p.i += ctrlSize
 	p.h1 += p.i
 	p.h1 &= p.mask
 

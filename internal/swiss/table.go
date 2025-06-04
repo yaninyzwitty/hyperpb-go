@@ -67,9 +67,12 @@ type Table[K Key, V any] struct {
 	// wants to be able to copy tables byte-wise in memory.
 	seed hash
 
-	// ctrl   [cap/ctrlSize]ctrl
-	// keys   [cap]K
-	// values [cap]V
+	// There is an extra clone of the first control word at the end, which
+	// is used to ensure we can always load a full control word at any byte
+	// offset within the control word array.
+	// ctrl   [hard/ctrlSize + 1]ctrl
+	// keys   [hard]K
+	// values [hard]V
 }
 
 // Layout calculates the layout for a table with the given types.
@@ -87,7 +90,7 @@ func Layout[K Key, V any](len int) (size, align int) {
 	_, cap := loadFactor(len)
 
 	size = int(unsafe.Sizeof(t))
-	size += int(cap) // Control bytes.
+	size += int(cap) + ctrlSize // Control bytes.
 	size += int(unsafe.Sizeof(k)) * int(cap)
 
 	if diff := unsafe.Alignof(v) - unsafe.Alignof(k); diff > 0 {
@@ -109,6 +112,9 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -147,7 +153,9 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 				idx, occupied := t.search(h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -175,7 +183,9 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 				idx, occupied := t.searchFunc(h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -244,17 +254,25 @@ func (t *Table[K, V]) Insert(k K, extract func(K) []byte) *V {
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[K](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[V](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
 	return values.Get(idx)
+}
+
+func (t *Table[K, V]) mirrorIndex(idx int) int {
+	mask := int(t.hard - 1)
+	cloned := ctrlSize - 1
+	return ((idx - cloned) & mask) + (cloned & mask)
 }
 
 // All ranges over a table.
@@ -320,9 +338,9 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[K](last)
 	len := 0
 	for {
@@ -340,11 +358,12 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -360,10 +379,10 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 		// Otherwise, check for empties.
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -375,7 +394,7 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -393,11 +412,12 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -413,11 +433,10 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 		// Otherwise, check for empties.
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -431,13 +450,13 @@ func (t *Table[K, V]) ctrl() *unsafe2.VLA[ctrl] {
 
 func (t *Table[K, V]) keys() *unsafe2.VLA[K] {
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	return unsafe2.Beyond[K](last)
 }
 
 func (t *Table[K, V]) values() *unsafe2.VLA[V] {
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[K](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	return unsafe2.Beyond[V](last2)
@@ -503,13 +522,13 @@ func (t *Table[K, V]) Dump() string {
 
 	fmt.Fprintf(buf, "ctrl:")
 	ctrl := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
-	for i := range int(t.hard) {
+	for i := range int(t.hard) + ctrlSize {
 		if i%ctrlSize == 0 {
 			fmt.Fprintf(buf, "\n  %p:%04d", ctrl.Get(i), i)
 		}
 		fmt.Fprintf(buf, " %02x", *ctrl.Get(i))
 	}
-	fmt.Fprintln(buf)
+	fmt.Fprintln(buf, " (mirrored)")
 
 	fmt.Fprintf(buf, "keys:")
 	keys := t.keys()

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//nolint:tparallel // The tests are intentionally serialized.
 package swiss_test
 
 import (
@@ -26,13 +27,16 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//nolint:tparallel // The tests are intentionally serialized.
-func TestTable(t *testing.T) {
+type value struct {
+	x int32
+}
+
+func TestIntTable(t *testing.T) {
 	t.Parallel()
 	arena := new(arena.Arena)
 
-	size, _ := swiss.Layout[int32, int32](0)
-	m := unsafe2.Cast[swiss.Table[int32, int32]](arena.Alloc(size))
+	size, _ := swiss.Layout[int32, value](0)
+	m := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range int32(1000) {
 		defer dbg.WithTesting(t)()
@@ -40,20 +44,61 @@ func TestTable(t *testing.T) {
 		t.Log(m.Dump())
 		v := m.Insert(k, nil)
 		if v == nil {
-			size, _ := swiss.Layout[int32, int32](m.Len() + 1)
-			m2 := unsafe2.Cast[swiss.Table[int32, int32]](arena.Alloc(size))
+			size, _ := swiss.Layout[int32, value](m.Len() + 1)
+			m2 := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 			m2.Init(m.Len()+1, m, nil)
 			m = m2
 			v = m.Insert(k, nil)
 		}
-		*v = -k
+		*v = value{-k}
 
 		ok := t.Run(strconv.Itoa(int(k)), func(t *testing.T) {
 			defer dbg.WithTesting(t)()
 
 			for k := range k + 1 {
-				v := -k
-				require.Equal(t, m.Lookup(k), &v, "%v: %v", k, v)
+				p := m.Lookup(k)
+				v := value{-k}
+				require.Equal(t, p, &v, "%v: %v; got %v", k, v, p)
+			}
+		})
+
+		if !ok {
+			t.FailNow()
+		}
+	}
+}
+
+func TestStringTable(t *testing.T) {
+	t.Parallel()
+	arena := new(arena.Arena)
+	extract := func(n uint32) []byte {
+		return unsafe2.StringToSlice[[]byte](urlSlice[n])
+	}
+
+	size, _ := swiss.Layout[uint32, value](0)
+	m := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
+	m.Init(0, nil, nil)
+	for k := range uint32(1000) {
+		defer dbg.WithTesting(t)()
+
+		t.Log(m.Dump())
+		v := m.Insert(k, extract)
+		if v == nil {
+			size, _ := swiss.Layout[uint32, value](m.Len() + 1)
+			m2 := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
+			m2.Init(m.Len()+1, m, extract)
+			m = m2
+			v = m.Insert(k, extract)
+		}
+		*v = value{-int32(k)}
+
+		ok := t.Run(strconv.Itoa(int(k)), func(t *testing.T) {
+			defer dbg.WithTesting(t)()
+
+			for k := range k + 1 {
+				p := m.LookupFunc(extract(k), extract)
+				v := value{-int32(k)}
+				require.Equal(t, p, &v, "%q: %v; got %v", extract(k), v, p)
 			}
 		})
 

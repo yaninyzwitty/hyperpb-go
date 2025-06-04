@@ -60,7 +60,7 @@ func main() {
 
 	stdout := new(strings.Builder)
 
-	cmd := exec.Command(argv0, "test", "-run", "^B", "-benchmem")
+	cmd := exec.Command(argv0, "test", "-run", "^B")
 	cmd.Args = append(cmd.Args, os.Args[1:]...)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin
@@ -83,6 +83,7 @@ func main() {
 	}
 
 	names := []string{}
+	prettyNames := []string{}
 	values := map[key]string{}
 	order := map[string]int{}
 	units := map[string]string{}
@@ -112,11 +113,12 @@ func main() {
 
 				// Delete all occurrences of .yaml.
 				name = strings.ReplaceAll(name, ".yaml", "")
+				names = append(names, name)
 
 				// Replace the common prefix of this and the previous
 				// benchmark with dashes.
-				if len(names) > 0 {
-					prev := names[len(names)-1]
+				if len(names) > 1 {
+					prev := names[len(names)-2]
 					k := common(prev, name)
 					k = strings.LastIndexByte(name[:k], '/')
 
@@ -131,7 +133,7 @@ func main() {
 					}
 				}
 
-				names = append(names, name)
+				prettyNames = append(prettyNames, name)
 
 			case fields[j][0] <= 0 || fields[j][0] >= 9:
 				num, unit, ok := strings.Cut(fields[j], " ")
@@ -204,7 +206,7 @@ func main() {
 	})
 
 	table := [][]string{header}
-	for i, name := range names {
+	for i, name := range prettyNames {
 		fields := []string{name}
 		for _, k := range header[1:] {
 			value := values[key{k, i}]

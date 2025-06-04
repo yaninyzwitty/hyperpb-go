@@ -26,6 +26,8 @@ else
 	PKGS := $(PKG)
 endif
 PKG ?= .
+TESTFLAGS ?= ""
+BENCHFLAGS ?= -benchmem
 
 TOOLS_MOD_DIR := ./internal/tools
 PATH_SEP := ":"
@@ -46,25 +48,25 @@ clean: ## Delete intermediate build artifacts
 
 .PHONY: test
 test: build ## Run unit tests
-	$(GO_CMD) test -tags=$(GO_TAGS) $(PKGS)
+	$(GO_CMD) test -tags=$(GO_TAGS) $(PKGS) $(TESTFLAGS)
 
 .PHONY: bench
 bench: build ## Run benchmarks
-	$(GO_CMD) run ./internal/prettybench -tags=$(GO_TAGS) -bench '$(BENCHMARK)' $(PKGS)
+	$(GO_CMD) run ./internal/prettybench -tags=$(GO_TAGS) -bench '$(BENCHMARK)' $(PKGS) $(BENCHFLAGS)
 
 .PHONY: profile
 profile: build ## Profile benchmarks and open them in pprof
-	$(GO_CMD) test -bench '$(BENCHMARK)' -benchmem -run '^B' \
+	$(GO_CMD) test -bench '$(BENCHMARK)' $(BENCHFLAGS) -run '^B' \
 		-tags=$(GO_TAGS) \
 		-benchtime 3s \
 		-o fastpb.test \
 		-cpuprofile fastpb.prof \
-		$(PKG)
+		$(PKG) $(TESTFLAGS)
 	$(GO_CMD) tool pprof -http localhost:8000 fastpb.test fastpb.prof
 
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
-	$(GO_CMD) test -tags=$(GO_TAGS) -c -o fastpb.test $(PKG)
+	$(GO_CMD) test -tags=$(GO_TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
 	$(GO_CMD) tool objdump -gnu -s '$(ASM_FILTER)' fastpb.test | \
 		$(GO_CMD) run ./internal/prettyasm \
 			-info fileline \

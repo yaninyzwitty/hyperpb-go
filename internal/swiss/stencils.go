@@ -28,6 +28,9 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -62,7 +65,9 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 				idx, occupied := searchU8xU8(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -90,7 +95,9 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 				idx, occupied := searchFuncU8xU8(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -107,6 +114,9 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -141,7 +151,9 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 				idx, occupied := searchU32xU8(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -169,7 +181,9 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 				idx, occupied := searchFuncU32xU8(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -186,6 +200,9 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -220,7 +237,9 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 				idx, occupied := searchU64xU8(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -248,7 +267,9 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 				idx, occupied := searchFuncU64xU8(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -265,6 +286,9 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -299,7 +323,9 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 				idx, occupied := searchU8xU32(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -327,7 +353,9 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 				idx, occupied := searchFuncU8xU32(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -344,6 +372,9 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -378,7 +409,9 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 				idx, occupied := searchU32xU32(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -406,7 +439,9 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 				idx, occupied := searchFuncU32xU32(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -423,6 +458,9 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -457,7 +495,9 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 				idx, occupied := searchU64xU32(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -485,7 +525,9 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 				idx, occupied := searchFuncU64xU32(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -502,6 +544,9 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -536,7 +581,9 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 				idx, occupied := searchU8xU64(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -564,7 +611,9 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 				idx, occupied := searchFuncU8xU64(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -581,6 +630,9 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -615,7 +667,9 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 				idx, occupied := searchU32xU64(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -643,7 +697,9 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 				idx, occupied := searchFuncU32xU64(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -660,6 +716,9 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 	t.soft, t.hard = loadFactor(len)
 	if dbg.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
+		defer func() {
+			t.log("resized", "%s", t.Dump())
+		}()
 	}
 
 	t.seed = hash(rand.Uint64())
@@ -694,7 +753,9 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 				idx, occupied := searchU64xU64(t, h, k)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -722,7 +783,9 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 				idx, occupied := searchFuncU64xU64(t, h, k, extract)
 				dbg.Assert(!occupied, "fwo keys mapped to one slot")
 
+				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
+				*ctrl2.Get(mirrored) = h.h2()
 				*keys2.Get(idx) = *keys1.Get(n)
 				*vals2.Get(idx) = *vals1.Get(n)
 				t.len++
@@ -754,13 +817,15 @@ func InsertU8xU8(t *Table[uint8, uint8], k uint8, extract func(uint8) []byte) *u
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint8](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -785,13 +850,15 @@ func InsertU32xU8(t *Table[uint32, uint8], k uint32, extract func(uint32) []byte
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint8](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -816,13 +883,15 @@ func InsertU64xU8(t *Table[uint64, uint8], k uint64, extract func(uint64) []byte
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint8](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -847,13 +916,15 @@ func InsertU8xU32(t *Table[uint8, uint32], k uint8, extract func(uint8) []byte) 
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint32](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -878,13 +949,15 @@ func InsertU32xU32(t *Table[uint32, uint32], k uint32, extract func(uint32) []by
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint32](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -909,13 +982,15 @@ func InsertU64xU32(t *Table[uint64, uint32], k uint64, extract func(uint64) []by
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint32](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -940,13 +1015,15 @@ func InsertU8xU64(t *Table[uint8, uint64], k uint8, extract func(uint8) []byte) 
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint64](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -971,13 +1048,15 @@ func InsertU32xU64(t *Table[uint32, uint64], k uint32, extract func(uint32) []by
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint64](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1002,13 +1081,15 @@ func InsertU64xU64(t *Table[uint64, uint64], k uint64, extract func(uint64) []by
 	}
 
 	ctrl := unsafe2.Beyond[ctrl](t)
-	last := ctrl.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrl.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
 	values := unsafe2.Beyond[uint64](last2)
 
 	if !occupied {
+		mirrored := t.mirrorIndex(idx)
 		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1022,9 +1103,9 @@ func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied boo
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	len := 0
 	for {
@@ -1039,11 +1120,12 @@ func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied boo
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1058,10 +1140,10 @@ func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied boo
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1072,9 +1154,9 @@ func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	len := 0
 	for {
@@ -1089,11 +1171,12 @@ func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied 
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1108,10 +1191,10 @@ func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied 
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1122,9 +1205,9 @@ func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	len := 0
 	for {
@@ -1139,11 +1222,12 @@ func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied 
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1158,10 +1242,10 @@ func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied 
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1172,9 +1256,9 @@ func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied b
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	len := 0
 	for {
@@ -1189,11 +1273,12 @@ func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied b
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1208,10 +1293,10 @@ func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied b
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1222,9 +1307,9 @@ func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	len := 0
 	for {
@@ -1239,11 +1324,12 @@ func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupie
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1258,10 +1344,10 @@ func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupie
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1272,9 +1358,9 @@ func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	len := 0
 	for {
@@ -1289,11 +1375,12 @@ func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupie
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1308,10 +1395,10 @@ func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupie
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1322,9 +1409,9 @@ func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied b
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint8](last)
 	len := 0
 	for {
@@ -1339,11 +1426,12 @@ func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied b
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1358,10 +1446,10 @@ func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied b
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1372,9 +1460,9 @@ func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint32](last)
 	len := 0
 	for {
@@ -1389,11 +1477,12 @@ func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupie
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1408,10 +1497,10 @@ func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupie
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1422,9 +1511,9 @@ func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[uint64](last)
 	len := 0
 	for {
@@ -1439,11 +1528,12 @@ func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupie
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1458,10 +1548,10 @@ func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupie
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1473,7 +1563,7 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1488,11 +1578,12 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1507,11 +1598,10 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1522,7 +1612,7 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1537,11 +1627,12 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(ui
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1556,11 +1647,10 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(ui
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1571,7 +1661,7 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1586,11 +1676,12 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(ui
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1605,11 +1696,10 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(ui
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1620,7 +1710,7 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1635,11 +1725,12 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(ui
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1654,11 +1745,10 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(ui
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1669,7 +1759,7 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1684,11 +1774,12 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1703,11 +1794,10 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1718,7 +1808,7 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1733,11 +1823,12 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1752,11 +1843,10 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1767,7 +1857,7 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1782,11 +1872,12 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(ui
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1801,11 +1892,10 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(ui
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1816,7 +1906,7 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1831,11 +1921,12 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1850,11 +1941,10 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1865,7 +1955,7 @@ func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -1880,11 +1970,12 @@ func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * 8
-			for j := range 8 {
+			n := i
+			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := extract(*keys.Get(n))
 					t.log("checking", "%x == %x", k, k2)
 					if bytes.Equal(k, k2) {
@@ -1899,11 +1990,10 @@ func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
@@ -1952,9 +2042,9 @@ func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard)/ctrlSize, h)
+	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
 	ctrls := unsafe2.Beyond[ctrl](t)
-	last := ctrls.Get(int(t.hard)/ctrlSize - 1)
+	last := ctrls.Get(int(t.hard) / ctrlSize)
 	keys := unsafe2.Beyond[int32](last)
 	len := 0
 	for {
@@ -1969,11 +2059,12 @@ func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied 
 		mask := ctrl.matches(h2)
 		t.log("matching", "i: %v, ctrl: %v, h2: %v, mask: %v", i, ctrl, h2, mask)
 		if mask.nonempty() {
-			n := i * ctrlSize
+			n := i
 			for j := range ctrlSize {
 				var eq bool
 				mask, eq = mask.next()
 				if eq {
+					n &= int(t.hard) - 1
 					k2 := *keys.Get(n)
 					t.log("checking", "%v == %v", k, k2)
 					if k == k2 {
@@ -1988,10 +2079,10 @@ func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied 
 
 		j := ctrl.first(empty)
 		if j < ctrlSize {
-			n := i*ctrlSize + j
+			n := i + j
 			t.log("found vacant", "%v,%v = %v", i, j, n)
 			t.recordProbeSeq(len)
-			return n, false
+			return n & (int(t.hard) - 1), false
 		}
 	}
 }
