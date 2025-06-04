@@ -302,3 +302,19 @@ message Maps {
     map<string, string> mce = 0xce;
     map<string, bytes> mcf = 0xcf;
 }
+
+message MessageMaps {
+    Scalars scalars = 1;
+
+    map<int32, MessageMaps> m1 = 0x11;
+    map<int64, MessageMaps> m2 = 0x12;
+    map<uint32, MessageMaps> m3 = 0x13;
+    map<uint64, MessageMaps> m4 = 0x14;
+    map<sint32, MessageMaps> m5 = 0x15;
+    map<sint64, MessageMaps> m6 = 0x16;
+    map<fixed32, MessageMaps> m7 = 0x17;
+    map<fixed64, MessageMaps> m8 = 0x18;
+    map<sfixed32, MessageMaps> m9 = 0x19;
+    map<sfixed64, MessageMaps> ma = 0x1a;
+    map<string, MessageMaps> mc = 0x1c;
+}

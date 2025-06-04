@@ -132,7 +132,8 @@ type typeSymbol struct {
 }
 
 type parserSymbol struct {
-	ty protoreflect.MessageDescriptor
+	ty       protoreflect.MessageDescriptor
+	mapEntry bool
 }
 
 type tableSymbol struct{ sym any }
@@ -140,6 +141,14 @@ type tableSymbol struct{ sym any }
 type fieldParserSymbol struct {
 	parser any
 	index  int
+}
+
+func (s typeSymbol) String() string {
+	return fmt.Sprintf("typeSymbol:%s", s.ty.Name())
+}
+
+func (s parserSymbol) String() string {
+	return fmt.Sprintf("parserSymbol:%s:%v", s.ty.Name(), s.mapEntry)
 }
 
 func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
@@ -600,7 +609,8 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 // representation.
 func (c *compiler) codegen(ir *ir) {
 	tSym := typeSymbol{ir.d}
-	pSym := parserSymbol{ir.d}
+	pSym := parserSymbol{ir.d, false}
+	mSym := parserSymbol{ir.d, true}
 
 	c.write(tSym,
 		typeHeader{
@@ -621,7 +631,7 @@ func (c *compiler) codegen(ir *ir) {
 	numbers := make([]swiss.Entry[int32, uint32], 0, len(ir.t))
 	for i, tf := range ir.t {
 		var relos []relo
-		if md := tf.d.Message(); md != nil {
+		if md := fieldMessage(tf.d); md != nil {
 			relos = []relo{{
 				symbol: typeSymbol{md},
 				offset: unsafe.Offsetof(field{}.message),
@@ -657,6 +667,10 @@ func (c *compiler) codegen(ir *ir) {
 		relo{
 			symbol: tableSymbol{pSym},
 			offset: unsafe.Offsetof(typeParser{}.tags),
+		},
+		relo{
+			symbol: mSym,
+			offset: unsafe.Offsetof(typeParser{}.mapEntry),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: pSym, index: 0},
@@ -695,9 +709,9 @@ func (c *compiler) codegen(ir *ir) {
 				offset: unsafe.Offsetof(fieldParser{}.nextErr),
 			},
 		}
-		if md := tf.d.Message(); md != nil {
+		if md := fieldMessage(tf.d); md != nil {
 			relos = append(relos, relo{
-				symbol: parserSymbol{md},
+				symbol: parserSymbol{md, false},
 				offset: unsafe.Offsetof(fieldParser{}.message),
 			})
 		}
@@ -733,6 +747,48 @@ func (c *compiler) codegen(ir *ir) {
 
 	// Append the parser's field number table.
 	writeTable(c, tableSymbol{pSym}, numbers)
+
+	// Write the map entry parser.
+	c.write(mSym,
+		typeParser{
+			discardUnknown: true,
+		},
+		relo{
+			symbol:   tSym,
+			offset:   unsafe.Offsetof(typeParser{}.tyOffset),
+			relative: true,
+		},
+		relo{
+			symbol: tableSymbol{mSym},
+			offset: unsafe.Offsetof(typeParser{}.tags),
+		},
+		relo{
+			symbol: fieldParserSymbol{parser: mSym, index: 0},
+			offset: unsafe.Offsetof(typeParser{}.entry) +
+				unsafe.Offsetof(fieldParser{}.nextOk),
+		},
+	)
+	const mapValue = 0x2<<3 | fieldTag(protowire.BytesType) // Field number 2 with bytes type (so, 0b10010).
+	c.write(
+		fieldParserSymbol{parser: mSym, index: 0},
+		fieldParser{
+			tag:   mapValue,
+			thunk: unsafe2.NewPC(parserThunk(parseMapEntry)),
+		},
+		relo{
+			symbol: fieldParserSymbol{parser: mSym, index: 0},
+			offset: unsafe.Offsetof(fieldParser{}.nextOk),
+		},
+		relo{
+			symbol: fieldParserSymbol{parser: mSym, index: 0},
+			offset: unsafe.Offsetof(fieldParser{}.nextErr),
+		},
+		relo{
+			symbol: pSym,
+			offset: unsafe.Offsetof(fieldParser{}.message),
+		},
+	)
+	writeTable(c, tableSymbol{mSym}, []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}})
 }
 
 func (c *compiler) message(md protoreflect.MessageDescriptor) {
@@ -748,11 +804,17 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 
 	fields := md.Fields()
 	for i := range fields.Len() {
-		field := fields.Get(i)
-		if m := field.Message(); m != nil {
+		if m := fieldMessage(fields.Get(i)); m != nil {
 			c.message(m)
 		}
 	}
+}
+
+func fieldMessage(fd protoreflect.FieldDescriptor) protoreflect.MessageDescriptor {
+	if fd.IsMap() {
+		return fd.MapValue().Message()
+	}
+	return fd.Message()
 }
 
 // relo is a relocation that is resolved in [compiler.link].
@@ -766,7 +828,7 @@ func (c *compiler) link(base *byte) {
 	for target, relo := range c.relos {
 		offset, ok := c.symbols[relo.symbol]
 		if !ok {
-			panic(fmt.Sprintf("fastpb: undefined symbol: %#v", relo.symbol))
+			panic(fmt.Sprintf("fastpb: undefined symbol: %v", relo.symbol))
 		}
 
 		if relo.relative {

@@ -129,3 +129,49 @@ func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 		}
 	}
 }
+
+// getMapIxM is a [getterThunk] for map<string, V> where V is an integer type.
+func getMapIxM[K integer](m *message, _ Type, getter getter) protoreflect.Value {
+	v := getField[*swiss.Table[K, *message]](m, getter.offset)
+	if v == nil || *v == nil {
+		return protoreflect.ValueOf(emptyMap{})
+	}
+
+	return protoreflect.ValueOf(mapIxM[K]{table: *v})
+}
+
+// mapIxM is a [protoreflect.Map] for map<string, V> where V is an integer type.
+type mapIxM[K integer] struct {
+	unimplementedMap
+	table *swiss.Table[K, *message]
+}
+
+func (m mapIxM[K]) Len() int                        { return m.table.Len() }
+func (m mapIxM[K]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
+func (m mapIxM[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
+	k := reflectValueScalar[K](mk.Value())
+	v := m.table.Lookup(k)
+	if v == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	return protoreflect.ValueOf(*v)
+}
+
+func (m mapIxM[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
+	for k, v := range m.table.All() {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+			return
+		}
+	}
+}
+
+// getMapSxM is a [getterThunk] for map<string, V> where V is a message type.
+func getMapSxM(m *message, _ Type, getter getter) protoreflect.Value {
+	v := getField[*swiss.Table[zc, *message]](m, getter.offset)
+	if v == nil || *v == nil {
+		return protoreflect.ValueOf(emptyMap{})
+	}
+
+	return protoreflect.ValueOf(mapSxM{src: m.context.src, table: *v})
+}

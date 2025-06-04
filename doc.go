@@ -34,7 +34,6 @@
 // The following features are currently not implemented but there are plans
 // to do so:
 //
-//   - Maps (currently they are rendered as repeated fields).
 //   - Groups (groups will parse as unknown fields).
 package fastpb
 

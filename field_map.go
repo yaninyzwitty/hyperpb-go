@@ -15,6 +15,8 @@
 package fastpb
 
 import (
+	"unsafe"
+
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -33,488 +35,496 @@ import (
 var mapFields = map[protoreflect.Kind]map[protoreflect.Kind]*archetype{
 	protoreflect.Int32Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseScalarMapV32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseScalarMapV32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapV32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseMapV32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseMapV32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseMapV32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseScalarMapV32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseScalarMapV32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapV32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseMapV32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseMapV32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseMapV32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseScalarMapV32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapV32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseScalarMapV32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseMapV32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseMapV32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseMapV32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseScalarMapV32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapV32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseScalarMapV32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseMapV32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseMapV32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseMapV32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseScalarMapV32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseScalarMapV32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseMapV32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseMapV32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int32], parseScalarMapV32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseScalarMapV32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int32], parseMapV32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseMapV32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int32], parseMapV32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Int64Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseScalarMapV64xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseScalarMapV64xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapV64xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseMapV64xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseMapV64xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseMapV64xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseScalarMapV64xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseScalarMapV64xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapV64xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseMapV64xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseMapV64xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseMapV64xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseScalarMapV64xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapV64xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseScalarMapV64xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseMapV64xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseMapV64xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseMapV64xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseScalarMapV64xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapV64xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseScalarMapV64xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseMapV64xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseMapV64xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseMapV64xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseScalarMapV64xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseScalarMapV64xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseMapV64x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseMapV64xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int64], parseScalarMapV64xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseScalarMapV64xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int64], parseMapV64xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseMapV64xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int64], parseMapV64xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Uint32Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[uint32, int32], parseScalarMapV32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[uint32, uint32], parseScalarMapV32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[uint32, int32], parseScalarMapV32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[uint32, int32], parseMapV32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[uint32, uint32], parseMapV32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[uint32, int32], parseMapV32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[uint32, int64], parseScalarMapV32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[uint32, uint64], parseScalarMapV32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[uint32, int64], parseScalarMapV32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[uint32, int64], parseMapV32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[uint32, uint64], parseMapV32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[uint32, int64], parseMapV32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint32, uint32], parseScalarMapV32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint32, int32], parseScalarMapV32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[uint32, float32], parseScalarMapV32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint32, uint32], parseMapV32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint32, int32], parseMapV32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[uint32, float32], parseMapV32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint32, uint64], parseScalarMapV32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint32, int64], parseScalarMapV32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[uint32, float64], parseScalarMapV32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint32, uint64], parseMapV32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint32, int64], parseMapV32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[uint32, float64], parseMapV32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[uint32, bool], parseScalarMapV32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[uint32, protoreflect.EnumNumber], parseScalarMapV32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[uint32, bool], parseMapV32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[uint32, protoreflect.EnumNumber], parseMapV32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[uint32], parseScalarMapV32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[uint32], parseScalarMapV32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[uint32], parseMapV32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[uint32], parseMapV32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[uint32], parseMapV32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Uint64Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[uint64, int32], parseScalarMapV64xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[uint64, uint32], parseScalarMapV64xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[uint64, int32], parseScalarMapV64xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[uint64, int32], parseMapV64xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[uint64, uint32], parseMapV64xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[uint64, int32], parseMapV64xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[uint64, int64], parseScalarMapV64xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[uint64, uint64], parseScalarMapV64xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[uint64, int64], parseScalarMapV64xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[uint64, int64], parseMapV64xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[uint64, uint64], parseMapV64xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[uint64, int64], parseMapV64xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint64, uint32], parseScalarMapV64xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint64, int32], parseScalarMapV64xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[uint64, float32], parseScalarMapV64xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint64, uint32], parseMapV64xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint64, int32], parseMapV64xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[uint64, float32], parseMapV64xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint64, uint64], parseScalarMapV64xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint64, int64], parseScalarMapV64xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[uint64, float64], parseScalarMapV64xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint64, uint64], parseMapV64xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint64, int64], parseMapV64xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[uint64, float64], parseMapV64xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[uint64, bool], parseScalarMapV64xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[uint64, protoreflect.EnumNumber], parseScalarMapV64xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[uint64, bool], parseMapV64x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[uint64, protoreflect.EnumNumber], parseMapV64xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[uint64], parseScalarMapV64xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[uint64], parseScalarMapV64xB),
+		protoreflect.StringKind: mapArch(getMapIxS[uint64], parseMapV64xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[uint64], parseMapV64xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[uint64], parseMapV64xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Sint32Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseScalarMapZ32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseScalarMapZ32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapZ32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseMapZ32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseMapZ32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseMapZ32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseScalarMapZ32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseScalarMapZ32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapZ32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseMapZ32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseMapZ32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseMapZ32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseScalarMapZ32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapZ32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseScalarMapZ32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseMapZ32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseMapZ32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseMapZ32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseScalarMapZ32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapZ32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseScalarMapZ32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseMapZ32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseMapZ32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseMapZ32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseScalarMapZ32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseScalarMapZ32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseMapZ32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseMapZ32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int32], parseScalarMapZ32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseScalarMapZ32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int32], parseMapZ32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseMapZ32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int32], parseMapZ32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Sint64Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseScalarMapZ64xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseScalarMapZ64xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapZ64xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseMapZ64xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseMapZ64xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseMapZ64xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseScalarMapZ64xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseScalarMapZ64xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapZ64xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseMapZ64xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseMapZ64xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseMapZ64xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseScalarMapZ64xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapZ64xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseScalarMapZ64xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseMapZ64xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseMapZ64xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseMapZ64xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseScalarMapZ64xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapZ64xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseScalarMapZ64xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseMapZ64xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseMapZ64xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseMapZ64xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseScalarMapZ64xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseScalarMapZ64xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseMapZ64x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseMapZ64xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int64], parseScalarMapZ64xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseScalarMapZ64xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int64], parseMapZ64xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseMapZ64xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int64], parseMapZ64xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 
 	protoreflect.Fixed32Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[uint32, int32], parseScalarMapF32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[uint32, uint32], parseScalarMapF32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[uint32, int32], parseScalarMapF32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[uint32, int32], parseMapF32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[uint32, uint32], parseMapF32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[uint32, int32], parseMapF32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[uint32, int64], parseScalarMapF32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[uint32, uint64], parseScalarMapF32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[uint32, int64], parseScalarMapF32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[uint32, int64], parseMapF32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[uint32, uint64], parseMapF32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[uint32, int64], parseMapF32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint32, uint32], parseScalarMapF32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint32, int32], parseScalarMapF32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[uint32, float32], parseScalarMapF32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint32, uint32], parseMapF32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint32, int32], parseMapF32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[uint32, float32], parseMapF32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint32, uint64], parseScalarMapF32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint32, int64], parseScalarMapF32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[uint32, float64], parseScalarMapF32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint32, uint64], parseMapF32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint32, int64], parseMapF32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[uint32, float64], parseMapF32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[uint32, bool], parseScalarMapF32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[uint32, protoreflect.EnumNumber], parseScalarMapF32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[uint32, bool], parseMapF32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[uint32, protoreflect.EnumNumber], parseMapF32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[uint32], parseScalarMapF32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[uint32], parseScalarMapF32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[uint32], parseMapF32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[uint32], parseMapF32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[uint32], parseMapF32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Fixed64Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[uint64, int32], parseScalarMapF64xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[uint64, uint32], parseScalarMapF64xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[uint64, int32], parseScalarMapF64xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[uint64, int32], parseMapF64xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[uint64, uint32], parseMapF64xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[uint64, int32], parseMapF64xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[uint64, int64], parseScalarMapF64xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[uint64, uint64], parseScalarMapF64xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[uint64, int64], parseScalarMapF64xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[uint64, int64], parseMapF64xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[uint64, uint64], parseMapF64xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[uint64, int64], parseMapF64xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint64, uint32], parseScalarMapF64xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint64, int32], parseScalarMapF64xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[uint64, float32], parseScalarMapF64xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[uint64, uint32], parseMapF64xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[uint64, int32], parseMapF64xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[uint64, float32], parseMapF64xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint64, uint64], parseScalarMapF64xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint64, int64], parseScalarMapF64xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[uint64, float64], parseScalarMapF64xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[uint64, uint64], parseMapF64xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[uint64, int64], parseMapF64xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[uint64, float64], parseMapF64xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[uint64, bool], parseScalarMapF64xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[uint64, protoreflect.EnumNumber], parseScalarMapF64xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[uint64, bool], parseMapF64x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[uint64, protoreflect.EnumNumber], parseMapF64xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[uint64], parseScalarMapF64xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[uint64], parseScalarMapF64xB),
+		protoreflect.StringKind: mapArch(getMapIxS[uint64], parseMapF64xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[uint64], parseMapF64xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[uint64], parseMapF64xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Sfixed32Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseScalarMapF32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseScalarMapF32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapF32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseMapF32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int32, uint32], parseMapF32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int32, int32], parseMapF32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseScalarMapF32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseScalarMapF32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapF32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int32, int64], parseMapF32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int32, uint64], parseMapF32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int32, int64], parseMapF32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseScalarMapF32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseScalarMapF32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseScalarMapF32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int32, uint32], parseMapF32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int32, int32], parseMapF32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int32, float32], parseMapF32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseScalarMapF32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseScalarMapF32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseScalarMapF32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int32, uint64], parseMapF32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int32, int64], parseMapF32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int32, float64], parseMapF32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseScalarMapF32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseScalarMapF32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int32, bool], parseMapF32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int32, protoreflect.EnumNumber], parseMapF32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int32], parseScalarMapF32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseScalarMapF32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int32], parseMapF32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int32], parseMapF32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int32], parseMapF32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 	protoreflect.Sfixed64Kind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseScalarMapF64xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseScalarMapF64xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapF64xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[int64, int32], parseMapF64xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[int64, uint32], parseMapF64xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[int64, int32], parseMapF64xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseScalarMapF64xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseScalarMapF64xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapF64xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[int64, int64], parseMapF64xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[int64, uint64], parseMapF64xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[int64, int64], parseMapF64xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseScalarMapF64xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseScalarMapF64xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseScalarMapF64xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[int64, uint32], parseMapF64xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[int64, int32], parseMapF64xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[int64, float32], parseMapF64xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseScalarMapF64xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseScalarMapF64xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseScalarMapF64xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[int64, uint64], parseMapF64xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[int64, int64], parseMapF64xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[int64, float64], parseMapF64xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseScalarMapF64xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseScalarMapF64xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[int64, bool], parseMapF64x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[int64, protoreflect.EnumNumber], parseMapF64xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[int64], parseScalarMapF64xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseScalarMapF64xB),
+		protoreflect.StringKind: mapArch(getMapIxS[int64], parseMapF64xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[int64], parseMapF64xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[int64], parseMapF64xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 
-	protoreflect.BoolKind: boolMapFields,
+	protoreflect.BoolKind: {
+		// 32-bit varint types.
+		protoreflect.Int32Kind:  mapArch(getMap2xI[int32], parseMap2xV32),
+		protoreflect.Uint32Kind: mapArch(getMap2xI[uint32], parseMap2xV32),
+		protoreflect.Sint32Kind: mapArch(getMap2xI[int32], parseMap2xZ32),
+
+		// 64-bit varint types.
+		protoreflect.Int64Kind:  mapArch(getMap2xI[int64], parseMap2xV64),
+		protoreflect.Uint64Kind: mapArch(getMap2xI[uint64], parseMap2xV64),
+		protoreflect.Sint64Kind: mapArch(getMap2xI[int64], parseMap2xZ64),
+
+		// 32-bit fixed types.
+		protoreflect.Fixed32Kind:  mapArch(getMap2xI[uint32], parseMap2xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMap2xI[int32], parseMap2xF32),
+		protoreflect.FloatKind:    mapArch(getMap2xI[float32], parseMap2xF32),
+
+		// 64-bit fixed types.
+		protoreflect.Fixed64Kind:  mapArch(getMap2xI[uint64], parseMap2xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMap2xI[int64], parseMap2xF64),
+		protoreflect.DoubleKind:   mapArch(getMap2xI[float64], parseMap2xF64),
+
+		// Special scalar types.
+		protoreflect.BoolKind: mapArch(getMap2x2, parseMap2x2),
+		protoreflect.EnumKind: mapArch(getMap2xI[protoreflect.EnumNumber], parseMap2xV32),
+
+		// String types.
+		protoreflect.StringKind: mapArch(getMap2xS, parseMap2xS),
+		protoreflect.BytesKind:  mapArch(getMap2xB, parseMap2xB),
+
+		// Message types.
+		protoreflect.MessageKind: mapArch(getMap2xM, parseMap2xM),
+		protoreflect.GroupKind:   {
+			// Not implemented.
+		},
+	},
 
 	protoreflect.EnumKind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseScalarMapV32xV32),
-		protoreflect.Uint32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, uint32], parseScalarMapV32xV32),
-		protoreflect.Sint32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseScalarMapV32xZ32),
+		protoreflect.Int32Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseMapV32xV32),
+		protoreflect.Uint32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, uint32], parseMapV32xV32),
+		protoreflect.Sint32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseMapV32xZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseScalarMapV32xV64),
-		protoreflect.Uint64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, uint64], parseScalarMapV32xV64),
-		protoreflect.Sint64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseScalarMapV32xZ64),
+		protoreflect.Int64Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseMapV32xV64),
+		protoreflect.Uint64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, uint64], parseMapV32xV64),
+		protoreflect.Sint64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseMapV32xZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, uint32], parseScalarMapV32xF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseScalarMapV32xF32),
-		protoreflect.FloatKind:    mapArch(getMapIxI[protoreflect.EnumNumber, float32], parseScalarMapV32xF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, uint32], parseMapV32xF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int32], parseMapV32xF32),
+		protoreflect.FloatKind:    mapArch(getMapIxI[protoreflect.EnumNumber, float32], parseMapV32xF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, uint64], parseScalarMapV32xF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseScalarMapV32xF64),
-		protoreflect.DoubleKind:   mapArch(getMapIxI[protoreflect.EnumNumber, float64], parseScalarMapV32xF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapIxI[protoreflect.EnumNumber, uint64], parseMapV32xF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapIxI[protoreflect.EnumNumber, int64], parseMapV32xF64),
+		protoreflect.DoubleKind:   mapArch(getMapIxI[protoreflect.EnumNumber, float64], parseMapV32xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapIxI[protoreflect.EnumNumber, bool], parseScalarMapV32xV1),
-		protoreflect.EnumKind: mapArch(getMapIxI[protoreflect.EnumNumber, protoreflect.EnumNumber], parseScalarMapV32xV32),
+		protoreflect.BoolKind: mapArch(getMapIxI[protoreflect.EnumNumber, bool], parseMapV32x2),
+		protoreflect.EnumKind: mapArch(getMapIxI[protoreflect.EnumNumber, protoreflect.EnumNumber], parseMapV32xV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapIxS[protoreflect.EnumNumber], parseScalarMapV32xS),
-		protoreflect.BytesKind:  mapArch(getMapIxB[protoreflect.EnumNumber], parseScalarMapV32xB),
+		protoreflect.StringKind: mapArch(getMapIxS[protoreflect.EnumNumber], parseMapV32xS),
+		protoreflect.BytesKind:  mapArch(getMapIxB[protoreflect.EnumNumber], parseMapV32xB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapIxM[protoreflect.EnumNumber], parseMapV32xM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 
 	protoreflect.StringKind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapSxI[int32], parseScalarMapSxV32),
-		protoreflect.Uint32Kind: mapArch(getMapSxI[uint32], parseScalarMapSxV32),
-		protoreflect.Sint32Kind: mapArch(getMapSxI[int32], parseScalarMapSxZ32),
+		protoreflect.Int32Kind:  mapArch(getMapSxI[int32], parseMapSxV32),
+		protoreflect.Uint32Kind: mapArch(getMapSxI[uint32], parseMapSxV32),
+		protoreflect.Sint32Kind: mapArch(getMapSxI[int32], parseMapSxZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapSxI[int64], parseScalarMapSxV64),
-		protoreflect.Uint64Kind: mapArch(getMapSxI[uint64], parseScalarMapSxV64),
-		protoreflect.Sint64Kind: mapArch(getMapSxI[int64], parseScalarMapSxZ64),
+		protoreflect.Int64Kind:  mapArch(getMapSxI[int64], parseMapSxV64),
+		protoreflect.Uint64Kind: mapArch(getMapSxI[uint64], parseMapSxV64),
+		protoreflect.Sint64Kind: mapArch(getMapSxI[int64], parseMapSxZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapSxI[uint32], parseScalarMapSxF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapSxI[int32], parseScalarMapSxF32),
-		protoreflect.FloatKind:    mapArch(getMapSxI[float32], parseScalarMapSxF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapSxI[uint32], parseMapSxF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapSxI[int32], parseMapSxF32),
+		protoreflect.FloatKind:    mapArch(getMapSxI[float32], parseMapSxF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapSxI[uint64], parseScalarMapSxF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapSxI[int64], parseScalarMapSxF64),
-		protoreflect.DoubleKind:   mapArch(getMapSxI[float64], parseScalarMapSxF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapSxI[uint64], parseMapSxF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapSxI[int64], parseMapSxF64),
+		protoreflect.DoubleKind:   mapArch(getMapSxI[float64], parseMapSxF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapSxI[bool], parseScalarMapSxV1),
-		protoreflect.EnumKind: mapArch(getMapSxI[protoreflect.EnumNumber], parseScalarMapSxV32),
+		protoreflect.BoolKind: mapArch(getMapSxI[bool], parseMapSx2),
+		protoreflect.EnumKind: mapArch(getMapSxI[protoreflect.EnumNumber], parseMapSxV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapSxS, parseScalarMapSxS),
-		protoreflect.BytesKind:  mapArch(getMapSxB, parseScalarMapSxB),
+		protoreflect.StringKind: mapArch(getMapSxS, parseMapSxS),
+		protoreflect.BytesKind:  mapArch(getMapSxB, parseMapSxB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapSxM, parseMapSxM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
 
 	proto2StringKind: {
 		// 32-bit varint types.
-		protoreflect.Int32Kind:  mapArch(getMapSxI[int32], parseScalarMapBxV32),
-		protoreflect.Uint32Kind: mapArch(getMapSxI[uint32], parseScalarMapBxV32),
-		protoreflect.Sint32Kind: mapArch(getMapSxI[int32], parseScalarMapBxZ32),
+		protoreflect.Int32Kind:  mapArch(getMapSxI[int32], parseMapBxV32),
+		protoreflect.Uint32Kind: mapArch(getMapSxI[uint32], parseMapBxV32),
+		protoreflect.Sint32Kind: mapArch(getMapSxI[int32], parseMapBxZ32),
 
 		// 64-bit varint types.
-		protoreflect.Int64Kind:  mapArch(getMapSxI[int64], parseScalarMapBxV64),
-		protoreflect.Uint64Kind: mapArch(getMapSxI[uint64], parseScalarMapBxV64),
-		protoreflect.Sint64Kind: mapArch(getMapSxI[int64], parseScalarMapBxZ64),
+		protoreflect.Int64Kind:  mapArch(getMapSxI[int64], parseMapBxV64),
+		protoreflect.Uint64Kind: mapArch(getMapSxI[uint64], parseMapBxV64),
+		protoreflect.Sint64Kind: mapArch(getMapSxI[int64], parseMapBxZ64),
 
 		// 32-bit fixed types.
-		protoreflect.Fixed32Kind:  mapArch(getMapSxI[uint32], parseScalarMapBxF32),
-		protoreflect.Sfixed32Kind: mapArch(getMapSxI[int32], parseScalarMapBxF32),
-		protoreflect.FloatKind:    mapArch(getMapSxI[float32], parseScalarMapBxF32),
+		protoreflect.Fixed32Kind:  mapArch(getMapSxI[uint32], parseMapBxF32),
+		protoreflect.Sfixed32Kind: mapArch(getMapSxI[int32], parseMapBxF32),
+		protoreflect.FloatKind:    mapArch(getMapSxI[float32], parseMapBxF32),
 
 		// 64-bit fixed types.
-		protoreflect.Fixed64Kind:  mapArch(getMapSxI[uint64], parseScalarMapBxF64),
-		protoreflect.Sfixed64Kind: mapArch(getMapSxI[int64], parseScalarMapBxF64),
-		protoreflect.DoubleKind:   mapArch(getMapSxI[float64], parseScalarMapBxF64),
+		protoreflect.Fixed64Kind:  mapArch(getMapSxI[uint64], parseMapBxF64),
+		protoreflect.Sfixed64Kind: mapArch(getMapSxI[int64], parseMapBxF64),
+		protoreflect.DoubleKind:   mapArch(getMapSxI[float64], parseMapBxF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMapSxI[bool], parseScalarMapBxV1),
-		protoreflect.EnumKind: mapArch(getMapSxI[protoreflect.EnumNumber], parseScalarMapBxV32),
+		protoreflect.BoolKind: mapArch(getMapSxI[bool], parseMapBx2),
+		protoreflect.EnumKind: mapArch(getMapSxI[protoreflect.EnumNumber], parseMapBxV32),
 
 		// String types.
-		protoreflect.StringKind: mapArch(getMapSxS, parseScalarMapBxS),
-		protoreflect.BytesKind:  mapArch(getMapSxB, parseScalarMapBxB),
+		protoreflect.StringKind: mapArch(getMapSxS, parseMapBxS),
+		protoreflect.BytesKind:  mapArch(getMapSxB, parseMapBxB),
 
 		// Message types.
-		protoreflect.MessageKind: {
-			// Not implemented.
-		},
-		protoreflect.GroupKind: {
+		protoreflect.MessageKind: mapArch(getMapSxM, parseMapBxM),
+		protoreflect.GroupKind:   {
 			// Not implemented.
 		},
 	},
@@ -542,7 +552,7 @@ func mapArch(getter getterThunk, parser parserThunk) *archetype {
 
 // mapItem is a type usable in any of the map parsers. This is essentially a
 // shim for pushing slight custom behavior modifications to each of the stencils
-// of e.g. [parseScalarMap].
+// of e.g. [parseMapKxV].
 type mapItem[V any] interface {
 	// The wire type for this item.
 	kind() protowire.Type
@@ -641,88 +651,98 @@ func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
 	}
 }
 
-//fastpb:stencil parseScalarMapV32xV32 parseScalarMap[varintItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapV32xV64 parseScalarMap[varintItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapV32xZ32 parseScalarMap[varintItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapV32xZ64 parseScalarMap[varintItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapV32xF32 parseScalarMap[varintItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapV32xF64 parseScalarMap[varintItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapV32xV1  parseScalarMap[varintItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseScalarMapV32xS   parseScalarMap[varintItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapV32xB   parseScalarMap[varintItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapV32xV32 parseMapKxV[varintItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapV32xV64 parseMapKxV[varintItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapV32xZ32 parseMapKxV[varintItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapV32xZ64 parseMapKxV[varintItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapV32xF32 parseMapKxV[varintItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapV32xF64 parseMapKxV[varintItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapV32x2   parseMapKxV[varintItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//fastpb:stencil parseMapV32xS   parseMapKxV[varintItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapV32xB   parseMapKxV[varintItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseScalarMapV64xV32 parseScalarMap[varintItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapV64xV64 parseScalarMap[varintItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapV64xZ32 parseScalarMap[varintItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapV64xZ64 parseScalarMap[varintItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapV64xF32 parseScalarMap[varintItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapV64xF64 parseScalarMap[varintItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapV64xV1  parseScalarMap[varintItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseScalarMapV64xS   parseScalarMap[varintItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapV64xB   parseScalarMap[varintItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapV64xV32 parseMapKxV[varintItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapV64xV64 parseMapKxV[varintItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapV64xZ32 parseMapKxV[varintItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapV64xZ64 parseMapKxV[varintItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapV64xF32 parseMapKxV[varintItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapV64xF64 parseMapKxV[varintItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapV64x2   parseMapKxV[varintItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseMapV64xS   parseMapKxV[varintItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapV64xB   parseMapKxV[varintItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseScalarMapZ32xV32 parseScalarMap[zigzagItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapZ32xV64 parseScalarMap[zigzagItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapZ32xZ32 parseScalarMap[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapZ32xZ64 parseScalarMap[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapZ32xF32 parseScalarMap[zigzagItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapZ32xF64 parseScalarMap[zigzagItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapZ32xV1  parseScalarMap[zigzagItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseScalarMapZ32xS   parseScalarMap[zigzagItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapZ32xB   parseScalarMap[zigzagItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapZ32xV32 parseMapKxV[zigzagItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapZ32xV64 parseMapKxV[zigzagItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapZ32xZ32 parseMapKxV[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapZ32xZ64 parseMapKxV[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapZ32xF32 parseMapKxV[zigzagItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapZ32xF64 parseMapKxV[zigzagItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapZ32x2   parseMapKxV[zigzagItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//fastpb:stencil parseMapZ32xS   parseMapKxV[zigzagItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapZ32xB   parseMapKxV[zigzagItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseScalarMapZ64xV32 parseScalarMap[zigzagItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapZ64xV64 parseScalarMap[zigzagItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapZ64xZ32 parseScalarMap[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapZ64xZ64 parseScalarMap[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapZ64xF32 parseScalarMap[zigzagItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapZ64xF64 parseScalarMap[zigzagItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapZ64xV1  parseScalarMap[zigzagItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseScalarMapZ64xS   parseScalarMap[zigzagItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapZ64xB   parseScalarMap[zigzagItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapZ64xV32 parseMapKxV[zigzagItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapZ64xV64 parseMapKxV[zigzagItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapZ64xZ32 parseMapKxV[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapZ64xZ64 parseMapKxV[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapZ64xF32 parseMapKxV[zigzagItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapZ64xF64 parseMapKxV[zigzagItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapZ64x2   parseMapKxV[zigzagItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseMapZ64xS   parseMapKxV[zigzagItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapZ64xB   parseMapKxV[zigzagItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseScalarMapF32xV32 parseScalarMap[fixed32Item, varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapF32xV64 parseScalarMap[fixed32Item, varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapF32xZ32 parseScalarMap[fixed32Item, zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapF32xZ64 parseScalarMap[fixed32Item, zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapF32xF32 parseScalarMap[fixed32Item, fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseScalarMapF32xF64 parseScalarMap[fixed32Item, fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapF32xV1  parseScalarMap[fixed32Item, boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseScalarMapF32xS   parseScalarMap[fixed32Item, stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseScalarMapF32xB   parseScalarMap[fixed32Item, bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapF32xV32 parseMapKxV[fixed32Item, varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapF32xV64 parseMapKxV[fixed32Item, varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapF32xZ32 parseMapKxV[fixed32Item, zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapF32xZ64 parseMapKxV[fixed32Item, zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapF32xF32 parseMapKxV[fixed32Item, fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//fastpb:stencil parseMapF32xF64 parseMapKxV[fixed32Item, fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapF32x2   parseMapKxV[fixed32Item, boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//fastpb:stencil parseMapF32xS   parseMapKxV[fixed32Item, stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//fastpb:stencil parseMapF32xB   parseMapKxV[fixed32Item, bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseScalarMapF64xV32 parseScalarMap[fixed64Item, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapF64xV64 parseScalarMap[fixed64Item, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapF64xZ32 parseScalarMap[fixed64Item, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapF64xZ64 parseScalarMap[fixed64Item, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapF64xF32 parseScalarMap[fixed64Item, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapF64xF64 parseScalarMap[fixed64Item, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapF64xV1  parseScalarMap[fixed64Item, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseScalarMapF64xS   parseScalarMap[fixed64Item, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapF64xB   parseScalarMap[fixed64Item, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapF64xV32 parseMapKxV[fixed64Item, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapF64xV64 parseMapKxV[fixed64Item, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapF64xZ32 parseMapKxV[fixed64Item, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapF64xZ64 parseMapKxV[fixed64Item, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapF64xF32 parseMapKxV[fixed64Item, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapF64xF64 parseMapKxV[fixed64Item, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapF64x2   parseMapKxV[fixed64Item, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseMapF64xS   parseMapKxV[fixed64Item, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapF64xB   parseMapKxV[fixed64Item, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseScalarMapSxV32 parseScalarMap[stringItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapSxV64 parseScalarMap[stringItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapSxZ32 parseScalarMap[stringItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapSxZ64 parseScalarMap[stringItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapSxF32 parseScalarMap[stringItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapSxF64 parseScalarMap[stringItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapSxV1  parseScalarMap[stringItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseScalarMapSxS   parseScalarMap[stringItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapSxB   parseScalarMap[stringItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapSxV32 parseMapKxV[stringItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapSxV64 parseMapKxV[stringItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapSxZ32 parseMapKxV[stringItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapSxZ64 parseMapKxV[stringItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapSxF32 parseMapKxV[stringItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapSxF64 parseMapKxV[stringItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapSx2   parseMapKxV[stringItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseMapSxS   parseMapKxV[stringItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapSxB   parseMapKxV[stringItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseScalarMapBxV32 parseScalarMap[bytesItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapBxV64 parseScalarMap[bytesItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapBxZ32 parseScalarMap[bytesItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapBxZ64 parseScalarMap[bytesItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapBxF32 parseScalarMap[bytesItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseScalarMapBxF64 parseScalarMap[bytesItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapBxV1  parseScalarMap[bytesItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseScalarMapBxS   parseScalarMap[bytesItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseScalarMapBxB   parseScalarMap[bytesItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapBxV32 parseMapKxV[bytesItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapBxV64 parseMapKxV[bytesItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapBxZ32 parseMapKxV[bytesItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapBxZ64 parseMapKxV[bytesItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapBxF32 parseMapKxV[bytesItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//fastpb:stencil parseMapBxF64 parseMapKxV[bytesItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapBx2   parseMapKxV[bytesItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//fastpb:stencil parseMapBxS   parseMapKxV[bytesItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//fastpb:stencil parseMapBxB   parseMapKxV[bytesItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-// parseScalarMap parses a map type whose value is a non-message type.
-func parseScalarMap[
+//fastpb:stencil parseMap2xV32 parseMapKxV[boolItem, varintItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//fastpb:stencil parseMap2xV64 parseMapKxV[boolItem, varintItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//fastpb:stencil parseMap2xZ32 parseMapKxV[boolItem, zigzagItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//fastpb:stencil parseMap2xZ64 parseMapKxV[boolItem, zigzagItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//fastpb:stencil parseMap2xF32 parseMapKxV[boolItem, fixed32Item, uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//fastpb:stencil parseMap2xF64 parseMapKxV[boolItem, fixed64Item, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//fastpb:stencil parseMap2x2   parseMapKxV[boolItem, boolItem, uint8, uint8] Init -> swiss.InitU8xU8 Insert -> swiss.InsertU8xU8
+//fastpb:stencil parseMap2xS   parseMapKxV[boolItem, stringItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//fastpb:stencil parseMap2xB   parseMapKxV[boolItem, bytesItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+
+// parseMapKxV parses a map type whose value is a non-message type.
+func parseMapKxV[
 	KI mapItem[K], VI mapItem[V],
 	K swiss.Key, V any,
 ](p1 parser1, p2 parser2) (parser1, parser2) {
@@ -813,6 +833,129 @@ insert:
 
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
+}
+
+//fastpb:stencil parseMapV32xM parseMapKxM[varintItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//fastpb:stencil parseMapV64xM parseMapKxM[varintItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//fastpb:stencil parseMapZ32xM parseMapKxM[zigzagItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//fastpb:stencil parseMapZ64xM parseMapKxM[zigzagItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//fastpb:stencil parseMapF32xM parseMapKxM[fixed32Item, uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//fastpb:stencil parseMapF64xM parseMapKxM[fixed64Item, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//fastpb:stencil parseMapSxM   parseMapKxM[stringItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//fastpb:stencil parseMapBxM   parseMapKxM[bytesItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//fastpb:stencil parseMap2xM   parseMapKxM[boolItem, uint8] Init -> swiss.InitU8xP Insert -> swiss.InsertU8xP
+
+// parseMapKxM parses a map type whose value is a message type.
+func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+
+	p2.scratch = uint64(p1.e_)
+	p1.e_ = p1.b_.Add(int(n))
+
+	var ki KI
+	var k K
+	var fast bool
+
+	kTag := protowire.EncodeTag(1, ki.kind())
+	vTag := protowire.EncodeTag(1, protowire.BytesType)
+
+	// Basically every map ever encodes its fields in order and does not
+	// have duplicate fields, so this is a hot fast path.
+	if p1.len() == 0 {
+		fast = true
+		goto insert
+	}
+	p1.log(p2, "first byte", "%#02x", *p1.b())
+	if *p1.b() == byte(kTag) {
+		p1.b_++
+		p1, p2, k = ki.parse(p1, p2)
+		if p1.len() == 0 {
+			fast = true
+			goto insert
+		}
+		p1.log(p2, "second byte", "%#02x", *p1.b())
+		if *p1.b() == byte(vTag) {
+			p1.b_++
+			// Need to parse a length prefix and check if it reaches all the
+			// way to the end of the message.
+			p1, p2, n = p1.lengthPrefix(p2)
+			if p1.e_ > p1.b_.Add(int(n)) {
+				fast = true
+				goto insert
+			}
+		}
+	}
+
+	// Slow fallback. This code should almost never be executed so we can
+	// afford to call varint() each time we parse a tag.
+	for p1.b_ < p1.e_ {
+		var tag uint64
+		p1, p2, tag = p1.varint(p2)
+		switch tag {
+		case kTag:
+			p1, p2, k = ki.parse(p1, p2)
+		default:
+			n, t := protowire.DecodeTag(tag)
+			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			if m < 0 {
+				p1.fail(p2, -errCode(m))
+			}
+			p1.b_ = p1.b_.Add(m)
+		}
+	}
+
+	// Now we need to rewind back to the beginning.
+	p1.b_ = p1.e_.Add(-int(n))
+
+insert:
+	type V = unsafe.Pointer
+
+	extract := ki.extract(p1, p2)
+	var mp **swiss.Table[K, V]
+	p1, p2, mp = getMutableField[*swiss.Table[K, V]](p1, p2)
+
+	m := *mp
+	if m == nil {
+		size, _ := swiss.Layout[K, V](1)
+		m = unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m)
+		m.Init(1, nil, extract)
+	}
+
+	vp := m.Insert(k, extract)
+	if vp == nil {
+		size, _ := swiss.Layout[K, V](m.Len() + 1)
+		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		unsafe2.StoreNoWB(mp, m2)
+		m2.Init(m.Len()+1, m, extract)
+		vp = m2.Insert(k, extract)
+	}
+
+	var v *message
+	// Allocate unconditionally to match Go protobuf's behavior.
+	// TODO: This could instead clear, but that optimization will almost never
+	// be relevant, because no serializer will ever emit the same key twice.
+	p1, p2, v = p1.alloc(p2)
+	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+
+	// Unspill the old end pointer.
+	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+
+	// Schedule a message parse.
+	if fast {
+		p1.log(p2, "fast map entry", "%d", n)
+		return p1.message(p2, int(n), v)
+	}
+
+	p1.log(p2, "slow map entry", "%d", n)
+	return p1.mapEntry(p2, int(n), v)
+}
+
+func parseMapEntry(p1 parser1, p2 parser2) (parser1, parser2) {
+	var n uint32
+	p1, p2, n = p1.lengthPrefix(p2)
+	return p1.message(p2, int(n), p2.m())
 }
 
 // emptyMap is a map with no elements.

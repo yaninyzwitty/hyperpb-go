@@ -174,10 +174,16 @@ type typeParser struct {
 	_ unsafe2.NoCopy
 
 	// The type that this parser parses.
-	tyOffset uint32
+	tyOffset       uint32
+	discardUnknown bool
 
 	// Maps field tags to offsets in fields.
 	tags *swiss.Table[int32, uint32]
+
+	// If this is an ordinary parser, this is the parser for parsing this
+	// message as a "map entry"; that is, it will have a single field with
+	// number 2 that forwards to this parser.
+	mapEntry *typeParser
 
 	entry fieldParser
 

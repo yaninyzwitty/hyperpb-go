@@ -85,8 +85,13 @@ func Store[P ~*E, E any, I Int](p P, n I, v E) {
 }
 
 // StoreNoWB performs a store without generating any write barriers.
-func StoreNoWB[E any](p **E, q *E) {
-	*Cast[Addr[E]](p) = AddrOf(q)
+func StoreNoWB[P ~*E, E any](p *P, q P) {
+	*Cast[uintptr](p) = uintptr(unsafe.Pointer(q))
+}
+
+// StoreNoWBUntyped performs a store without generating any write barriers.
+func StoreNoWBUntyped[P ~unsafe.Pointer](p *P, q P) {
+	*Cast[uintptr](p) = uintptr(q)
 }
 
 // ByteAdd adds the given offset to p, without scaling.
@@ -214,10 +219,13 @@ func AnyBytes(v any) []byte {
 		return nil
 	}
 
-	return unsafe.Slice(
-		AnyData(v),
-		int(reflect.TypeOf(v).Size()),
-	)
+	t := reflect.TypeOf(v)
+	p := AnyData(v)
+	if t.Kind() == reflect.Pointer || t.Kind() == reflect.UnsafePointer {
+		p = Cast[byte](&p)
+	}
+
+	return unsafe.Slice(p, reflect.TypeOf(v).Size())
 }
 
 // Addr is a typed raw address.

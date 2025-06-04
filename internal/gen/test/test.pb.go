@@ -2346,6 +2346,138 @@ func (x *Maps) GetMcf() map[string][]byte {
 	return nil
 }
 
+type MessageMaps struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Scalars       *Scalars                `protobuf:"bytes,1,opt,name=scalars,proto3" json:"scalars,omitempty"`
+	M1            map[int32]*MessageMaps  `protobuf:"bytes,17,rep,name=m1,proto3" json:"m1,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M2            map[int64]*MessageMaps  `protobuf:"bytes,18,rep,name=m2,proto3" json:"m2,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M3            map[uint32]*MessageMaps `protobuf:"bytes,19,rep,name=m3,proto3" json:"m3,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M4            map[uint64]*MessageMaps `protobuf:"bytes,20,rep,name=m4,proto3" json:"m4,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M5            map[int32]*MessageMaps  `protobuf:"bytes,21,rep,name=m5,proto3" json:"m5,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M6            map[int64]*MessageMaps  `protobuf:"bytes,22,rep,name=m6,proto3" json:"m6,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M7            map[uint32]*MessageMaps `protobuf:"bytes,23,rep,name=m7,proto3" json:"m7,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M8            map[uint64]*MessageMaps `protobuf:"bytes,24,rep,name=m8,proto3" json:"m8,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	M9            map[int32]*MessageMaps  `protobuf:"bytes,25,rep,name=m9,proto3" json:"m9,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Ma            map[int64]*MessageMaps  `protobuf:"bytes,26,rep,name=ma,proto3" json:"ma,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Mc            map[string]*MessageMaps `protobuf:"bytes,28,rep,name=mc,proto3" json:"mc,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MessageMaps) Reset() {
+	*x = MessageMaps{}
+	mi := &file_test_test_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MessageMaps) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageMaps) ProtoMessage() {}
+
+func (x *MessageMaps) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageMaps.ProtoReflect.Descriptor instead.
+func (*MessageMaps) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *MessageMaps) GetScalars() *Scalars {
+	if x != nil {
+		return x.Scalars
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM1() map[int32]*MessageMaps {
+	if x != nil {
+		return x.M1
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM2() map[int64]*MessageMaps {
+	if x != nil {
+		return x.M2
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM3() map[uint32]*MessageMaps {
+	if x != nil {
+		return x.M3
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM4() map[uint64]*MessageMaps {
+	if x != nil {
+		return x.M4
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM5() map[int32]*MessageMaps {
+	if x != nil {
+		return x.M5
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM6() map[int64]*MessageMaps {
+	if x != nil {
+		return x.M6
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM7() map[uint32]*MessageMaps {
+	if x != nil {
+		return x.M7
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM8() map[uint64]*MessageMaps {
+	if x != nil {
+		return x.M8
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetM9() map[int32]*MessageMaps {
+	if x != nil {
+		return x.M9
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetMa() map[int64]*MessageMaps {
+	if x != nil {
+		return x.Ma
+	}
+	return nil
+}
+
+func (x *MessageMaps) GetMc() map[string]*MessageMaps {
+	if x != nil {
+		return x.Mc
+	}
+	return nil
+}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
@@ -3195,7 +3327,53 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
 	"\bMcfEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01*@\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"\xde\v\n" +
+	"\vMessageMaps\x12.\n" +
+	"\ascalars\x18\x01 \x01(\v2\x14.fastpb.test.ScalarsR\ascalars\x120\n" +
+	"\x02m1\x18\x11 \x03(\v2 .fastpb.test.MessageMaps.M1EntryR\x02m1\x120\n" +
+	"\x02m2\x18\x12 \x03(\v2 .fastpb.test.MessageMaps.M2EntryR\x02m2\x120\n" +
+	"\x02m3\x18\x13 \x03(\v2 .fastpb.test.MessageMaps.M3EntryR\x02m3\x120\n" +
+	"\x02m4\x18\x14 \x03(\v2 .fastpb.test.MessageMaps.M4EntryR\x02m4\x120\n" +
+	"\x02m5\x18\x15 \x03(\v2 .fastpb.test.MessageMaps.M5EntryR\x02m5\x120\n" +
+	"\x02m6\x18\x16 \x03(\v2 .fastpb.test.MessageMaps.M6EntryR\x02m6\x120\n" +
+	"\x02m7\x18\x17 \x03(\v2 .fastpb.test.MessageMaps.M7EntryR\x02m7\x120\n" +
+	"\x02m8\x18\x18 \x03(\v2 .fastpb.test.MessageMaps.M8EntryR\x02m8\x120\n" +
+	"\x02m9\x18\x19 \x03(\v2 .fastpb.test.MessageMaps.M9EntryR\x02m9\x120\n" +
+	"\x02ma\x18\x1a \x03(\v2 .fastpb.test.MessageMaps.MaEntryR\x02ma\x120\n" +
+	"\x02mc\x18\x1c \x03(\v2 .fastpb.test.MessageMaps.McEntryR\x02mc\x1aO\n" +
+	"\aM1Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM2Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM3Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM4Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM5Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM6Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM7Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM8Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aM9Entry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aMaEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\aMcEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01*@\n" +
 	"\x04Enum\x12\x14\n" +
 	"\x10ENUM_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3219,420 +3397,455 @@ func file_test_test_proto_rawDescGZIP() []byte {
 }
 
 var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 197)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 209)
 var file_test_test_proto_goTypes = []any{
-	(Enum)(0),        // 0: fastpb.test.Enum
-	(*Scalars)(nil),  // 1: fastpb.test.Scalars
-	(*Repeated)(nil), // 2: fastpb.test.Repeated
-	(*Graph)(nil),    // 3: fastpb.test.Graph
-	(*Oneof)(nil),    // 4: fastpb.test.Oneof
-	(*Maps)(nil),     // 5: fastpb.test.Maps
-	nil,              // 6: fastpb.test.Maps.M10Entry
-	nil,              // 7: fastpb.test.Maps.M11Entry
-	nil,              // 8: fastpb.test.Maps.M12Entry
-	nil,              // 9: fastpb.test.Maps.M13Entry
-	nil,              // 10: fastpb.test.Maps.M14Entry
-	nil,              // 11: fastpb.test.Maps.M15Entry
-	nil,              // 12: fastpb.test.Maps.M16Entry
-	nil,              // 13: fastpb.test.Maps.M17Entry
-	nil,              // 14: fastpb.test.Maps.M18Entry
-	nil,              // 15: fastpb.test.Maps.M19Entry
-	nil,              // 16: fastpb.test.Maps.M1aEntry
-	nil,              // 17: fastpb.test.Maps.M1bEntry
-	nil,              // 18: fastpb.test.Maps.M1cEntry
-	nil,              // 19: fastpb.test.Maps.M1dEntry
-	nil,              // 20: fastpb.test.Maps.M1eEntry
-	nil,              // 21: fastpb.test.Maps.M1fEntry
-	nil,              // 22: fastpb.test.Maps.M20Entry
-	nil,              // 23: fastpb.test.Maps.M21Entry
-	nil,              // 24: fastpb.test.Maps.M22Entry
-	nil,              // 25: fastpb.test.Maps.M23Entry
-	nil,              // 26: fastpb.test.Maps.M24Entry
-	nil,              // 27: fastpb.test.Maps.M25Entry
-	nil,              // 28: fastpb.test.Maps.M26Entry
-	nil,              // 29: fastpb.test.Maps.M27Entry
-	nil,              // 30: fastpb.test.Maps.M28Entry
-	nil,              // 31: fastpb.test.Maps.M29Entry
-	nil,              // 32: fastpb.test.Maps.M2aEntry
-	nil,              // 33: fastpb.test.Maps.M2bEntry
-	nil,              // 34: fastpb.test.Maps.M2cEntry
-	nil,              // 35: fastpb.test.Maps.M2dEntry
-	nil,              // 36: fastpb.test.Maps.M2eEntry
-	nil,              // 37: fastpb.test.Maps.M2fEntry
-	nil,              // 38: fastpb.test.Maps.M30Entry
-	nil,              // 39: fastpb.test.Maps.M31Entry
-	nil,              // 40: fastpb.test.Maps.M32Entry
-	nil,              // 41: fastpb.test.Maps.M33Entry
-	nil,              // 42: fastpb.test.Maps.M34Entry
-	nil,              // 43: fastpb.test.Maps.M35Entry
-	nil,              // 44: fastpb.test.Maps.M36Entry
-	nil,              // 45: fastpb.test.Maps.M37Entry
-	nil,              // 46: fastpb.test.Maps.M38Entry
-	nil,              // 47: fastpb.test.Maps.M39Entry
-	nil,              // 48: fastpb.test.Maps.M3aEntry
-	nil,              // 49: fastpb.test.Maps.M3bEntry
-	nil,              // 50: fastpb.test.Maps.M3cEntry
-	nil,              // 51: fastpb.test.Maps.M3dEntry
-	nil,              // 52: fastpb.test.Maps.M3eEntry
-	nil,              // 53: fastpb.test.Maps.M3fEntry
-	nil,              // 54: fastpb.test.Maps.M40Entry
-	nil,              // 55: fastpb.test.Maps.M41Entry
-	nil,              // 56: fastpb.test.Maps.M42Entry
-	nil,              // 57: fastpb.test.Maps.M43Entry
-	nil,              // 58: fastpb.test.Maps.M44Entry
-	nil,              // 59: fastpb.test.Maps.M45Entry
-	nil,              // 60: fastpb.test.Maps.M46Entry
-	nil,              // 61: fastpb.test.Maps.M47Entry
-	nil,              // 62: fastpb.test.Maps.M48Entry
-	nil,              // 63: fastpb.test.Maps.M49Entry
-	nil,              // 64: fastpb.test.Maps.M4aEntry
-	nil,              // 65: fastpb.test.Maps.M4bEntry
-	nil,              // 66: fastpb.test.Maps.M4cEntry
-	nil,              // 67: fastpb.test.Maps.M4dEntry
-	nil,              // 68: fastpb.test.Maps.M4eEntry
-	nil,              // 69: fastpb.test.Maps.M4fEntry
-	nil,              // 70: fastpb.test.Maps.M50Entry
-	nil,              // 71: fastpb.test.Maps.M51Entry
-	nil,              // 72: fastpb.test.Maps.M52Entry
-	nil,              // 73: fastpb.test.Maps.M53Entry
-	nil,              // 74: fastpb.test.Maps.M54Entry
-	nil,              // 75: fastpb.test.Maps.M55Entry
-	nil,              // 76: fastpb.test.Maps.M56Entry
-	nil,              // 77: fastpb.test.Maps.M57Entry
-	nil,              // 78: fastpb.test.Maps.M58Entry
-	nil,              // 79: fastpb.test.Maps.M59Entry
-	nil,              // 80: fastpb.test.Maps.M5aEntry
-	nil,              // 81: fastpb.test.Maps.M5bEntry
-	nil,              // 82: fastpb.test.Maps.M5cEntry
-	nil,              // 83: fastpb.test.Maps.M5dEntry
-	nil,              // 84: fastpb.test.Maps.M5eEntry
-	nil,              // 85: fastpb.test.Maps.M5fEntry
-	nil,              // 86: fastpb.test.Maps.M60Entry
-	nil,              // 87: fastpb.test.Maps.M61Entry
-	nil,              // 88: fastpb.test.Maps.M62Entry
-	nil,              // 89: fastpb.test.Maps.M63Entry
-	nil,              // 90: fastpb.test.Maps.M64Entry
-	nil,              // 91: fastpb.test.Maps.M65Entry
-	nil,              // 92: fastpb.test.Maps.M66Entry
-	nil,              // 93: fastpb.test.Maps.M67Entry
-	nil,              // 94: fastpb.test.Maps.M68Entry
-	nil,              // 95: fastpb.test.Maps.M69Entry
-	nil,              // 96: fastpb.test.Maps.M6aEntry
-	nil,              // 97: fastpb.test.Maps.M6bEntry
-	nil,              // 98: fastpb.test.Maps.M6cEntry
-	nil,              // 99: fastpb.test.Maps.M6dEntry
-	nil,              // 100: fastpb.test.Maps.M6eEntry
-	nil,              // 101: fastpb.test.Maps.M6fEntry
-	nil,              // 102: fastpb.test.Maps.M70Entry
-	nil,              // 103: fastpb.test.Maps.M71Entry
-	nil,              // 104: fastpb.test.Maps.M72Entry
-	nil,              // 105: fastpb.test.Maps.M73Entry
-	nil,              // 106: fastpb.test.Maps.M74Entry
-	nil,              // 107: fastpb.test.Maps.M75Entry
-	nil,              // 108: fastpb.test.Maps.M76Entry
-	nil,              // 109: fastpb.test.Maps.M77Entry
-	nil,              // 110: fastpb.test.Maps.M78Entry
-	nil,              // 111: fastpb.test.Maps.M79Entry
-	nil,              // 112: fastpb.test.Maps.M7aEntry
-	nil,              // 113: fastpb.test.Maps.M7bEntry
-	nil,              // 114: fastpb.test.Maps.M7cEntry
-	nil,              // 115: fastpb.test.Maps.M7dEntry
-	nil,              // 116: fastpb.test.Maps.M7eEntry
-	nil,              // 117: fastpb.test.Maps.M7fEntry
-	nil,              // 118: fastpb.test.Maps.M80Entry
-	nil,              // 119: fastpb.test.Maps.M81Entry
-	nil,              // 120: fastpb.test.Maps.M82Entry
-	nil,              // 121: fastpb.test.Maps.M83Entry
-	nil,              // 122: fastpb.test.Maps.M84Entry
-	nil,              // 123: fastpb.test.Maps.M85Entry
-	nil,              // 124: fastpb.test.Maps.M86Entry
-	nil,              // 125: fastpb.test.Maps.M87Entry
-	nil,              // 126: fastpb.test.Maps.M88Entry
-	nil,              // 127: fastpb.test.Maps.M89Entry
-	nil,              // 128: fastpb.test.Maps.M8aEntry
-	nil,              // 129: fastpb.test.Maps.M8bEntry
-	nil,              // 130: fastpb.test.Maps.M8cEntry
-	nil,              // 131: fastpb.test.Maps.M8dEntry
-	nil,              // 132: fastpb.test.Maps.M8eEntry
-	nil,              // 133: fastpb.test.Maps.M8fEntry
-	nil,              // 134: fastpb.test.Maps.M90Entry
-	nil,              // 135: fastpb.test.Maps.M91Entry
-	nil,              // 136: fastpb.test.Maps.M92Entry
-	nil,              // 137: fastpb.test.Maps.M93Entry
-	nil,              // 138: fastpb.test.Maps.M94Entry
-	nil,              // 139: fastpb.test.Maps.M95Entry
-	nil,              // 140: fastpb.test.Maps.M96Entry
-	nil,              // 141: fastpb.test.Maps.M97Entry
-	nil,              // 142: fastpb.test.Maps.M98Entry
-	nil,              // 143: fastpb.test.Maps.M99Entry
-	nil,              // 144: fastpb.test.Maps.M9aEntry
-	nil,              // 145: fastpb.test.Maps.M9bEntry
-	nil,              // 146: fastpb.test.Maps.M9cEntry
-	nil,              // 147: fastpb.test.Maps.M9dEntry
-	nil,              // 148: fastpb.test.Maps.M9eEntry
-	nil,              // 149: fastpb.test.Maps.M9fEntry
-	nil,              // 150: fastpb.test.Maps.Ma0Entry
-	nil,              // 151: fastpb.test.Maps.Ma1Entry
-	nil,              // 152: fastpb.test.Maps.Ma2Entry
-	nil,              // 153: fastpb.test.Maps.Ma3Entry
-	nil,              // 154: fastpb.test.Maps.Ma4Entry
-	nil,              // 155: fastpb.test.Maps.Ma5Entry
-	nil,              // 156: fastpb.test.Maps.Ma6Entry
-	nil,              // 157: fastpb.test.Maps.Ma7Entry
-	nil,              // 158: fastpb.test.Maps.Ma8Entry
-	nil,              // 159: fastpb.test.Maps.Ma9Entry
-	nil,              // 160: fastpb.test.Maps.MaaEntry
-	nil,              // 161: fastpb.test.Maps.MabEntry
-	nil,              // 162: fastpb.test.Maps.MacEntry
-	nil,              // 163: fastpb.test.Maps.MadEntry
-	nil,              // 164: fastpb.test.Maps.MaeEntry
-	nil,              // 165: fastpb.test.Maps.MafEntry
-	nil,              // 166: fastpb.test.Maps.Mb0Entry
-	nil,              // 167: fastpb.test.Maps.Mb1Entry
-	nil,              // 168: fastpb.test.Maps.Mb2Entry
-	nil,              // 169: fastpb.test.Maps.Mb3Entry
-	nil,              // 170: fastpb.test.Maps.Mb4Entry
-	nil,              // 171: fastpb.test.Maps.Mb5Entry
-	nil,              // 172: fastpb.test.Maps.Mb6Entry
-	nil,              // 173: fastpb.test.Maps.Mb7Entry
-	nil,              // 174: fastpb.test.Maps.Mb8Entry
-	nil,              // 175: fastpb.test.Maps.Mb9Entry
-	nil,              // 176: fastpb.test.Maps.MbaEntry
-	nil,              // 177: fastpb.test.Maps.MbbEntry
-	nil,              // 178: fastpb.test.Maps.MbcEntry
-	nil,              // 179: fastpb.test.Maps.MbdEntry
-	nil,              // 180: fastpb.test.Maps.MbeEntry
-	nil,              // 181: fastpb.test.Maps.MbfEntry
-	nil,              // 182: fastpb.test.Maps.Mc0Entry
-	nil,              // 183: fastpb.test.Maps.Mc1Entry
-	nil,              // 184: fastpb.test.Maps.Mc2Entry
-	nil,              // 185: fastpb.test.Maps.Mc3Entry
-	nil,              // 186: fastpb.test.Maps.Mc4Entry
-	nil,              // 187: fastpb.test.Maps.Mc5Entry
-	nil,              // 188: fastpb.test.Maps.Mc6Entry
-	nil,              // 189: fastpb.test.Maps.Mc7Entry
-	nil,              // 190: fastpb.test.Maps.Mc8Entry
-	nil,              // 191: fastpb.test.Maps.Mc9Entry
-	nil,              // 192: fastpb.test.Maps.McaEntry
-	nil,              // 193: fastpb.test.Maps.McbEntry
-	nil,              // 194: fastpb.test.Maps.MccEntry
-	nil,              // 195: fastpb.test.Maps.McdEntry
-	nil,              // 196: fastpb.test.Maps.MceEntry
-	nil,              // 197: fastpb.test.Maps.McfEntry
+	(Enum)(0),           // 0: fastpb.test.Enum
+	(*Scalars)(nil),     // 1: fastpb.test.Scalars
+	(*Repeated)(nil),    // 2: fastpb.test.Repeated
+	(*Graph)(nil),       // 3: fastpb.test.Graph
+	(*Oneof)(nil),       // 4: fastpb.test.Oneof
+	(*Maps)(nil),        // 5: fastpb.test.Maps
+	(*MessageMaps)(nil), // 6: fastpb.test.MessageMaps
+	nil,                 // 7: fastpb.test.Maps.M10Entry
+	nil,                 // 8: fastpb.test.Maps.M11Entry
+	nil,                 // 9: fastpb.test.Maps.M12Entry
+	nil,                 // 10: fastpb.test.Maps.M13Entry
+	nil,                 // 11: fastpb.test.Maps.M14Entry
+	nil,                 // 12: fastpb.test.Maps.M15Entry
+	nil,                 // 13: fastpb.test.Maps.M16Entry
+	nil,                 // 14: fastpb.test.Maps.M17Entry
+	nil,                 // 15: fastpb.test.Maps.M18Entry
+	nil,                 // 16: fastpb.test.Maps.M19Entry
+	nil,                 // 17: fastpb.test.Maps.M1aEntry
+	nil,                 // 18: fastpb.test.Maps.M1bEntry
+	nil,                 // 19: fastpb.test.Maps.M1cEntry
+	nil,                 // 20: fastpb.test.Maps.M1dEntry
+	nil,                 // 21: fastpb.test.Maps.M1eEntry
+	nil,                 // 22: fastpb.test.Maps.M1fEntry
+	nil,                 // 23: fastpb.test.Maps.M20Entry
+	nil,                 // 24: fastpb.test.Maps.M21Entry
+	nil,                 // 25: fastpb.test.Maps.M22Entry
+	nil,                 // 26: fastpb.test.Maps.M23Entry
+	nil,                 // 27: fastpb.test.Maps.M24Entry
+	nil,                 // 28: fastpb.test.Maps.M25Entry
+	nil,                 // 29: fastpb.test.Maps.M26Entry
+	nil,                 // 30: fastpb.test.Maps.M27Entry
+	nil,                 // 31: fastpb.test.Maps.M28Entry
+	nil,                 // 32: fastpb.test.Maps.M29Entry
+	nil,                 // 33: fastpb.test.Maps.M2aEntry
+	nil,                 // 34: fastpb.test.Maps.M2bEntry
+	nil,                 // 35: fastpb.test.Maps.M2cEntry
+	nil,                 // 36: fastpb.test.Maps.M2dEntry
+	nil,                 // 37: fastpb.test.Maps.M2eEntry
+	nil,                 // 38: fastpb.test.Maps.M2fEntry
+	nil,                 // 39: fastpb.test.Maps.M30Entry
+	nil,                 // 40: fastpb.test.Maps.M31Entry
+	nil,                 // 41: fastpb.test.Maps.M32Entry
+	nil,                 // 42: fastpb.test.Maps.M33Entry
+	nil,                 // 43: fastpb.test.Maps.M34Entry
+	nil,                 // 44: fastpb.test.Maps.M35Entry
+	nil,                 // 45: fastpb.test.Maps.M36Entry
+	nil,                 // 46: fastpb.test.Maps.M37Entry
+	nil,                 // 47: fastpb.test.Maps.M38Entry
+	nil,                 // 48: fastpb.test.Maps.M39Entry
+	nil,                 // 49: fastpb.test.Maps.M3aEntry
+	nil,                 // 50: fastpb.test.Maps.M3bEntry
+	nil,                 // 51: fastpb.test.Maps.M3cEntry
+	nil,                 // 52: fastpb.test.Maps.M3dEntry
+	nil,                 // 53: fastpb.test.Maps.M3eEntry
+	nil,                 // 54: fastpb.test.Maps.M3fEntry
+	nil,                 // 55: fastpb.test.Maps.M40Entry
+	nil,                 // 56: fastpb.test.Maps.M41Entry
+	nil,                 // 57: fastpb.test.Maps.M42Entry
+	nil,                 // 58: fastpb.test.Maps.M43Entry
+	nil,                 // 59: fastpb.test.Maps.M44Entry
+	nil,                 // 60: fastpb.test.Maps.M45Entry
+	nil,                 // 61: fastpb.test.Maps.M46Entry
+	nil,                 // 62: fastpb.test.Maps.M47Entry
+	nil,                 // 63: fastpb.test.Maps.M48Entry
+	nil,                 // 64: fastpb.test.Maps.M49Entry
+	nil,                 // 65: fastpb.test.Maps.M4aEntry
+	nil,                 // 66: fastpb.test.Maps.M4bEntry
+	nil,                 // 67: fastpb.test.Maps.M4cEntry
+	nil,                 // 68: fastpb.test.Maps.M4dEntry
+	nil,                 // 69: fastpb.test.Maps.M4eEntry
+	nil,                 // 70: fastpb.test.Maps.M4fEntry
+	nil,                 // 71: fastpb.test.Maps.M50Entry
+	nil,                 // 72: fastpb.test.Maps.M51Entry
+	nil,                 // 73: fastpb.test.Maps.M52Entry
+	nil,                 // 74: fastpb.test.Maps.M53Entry
+	nil,                 // 75: fastpb.test.Maps.M54Entry
+	nil,                 // 76: fastpb.test.Maps.M55Entry
+	nil,                 // 77: fastpb.test.Maps.M56Entry
+	nil,                 // 78: fastpb.test.Maps.M57Entry
+	nil,                 // 79: fastpb.test.Maps.M58Entry
+	nil,                 // 80: fastpb.test.Maps.M59Entry
+	nil,                 // 81: fastpb.test.Maps.M5aEntry
+	nil,                 // 82: fastpb.test.Maps.M5bEntry
+	nil,                 // 83: fastpb.test.Maps.M5cEntry
+	nil,                 // 84: fastpb.test.Maps.M5dEntry
+	nil,                 // 85: fastpb.test.Maps.M5eEntry
+	nil,                 // 86: fastpb.test.Maps.M5fEntry
+	nil,                 // 87: fastpb.test.Maps.M60Entry
+	nil,                 // 88: fastpb.test.Maps.M61Entry
+	nil,                 // 89: fastpb.test.Maps.M62Entry
+	nil,                 // 90: fastpb.test.Maps.M63Entry
+	nil,                 // 91: fastpb.test.Maps.M64Entry
+	nil,                 // 92: fastpb.test.Maps.M65Entry
+	nil,                 // 93: fastpb.test.Maps.M66Entry
+	nil,                 // 94: fastpb.test.Maps.M67Entry
+	nil,                 // 95: fastpb.test.Maps.M68Entry
+	nil,                 // 96: fastpb.test.Maps.M69Entry
+	nil,                 // 97: fastpb.test.Maps.M6aEntry
+	nil,                 // 98: fastpb.test.Maps.M6bEntry
+	nil,                 // 99: fastpb.test.Maps.M6cEntry
+	nil,                 // 100: fastpb.test.Maps.M6dEntry
+	nil,                 // 101: fastpb.test.Maps.M6eEntry
+	nil,                 // 102: fastpb.test.Maps.M6fEntry
+	nil,                 // 103: fastpb.test.Maps.M70Entry
+	nil,                 // 104: fastpb.test.Maps.M71Entry
+	nil,                 // 105: fastpb.test.Maps.M72Entry
+	nil,                 // 106: fastpb.test.Maps.M73Entry
+	nil,                 // 107: fastpb.test.Maps.M74Entry
+	nil,                 // 108: fastpb.test.Maps.M75Entry
+	nil,                 // 109: fastpb.test.Maps.M76Entry
+	nil,                 // 110: fastpb.test.Maps.M77Entry
+	nil,                 // 111: fastpb.test.Maps.M78Entry
+	nil,                 // 112: fastpb.test.Maps.M79Entry
+	nil,                 // 113: fastpb.test.Maps.M7aEntry
+	nil,                 // 114: fastpb.test.Maps.M7bEntry
+	nil,                 // 115: fastpb.test.Maps.M7cEntry
+	nil,                 // 116: fastpb.test.Maps.M7dEntry
+	nil,                 // 117: fastpb.test.Maps.M7eEntry
+	nil,                 // 118: fastpb.test.Maps.M7fEntry
+	nil,                 // 119: fastpb.test.Maps.M80Entry
+	nil,                 // 120: fastpb.test.Maps.M81Entry
+	nil,                 // 121: fastpb.test.Maps.M82Entry
+	nil,                 // 122: fastpb.test.Maps.M83Entry
+	nil,                 // 123: fastpb.test.Maps.M84Entry
+	nil,                 // 124: fastpb.test.Maps.M85Entry
+	nil,                 // 125: fastpb.test.Maps.M86Entry
+	nil,                 // 126: fastpb.test.Maps.M87Entry
+	nil,                 // 127: fastpb.test.Maps.M88Entry
+	nil,                 // 128: fastpb.test.Maps.M89Entry
+	nil,                 // 129: fastpb.test.Maps.M8aEntry
+	nil,                 // 130: fastpb.test.Maps.M8bEntry
+	nil,                 // 131: fastpb.test.Maps.M8cEntry
+	nil,                 // 132: fastpb.test.Maps.M8dEntry
+	nil,                 // 133: fastpb.test.Maps.M8eEntry
+	nil,                 // 134: fastpb.test.Maps.M8fEntry
+	nil,                 // 135: fastpb.test.Maps.M90Entry
+	nil,                 // 136: fastpb.test.Maps.M91Entry
+	nil,                 // 137: fastpb.test.Maps.M92Entry
+	nil,                 // 138: fastpb.test.Maps.M93Entry
+	nil,                 // 139: fastpb.test.Maps.M94Entry
+	nil,                 // 140: fastpb.test.Maps.M95Entry
+	nil,                 // 141: fastpb.test.Maps.M96Entry
+	nil,                 // 142: fastpb.test.Maps.M97Entry
+	nil,                 // 143: fastpb.test.Maps.M98Entry
+	nil,                 // 144: fastpb.test.Maps.M99Entry
+	nil,                 // 145: fastpb.test.Maps.M9aEntry
+	nil,                 // 146: fastpb.test.Maps.M9bEntry
+	nil,                 // 147: fastpb.test.Maps.M9cEntry
+	nil,                 // 148: fastpb.test.Maps.M9dEntry
+	nil,                 // 149: fastpb.test.Maps.M9eEntry
+	nil,                 // 150: fastpb.test.Maps.M9fEntry
+	nil,                 // 151: fastpb.test.Maps.Ma0Entry
+	nil,                 // 152: fastpb.test.Maps.Ma1Entry
+	nil,                 // 153: fastpb.test.Maps.Ma2Entry
+	nil,                 // 154: fastpb.test.Maps.Ma3Entry
+	nil,                 // 155: fastpb.test.Maps.Ma4Entry
+	nil,                 // 156: fastpb.test.Maps.Ma5Entry
+	nil,                 // 157: fastpb.test.Maps.Ma6Entry
+	nil,                 // 158: fastpb.test.Maps.Ma7Entry
+	nil,                 // 159: fastpb.test.Maps.Ma8Entry
+	nil,                 // 160: fastpb.test.Maps.Ma9Entry
+	nil,                 // 161: fastpb.test.Maps.MaaEntry
+	nil,                 // 162: fastpb.test.Maps.MabEntry
+	nil,                 // 163: fastpb.test.Maps.MacEntry
+	nil,                 // 164: fastpb.test.Maps.MadEntry
+	nil,                 // 165: fastpb.test.Maps.MaeEntry
+	nil,                 // 166: fastpb.test.Maps.MafEntry
+	nil,                 // 167: fastpb.test.Maps.Mb0Entry
+	nil,                 // 168: fastpb.test.Maps.Mb1Entry
+	nil,                 // 169: fastpb.test.Maps.Mb2Entry
+	nil,                 // 170: fastpb.test.Maps.Mb3Entry
+	nil,                 // 171: fastpb.test.Maps.Mb4Entry
+	nil,                 // 172: fastpb.test.Maps.Mb5Entry
+	nil,                 // 173: fastpb.test.Maps.Mb6Entry
+	nil,                 // 174: fastpb.test.Maps.Mb7Entry
+	nil,                 // 175: fastpb.test.Maps.Mb8Entry
+	nil,                 // 176: fastpb.test.Maps.Mb9Entry
+	nil,                 // 177: fastpb.test.Maps.MbaEntry
+	nil,                 // 178: fastpb.test.Maps.MbbEntry
+	nil,                 // 179: fastpb.test.Maps.MbcEntry
+	nil,                 // 180: fastpb.test.Maps.MbdEntry
+	nil,                 // 181: fastpb.test.Maps.MbeEntry
+	nil,                 // 182: fastpb.test.Maps.MbfEntry
+	nil,                 // 183: fastpb.test.Maps.Mc0Entry
+	nil,                 // 184: fastpb.test.Maps.Mc1Entry
+	nil,                 // 185: fastpb.test.Maps.Mc2Entry
+	nil,                 // 186: fastpb.test.Maps.Mc3Entry
+	nil,                 // 187: fastpb.test.Maps.Mc4Entry
+	nil,                 // 188: fastpb.test.Maps.Mc5Entry
+	nil,                 // 189: fastpb.test.Maps.Mc6Entry
+	nil,                 // 190: fastpb.test.Maps.Mc7Entry
+	nil,                 // 191: fastpb.test.Maps.Mc8Entry
+	nil,                 // 192: fastpb.test.Maps.Mc9Entry
+	nil,                 // 193: fastpb.test.Maps.McaEntry
+	nil,                 // 194: fastpb.test.Maps.McbEntry
+	nil,                 // 195: fastpb.test.Maps.MccEntry
+	nil,                 // 196: fastpb.test.Maps.McdEntry
+	nil,                 // 197: fastpb.test.Maps.MceEntry
+	nil,                 // 198: fastpb.test.Maps.McfEntry
+	nil,                 // 199: fastpb.test.MessageMaps.M1Entry
+	nil,                 // 200: fastpb.test.MessageMaps.M2Entry
+	nil,                 // 201: fastpb.test.MessageMaps.M3Entry
+	nil,                 // 202: fastpb.test.MessageMaps.M4Entry
+	nil,                 // 203: fastpb.test.MessageMaps.M5Entry
+	nil,                 // 204: fastpb.test.MessageMaps.M6Entry
+	nil,                 // 205: fastpb.test.MessageMaps.M7Entry
+	nil,                 // 206: fastpb.test.MessageMaps.M8Entry
+	nil,                 // 207: fastpb.test.MessageMaps.M9Entry
+	nil,                 // 208: fastpb.test.MessageMaps.MaEntry
+	nil,                 // 209: fastpb.test.MessageMaps.McEntry
 }
 var file_test_test_proto_depIdxs = []int32{
 	3,   // 0: fastpb.test.Graph.s:type_name -> fastpb.test.Graph
 	3,   // 1: fastpb.test.Graph.r:type_name -> fastpb.test.Graph
 	4,   // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
-	6,   // 3: fastpb.test.Maps.m10:type_name -> fastpb.test.Maps.M10Entry
-	7,   // 4: fastpb.test.Maps.m11:type_name -> fastpb.test.Maps.M11Entry
-	8,   // 5: fastpb.test.Maps.m12:type_name -> fastpb.test.Maps.M12Entry
-	9,   // 6: fastpb.test.Maps.m13:type_name -> fastpb.test.Maps.M13Entry
-	10,  // 7: fastpb.test.Maps.m14:type_name -> fastpb.test.Maps.M14Entry
-	11,  // 8: fastpb.test.Maps.m15:type_name -> fastpb.test.Maps.M15Entry
-	12,  // 9: fastpb.test.Maps.m16:type_name -> fastpb.test.Maps.M16Entry
-	13,  // 10: fastpb.test.Maps.m17:type_name -> fastpb.test.Maps.M17Entry
-	14,  // 11: fastpb.test.Maps.m18:type_name -> fastpb.test.Maps.M18Entry
-	15,  // 12: fastpb.test.Maps.m19:type_name -> fastpb.test.Maps.M19Entry
-	16,  // 13: fastpb.test.Maps.m1a:type_name -> fastpb.test.Maps.M1aEntry
-	17,  // 14: fastpb.test.Maps.m1b:type_name -> fastpb.test.Maps.M1bEntry
-	18,  // 15: fastpb.test.Maps.m1c:type_name -> fastpb.test.Maps.M1cEntry
-	19,  // 16: fastpb.test.Maps.m1d:type_name -> fastpb.test.Maps.M1dEntry
-	20,  // 17: fastpb.test.Maps.m1e:type_name -> fastpb.test.Maps.M1eEntry
-	21,  // 18: fastpb.test.Maps.m1f:type_name -> fastpb.test.Maps.M1fEntry
-	22,  // 19: fastpb.test.Maps.m20:type_name -> fastpb.test.Maps.M20Entry
-	23,  // 20: fastpb.test.Maps.m21:type_name -> fastpb.test.Maps.M21Entry
-	24,  // 21: fastpb.test.Maps.m22:type_name -> fastpb.test.Maps.M22Entry
-	25,  // 22: fastpb.test.Maps.m23:type_name -> fastpb.test.Maps.M23Entry
-	26,  // 23: fastpb.test.Maps.m24:type_name -> fastpb.test.Maps.M24Entry
-	27,  // 24: fastpb.test.Maps.m25:type_name -> fastpb.test.Maps.M25Entry
-	28,  // 25: fastpb.test.Maps.m26:type_name -> fastpb.test.Maps.M26Entry
-	29,  // 26: fastpb.test.Maps.m27:type_name -> fastpb.test.Maps.M27Entry
-	30,  // 27: fastpb.test.Maps.m28:type_name -> fastpb.test.Maps.M28Entry
-	31,  // 28: fastpb.test.Maps.m29:type_name -> fastpb.test.Maps.M29Entry
-	32,  // 29: fastpb.test.Maps.m2a:type_name -> fastpb.test.Maps.M2aEntry
-	33,  // 30: fastpb.test.Maps.m2b:type_name -> fastpb.test.Maps.M2bEntry
-	34,  // 31: fastpb.test.Maps.m2c:type_name -> fastpb.test.Maps.M2cEntry
-	35,  // 32: fastpb.test.Maps.m2d:type_name -> fastpb.test.Maps.M2dEntry
-	36,  // 33: fastpb.test.Maps.m2e:type_name -> fastpb.test.Maps.M2eEntry
-	37,  // 34: fastpb.test.Maps.m2f:type_name -> fastpb.test.Maps.M2fEntry
-	38,  // 35: fastpb.test.Maps.m30:type_name -> fastpb.test.Maps.M30Entry
-	39,  // 36: fastpb.test.Maps.m31:type_name -> fastpb.test.Maps.M31Entry
-	40,  // 37: fastpb.test.Maps.m32:type_name -> fastpb.test.Maps.M32Entry
-	41,  // 38: fastpb.test.Maps.m33:type_name -> fastpb.test.Maps.M33Entry
-	42,  // 39: fastpb.test.Maps.m34:type_name -> fastpb.test.Maps.M34Entry
-	43,  // 40: fastpb.test.Maps.m35:type_name -> fastpb.test.Maps.M35Entry
-	44,  // 41: fastpb.test.Maps.m36:type_name -> fastpb.test.Maps.M36Entry
-	45,  // 42: fastpb.test.Maps.m37:type_name -> fastpb.test.Maps.M37Entry
-	46,  // 43: fastpb.test.Maps.m38:type_name -> fastpb.test.Maps.M38Entry
-	47,  // 44: fastpb.test.Maps.m39:type_name -> fastpb.test.Maps.M39Entry
-	48,  // 45: fastpb.test.Maps.m3a:type_name -> fastpb.test.Maps.M3aEntry
-	49,  // 46: fastpb.test.Maps.m3b:type_name -> fastpb.test.Maps.M3bEntry
-	50,  // 47: fastpb.test.Maps.m3c:type_name -> fastpb.test.Maps.M3cEntry
-	51,  // 48: fastpb.test.Maps.m3d:type_name -> fastpb.test.Maps.M3dEntry
-	52,  // 49: fastpb.test.Maps.m3e:type_name -> fastpb.test.Maps.M3eEntry
-	53,  // 50: fastpb.test.Maps.m3f:type_name -> fastpb.test.Maps.M3fEntry
-	54,  // 51: fastpb.test.Maps.m40:type_name -> fastpb.test.Maps.M40Entry
-	55,  // 52: fastpb.test.Maps.m41:type_name -> fastpb.test.Maps.M41Entry
-	56,  // 53: fastpb.test.Maps.m42:type_name -> fastpb.test.Maps.M42Entry
-	57,  // 54: fastpb.test.Maps.m43:type_name -> fastpb.test.Maps.M43Entry
-	58,  // 55: fastpb.test.Maps.m44:type_name -> fastpb.test.Maps.M44Entry
-	59,  // 56: fastpb.test.Maps.m45:type_name -> fastpb.test.Maps.M45Entry
-	60,  // 57: fastpb.test.Maps.m46:type_name -> fastpb.test.Maps.M46Entry
-	61,  // 58: fastpb.test.Maps.m47:type_name -> fastpb.test.Maps.M47Entry
-	62,  // 59: fastpb.test.Maps.m48:type_name -> fastpb.test.Maps.M48Entry
-	63,  // 60: fastpb.test.Maps.m49:type_name -> fastpb.test.Maps.M49Entry
-	64,  // 61: fastpb.test.Maps.m4a:type_name -> fastpb.test.Maps.M4aEntry
-	65,  // 62: fastpb.test.Maps.m4b:type_name -> fastpb.test.Maps.M4bEntry
-	66,  // 63: fastpb.test.Maps.m4c:type_name -> fastpb.test.Maps.M4cEntry
-	67,  // 64: fastpb.test.Maps.m4d:type_name -> fastpb.test.Maps.M4dEntry
-	68,  // 65: fastpb.test.Maps.m4e:type_name -> fastpb.test.Maps.M4eEntry
-	69,  // 66: fastpb.test.Maps.m4f:type_name -> fastpb.test.Maps.M4fEntry
-	70,  // 67: fastpb.test.Maps.m50:type_name -> fastpb.test.Maps.M50Entry
-	71,  // 68: fastpb.test.Maps.m51:type_name -> fastpb.test.Maps.M51Entry
-	72,  // 69: fastpb.test.Maps.m52:type_name -> fastpb.test.Maps.M52Entry
-	73,  // 70: fastpb.test.Maps.m53:type_name -> fastpb.test.Maps.M53Entry
-	74,  // 71: fastpb.test.Maps.m54:type_name -> fastpb.test.Maps.M54Entry
-	75,  // 72: fastpb.test.Maps.m55:type_name -> fastpb.test.Maps.M55Entry
-	76,  // 73: fastpb.test.Maps.m56:type_name -> fastpb.test.Maps.M56Entry
-	77,  // 74: fastpb.test.Maps.m57:type_name -> fastpb.test.Maps.M57Entry
-	78,  // 75: fastpb.test.Maps.m58:type_name -> fastpb.test.Maps.M58Entry
-	79,  // 76: fastpb.test.Maps.m59:type_name -> fastpb.test.Maps.M59Entry
-	80,  // 77: fastpb.test.Maps.m5a:type_name -> fastpb.test.Maps.M5aEntry
-	81,  // 78: fastpb.test.Maps.m5b:type_name -> fastpb.test.Maps.M5bEntry
-	82,  // 79: fastpb.test.Maps.m5c:type_name -> fastpb.test.Maps.M5cEntry
-	83,  // 80: fastpb.test.Maps.m5d:type_name -> fastpb.test.Maps.M5dEntry
-	84,  // 81: fastpb.test.Maps.m5e:type_name -> fastpb.test.Maps.M5eEntry
-	85,  // 82: fastpb.test.Maps.m5f:type_name -> fastpb.test.Maps.M5fEntry
-	86,  // 83: fastpb.test.Maps.m60:type_name -> fastpb.test.Maps.M60Entry
-	87,  // 84: fastpb.test.Maps.m61:type_name -> fastpb.test.Maps.M61Entry
-	88,  // 85: fastpb.test.Maps.m62:type_name -> fastpb.test.Maps.M62Entry
-	89,  // 86: fastpb.test.Maps.m63:type_name -> fastpb.test.Maps.M63Entry
-	90,  // 87: fastpb.test.Maps.m64:type_name -> fastpb.test.Maps.M64Entry
-	91,  // 88: fastpb.test.Maps.m65:type_name -> fastpb.test.Maps.M65Entry
-	92,  // 89: fastpb.test.Maps.m66:type_name -> fastpb.test.Maps.M66Entry
-	93,  // 90: fastpb.test.Maps.m67:type_name -> fastpb.test.Maps.M67Entry
-	94,  // 91: fastpb.test.Maps.m68:type_name -> fastpb.test.Maps.M68Entry
-	95,  // 92: fastpb.test.Maps.m69:type_name -> fastpb.test.Maps.M69Entry
-	96,  // 93: fastpb.test.Maps.m6a:type_name -> fastpb.test.Maps.M6aEntry
-	97,  // 94: fastpb.test.Maps.m6b:type_name -> fastpb.test.Maps.M6bEntry
-	98,  // 95: fastpb.test.Maps.m6c:type_name -> fastpb.test.Maps.M6cEntry
-	99,  // 96: fastpb.test.Maps.m6d:type_name -> fastpb.test.Maps.M6dEntry
-	100, // 97: fastpb.test.Maps.m6e:type_name -> fastpb.test.Maps.M6eEntry
-	101, // 98: fastpb.test.Maps.m6f:type_name -> fastpb.test.Maps.M6fEntry
-	102, // 99: fastpb.test.Maps.m70:type_name -> fastpb.test.Maps.M70Entry
-	103, // 100: fastpb.test.Maps.m71:type_name -> fastpb.test.Maps.M71Entry
-	104, // 101: fastpb.test.Maps.m72:type_name -> fastpb.test.Maps.M72Entry
-	105, // 102: fastpb.test.Maps.m73:type_name -> fastpb.test.Maps.M73Entry
-	106, // 103: fastpb.test.Maps.m74:type_name -> fastpb.test.Maps.M74Entry
-	107, // 104: fastpb.test.Maps.m75:type_name -> fastpb.test.Maps.M75Entry
-	108, // 105: fastpb.test.Maps.m76:type_name -> fastpb.test.Maps.M76Entry
-	109, // 106: fastpb.test.Maps.m77:type_name -> fastpb.test.Maps.M77Entry
-	110, // 107: fastpb.test.Maps.m78:type_name -> fastpb.test.Maps.M78Entry
-	111, // 108: fastpb.test.Maps.m79:type_name -> fastpb.test.Maps.M79Entry
-	112, // 109: fastpb.test.Maps.m7a:type_name -> fastpb.test.Maps.M7aEntry
-	113, // 110: fastpb.test.Maps.m7b:type_name -> fastpb.test.Maps.M7bEntry
-	114, // 111: fastpb.test.Maps.m7c:type_name -> fastpb.test.Maps.M7cEntry
-	115, // 112: fastpb.test.Maps.m7d:type_name -> fastpb.test.Maps.M7dEntry
-	116, // 113: fastpb.test.Maps.m7e:type_name -> fastpb.test.Maps.M7eEntry
-	117, // 114: fastpb.test.Maps.m7f:type_name -> fastpb.test.Maps.M7fEntry
-	118, // 115: fastpb.test.Maps.m80:type_name -> fastpb.test.Maps.M80Entry
-	119, // 116: fastpb.test.Maps.m81:type_name -> fastpb.test.Maps.M81Entry
-	120, // 117: fastpb.test.Maps.m82:type_name -> fastpb.test.Maps.M82Entry
-	121, // 118: fastpb.test.Maps.m83:type_name -> fastpb.test.Maps.M83Entry
-	122, // 119: fastpb.test.Maps.m84:type_name -> fastpb.test.Maps.M84Entry
-	123, // 120: fastpb.test.Maps.m85:type_name -> fastpb.test.Maps.M85Entry
-	124, // 121: fastpb.test.Maps.m86:type_name -> fastpb.test.Maps.M86Entry
-	125, // 122: fastpb.test.Maps.m87:type_name -> fastpb.test.Maps.M87Entry
-	126, // 123: fastpb.test.Maps.m88:type_name -> fastpb.test.Maps.M88Entry
-	127, // 124: fastpb.test.Maps.m89:type_name -> fastpb.test.Maps.M89Entry
-	128, // 125: fastpb.test.Maps.m8a:type_name -> fastpb.test.Maps.M8aEntry
-	129, // 126: fastpb.test.Maps.m8b:type_name -> fastpb.test.Maps.M8bEntry
-	130, // 127: fastpb.test.Maps.m8c:type_name -> fastpb.test.Maps.M8cEntry
-	131, // 128: fastpb.test.Maps.m8d:type_name -> fastpb.test.Maps.M8dEntry
-	132, // 129: fastpb.test.Maps.m8e:type_name -> fastpb.test.Maps.M8eEntry
-	133, // 130: fastpb.test.Maps.m8f:type_name -> fastpb.test.Maps.M8fEntry
-	134, // 131: fastpb.test.Maps.m90:type_name -> fastpb.test.Maps.M90Entry
-	135, // 132: fastpb.test.Maps.m91:type_name -> fastpb.test.Maps.M91Entry
-	136, // 133: fastpb.test.Maps.m92:type_name -> fastpb.test.Maps.M92Entry
-	137, // 134: fastpb.test.Maps.m93:type_name -> fastpb.test.Maps.M93Entry
-	138, // 135: fastpb.test.Maps.m94:type_name -> fastpb.test.Maps.M94Entry
-	139, // 136: fastpb.test.Maps.m95:type_name -> fastpb.test.Maps.M95Entry
-	140, // 137: fastpb.test.Maps.m96:type_name -> fastpb.test.Maps.M96Entry
-	141, // 138: fastpb.test.Maps.m97:type_name -> fastpb.test.Maps.M97Entry
-	142, // 139: fastpb.test.Maps.m98:type_name -> fastpb.test.Maps.M98Entry
-	143, // 140: fastpb.test.Maps.m99:type_name -> fastpb.test.Maps.M99Entry
-	144, // 141: fastpb.test.Maps.m9a:type_name -> fastpb.test.Maps.M9aEntry
-	145, // 142: fastpb.test.Maps.m9b:type_name -> fastpb.test.Maps.M9bEntry
-	146, // 143: fastpb.test.Maps.m9c:type_name -> fastpb.test.Maps.M9cEntry
-	147, // 144: fastpb.test.Maps.m9d:type_name -> fastpb.test.Maps.M9dEntry
-	148, // 145: fastpb.test.Maps.m9e:type_name -> fastpb.test.Maps.M9eEntry
-	149, // 146: fastpb.test.Maps.m9f:type_name -> fastpb.test.Maps.M9fEntry
-	150, // 147: fastpb.test.Maps.ma0:type_name -> fastpb.test.Maps.Ma0Entry
-	151, // 148: fastpb.test.Maps.ma1:type_name -> fastpb.test.Maps.Ma1Entry
-	152, // 149: fastpb.test.Maps.ma2:type_name -> fastpb.test.Maps.Ma2Entry
-	153, // 150: fastpb.test.Maps.ma3:type_name -> fastpb.test.Maps.Ma3Entry
-	154, // 151: fastpb.test.Maps.ma4:type_name -> fastpb.test.Maps.Ma4Entry
-	155, // 152: fastpb.test.Maps.ma5:type_name -> fastpb.test.Maps.Ma5Entry
-	156, // 153: fastpb.test.Maps.ma6:type_name -> fastpb.test.Maps.Ma6Entry
-	157, // 154: fastpb.test.Maps.ma7:type_name -> fastpb.test.Maps.Ma7Entry
-	158, // 155: fastpb.test.Maps.ma8:type_name -> fastpb.test.Maps.Ma8Entry
-	159, // 156: fastpb.test.Maps.ma9:type_name -> fastpb.test.Maps.Ma9Entry
-	160, // 157: fastpb.test.Maps.maa:type_name -> fastpb.test.Maps.MaaEntry
-	161, // 158: fastpb.test.Maps.mab:type_name -> fastpb.test.Maps.MabEntry
-	162, // 159: fastpb.test.Maps.mac:type_name -> fastpb.test.Maps.MacEntry
-	163, // 160: fastpb.test.Maps.mad:type_name -> fastpb.test.Maps.MadEntry
-	164, // 161: fastpb.test.Maps.mae:type_name -> fastpb.test.Maps.MaeEntry
-	165, // 162: fastpb.test.Maps.maf:type_name -> fastpb.test.Maps.MafEntry
-	166, // 163: fastpb.test.Maps.mb0:type_name -> fastpb.test.Maps.Mb0Entry
-	167, // 164: fastpb.test.Maps.mb1:type_name -> fastpb.test.Maps.Mb1Entry
-	168, // 165: fastpb.test.Maps.mb2:type_name -> fastpb.test.Maps.Mb2Entry
-	169, // 166: fastpb.test.Maps.mb3:type_name -> fastpb.test.Maps.Mb3Entry
-	170, // 167: fastpb.test.Maps.mb4:type_name -> fastpb.test.Maps.Mb4Entry
-	171, // 168: fastpb.test.Maps.mb5:type_name -> fastpb.test.Maps.Mb5Entry
-	172, // 169: fastpb.test.Maps.mb6:type_name -> fastpb.test.Maps.Mb6Entry
-	173, // 170: fastpb.test.Maps.mb7:type_name -> fastpb.test.Maps.Mb7Entry
-	174, // 171: fastpb.test.Maps.mb8:type_name -> fastpb.test.Maps.Mb8Entry
-	175, // 172: fastpb.test.Maps.mb9:type_name -> fastpb.test.Maps.Mb9Entry
-	176, // 173: fastpb.test.Maps.mba:type_name -> fastpb.test.Maps.MbaEntry
-	177, // 174: fastpb.test.Maps.mbb:type_name -> fastpb.test.Maps.MbbEntry
-	178, // 175: fastpb.test.Maps.mbc:type_name -> fastpb.test.Maps.MbcEntry
-	179, // 176: fastpb.test.Maps.mbd:type_name -> fastpb.test.Maps.MbdEntry
-	180, // 177: fastpb.test.Maps.mbe:type_name -> fastpb.test.Maps.MbeEntry
-	181, // 178: fastpb.test.Maps.mbf:type_name -> fastpb.test.Maps.MbfEntry
-	182, // 179: fastpb.test.Maps.mc0:type_name -> fastpb.test.Maps.Mc0Entry
-	183, // 180: fastpb.test.Maps.mc1:type_name -> fastpb.test.Maps.Mc1Entry
-	184, // 181: fastpb.test.Maps.mc2:type_name -> fastpb.test.Maps.Mc2Entry
-	185, // 182: fastpb.test.Maps.mc3:type_name -> fastpb.test.Maps.Mc3Entry
-	186, // 183: fastpb.test.Maps.mc4:type_name -> fastpb.test.Maps.Mc4Entry
-	187, // 184: fastpb.test.Maps.mc5:type_name -> fastpb.test.Maps.Mc5Entry
-	188, // 185: fastpb.test.Maps.mc6:type_name -> fastpb.test.Maps.Mc6Entry
-	189, // 186: fastpb.test.Maps.mc7:type_name -> fastpb.test.Maps.Mc7Entry
-	190, // 187: fastpb.test.Maps.mc8:type_name -> fastpb.test.Maps.Mc8Entry
-	191, // 188: fastpb.test.Maps.mc9:type_name -> fastpb.test.Maps.Mc9Entry
-	192, // 189: fastpb.test.Maps.mca:type_name -> fastpb.test.Maps.McaEntry
-	193, // 190: fastpb.test.Maps.mcb:type_name -> fastpb.test.Maps.McbEntry
-	194, // 191: fastpb.test.Maps.mcc:type_name -> fastpb.test.Maps.MccEntry
-	195, // 192: fastpb.test.Maps.mcd:type_name -> fastpb.test.Maps.McdEntry
-	196, // 193: fastpb.test.Maps.mce:type_name -> fastpb.test.Maps.MceEntry
-	197, // 194: fastpb.test.Maps.mcf:type_name -> fastpb.test.Maps.McfEntry
-	0,   // 195: fastpb.test.Maps.M1dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 196: fastpb.test.Maps.M2dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 197: fastpb.test.Maps.M3dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 198: fastpb.test.Maps.M4dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 199: fastpb.test.Maps.M5dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 200: fastpb.test.Maps.M6dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 201: fastpb.test.Maps.M7dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 202: fastpb.test.Maps.M8dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 203: fastpb.test.Maps.M9dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 204: fastpb.test.Maps.MadEntry.value:type_name -> fastpb.test.Enum
-	0,   // 205: fastpb.test.Maps.MbdEntry.value:type_name -> fastpb.test.Enum
-	0,   // 206: fastpb.test.Maps.McdEntry.value:type_name -> fastpb.test.Enum
-	207, // [207:207] is the sub-list for method output_type
-	207, // [207:207] is the sub-list for method input_type
-	207, // [207:207] is the sub-list for extension type_name
-	207, // [207:207] is the sub-list for extension extendee
-	0,   // [0:207] is the sub-list for field type_name
+	7,   // 3: fastpb.test.Maps.m10:type_name -> fastpb.test.Maps.M10Entry
+	8,   // 4: fastpb.test.Maps.m11:type_name -> fastpb.test.Maps.M11Entry
+	9,   // 5: fastpb.test.Maps.m12:type_name -> fastpb.test.Maps.M12Entry
+	10,  // 6: fastpb.test.Maps.m13:type_name -> fastpb.test.Maps.M13Entry
+	11,  // 7: fastpb.test.Maps.m14:type_name -> fastpb.test.Maps.M14Entry
+	12,  // 8: fastpb.test.Maps.m15:type_name -> fastpb.test.Maps.M15Entry
+	13,  // 9: fastpb.test.Maps.m16:type_name -> fastpb.test.Maps.M16Entry
+	14,  // 10: fastpb.test.Maps.m17:type_name -> fastpb.test.Maps.M17Entry
+	15,  // 11: fastpb.test.Maps.m18:type_name -> fastpb.test.Maps.M18Entry
+	16,  // 12: fastpb.test.Maps.m19:type_name -> fastpb.test.Maps.M19Entry
+	17,  // 13: fastpb.test.Maps.m1a:type_name -> fastpb.test.Maps.M1aEntry
+	18,  // 14: fastpb.test.Maps.m1b:type_name -> fastpb.test.Maps.M1bEntry
+	19,  // 15: fastpb.test.Maps.m1c:type_name -> fastpb.test.Maps.M1cEntry
+	20,  // 16: fastpb.test.Maps.m1d:type_name -> fastpb.test.Maps.M1dEntry
+	21,  // 17: fastpb.test.Maps.m1e:type_name -> fastpb.test.Maps.M1eEntry
+	22,  // 18: fastpb.test.Maps.m1f:type_name -> fastpb.test.Maps.M1fEntry
+	23,  // 19: fastpb.test.Maps.m20:type_name -> fastpb.test.Maps.M20Entry
+	24,  // 20: fastpb.test.Maps.m21:type_name -> fastpb.test.Maps.M21Entry
+	25,  // 21: fastpb.test.Maps.m22:type_name -> fastpb.test.Maps.M22Entry
+	26,  // 22: fastpb.test.Maps.m23:type_name -> fastpb.test.Maps.M23Entry
+	27,  // 23: fastpb.test.Maps.m24:type_name -> fastpb.test.Maps.M24Entry
+	28,  // 24: fastpb.test.Maps.m25:type_name -> fastpb.test.Maps.M25Entry
+	29,  // 25: fastpb.test.Maps.m26:type_name -> fastpb.test.Maps.M26Entry
+	30,  // 26: fastpb.test.Maps.m27:type_name -> fastpb.test.Maps.M27Entry
+	31,  // 27: fastpb.test.Maps.m28:type_name -> fastpb.test.Maps.M28Entry
+	32,  // 28: fastpb.test.Maps.m29:type_name -> fastpb.test.Maps.M29Entry
+	33,  // 29: fastpb.test.Maps.m2a:type_name -> fastpb.test.Maps.M2aEntry
+	34,  // 30: fastpb.test.Maps.m2b:type_name -> fastpb.test.Maps.M2bEntry
+	35,  // 31: fastpb.test.Maps.m2c:type_name -> fastpb.test.Maps.M2cEntry
+	36,  // 32: fastpb.test.Maps.m2d:type_name -> fastpb.test.Maps.M2dEntry
+	37,  // 33: fastpb.test.Maps.m2e:type_name -> fastpb.test.Maps.M2eEntry
+	38,  // 34: fastpb.test.Maps.m2f:type_name -> fastpb.test.Maps.M2fEntry
+	39,  // 35: fastpb.test.Maps.m30:type_name -> fastpb.test.Maps.M30Entry
+	40,  // 36: fastpb.test.Maps.m31:type_name -> fastpb.test.Maps.M31Entry
+	41,  // 37: fastpb.test.Maps.m32:type_name -> fastpb.test.Maps.M32Entry
+	42,  // 38: fastpb.test.Maps.m33:type_name -> fastpb.test.Maps.M33Entry
+	43,  // 39: fastpb.test.Maps.m34:type_name -> fastpb.test.Maps.M34Entry
+	44,  // 40: fastpb.test.Maps.m35:type_name -> fastpb.test.Maps.M35Entry
+	45,  // 41: fastpb.test.Maps.m36:type_name -> fastpb.test.Maps.M36Entry
+	46,  // 42: fastpb.test.Maps.m37:type_name -> fastpb.test.Maps.M37Entry
+	47,  // 43: fastpb.test.Maps.m38:type_name -> fastpb.test.Maps.M38Entry
+	48,  // 44: fastpb.test.Maps.m39:type_name -> fastpb.test.Maps.M39Entry
+	49,  // 45: fastpb.test.Maps.m3a:type_name -> fastpb.test.Maps.M3aEntry
+	50,  // 46: fastpb.test.Maps.m3b:type_name -> fastpb.test.Maps.M3bEntry
+	51,  // 47: fastpb.test.Maps.m3c:type_name -> fastpb.test.Maps.M3cEntry
+	52,  // 48: fastpb.test.Maps.m3d:type_name -> fastpb.test.Maps.M3dEntry
+	53,  // 49: fastpb.test.Maps.m3e:type_name -> fastpb.test.Maps.M3eEntry
+	54,  // 50: fastpb.test.Maps.m3f:type_name -> fastpb.test.Maps.M3fEntry
+	55,  // 51: fastpb.test.Maps.m40:type_name -> fastpb.test.Maps.M40Entry
+	56,  // 52: fastpb.test.Maps.m41:type_name -> fastpb.test.Maps.M41Entry
+	57,  // 53: fastpb.test.Maps.m42:type_name -> fastpb.test.Maps.M42Entry
+	58,  // 54: fastpb.test.Maps.m43:type_name -> fastpb.test.Maps.M43Entry
+	59,  // 55: fastpb.test.Maps.m44:type_name -> fastpb.test.Maps.M44Entry
+	60,  // 56: fastpb.test.Maps.m45:type_name -> fastpb.test.Maps.M45Entry
+	61,  // 57: fastpb.test.Maps.m46:type_name -> fastpb.test.Maps.M46Entry
+	62,  // 58: fastpb.test.Maps.m47:type_name -> fastpb.test.Maps.M47Entry
+	63,  // 59: fastpb.test.Maps.m48:type_name -> fastpb.test.Maps.M48Entry
+	64,  // 60: fastpb.test.Maps.m49:type_name -> fastpb.test.Maps.M49Entry
+	65,  // 61: fastpb.test.Maps.m4a:type_name -> fastpb.test.Maps.M4aEntry
+	66,  // 62: fastpb.test.Maps.m4b:type_name -> fastpb.test.Maps.M4bEntry
+	67,  // 63: fastpb.test.Maps.m4c:type_name -> fastpb.test.Maps.M4cEntry
+	68,  // 64: fastpb.test.Maps.m4d:type_name -> fastpb.test.Maps.M4dEntry
+	69,  // 65: fastpb.test.Maps.m4e:type_name -> fastpb.test.Maps.M4eEntry
+	70,  // 66: fastpb.test.Maps.m4f:type_name -> fastpb.test.Maps.M4fEntry
+	71,  // 67: fastpb.test.Maps.m50:type_name -> fastpb.test.Maps.M50Entry
+	72,  // 68: fastpb.test.Maps.m51:type_name -> fastpb.test.Maps.M51Entry
+	73,  // 69: fastpb.test.Maps.m52:type_name -> fastpb.test.Maps.M52Entry
+	74,  // 70: fastpb.test.Maps.m53:type_name -> fastpb.test.Maps.M53Entry
+	75,  // 71: fastpb.test.Maps.m54:type_name -> fastpb.test.Maps.M54Entry
+	76,  // 72: fastpb.test.Maps.m55:type_name -> fastpb.test.Maps.M55Entry
+	77,  // 73: fastpb.test.Maps.m56:type_name -> fastpb.test.Maps.M56Entry
+	78,  // 74: fastpb.test.Maps.m57:type_name -> fastpb.test.Maps.M57Entry
+	79,  // 75: fastpb.test.Maps.m58:type_name -> fastpb.test.Maps.M58Entry
+	80,  // 76: fastpb.test.Maps.m59:type_name -> fastpb.test.Maps.M59Entry
+	81,  // 77: fastpb.test.Maps.m5a:type_name -> fastpb.test.Maps.M5aEntry
+	82,  // 78: fastpb.test.Maps.m5b:type_name -> fastpb.test.Maps.M5bEntry
+	83,  // 79: fastpb.test.Maps.m5c:type_name -> fastpb.test.Maps.M5cEntry
+	84,  // 80: fastpb.test.Maps.m5d:type_name -> fastpb.test.Maps.M5dEntry
+	85,  // 81: fastpb.test.Maps.m5e:type_name -> fastpb.test.Maps.M5eEntry
+	86,  // 82: fastpb.test.Maps.m5f:type_name -> fastpb.test.Maps.M5fEntry
+	87,  // 83: fastpb.test.Maps.m60:type_name -> fastpb.test.Maps.M60Entry
+	88,  // 84: fastpb.test.Maps.m61:type_name -> fastpb.test.Maps.M61Entry
+	89,  // 85: fastpb.test.Maps.m62:type_name -> fastpb.test.Maps.M62Entry
+	90,  // 86: fastpb.test.Maps.m63:type_name -> fastpb.test.Maps.M63Entry
+	91,  // 87: fastpb.test.Maps.m64:type_name -> fastpb.test.Maps.M64Entry
+	92,  // 88: fastpb.test.Maps.m65:type_name -> fastpb.test.Maps.M65Entry
+	93,  // 89: fastpb.test.Maps.m66:type_name -> fastpb.test.Maps.M66Entry
+	94,  // 90: fastpb.test.Maps.m67:type_name -> fastpb.test.Maps.M67Entry
+	95,  // 91: fastpb.test.Maps.m68:type_name -> fastpb.test.Maps.M68Entry
+	96,  // 92: fastpb.test.Maps.m69:type_name -> fastpb.test.Maps.M69Entry
+	97,  // 93: fastpb.test.Maps.m6a:type_name -> fastpb.test.Maps.M6aEntry
+	98,  // 94: fastpb.test.Maps.m6b:type_name -> fastpb.test.Maps.M6bEntry
+	99,  // 95: fastpb.test.Maps.m6c:type_name -> fastpb.test.Maps.M6cEntry
+	100, // 96: fastpb.test.Maps.m6d:type_name -> fastpb.test.Maps.M6dEntry
+	101, // 97: fastpb.test.Maps.m6e:type_name -> fastpb.test.Maps.M6eEntry
+	102, // 98: fastpb.test.Maps.m6f:type_name -> fastpb.test.Maps.M6fEntry
+	103, // 99: fastpb.test.Maps.m70:type_name -> fastpb.test.Maps.M70Entry
+	104, // 100: fastpb.test.Maps.m71:type_name -> fastpb.test.Maps.M71Entry
+	105, // 101: fastpb.test.Maps.m72:type_name -> fastpb.test.Maps.M72Entry
+	106, // 102: fastpb.test.Maps.m73:type_name -> fastpb.test.Maps.M73Entry
+	107, // 103: fastpb.test.Maps.m74:type_name -> fastpb.test.Maps.M74Entry
+	108, // 104: fastpb.test.Maps.m75:type_name -> fastpb.test.Maps.M75Entry
+	109, // 105: fastpb.test.Maps.m76:type_name -> fastpb.test.Maps.M76Entry
+	110, // 106: fastpb.test.Maps.m77:type_name -> fastpb.test.Maps.M77Entry
+	111, // 107: fastpb.test.Maps.m78:type_name -> fastpb.test.Maps.M78Entry
+	112, // 108: fastpb.test.Maps.m79:type_name -> fastpb.test.Maps.M79Entry
+	113, // 109: fastpb.test.Maps.m7a:type_name -> fastpb.test.Maps.M7aEntry
+	114, // 110: fastpb.test.Maps.m7b:type_name -> fastpb.test.Maps.M7bEntry
+	115, // 111: fastpb.test.Maps.m7c:type_name -> fastpb.test.Maps.M7cEntry
+	116, // 112: fastpb.test.Maps.m7d:type_name -> fastpb.test.Maps.M7dEntry
+	117, // 113: fastpb.test.Maps.m7e:type_name -> fastpb.test.Maps.M7eEntry
+	118, // 114: fastpb.test.Maps.m7f:type_name -> fastpb.test.Maps.M7fEntry
+	119, // 115: fastpb.test.Maps.m80:type_name -> fastpb.test.Maps.M80Entry
+	120, // 116: fastpb.test.Maps.m81:type_name -> fastpb.test.Maps.M81Entry
+	121, // 117: fastpb.test.Maps.m82:type_name -> fastpb.test.Maps.M82Entry
+	122, // 118: fastpb.test.Maps.m83:type_name -> fastpb.test.Maps.M83Entry
+	123, // 119: fastpb.test.Maps.m84:type_name -> fastpb.test.Maps.M84Entry
+	124, // 120: fastpb.test.Maps.m85:type_name -> fastpb.test.Maps.M85Entry
+	125, // 121: fastpb.test.Maps.m86:type_name -> fastpb.test.Maps.M86Entry
+	126, // 122: fastpb.test.Maps.m87:type_name -> fastpb.test.Maps.M87Entry
+	127, // 123: fastpb.test.Maps.m88:type_name -> fastpb.test.Maps.M88Entry
+	128, // 124: fastpb.test.Maps.m89:type_name -> fastpb.test.Maps.M89Entry
+	129, // 125: fastpb.test.Maps.m8a:type_name -> fastpb.test.Maps.M8aEntry
+	130, // 126: fastpb.test.Maps.m8b:type_name -> fastpb.test.Maps.M8bEntry
+	131, // 127: fastpb.test.Maps.m8c:type_name -> fastpb.test.Maps.M8cEntry
+	132, // 128: fastpb.test.Maps.m8d:type_name -> fastpb.test.Maps.M8dEntry
+	133, // 129: fastpb.test.Maps.m8e:type_name -> fastpb.test.Maps.M8eEntry
+	134, // 130: fastpb.test.Maps.m8f:type_name -> fastpb.test.Maps.M8fEntry
+	135, // 131: fastpb.test.Maps.m90:type_name -> fastpb.test.Maps.M90Entry
+	136, // 132: fastpb.test.Maps.m91:type_name -> fastpb.test.Maps.M91Entry
+	137, // 133: fastpb.test.Maps.m92:type_name -> fastpb.test.Maps.M92Entry
+	138, // 134: fastpb.test.Maps.m93:type_name -> fastpb.test.Maps.M93Entry
+	139, // 135: fastpb.test.Maps.m94:type_name -> fastpb.test.Maps.M94Entry
+	140, // 136: fastpb.test.Maps.m95:type_name -> fastpb.test.Maps.M95Entry
+	141, // 137: fastpb.test.Maps.m96:type_name -> fastpb.test.Maps.M96Entry
+	142, // 138: fastpb.test.Maps.m97:type_name -> fastpb.test.Maps.M97Entry
+	143, // 139: fastpb.test.Maps.m98:type_name -> fastpb.test.Maps.M98Entry
+	144, // 140: fastpb.test.Maps.m99:type_name -> fastpb.test.Maps.M99Entry
+	145, // 141: fastpb.test.Maps.m9a:type_name -> fastpb.test.Maps.M9aEntry
+	146, // 142: fastpb.test.Maps.m9b:type_name -> fastpb.test.Maps.M9bEntry
+	147, // 143: fastpb.test.Maps.m9c:type_name -> fastpb.test.Maps.M9cEntry
+	148, // 144: fastpb.test.Maps.m9d:type_name -> fastpb.test.Maps.M9dEntry
+	149, // 145: fastpb.test.Maps.m9e:type_name -> fastpb.test.Maps.M9eEntry
+	150, // 146: fastpb.test.Maps.m9f:type_name -> fastpb.test.Maps.M9fEntry
+	151, // 147: fastpb.test.Maps.ma0:type_name -> fastpb.test.Maps.Ma0Entry
+	152, // 148: fastpb.test.Maps.ma1:type_name -> fastpb.test.Maps.Ma1Entry
+	153, // 149: fastpb.test.Maps.ma2:type_name -> fastpb.test.Maps.Ma2Entry
+	154, // 150: fastpb.test.Maps.ma3:type_name -> fastpb.test.Maps.Ma3Entry
+	155, // 151: fastpb.test.Maps.ma4:type_name -> fastpb.test.Maps.Ma4Entry
+	156, // 152: fastpb.test.Maps.ma5:type_name -> fastpb.test.Maps.Ma5Entry
+	157, // 153: fastpb.test.Maps.ma6:type_name -> fastpb.test.Maps.Ma6Entry
+	158, // 154: fastpb.test.Maps.ma7:type_name -> fastpb.test.Maps.Ma7Entry
+	159, // 155: fastpb.test.Maps.ma8:type_name -> fastpb.test.Maps.Ma8Entry
+	160, // 156: fastpb.test.Maps.ma9:type_name -> fastpb.test.Maps.Ma9Entry
+	161, // 157: fastpb.test.Maps.maa:type_name -> fastpb.test.Maps.MaaEntry
+	162, // 158: fastpb.test.Maps.mab:type_name -> fastpb.test.Maps.MabEntry
+	163, // 159: fastpb.test.Maps.mac:type_name -> fastpb.test.Maps.MacEntry
+	164, // 160: fastpb.test.Maps.mad:type_name -> fastpb.test.Maps.MadEntry
+	165, // 161: fastpb.test.Maps.mae:type_name -> fastpb.test.Maps.MaeEntry
+	166, // 162: fastpb.test.Maps.maf:type_name -> fastpb.test.Maps.MafEntry
+	167, // 163: fastpb.test.Maps.mb0:type_name -> fastpb.test.Maps.Mb0Entry
+	168, // 164: fastpb.test.Maps.mb1:type_name -> fastpb.test.Maps.Mb1Entry
+	169, // 165: fastpb.test.Maps.mb2:type_name -> fastpb.test.Maps.Mb2Entry
+	170, // 166: fastpb.test.Maps.mb3:type_name -> fastpb.test.Maps.Mb3Entry
+	171, // 167: fastpb.test.Maps.mb4:type_name -> fastpb.test.Maps.Mb4Entry
+	172, // 168: fastpb.test.Maps.mb5:type_name -> fastpb.test.Maps.Mb5Entry
+	173, // 169: fastpb.test.Maps.mb6:type_name -> fastpb.test.Maps.Mb6Entry
+	174, // 170: fastpb.test.Maps.mb7:type_name -> fastpb.test.Maps.Mb7Entry
+	175, // 171: fastpb.test.Maps.mb8:type_name -> fastpb.test.Maps.Mb8Entry
+	176, // 172: fastpb.test.Maps.mb9:type_name -> fastpb.test.Maps.Mb9Entry
+	177, // 173: fastpb.test.Maps.mba:type_name -> fastpb.test.Maps.MbaEntry
+	178, // 174: fastpb.test.Maps.mbb:type_name -> fastpb.test.Maps.MbbEntry
+	179, // 175: fastpb.test.Maps.mbc:type_name -> fastpb.test.Maps.MbcEntry
+	180, // 176: fastpb.test.Maps.mbd:type_name -> fastpb.test.Maps.MbdEntry
+	181, // 177: fastpb.test.Maps.mbe:type_name -> fastpb.test.Maps.MbeEntry
+	182, // 178: fastpb.test.Maps.mbf:type_name -> fastpb.test.Maps.MbfEntry
+	183, // 179: fastpb.test.Maps.mc0:type_name -> fastpb.test.Maps.Mc0Entry
+	184, // 180: fastpb.test.Maps.mc1:type_name -> fastpb.test.Maps.Mc1Entry
+	185, // 181: fastpb.test.Maps.mc2:type_name -> fastpb.test.Maps.Mc2Entry
+	186, // 182: fastpb.test.Maps.mc3:type_name -> fastpb.test.Maps.Mc3Entry
+	187, // 183: fastpb.test.Maps.mc4:type_name -> fastpb.test.Maps.Mc4Entry
+	188, // 184: fastpb.test.Maps.mc5:type_name -> fastpb.test.Maps.Mc5Entry
+	189, // 185: fastpb.test.Maps.mc6:type_name -> fastpb.test.Maps.Mc6Entry
+	190, // 186: fastpb.test.Maps.mc7:type_name -> fastpb.test.Maps.Mc7Entry
+	191, // 187: fastpb.test.Maps.mc8:type_name -> fastpb.test.Maps.Mc8Entry
+	192, // 188: fastpb.test.Maps.mc9:type_name -> fastpb.test.Maps.Mc9Entry
+	193, // 189: fastpb.test.Maps.mca:type_name -> fastpb.test.Maps.McaEntry
+	194, // 190: fastpb.test.Maps.mcb:type_name -> fastpb.test.Maps.McbEntry
+	195, // 191: fastpb.test.Maps.mcc:type_name -> fastpb.test.Maps.MccEntry
+	196, // 192: fastpb.test.Maps.mcd:type_name -> fastpb.test.Maps.McdEntry
+	197, // 193: fastpb.test.Maps.mce:type_name -> fastpb.test.Maps.MceEntry
+	198, // 194: fastpb.test.Maps.mcf:type_name -> fastpb.test.Maps.McfEntry
+	1,   // 195: fastpb.test.MessageMaps.scalars:type_name -> fastpb.test.Scalars
+	199, // 196: fastpb.test.MessageMaps.m1:type_name -> fastpb.test.MessageMaps.M1Entry
+	200, // 197: fastpb.test.MessageMaps.m2:type_name -> fastpb.test.MessageMaps.M2Entry
+	201, // 198: fastpb.test.MessageMaps.m3:type_name -> fastpb.test.MessageMaps.M3Entry
+	202, // 199: fastpb.test.MessageMaps.m4:type_name -> fastpb.test.MessageMaps.M4Entry
+	203, // 200: fastpb.test.MessageMaps.m5:type_name -> fastpb.test.MessageMaps.M5Entry
+	204, // 201: fastpb.test.MessageMaps.m6:type_name -> fastpb.test.MessageMaps.M6Entry
+	205, // 202: fastpb.test.MessageMaps.m7:type_name -> fastpb.test.MessageMaps.M7Entry
+	206, // 203: fastpb.test.MessageMaps.m8:type_name -> fastpb.test.MessageMaps.M8Entry
+	207, // 204: fastpb.test.MessageMaps.m9:type_name -> fastpb.test.MessageMaps.M9Entry
+	208, // 205: fastpb.test.MessageMaps.ma:type_name -> fastpb.test.MessageMaps.MaEntry
+	209, // 206: fastpb.test.MessageMaps.mc:type_name -> fastpb.test.MessageMaps.McEntry
+	0,   // 207: fastpb.test.Maps.M1dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 208: fastpb.test.Maps.M2dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 209: fastpb.test.Maps.M3dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 210: fastpb.test.Maps.M4dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 211: fastpb.test.Maps.M5dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 212: fastpb.test.Maps.M6dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 213: fastpb.test.Maps.M7dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 214: fastpb.test.Maps.M8dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 215: fastpb.test.Maps.M9dEntry.value:type_name -> fastpb.test.Enum
+	0,   // 216: fastpb.test.Maps.MadEntry.value:type_name -> fastpb.test.Enum
+	0,   // 217: fastpb.test.Maps.MbdEntry.value:type_name -> fastpb.test.Enum
+	0,   // 218: fastpb.test.Maps.McdEntry.value:type_name -> fastpb.test.Enum
+	6,   // 219: fastpb.test.MessageMaps.M1Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 220: fastpb.test.MessageMaps.M2Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 221: fastpb.test.MessageMaps.M3Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 222: fastpb.test.MessageMaps.M4Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 223: fastpb.test.MessageMaps.M5Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 224: fastpb.test.MessageMaps.M6Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 225: fastpb.test.MessageMaps.M7Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 226: fastpb.test.MessageMaps.M8Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 227: fastpb.test.MessageMaps.M9Entry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 228: fastpb.test.MessageMaps.MaEntry.value:type_name -> fastpb.test.MessageMaps
+	6,   // 229: fastpb.test.MessageMaps.McEntry.value:type_name -> fastpb.test.MessageMaps
+	230, // [230:230] is the sub-list for method output_type
+	230, // [230:230] is the sub-list for method input_type
+	230, // [230:230] is the sub-list for extension type_name
+	230, // [230:230] is the sub-list for extension extendee
+	0,   // [0:230] is the sub-list for field type_name
 }
 
 func init() { file_test_test_proto_init() }
@@ -3660,7 +3873,7 @@ func file_test_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   197,
+			NumMessages:   209,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -731,6 +731,35 @@ func (p1 parser1) message(p2 parser2, len int, m *message) (parser1, parser2) {
 	return p1, p2
 }
 
+// message pushes a new map entry to be parsed onto the parser stack.
+//
+//go:nosplit
+func (p1 parser1) mapEntry(p2 parser2, len int, m *message) (parser1, parser2) {
+	if len == 0 {
+		return p1, p2
+	}
+
+	// Preserve this register across the call to push.
+	p2.scratch = uint64(unsafe2.AddrOf(m))
+
+	if p1.b_.Add(len) != p1.e_ {
+		// We don't need to push a new frame if the new message would cause
+		// the current frame to be empty once it gets popped.
+		p1, p2 = p1.push(p2, p1.b_.Add(len))
+	}
+
+	p1.g_ = ^uint64(0)
+	p2.m_ = unsafe2.Addr[message](p2.scratch)
+	p2.pp().t_ = unsafe2.AddrOf(p2.m().ty().raw.parser.mapEntry)
+	if dbg.Enabled {
+		p1, p2 = logMessage(p1, p2)
+	}
+
+	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().entry)
+
+	return p1, p2
+}
+
 // Outlined so that push() does not hit the stack size limit for nosplit.
 //
 //go:noinline
@@ -1006,17 +1035,19 @@ func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
 	}
 	p1 = p1.advance(m)
 
-	zc := newZC(p1.c().src, start.AssertValid(), int(p1.b_-start))
-	cold := p2.m().mutableCold()
-	if cold.unknown.Len() > 0 {
-		last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
-		if zc.start() == last.end() {
-			*last = newRawZC(last.start(), last.len()+zc.len())
-			return p1, p2
+	if !p2.t().discardUnknown {
+		zc := newZC(p1.c().src, start.AssertValid(), int(p1.b_-start))
+		cold := p2.m().mutableCold()
+		if cold.unknown.Len() > 0 {
+			last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
+			if zc.start() == last.end() {
+				*last = newRawZC(last.start(), last.len()+zc.len())
+				return p1, p2
+			}
 		}
+		cold.unknown = cold.unknown.AppendOne(p1.arena(), zc)
 	}
 
-	cold.unknown = cold.unknown.AppendOne(p1.arena(), zc)
 	return p1, p2
 }
 

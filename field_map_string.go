@@ -148,3 +148,35 @@ func (m mapSxB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 		}
 	}
 }
+
+// mapSxM is a [protoreflect.Map] for map<string, V> where V is a message type.
+type mapSxM struct {
+	unimplementedMap
+	src   *byte
+	table *swiss.Table[zc, *message]
+}
+
+func (m mapSxM) extract() func(zc) []byte {
+	return func(zc zc) []byte { return zc.bytes(m.src) }
+}
+
+func (m mapSxM) Len() int                        { return m.table.Len() }
+func (m mapSxM) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
+func (m mapSxM) Get(mk protoreflect.MapKey) protoreflect.Value {
+	k := mk.String()
+	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
+	if v == nil {
+		return protoreflect.ValueOf(nil)
+	}
+
+	return protoreflect.ValueOf(*v)
+}
+
+func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
+	for k, v := range m.table.All() {
+		k := k.utf8(m.src)
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+			return
+		}
+	}
+}
