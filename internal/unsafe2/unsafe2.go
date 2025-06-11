@@ -17,34 +17,22 @@
 package unsafe2
 
 import (
-	"fmt"
-	"reflect"
 	"sync"
 	"unsafe"
+
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
-const (
-	PointerSize  = int(unsafe.Sizeof(unsafe.Pointer(nil)))
-	PointerAlign = int(unsafe.Sizeof(unsafe.Pointer(nil)))
-
-	Int32Size  = int(unsafe.Sizeof(int32(0)))
-	Int32Align = int(unsafe.Sizeof(int32(0)))
-
-	Int64Size  = int(unsafe.Sizeof(int64(0)))
-	Int64Align = int(unsafe.Sizeof(int64(0)))
-)
+// NoCopy is a type that go vet will complain about having been moved.
+//
+// It does so by implementing [sync.Locker].
+type NoCopy [0]sync.Mutex
 
 // Int is any integer type.
 type Int interface {
 	int | int8 | int16 | int32 | int64 |
 		uint | uint8 | uint16 | uint32 | uint64 |
 		uintptr
-}
-
-// Layout returns the size and alignment of a given type.
-func Layout[T any]() (size, align int) {
-	var z T
-	return int(unsafe.Sizeof(z)), int(unsafe.Alignof(z))
 }
 
 // BitCast performs an unsafe bitcast from one type to another.
@@ -59,24 +47,19 @@ func Cast[To, From any](p *From) *To {
 
 // Add adds the given offset to p, scaled by the size of T.
 func Add[P ~*E, E any, I Int](p P, n I) P {
-	size, _ := Layout[E]()
+	size := layout.Size[E]()
 	return P(unsafe.Add(unsafe.Pointer(p), uintptr(size)*uintptr(n)))
 }
 
 // Sub computes the difference between two pointers, scaled by the size of T.
 func Sub[P ~*E, E any](p1, p2 P) int {
-	size, _ := Layout[E]()
+	size := layout.Size[E]()
 	return int(uintptr(unsafe.Pointer(p1))-uintptr(unsafe.Pointer(p2))) / size
 }
 
 // Load loads a value of the given type at the given index.
 func Load[P ~*E, E any, I Int](p P, n I) E {
 	return *Add(p, n)
-}
-
-// LoadSlice loads a slice without performing a bounds check.
-func LoadSlice[S ~[]E, E any, I Int](s S, n I) E {
-	return Load(unsafe.SliceData(s), n)
 }
 
 // Store stores a value at the given index.
@@ -120,229 +103,4 @@ func Ping[P ~*E, E any](p P) {
 // align must be a power of two. If p is aligned, returns 0, 0.
 func Misalign[P ~*E, E any](p P, align int) (prev, next int) {
 	return AddrOf(p).Misalign(align)
-}
-
-// Slice is like [unsafe.Slice], but isn't as branchy.
-func Slice[P ~*E, E any, I Int](p P, len I) []E {
-	return Slice2(p, len, len)
-}
-
-// Slice2 is like [unsafe.Slice], but allows specifying length and capacity
-// separately.
-func Slice2[P ~*E, E any, I Int](p P, len, cap I) []E {
-	return unsafe.Slice(p, cap)[:len]
-}
-
-// Bytes converts a pointer into a slice of its contents.
-func Bytes[P ~*E, E any](p P) []byte {
-	size, _ := Layout[E]()
-	return Slice(Cast[byte](p), size)
-}
-
-// String is like [unsafe.String], but isn't as branchy.
-func String[P ~*E, E any, I Int](p P, len I) string {
-	size, _ := Layout[E]()
-	slice := struct {
-		ptr P
-		len int
-	}{p, int(len) * size}
-
-	return BitCast[string](slice)
-}
-
-// Copy copies n elements from one pointer to the other.
-func Copy[P ~*E, E any, I Int](dst, src P, n I) {
-	copy(Slice(dst, n), Slice(src, n))
-}
-
-// Clear zeros n elements at p.
-func Clear[P ~*E, E any, I Int](p P, n I) {
-	clear(Slice(p, n))
-}
-
-var (
-	alwaysFalse bool
-	sink        unsafe.Pointer //nolint:unused
-)
-
-// Escape escapes a pointer to the heap.
-func Escape[P ~*E, E any](p P) P {
-	if alwaysFalse {
-		sink = unsafe.Pointer(p)
-	}
-	return p
-}
-
-// NoEscape hides a pointer from escape analysis, preventing it from
-// escaping to the heap.
-func NoEscape[P ~*E, E any](p P) P {
-	//nolint:staticcheck // False positive: complains that p^0 does nothing.
-	return P((AddrOf(p) ^ 0).AssertValid())
-}
-
-// SliceToString converts a slice into a string, multiplying the slice length
-// as appropriate.
-func SliceToString[S ~[]T, T any](s S) string {
-	size, _ := Layout[T]()
-	str := struct {
-		ptr *T
-		len int
-	}{unsafe.SliceData(s), len(s) * size}
-	return BitCast[string](str)
-}
-
-// StringToSlice converts a string into a slice, multiplying the slice length
-// as appropriate.
-func StringToSlice[S ~[]T, T any](s string) S {
-	size, _ := Layout[T]()
-	return unsafe.Slice(Cast[T](unsafe.StringData(s)), len(s)/size)
-}
-
-type iface struct {
-	itab uintptr
-	data *byte
-}
-
-// AnyData extracts the pointer value from an any.
-func AnyData(v any) *byte {
-	return Cast[iface](&v).data
-}
-
-// AnyData extracts the opaque type from an any.
-func AnyType(v any) uintptr {
-	return Cast[iface](&v).itab
-}
-
-// AnyBytes extracts a slice pointing to the variable-length data of an any.
-func AnyBytes(v any) []byte {
-	if v == nil {
-		return nil
-	}
-
-	t := reflect.TypeOf(v)
-	p := AnyData(v)
-	if t.Kind() == reflect.Pointer || t.Kind() == reflect.UnsafePointer {
-		p = Cast[byte](&p)
-	}
-
-	return unsafe.Slice(p, reflect.TypeOf(v).Size())
-}
-
-// Addr is a typed raw address.
-type Addr[T any] uintptr
-
-// AddrOf gets the address of a pointer.
-func AddrOf[P ~*E, E any](p P) Addr[E] {
-	return Addr[E](unsafe.Pointer(p))
-}
-
-// AssertValid asserts that this address is a valid pointer.
-//
-//go:nosplit
-func (a Addr[T]) AssertValid() *T {
-	return (*T)(unsafe.Pointer(a)) // Don't worry about it.
-}
-
-// Add adds the given offset to this address.
-func (a Addr[T]) Add(n int) Addr[T] {
-	size, _ := Layout[T]()
-	return a + Addr[T](n*size)
-}
-
-// Add adds the given offset to this address.
-func (a Addr[T]) Sub(b Addr[T]) int {
-	size, _ := Layout[T]()
-	return int(a-b) / size
-}
-
-// Misalign returns the misalignment for an address: i.e., the byte offset to
-// make this pointer aligned to the previous, or next, align-aligned word.
-//
-// align must be a power of two. If p is aligned, returns 0, 0.
-func (a Addr[T]) Misalign(align int) (prev, next int) {
-	addr := int(a)
-	prev = addr & (align - 1)           // p % align
-	next = (align - addr) & (align - 1) // (align - p) % align
-	return prev, next
-}
-
-// Format implements [fmt.Formatter].
-func (a Addr[T]) Format(state fmt.State, verb rune) {
-	if verb == 'v' {
-		fmt.Fprintf(state, "%#x", uintptr(a))
-		return
-	}
-
-	fmt.Fprintf(state, fmt.FormatString(state, verb), uintptr(a))
-}
-
-// VLA is a mechanism for accessing a variable-length array that follows
-// some struct.
-type VLA[T any] [0]T
-
-// Beyond obtains the VLA past the end of p.
-func Beyond[T, Header any](p *Header) *VLA[T] {
-	// The below code performs the following address calculation without
-	// triggering a load (Go likes to perform loads of the result of pointer
-	// arithmetic like the following).
-	//
-	//  &Cast[struct {
-	//    _   Header
-	//    VLA VLA[T]
-	//  }](p).VLA
-
-	size, _ := Layout[Header]()
-	_, align := Layout[T]()
-	size = (size + align - 1) &^ (align - 1)
-
-	return Cast[VLA[T]](ByteAdd(p, size))
-}
-
-// Get returns a pointer to the nth element of this array.
-func (a *VLA[T]) Get(n int) *T {
-	return Add(Cast[T](a), n)
-}
-
-// Get returns a pointer to the element of this array at the given byte offset.
-func (a *VLA[T]) ByteGet(n int) *T {
-	return ByteAdd(Cast[T](a), n)
-}
-
-// Slice converts this VLA into a slice of the given length.
-func (a *VLA[T]) Slice(n int) []T {
-	return unsafe.Slice(a.Get(0), n)
-}
-
-// NoCopy is a type that go vet will complain about having been moved.
-//
-// It does so by implementing [sync.Locker].
-type NoCopy [0]sync.Mutex
-
-// Func is a raw function pointer, which can be used to store captureless
-// funcs.
-//
-// Suppose a func() is in rax. Go implements calling it by emitting the
-// following code:
-//
-//	mov  rdx, rax
-//	mov  rcx, [rdx]
-//	call rcx
-//
-// For a captureless func, this load will be of a constant containing the PC
-// of the function to call. This can result in cache misses. This type works
-// around that by keeping the PC local, so the resulting load avoids this
-// problem.
-type PC[F any] uintptr
-
-// NewPC wraps a func. This performs no checking that the func does not
-// capture any variables.
-func NewPC[F any](f F) PC[F] {
-	// Recall that a func()'s layout is *runtime.funcval, and PC[F] is emulating
-	// runtime.funcval.
-	return *BitCast[*PC[F]](f)
-}
-
-// Get returns the func this PC wraps.
-func (pc *PC[F]) Get() F {
-	return BitCast[F](pc)
 }

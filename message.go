@@ -23,8 +23,11 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 
 	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // Message is a dynamic message value constructed with this package.
@@ -94,7 +97,7 @@ var (
 
 // cold is portions of a message that are located in context.cold.
 type cold struct {
-	unknown arena.Slice[zc] // Unknown field chunks.
+	unknown slice.Slice[zc.Range] // Unknown field chunks.
 }
 
 // getField returns the field data for a given message.
@@ -154,7 +157,7 @@ func storeFromScratch[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 
 // getBit gets the value of the nth bit from this message's bitset.
 func (m *message) getBit(n uint32) bool {
-	size, _ := unsafe2.Layout[message]()
+	size := layout.Size[message]()
 	word := unsafe2.ByteLoad[uint32](m, size+int(n)/32*4)
 	mask := uint32(1) << (n % 32)
 	return word&mask != 0
@@ -513,12 +516,12 @@ func (m *message) GetUnknown() protoreflect.RawFields {
 	}
 
 	if cold.unknown.Len() == 1 {
-		return cold.unknown.Ptr().bytes(m.context.src)
+		return cold.unknown.Ptr().Bytes(m.context.src)
 	}
 
 	var out []byte
 	for _, zc := range cold.unknown.Raw() {
-		out = append(out, zc.bytes(m.context.src)...)
+		out = append(out, zc.Bytes(m.context.src)...)
 	}
 	return out
 }
@@ -565,121 +568,4 @@ func (m *message) IsValid() bool {
 // ProtoMethods implements [protoreflect.Message].
 func (m *message) ProtoMethods() *protoiface.Methods {
 	return &m.ty().raw.aux.methods
-}
-
-// empty is an empty value of any [Type].
-type empty struct{ ty Type }
-
-var (
-	_ proto.Message        = empty{}
-	_ protoreflect.Message = empty{}
-)
-
-// ProtoReflect implements [proto.Message].
-func (e empty) ProtoReflect() protoreflect.Message {
-	return e
-}
-
-// Descriptor implements [protoreflect.Message].
-func (e empty) Descriptor() protoreflect.MessageDescriptor {
-	return e.ty.Descriptor()
-}
-
-// Type implements {protoreflect.Message}.
-func (e empty) Type() protoreflect.MessageType {
-	return e.ty
-}
-
-// New implements [protoreflect.Message].
-func (e empty) New() protoreflect.Message {
-	return e.ty.New()
-}
-
-// Interface implements [protoreflect.Message].
-func (e empty) Interface() protoreflect.ProtoMessage {
-	return e
-}
-
-// Range implements [protoreflect.Message].
-func (e empty) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {}
-
-// Has implements [protoreflect.Message].
-func (e empty) Has(fd protoreflect.FieldDescriptor) bool {
-	return false
-}
-
-// Clear implements [protoreflect.Message].
-func (e empty) Clear(protoreflect.FieldDescriptor) {}
-
-// Get implements [protoreflect.Message].
-func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	f := e.ty.byDescriptor(fd)
-	if !f.valid() {
-		return protoreflect.ValueOf(nil)
-	}
-
-	switch {
-	case fd.IsList():
-		return protoreflect.ValueOf(emptyList{})
-
-	case fd.IsMap():
-		panic(dbg.Unsupported())
-
-	case fd.Message() != nil:
-		return protoreflect.ValueOf(empty{f.message})
-
-	default:
-		return fd.Default()
-	}
-}
-
-// Set implements [protoreflect.Message].
-//
-// Panics when called.
-func (e empty) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
-	panic(dbg.Unsupported())
-}
-
-// Mutable implements [protoreflect.Message].
-//
-// Panics when called.
-func (e empty) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
-}
-
-// NewField implements [protoreflect.Message].
-//
-// Panics when called.
-func (e empty) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
-}
-
-// GetUnknown implements [protoreflect.Message].
-func (e empty) GetUnknown() protoreflect.RawFields {
-	return nil
-}
-
-// SetUnknown implements [protoreflect.Message].
-//
-// Panics when called.
-func (e empty) SetUnknown(raw protoreflect.RawFields) {
-	if len(raw) == 0 {
-		return
-	}
-	panic(dbg.Unsupported())
-}
-
-// WhichOneof implements [protoreflect.Message].
-func (e empty) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	return nil
-}
-
-// IsValid implements [protoreflect.Message].
-func (e empty) IsValid() bool {
-	return false
-}
-
-// ProtoMethods implements [protoreflect.Message].
-func (e empty) ProtoMethods() *protoiface.Methods {
-	return &e.ty.raw.aux.methods
 }

@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package arena
+package slice
 
 import (
 	"fmt"
-	"unsafe"
 
+	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 // Slice is a slice that points into an arena.
@@ -31,51 +32,32 @@ type Slice[T any] struct {
 	len, cap uint32
 }
 
-// SliceAddr is like [Slice], but its pointer is replaced with an address, so
-// loading/storing values of this type issues no write barriers.
-type SliceAddr[T any] struct {
-	ptr      unsafe2.Addr[T]
-	len, cap uint32
-}
-
-const (
-	SliceSize  = int(unsafe.Sizeof(Slice[byte]{}))
-	SliceAlign = int(unsafe.Alignof(Slice[byte]{}))
-)
-
-// SliceFromParts assembles a slice from its raw components.
-func SliceFromParts[T any](ptr *T, len, cap uint32) Slice[T] {
+// FromParts assembles a slice from its raw components.
+func FromParts[T any](ptr *T, len, cap uint32) Slice[T] {
 	return Slice[T]{ptr, len, cap}
 }
 
 // Addr converts this slice into an address slice.
 //
 // See the caveats of [unsafe2.AddrOf].
-func (s Slice[T]) Addr() SliceAddr[T] {
-	return SliceAddr[T]{unsafe2.AddrOf(s.ptr), s.len, s.cap}
+func (s Slice[T]) Addr() Addr[T] {
+	return Addr[T]{unsafe2.AddrOf(s.ptr), s.len, s.cap}
 }
 
-// Addr converts this address slice into a true [Slice].
-//
-// See the caveats of [unsafe2.Addr.AssertValid].
-func (s SliceAddr[T]) AssertValid() Slice[T] {
-	return Slice[T]{s.ptr.AssertValid(), s.len, s.cap}
-}
-
-// SliceOf allocates a slice for the given values.
-func SliceOf[T any](a *Arena, values ...T) Slice[T] {
-	s := NewSlice[T](a, len(values))
+// Of allocates a slice for the given values.
+func Of[T any](a *arena.Arena, values ...T) Slice[T] {
+	s := Make[T](a, len(values))
 	copy(s.Raw(), values)
 	return s
 }
 
-// NewSlice allocates a slice of the given length.
-func NewSlice[T any](a *Arena, n int) Slice[T] {
+// Make allocates a slice of the given length.
+func Make[T any](a *arena.Arena, n int) Slice[T] {
 	cap := sliceLayout[T](n)
 	p := unsafe2.Cast[T](a.Alloc(cap))
 
-	size, _ := unsafe2.Layout[T]()
-	s := SliceFromParts(p, uint32(n), uint32(cap/size))
+	size := layout.Size[T]()
+	s := FromParts(p, uint32(n), uint32(cap/size))
 	return s
 }
 
@@ -137,7 +119,7 @@ func (s Slice[T]) Rest() []T {
 
 // Append appends the given elements to a slice, reallocating on the given
 // arena if necessary.
-func (s Slice[T]) Append(a *Arena, elems ...T) Slice[T] {
+func (s Slice[T]) Append(a *arena.Arena, elems ...T) Slice[T] {
 	var z T
 	a.Log("append", "%p[%d:%d], %T x %d", s.ptr, s.len, s.cap, z, len(elems))
 
@@ -153,7 +135,7 @@ func (s Slice[T]) Append(a *Arena, elems ...T) Slice[T] {
 // AppendOne is an optimized version of append for one element.
 //
 //go:nosplit
-func (s Slice[T]) AppendOne(a *Arena, elem T) Slice[T] {
+func (s Slice[T]) AppendOne(a *arena.Arena, elem T) Slice[T] {
 	a.Log("append", "%p[%d:%d], %T x 1", s.ptr, s.len, s.cap, elem)
 
 	if s.Len() == s.Cap() {
@@ -166,9 +148,9 @@ func (s Slice[T]) AppendOne(a *Arena, elem T) Slice[T] {
 }
 
 // Grow extends the capacity of this slice by n bytes.
-func (s Slice[T]) Grow(a *Arena, n int) Slice[T] {
+func (s Slice[T]) Grow(a *arena.Arena, n int) Slice[T] {
 	var z T
-	size, _ := unsafe2.Layout[T]()
+	size := layout.Size[T]()
 	a.Log("grow", "%p[%d:%d], %d x %T", s.ptr, s.len, s.cap, n, z)
 
 	if s.ptr == nil {
@@ -181,18 +163,10 @@ func (s Slice[T]) Grow(a *Arena, n int) Slice[T] {
 	oldSize := sliceLayout[T](s.Cap())
 	newSize := sliceLayout[T](s.Cap() + n)
 
-	p := a.realloc(newSize, oldSize, unsafe2.Cast[byte](s.ptr))
+	p := a.Realloc(newSize, oldSize, unsafe2.Cast[byte](s.ptr))
 	s.ptr = unsafe2.Cast[T](p)
 	s.cap = uint32(newSize) / uint32(size)
 	return s
-}
-
-func sliceLayout[T any](n int) (size int) {
-	size, align := unsafe2.Layout[T]()
-	if align > Align {
-		panic("fastpb: over-aligned object")
-	}
-	return suggestSize(size * n)
 }
 
 // Format implements [fmt.Formatter].
@@ -205,7 +179,78 @@ func (s Slice[T]) Format(state fmt.State, v rune) {
 	fmt.Fprintf(state, fmt.FormatString(state, v), s.Raw())
 }
 
+// Addr is like [Slice], but its pointer is replaced with an address, so
+// loading/storing values of this type issues no write barriers.
+type Addr[T any] struct {
+	Ptr      unsafe2.Addr[T]
+	Len, Cap uint32
+}
+
+// AssertValid converts this address slice into a true [Slice].
+//
+// See the caveats of [unsafe2.Addr.AssertValid].
+func (s Addr[T]) AssertValid() Slice[T] {
+	return Slice[T]{s.Ptr.ClearSignBit().AssertValid(), s.Len, s.Cap}
+}
+
+// Untyped converts this address slice into a true [Slice].
+//
+// See the caveats of [unsafe2.Addr.AssertValid].
+func (s Addr[T]) Untyped() Untyped {
+	return Untyped{
+		Ptr: unsafe2.Addr[byte](s.Ptr),
+		Len: s.Len,
+		Cap: s.Cap,
+	}
+}
+
 // String implements [fmt.Stringer].
-func (s SliceAddr[T]) String() string {
-	return fmt.Sprintf("%v[%d:%d]", s.ptr, s.len, s.cap)
+func (s Addr[T]) String() string {
+	return s.Untyped().String()
+}
+
+// Untyped is an [Addr] that has forgotten what type it is.
+type Untyped struct {
+	Ptr      unsafe2.Addr[byte]
+	Len, Cap uint32
+}
+
+// OffArena creates a new off-arena slice.
+//
+// When cast to a concrete type, this will clear.
+func OffArena[T any](ptr *T, len int) Untyped {
+	return Untyped{
+		Ptr: ^unsafe2.Addr[byte](unsafe2.AddrOf(ptr)),
+		Len: uint32(len),
+		Cap: uint32(len),
+	}
+}
+
+// CastUntyped gives a type to a [Untyped], asserting it as valid in the
+// process.
+func CastUntyped[To any](s Untyped) Slice[To] {
+	return Slice[To]{
+		ptr: unsafe2.Addr[To](s.Ptr.ClearSignBit()).AssertValid(),
+		len: s.Len,
+		cap: s.Cap,
+	}
+}
+
+// OffArena returns if this is off-arena memory, i.e., as created with
+// [OffArena].
+func (s Untyped) OffArena() bool {
+	return s.Ptr.SignBit()
+}
+
+// String implements [fmt.Stringer].
+func (s Untyped) String() string {
+	return fmt.Sprintf("%v[%d:%d]", s.Ptr, s.Len, s.Cap)
+}
+
+func sliceLayout[T any](n int) (size int) {
+	layout := layout.Of[T]()
+	if layout.Align > arena.Align {
+		panic("fastpb: over-aligned object")
+	}
+	return arena.SuggestSize(layout.Size * n)
 }

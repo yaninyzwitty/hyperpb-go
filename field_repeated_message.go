@@ -17,8 +17,7 @@ package fastpb
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -29,88 +28,84 @@ import (
 // outlined mode to avoid needing to copy parsed messages on slice resize.
 
 func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
-	if m.getBit(getter.offset.bit) {
-		raw := *getField[arena.Slice[*message]](m, getter.offset)
-		return protoreflect.ValueOf(messageList{raw: raw.Raw()})
+	p := getField[repeatedMessage](m, getter.offset)
+	return protoreflect.ValueOf(p)
+}
+
+// repeatedMessage is a [protoreflect.List] implementation for message types.
+type repeatedMessage struct {
+	immutableList
+
+	// Slice[byte] if stride is non-nil, Slice[*message] otherwise.
+	raw slice.Untyped
+
+	// The array stride for when raw is an inlined message list.
+	stride uint32
+}
+
+// IsValid implements [protoreflect.List].
+func (r *repeatedMessage) IsValid() bool { return r != nil }
+
+// Len implements [protoreflect.List].
+func (r *repeatedMessage) Len() int {
+	if r == nil {
+		return 0
 	}
 
-	p := getField[arena.Slice[byte]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedBool{raw: nil})
+	if r.stride != 0 {
+		return int(r.raw.Len) / int(r.stride)
 	}
 
-	v := *p
-	if v.Ptr() == nil {
-		return protoreflect.ValueOf(emptyList{})
+	return int(r.raw.Len)
+}
+
+// Get implements [protoreflect.List].
+func (r *repeatedMessage) Get(n int) protoreflect.Value {
+	if r.stride != 0 {
+		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
+		p := unsafe2.ByteAdd(r.raw.Ptr.AssertValid(), n*int(r.stride))
+		return protoreflect.ValueOf(unsafe2.Cast[message](p))
 	}
 
-	first := unsafe2.Cast[message](v.Ptr()) // Get the type from the first element of the list.
-	return protoreflect.ValueOf(inlineMessageList{
-		ty:    first.ty(),
-		raw:   first,
-		dummy: make([]struct{}, v.Len()/int(first.ty().raw.size)),
-	})
-}
-
-// messageList is a [protoreflect.List] implementation for message types.
-type messageList struct {
-	unimplementedList
-	raw []*message
-}
-
-func (l messageList) Len() int { return len(l.raw) }
-func (l messageList) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(l.raw[n])
-}
-
-// inlineMessageList is a [protoreflect.List] implementation for message types.
-type inlineMessageList struct {
-	unimplementedList
-	ty    Type
-	raw   *message
-	dummy []struct{}
-}
-
-func (l inlineMessageList) Len() int { return len(l.dummy) }
-func (l inlineMessageList) Get(n int) protoreflect.Value {
-	_ = l.dummy[n] // Bounds check
-	return protoreflect.ValueOf(unsafe2.ByteAdd(l.raw, n*int(l.ty.raw.size)))
+	raw := slice.CastUntyped[*message](r.raw).Raw()
+	return protoreflect.ValueOf(raw[n])
 }
 
 //go:nosplit
 func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	var slot *arena.SliceAddr[byte]
-	p1, p2, slot = getMutableField[arena.SliceAddr[byte]](p1, p2)
-	slice := slot.AssertValid()
-	p1.log(p2, "repeated message", "%v", slice.Addr())
+	var r *repeatedMessage
+	p1, p2, r = getMutableField[repeatedMessage](p1, p2)
+	p1.log(p2, "repeated message", "%v", r.raw)
 
 	var m *message
 
-	if p2.m().getBit(p2.f().offset.bit) {
+	if r.raw.Ptr != 0 && r.stride == 0 {
 		goto pointers
 	}
 
 	{
 		ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-		size := int(ty.raw.size)
-		if slice.Ptr() == nil {
-			p1, p2, slot = newInlineRepeatedField(p1, p2, slot)
-		} else if slice.Len()+size > slice.Cap() {
-			p1, p2 = spillInlineRepeatedField(p1, p2, slot)
-			p1.log(p2, "repeated message spill", "%v->%v", slice.Addr(), *slot)
+		stride := int(ty.raw.size)
+		s := slice.CastUntyped[byte](r.raw)
+
+		if r.raw.Ptr == 0 {
+			p1, p2, r = newInlineRepeatedField(p1, p2, r)
+		} else if s.Len()+stride > s.Cap() {
+			p1, p2 = spillInlineRepeatedField(p1, p2, r)
+			p1.log(p2, "repeated message spill", "%v->%v", s.Addr(), *r)
 
 			goto pointers
 		}
 
-		slice = slot.AssertValid()
-		p := unsafe2.Add(slice.Ptr(), slice.Len())
-		slice = slice.SetLen(slice.Len() + size)
-		*slot = slice.Addr()
+		s = slice.CastUntyped[byte](r.raw)
+		p := unsafe2.Add(s.Ptr(), s.Len())
+		s = s.SetLen(s.Len() + stride)
+		r.raw = s.Addr().Untyped()
 
-		p1.log(p2, "inline repeated message", "%v, %p/%d", slice.Addr(), p, size)
+		p1.log(p2, "inline repeated message", "%v, %p/%d", s.Addr(), p, stride)
 		p1, p2, m = p1.allocInPlace(p2, p)
 		goto exit
 	}
@@ -119,89 +114,70 @@ pointers:
 	{
 		p1, p2, m = p1.alloc(p2)
 
-		slot := unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot)
-		slice := slot.AssertValid()
-		if slice.Len() == slice.Cap() {
+		r := unsafe2.Cast[slice.Addr[unsafe2.Addr[message]]](r)
+		s := r.AssertValid()
+		if s.Len() == s.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
-			p1.log(p2, "outline repeated message", "%v, %p", *slot, m)
+			p1.log(p2, "outline repeated message", "%v, %p", *r, m)
 			goto exit
 		}
 
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, unsafe2.AddrOf(m))
-		p1.log(p2, "outline repeated message", "%v, %p", slice.Addr(), m)
-		*slot = slice.Addr()
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, unsafe2.AddrOf(m))
+		p1.log(p2, "outline repeated message", "%v, %p", s.Addr(), m)
+		*r = s.Addr()
 	}
 
 exit:
-	return p1.message(p2, int(n), m)
+	return p1.message(p2, n, m)
 }
 
 //go:noinline
-func newInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2, *arena.SliceAddr[byte]) {
+func newInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1, parser2, *repeatedMessage) {
 	// First element of this field. Allocate a byte array large enough to
 	// hold one element.
 	//
 	// TODO: Add a profiling knob for setting the default number of
 	// elements.
 	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	size := ty.raw.size
-	slice := arena.NewSlice[byte](p1.arena(), int(size))
-	slice = slice.SetLen(0)
-	*slot = slice.Addr()
+	stride := ty.raw.size
 
-	return p1, p2, slot
+	s := slice.Make[byte](p1.arena(), int(stride))
+	s = s.SetLen(0)
+
+	r.raw = s.Addr().Untyped()
+	r.stride = stride
+
+	return p1, p2, r
 }
 
 //go:noinline
-func spillInlineRepeatedField(p1 parser1, p2 parser2, slot *arena.SliceAddr[byte]) (parser1, parser2) {
+func spillInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1, parser2) {
 	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	size := int(ty.raw.size)
-	slice := slot.AssertValid()
+	stride := int(ty.raw.size)
+	s := slice.CastUntyped[byte](r.raw)
 
 	// Spill all of the messages onto a pointer slice.
-	spill := arena.NewSlice[unsafe2.Addr[message]](p1.arena(), slice.Cap()/size*2)
-	var spillIdx int
-	for i := 0; i < slice.Len(); i += size {
-		m := unsafe2.Cast[message](unsafe2.Add(slice.Ptr(), i))
-		spill.Store(spillIdx, unsafe2.AddrOf(m))
-		spillIdx++
+	spill := slice.Make[unsafe2.Addr[message]](p1.arena(), s.Cap()/stride*2)
+	var j int
+	for i := 0; i < s.Len(); i += stride {
+		m := unsafe2.Cast[message](unsafe2.Add(s.Ptr(), i))
+		spill.Store(j, unsafe2.AddrOf(m))
+		j++
 	}
-	spill = spill.SetLen(spillIdx)
+	spill = spill.SetLen(j)
 
-	*unsafe2.Cast[arena.SliceAddr[unsafe2.Addr[message]]](slot) = spill.Addr()
-	p1, p2 = p1.setBit(p2) // Mark this as an outlined message.
+	r.raw = spill.Addr().Untyped()
+	r.stride = 0 // Mark this as an outlined message.
 
 	return p1, p2
 }
 
 //go:noinline
 func appendOneMessage(p1 parser1, p2 parser2, m *message) (parser1, parser2, *message) {
-	var slot *arena.SliceAddr[unsafe2.Addr[message]]
-	p1, p2, slot = getMutableField[arena.SliceAddr[unsafe2.Addr[message]]](p1, p2)
-	*slot = slot.AssertValid().AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr()
+	var slot *repeatedMessage
+	p1, p2, slot = getMutableField[repeatedMessage](p1, p2)
+	s := slice.CastUntyped[unsafe2.Addr[message]](slot.raw)
+	slot.raw = s.AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr().Untyped()
 	return p1, p2, m
 }
-
-// emptyList is an empty untyped list.
-type emptyList struct {
-	unimplementedList
-}
-
-func (emptyList) Len() int { return 0 }
-func (emptyList) Get(n int) protoreflect.Value {
-	_ = []byte{}[n] // Trigger a bounds check.
-	return protoreflect.Value{}
-}
-
-// unimplementedList implements [protoreflect.List] by panicking.
-type unimplementedList struct{}
-
-func (unimplementedList) IsValid() bool                     { return true }
-func (unimplementedList) Append(protoreflect.Value)         { panic(dbg.Unsupported()) }
-func (unimplementedList) AppendMutable() protoreflect.Value { panic(dbg.Unsupported()) }
-func (unimplementedList) Get(int) protoreflect.Value        { panic(dbg.Unsupported()) }
-func (unimplementedList) Len() int                          { panic(dbg.Unsupported()) }
-func (unimplementedList) NewElement() protoreflect.Value    { panic(dbg.Unsupported()) }
-func (unimplementedList) Set(int, protoreflect.Value)       { panic(dbg.Unsupported()) }
-func (unimplementedList) Truncate(int)                      { panic(dbg.Unsupported()) }

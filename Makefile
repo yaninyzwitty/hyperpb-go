@@ -26,7 +26,7 @@ else
 	PKGS := $(PKG)
 endif
 PKG ?= .
-TESTFLAGS ?= ""
+TESTFLAGS ?=
 BENCHFLAGS ?= -benchmem
 
 TOOLS_MOD_DIR := ./internal/tools

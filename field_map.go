@@ -23,6 +23,8 @@ import (
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // map<K, V>, for K an integer type, is implemented as a swiss.Table of that
@@ -544,7 +546,7 @@ func init() {
 // bool.
 func mapArch(getter getterThunk, parser parserThunk) *archetype {
 	return &archetype{
-		size: uint32(unsafe2.PointerSize), align: uint32(unsafe2.PointerAlign),
+		layout:  layout.Of[*swiss.Table[int32, int32]](),
 		getter:  getter,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parser}},
 	}
@@ -621,15 +623,15 @@ func (fixed64Item) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
 }
 
 func (stringItem) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
-	var zc zc
-	p1, p2, zc = p1.utf8(p2)
-	return p1, p2, uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.utf8(p2)
+	return p1, p2, uint64(r)
 }
 
 func (bytesItem) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	return p1, p2, uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.bytes(p2)
+	return p1, p2, uint64(r)
 }
 
 func (varintItem[T]) extract(parser1, parser2) func(T) []byte    { return nil }
@@ -640,14 +642,14 @@ func (boolItem) extract(parser1, parser2) func(uint8) []byte     { return nil }
 func (stringItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
 	src := p1.c().src
 	return func(u uint64) []byte {
-		return zc(u).bytes(src)
+		return zc.Range(u).Bytes(src)
 	}
 }
 
 func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
 	src := p1.c().src
 	return func(u uint64) []byte {
-		return zc(u).bytes(src)
+		return zc.Range(u).Bytes(src)
 	}
 }
 
@@ -746,11 +748,11 @@ func parseMapKxV[
 	KI mapItem[K], VI mapItem[V],
 	K swiss.Key, V any,
 ](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki KI
 	var vi VI
@@ -847,11 +849,11 @@ insert:
 
 // parseMapKxM parses a map type whose value is a message type.
 func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki KI
 	var k K
@@ -880,7 +882,7 @@ func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, p
 			// Need to parse a length prefix and check if it reaches all the
 			// way to the end of the message.
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -906,7 +908,7 @@ func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, p
 	}
 
 	// Now we need to rewind back to the beginning.
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -945,17 +947,17 @@ insert:
 	// Schedule a message parse.
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 
 func parseMapEntry(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
-	return p1.message(p2, int(n), p2.m())
+	return p1.message(p2, n, p2.m())
 }
 
 // emptyMap is a map with no elements.

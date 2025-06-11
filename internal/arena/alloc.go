@@ -22,6 +22,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 func suggestSizeLog(bytes int) uint {
@@ -29,8 +30,8 @@ func suggestSizeLog(bytes int) uint {
 	return max(6, uint(bits.Len(uint(bytes)-1)))
 }
 
-// suggestSize suggests an allocation size by rounding up to a power of 2.
-func suggestSize(bytes int) int {
+// SuggestSize suggests an allocation size by rounding up to a power of 2.
+func SuggestSize(bytes int) int {
 	// Snap to the next power of two.
 	n := 1 << suggestSizeLog(bytes)
 	if bytes == 0 {
@@ -81,7 +82,7 @@ func AllocTraceable(size int, ptr unsafe.Pointer) *byte {
 	// every time, because that path is not used by the arena implementation.
 	var shape reflect.Type
 
-	_, up := unsafe2.Addr[byte](size).Misalign(unsafe2.PointerAlign)
+	_, up := unsafe2.Addr[byte](size).Misalign(layout.Align[*byte]())
 	size += up
 
 	if isPow2(size) {

@@ -18,6 +18,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // getMapIxI is a [getterThunk] for map<K, V> where K and V are both integer types.
@@ -58,7 +59,7 @@ func (m mapIxI[K, V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) 
 
 // getMapIxS is a [getterThunk] for map<K, string> where K is an integer type.
 func getMapIxS[K integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[K, zc]](m, getter.offset)
+	v := getField[*swiss.Table[K, zc.Range]](m, getter.offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -70,7 +71,7 @@ func getMapIxS[K integer](m *message, _ Type, getter getter) protoreflect.Value 
 type mapIxS[K integer] struct {
 	unimplementedMap
 	src   *byte
-	table *swiss.Table[K, zc]
+	table *swiss.Table[K, zc.Range]
 }
 
 func (m mapIxS[K]) Len() int                        { return m.table.Len() }
@@ -82,12 +83,12 @@ func (m mapIxS[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(v.utf8(m.src))
+	return protoreflect.ValueOf(v.String(m.src))
 }
 
 func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.utf8(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.String(m.src))) {
 			return
 		}
 	}
@@ -95,7 +96,7 @@ func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 
 // getMapIxB is a [getterThunk] for map<K, bytes> where K is an integer type.
 func getMapIxB[K integer](m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[K, zc]](m, getter.offset)
+	v := getField[*swiss.Table[K, zc.Range]](m, getter.offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -107,7 +108,7 @@ func getMapIxB[K integer](m *message, _ Type, getter getter) protoreflect.Value 
 type mapIxB[K integer] struct {
 	unimplementedMap
 	src   *byte
-	table *swiss.Table[K, zc]
+	table *swiss.Table[K, zc.Range]
 }
 
 func (m mapIxB[K]) Len() int                        { return m.table.Len() }
@@ -119,12 +120,12 @@ func (m mapIxB[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(v.bytes(m.src))
+	return protoreflect.ValueOf(v.Bytes(m.src))
 }
 
 func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.bytes(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.Bytes(m.src))) {
 			return
 		}
 	}
@@ -164,14 +165,4 @@ func (m mapIxM[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 			return
 		}
 	}
-}
-
-// getMapSxM is a [getterThunk] for map<string, V> where V is a message type.
-func getMapSxM(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[zc, *message]](m, getter.offset)
-	if v == nil || *v == nil {
-		return protoreflect.ValueOf(emptyMap{})
-	}
-
-	return protoreflect.ValueOf(mapSxM{src: m.context.src, table: *v})
 }

@@ -20,16 +20,18 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
-// Repeated fields are implemented as one an arena.Slice for some element
+// Repeated fields are implemented as one an slice.Slice for some element
 // type, with various optimizations to avoid materializing a slice in cases
 // where we can zero-copy.
 //
-// If the pointer part of an arena.Slice is nil, that means that its length
+// If the pointer part of an slice.Slice is nil, that means that its length
 // and capacity are actually the contents of a [zc], and the slice is actually
 // a zero-copy alias of the input buffer. This is most notable for fixed-size
 // fields, which we can almost always zero-copy.
@@ -38,58 +40,27 @@ import (
 // of the packed field is one byte long. There is a special list implementation
 // that handles this case.
 
-// isZC returns whether a slice is secretly a [zc].
-func isZC[T any](slice arena.Slice[T]) bool {
-	return slice.Ptr() == nil
-}
-
-// wrapZC wraps a [zc] up as an arena slice.
-func wrapZC[T any](zc zc) arena.Slice[T] {
-	return arena.SliceFromParts[T](nil, uint32(zc.start()), uint32(zc.len()))
-}
-
-// unwrapRawZC is like unwrapZC, but it does not dereference the zc into a
-// slice.
-func unwrapRawZC[T any](slice arena.Slice[T]) zc {
-	return newRawZC(slice.Len(), slice.Cap())
-}
-
-// unwrapZC unwraps a slice that is secretly a [zc], and uses it to obtain a
-// slice of T values from src.
-func unwrapZC[T any](slice arena.Slice[T], src *byte) []T {
-	size, _ := unsafe2.Layout[T]()
-	// This is a borrow from src, and len and cap are a zc. Note that both
-	// are denominated in bytes in this mode.
-	return unsafe2.Slice(
-		unsafe2.Cast[T](unsafe2.Add(src, slice.Len())),
-		slice.Cap()/size,
-	)
-}
-
 var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalarMaybeBytes[int32],
+		layout: layout.Of[repeatedScalar[byte, int32]](),
+		getter: getRepeatedScalar[byte, int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Uint32Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalarMaybeBytes[uint32],
+		layout: layout.Of[repeatedScalar[byte, uint32]](),
+		getter: getRepeatedScalar[byte, uint32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, parser: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Sint32Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedZigZag[int32],
+		layout: layout.Of[repeatedZigzag[byte, uint32]](),
+		getter: getRepeatedZigzag[byte, int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
@@ -98,27 +69,24 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalarMaybeBytes[int64],
+		layout: layout.Of[repeatedScalar[byte, int64]](),
+		getter: getRepeatedScalar[byte, int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 		},
 	},
 	protoreflect.Uint64Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalarMaybeBytes[uint64],
+		layout: layout.Of[repeatedScalar[byte, uint64]](),
+		getter: getRepeatedScalar[byte, uint64],
 		parsers: []parseKind{
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
 		},
 	},
 	protoreflect.Sint64Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedZigZag[int64],
+		layout: layout.Of[repeatedZigzag[byte, int64]](),
+		getter: getRepeatedZigzag[byte, int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
@@ -127,27 +95,24 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[uint32],
+		layout: layout.Of[repeatedScalar[uint32, uint32]](),
+		getter: getRepeatedScalar[uint32, uint32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.Sfixed32Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[int32],
+		layout: layout.Of[repeatedScalar[int32, int32]](),
+		getter: getRepeatedScalar[int32, int32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.FloatKind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[float32],
+		layout: layout.Of[repeatedScalar[float32, float32]](),
+		getter: getRepeatedScalar[float32, float32],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
@@ -156,27 +121,24 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[uint64],
+		layout: layout.Of[repeatedScalar[uint64, uint64]](),
+		getter: getRepeatedScalar[uint64, uint64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.Sfixed64Kind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[int64],
+		layout: layout.Of[repeatedScalar[int64, int64]](),
+		getter: getRepeatedScalar[int64, int64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.DoubleKind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[float64],
+		layout: layout.Of[repeatedScalar[float64, float64]](),
+		getter: getRepeatedScalar[float64, float64],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
@@ -185,8 +147,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
+		layout: layout.Of[repeatedBool](),
 		getter: getRepeatedBool,
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint8},
@@ -194,9 +155,8 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 		},
 	},
 	protoreflect.EnumKind: {
-		size:   uint32(arena.SliceSize),
-		align:  uint32(arena.SliceAlign),
-		getter: getRepeatedScalar[protoreflect.EnumNumber],
+		layout: layout.Of[repeatedScalar[byte, protoreflect.EnumNumber]](),
+		getter: getRepeatedScalar[byte, protoreflect.EnumNumber],
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
@@ -205,209 +165,177 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 
 	// String types.
 	protoreflect.StringKind: {
-		size:    uint32(arena.SliceSize),
-		align:   uint32(arena.SliceAlign),
+		layout:  layout.Of[repeatedString](),
 		getter:  getRepeatedString,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedUTF8}},
 	},
 	proto2StringKind: {
-		size:    uint32(arena.SliceSize),
-		align:   uint32(arena.SliceAlign),
+		layout:  layout.Of[repeatedString](),
 		getter:  getRepeatedString,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 	protoreflect.BytesKind: {
-		size:    uint32(arena.SliceSize),
-		align:   uint32(arena.SliceAlign),
-		getter:  repeatedBytes,
+		layout:  layout.Of[repeatedBytes](),
+		getter:  getRepeatedBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
-		size:    uint32(arena.SliceSize),
-		align:   uint32(arena.SliceAlign),
-		bits:    1, // This bit determines whether the field is inlined or pointer mode.
+		layout:  layout.Of[repeatedMessage](),
 		getter:  getRepeatedMessage,
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedMessage}},
 	},
 	protoreflect.GroupKind: {},
 }
 
-func getRepeatedScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[T]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedScalar[T]{raw: nil})
+type repeatedScalarElement interface {
+	integer | ~float32 | ~float64
+}
+
+func getRepeatedScalar[Z, E repeatedScalarElement](m *message, _ Type, getter getter) protoreflect.Value {
+	p := getField[repeatedScalar[Z, E]](m, getter.offset)
+	return protoreflect.ValueOf(p)
+}
+
+type repeatedScalar[Z, E repeatedScalarElement] struct {
+	immutableList
+	raw slice.Untyped
+}
+
+// IsValid implements [protoreflect.List].
+func (r *repeatedScalar[_, _]) IsValid() bool { return r != nil }
+
+// Len implements [protoreflect.List].
+func (r *repeatedScalar[_, _]) Len() int {
+	if r == nil {
+		return 0
 	}
+	return int(r.raw.Len)
+}
 
-	v := *p
-	var raw []T
-	if isZC(v) {
-		raw = unwrapZC(v, m.context.src)
-	} else {
-		raw = v.Raw()
+// Get implements [protoreflect.List].
+func (r *repeatedScalar[Z, E]) Get(n int) protoreflect.Value {
+	raw := r.raw
+	if raw.OffArena() {
+		v := slice.CastUntyped[Z](raw).Raw()[n]
+		return protoreflect.ValueOf(E(v))
 	}
-	return protoreflect.ValueOf(repeatedScalar[T]{raw: raw})
+	v := slice.CastUntyped[E](raw).Raw()[n]
+	return protoreflect.ValueOf(v)
 }
 
-// repeatedScalar is a [protoreflect.List] implementation for non-bool scalar
-// types.
-type repeatedScalar[E any] struct {
-	unimplementedList
-	raw []E
+func getRepeatedZigzag[Z, E integer](m *message, _ Type, getter getter) protoreflect.Value {
+	p := getField[repeatedZigzag[Z, E]](m, getter.offset)
+	return protoreflect.ValueOf(p)
 }
 
-var _ protoreflect.List = repeatedScalar[int32]{}
-
-func (l repeatedScalar[E]) Len() int { return len(l.raw) }
-func (l repeatedScalar[E]) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(l.raw[n])
+type repeatedZigzag[Z, E integer] struct {
+	immutableList
+	raw slice.Untyped
 }
 
-func getRepeatedScalarMaybeBytes[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[T]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedScalar[T]{raw: nil})
+// IsValid implements [protoreflect.List].
+func (r *repeatedZigzag[_, _]) IsValid() bool { return r != nil }
+
+// Len implements [protoreflect.List].
+func (r *repeatedZigzag[_, _]) Len() int {
+	if r == nil {
+		return 0
 	}
+	return int(r.raw.Len)
+}
 
-	v := *p
-	if isZC(v) {
-		raw := unwrapRawZC(v).bytes(m.context.src)
-		return protoreflect.ValueOf(repeatedScalarBytes[T]{raw: raw})
+// Get implements [protoreflect.List].
+func (r *repeatedZigzag[Z, E]) Get(n int) protoreflect.Value {
+	raw := r.raw
+	if raw.Ptr.SignBit() {
+		v := slice.CastUntyped[Z](raw).Raw()[n]
+		return protoreflect.ValueOf(zigzag(E(v)))
 	}
-
-	return protoreflect.ValueOf(repeatedScalar[T]{raw: v.Raw()})
-}
-
-// repeatedScalarBytes is a [protoreflect.List] implementation for non-bool scalar
-// types, where each value fits in a single byte.
-type repeatedScalarBytes[E integer] struct {
-	unimplementedList
-	raw []byte
-}
-
-var _ protoreflect.List = repeatedScalar[int32]{}
-
-func (l repeatedScalarBytes[E]) Len() int { return len(l.raw) }
-func (l repeatedScalarBytes[E]) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(E(l.raw[n]))
-}
-
-func getRepeatedZigZag[T integer](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[T]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedZigZag[T]{raw: nil})
-	}
-
-	v := *p
-	if isZC(v) {
-		raw := unwrapRawZC(v).bytes(m.context.src)
-		return protoreflect.ValueOf(repeatedZigZagBytes[T]{raw: raw})
-	}
-
-	return protoreflect.ValueOf(repeatedZigZag[T]{raw: v.Raw()})
-}
-
-// scalarList is a [protoreflect.List] implementation for integer types that
-// zig-zag decodes them on-demand.
-type repeatedZigZag[E integer] struct {
-	unimplementedList
-	raw []E
-}
-
-func (l repeatedZigZag[E]) Len() int { return len(l.raw) }
-func (l repeatedZigZag[E]) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(zigzag(l.raw[n]))
-}
-
-// repeatedZigZagBytes is a zigzag version of byteScalarList.
-type repeatedZigZagBytes[E integer] struct {
-	unimplementedList
-	raw []byte
-}
-
-func (l repeatedZigZagBytes[E]) Len() int { return len(l.raw) }
-func (l repeatedZigZagBytes[E]) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(zigzag(E(l.raw[n])))
+	v := slice.CastUntyped[E](raw).Raw()[n]
+	return protoreflect.ValueOf(zigzag(v))
 }
 
 func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[byte]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedBool{raw: nil})
-	}
-
-	v := *p
-	var raw []byte
-	if isZC(v) {
-		raw = unwrapZC(v, m.context.src)
-	} else {
-		raw = v.Raw()
-	}
-
-	return protoreflect.ValueOf(repeatedBool{raw: raw})
+	p := getField[repeatedString](m, getter.offset)
+	return protoreflect.ValueOf(p)
 }
 
-// repeatedBool is a [protoreflect.List] implementation for bool.
 type repeatedBool struct {
-	unimplementedList
-	raw []byte
+	immutableList
+	raw slice.Addr[byte]
 }
 
-func (l repeatedBool) Len() int { return len(l.raw) }
-func (l repeatedBool) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(l.raw[n] != 0)
+// IsValid implements [protoreflect.List].
+func (r *repeatedBool) IsValid() bool { return r != nil }
+
+// Len implements [protoreflect.List].
+func (r *repeatedBool) Len() int {
+	if r == nil {
+		return 0
+	}
+	return int(r.raw.Len)
+}
+
+// Get implements [protoreflect.List].
+func (r *repeatedBool) Get(n int) protoreflect.Value {
+	v := r.raw.AssertValid().Raw()[n]
+	return protoreflect.ValueOf(v != 0)
 }
 
 func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[zc]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedBool{raw: nil})
-	}
-
-	v := *p
-	return protoreflect.ValueOf(repeatedString{raw: v.Raw(), shared: m.context})
+	p := getField[repeatedString](m, getter.offset)
+	return protoreflect.ValueOf(p)
 }
 
 // repeatedString is a [protoreflect.List] implementation for string.
 type repeatedString struct {
-	unimplementedList
-	raw    []zc
-	shared *Context
+	immutableList
+	src *byte
+	raw slice.Addr[zc.Range]
 }
 
-func (l repeatedString) Len() int { return len(l.raw) }
-func (l repeatedString) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(l.raw[n].utf8(l.shared.src))
-}
+// IsValid implements [protoreflect.List].
+func (r *repeatedString) IsValid() bool { return r != nil }
 
-func repeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[arena.Slice[zc]](m, getter.offset)
-	if p == nil {
-		return protoreflect.ValueOf(repeatedBool{raw: nil})
+func (r *repeatedString) Len() int {
+	if r == nil {
+		return 0
 	}
-
-	v := *p
-	return protoreflect.ValueOf(bytesList{raw: v.Raw(), shared: m.context})
+	return int(r.raw.Len)
 }
 
-// bytesList is a [protoreflect.List] implementation for bytes.
-type bytesList struct {
-	unimplementedList
-	raw    []zc
-	shared *Context
+func (r *repeatedString) Get(n int) protoreflect.Value {
+	zc := r.raw.AssertValid().Raw()[n]
+	return protoreflect.ValueOf(zc.String(r.src))
 }
 
-func (l bytesList) Len() int { return len(l.raw) }
-func (l bytesList) Get(n int) protoreflect.Value {
-	return protoreflect.ValueOf(l.raw[n].bytes(l.shared.src))
+func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
+	p := getField[repeatedBytes](m, getter.offset)
+	return protoreflect.ValueOf(p)
 }
 
-//go:nosplit
-//fastpb:stencil spillArena32 spillArena[uint32]
-//fastpb:stencil spillArena64 spillArena[uint64]
-func spillArena[T any](p1 parser1, p2 parser2, rep arena.Slice[T]) (parser1, parser2, arena.Slice[T]) {
-	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
+// repeatedBytes is a [protoreflect.List] implementation for string.
+type repeatedBytes struct {
+	immutableList
+	src *byte
+	raw slice.Addr[zc.Range]
+}
+
+// IsValid implements [protoreflect.List].
+func (r *repeatedBytes) IsValid() bool { return r != nil }
+
+func (r *repeatedBytes) Len() int {
+	if r == nil {
+		return 0
+	}
+	return int(r.raw.Len)
+}
+
+func (r *repeatedBytes) Get(n int) protoreflect.Value {
+	zc := r.raw.AssertValid().Raw()[n]
+	return protoreflect.ValueOf(zc.Bytes(r.src))
 }
 
 //go:nosplit
@@ -418,39 +346,38 @@ func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	var slot *arena.SliceAddr[T]
-	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[byte, T]
+	p1, p2, r = getMutableField[repeatedScalar[byte, T]](p1, p2)
+	p1.log(p2, "slot", "%v", r.raw)
 
 	// Check if we're already an arena, or an empty repeated field which looks like
 	// an empty arena slice.
-	if isZC(slice) && slice.Cap() > 0 {
-		// Already holds a borrow. Need to spill to arena.
-		// This is the worst-case scenario.
-		zc := unwrapRawZC(slice).bytes(p1.c().src)
-		slice := arena.NewSlice[T](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			slice.Store(i, T(b))
+	if r.raw.OffArena() {
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s := slice.Make[T](p1.arena(), len(borrow)+1)
+		for i, b := range borrow {
+			s.Store(i, T(b))
 		}
-		slice.Store(slice.Len()-1, T(n))
-		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+		s.Store(s.Len()-1, T(n))
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, T(n))
+	s := slice.CastUntyped[T](r.raw)
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, T(n))
 
-		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
-		*slot = slice.Addr()
+		p1.log(p2, "store", "%v %v", s.Addr(), s)
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), T(n))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), T(n))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -459,14 +386,14 @@ func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil parsePackedVarint32 parsePackedVarint[uint32]
 //fastpb:stencil parsePackedVarint64 parsePackedVarint[uint64]
 func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
@@ -478,50 +405,45 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	var slot *arena.SliceAddr[T]
-	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
-	slice := slot.AssertValid()
-	if isZC(slice) {
-		// Check if we're already on-arena, or an empty repeated field which looks
-		// like an empty arena slice.
-		switch {
-		case slice.Cap() > 0:
-			// Already holds a borrow. Need to spill to arena.
-			// This is the worst-case scenario.
-			zc := unwrapRawZC(slice).bytes(p1.c().src)
-			slice = arena.NewSlice[T](p1.arena(), len(zc)+count)
-			for i, b := range zc {
-				slice.Store(i, T(b))
-			}
-			slice = slice.SetLen(len(zc))
-
-			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
-
-		case count == int(n):
-			*slot = wrapZC[T](newZC(p1.c().src, p1.b(), int(n))).Addr()
-
-			if dbg.Enabled {
-				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
-				p1.log(p2, "zc", "%v %v", *slot, raw)
-			}
+	var r *repeatedScalar[byte, T]
+	p1, p2, r = getMutableField[repeatedScalar[byte, T]](p1, p2)
+	var s slice.Slice[T]
+	switch {
+	case r.raw.Ptr == 0:
+		if count == n {
+			r.raw = slice.OffArena(p1.b(), n)
+			p1.log(p2, "zc", "%v", r.raw)
 
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-
-		default:
-			slice = slice.Grow(p1.arena(), count)
-			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := slice.Cap() - slice.Len(); spare < count {
-		slice = slice.Grow(p1.arena(), count-spare)
-		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
+		s = s.Grow(p1.arena(), count)
+		p1.log(p2, "grow", "%v %v", s.Addr(), s)
+
+	case r.raw.OffArena():
+		// Already holds a borrow. Need to spill to arena.
+		// This is the worst-case scenario.
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s = slice.Make[T](p1.arena(), len(borrow)+count)
+		for i, b := range borrow {
+			s.Store(i, T(b))
+		}
+		s = s.SetLen(len(borrow))
+
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+
+	default:
+		s = slice.CastUntyped[T](r.raw)
+		if spare := s.Cap() - s.Len(); spare < count {
+			s = s.Grow(p1.arena(), count-spare)
+			p1.log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+		}
 	}
 
-	// Manual inlining of AppendOne. Previously, we called AppendOne, but
-	// Go would not inline it, which resulted in a lot of spilling in a hot
-	// loop!
-	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
+	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p1.log(p2, "store at", "%v", p)
+
 	// There are three variants of this loop: one for the cases where every
 	// varint is small (one byte; common). One for the cases where most varints
 	// are small (so the special-case branches are likely to be well-predicted)
@@ -576,10 +498,10 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
 
-	*slot = slice.Addr()
+	r.raw = s.Addr().Untyped()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -598,31 +520,22 @@ func parseRepeatedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
 //fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
 func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parser2) {
-	var slot *arena.SliceAddr[T]
-	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[T, T]
+	p1, p2, r = getMutableField[repeatedScalar[T, T]](p1, p2)
+	s := slice.CastUntyped[T](r.raw)
 
-	// Check if we're already an arena, or an empty repeated field which looks like
-	// an empty arena slice.
-	if isZC(slice) && slice.Cap() > 0 {
-		// Already holds a borrow. Need to spill to arena.
-		// This is the worst-case scenario.
-		p1, p2, slice = spillArena(p1, p2, slice)
-		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
-	}
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, v)
-		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
-
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), v)
-	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -630,43 +543,50 @@ func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parse
 //fastpb:stencil parsePackedFixed32 parsePackedFixed[uint32]
 //fastpb:stencil parsePackedFixed64 parsePackedFixed[uint64]
 func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	if zc.len() == 0 {
+	var n int
+	p1, p2, n = p1.lengthPrefix(p2)
+	if n == 0 {
 		return p1, p2
 	}
 
-	size, _ := unsafe2.Layout[T]()
-	if zc.len()%size != 0 {
+	size := layout.Size[T]()
+	if n%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	var slot *arena.SliceAddr[T]
-	p1, p2, slot = getMutableField[arena.SliceAddr[T]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[T, T]
+	p1, p2, r = getMutableField[repeatedScalar[T, T]](p1, p2)
 
-	switch {
-	case !isZC(slice):
-		// Already on an arena.
-	case slice.Cap() == 0:
+	if r.raw.Ptr == 0 {
 		// Empty repeated field. We can just shove the zc here.
 		// This is the best-case scenario.
-		*slot = wrapZC[T](zc).Addr()
+		r.raw = slice.OffArena(p1.b(), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[T](r.raw))
+		}
+
+		p1 = p1.advance(n)
 		goto exit
-	default:
-		// Already holds a borrow. Need to spill to arena.
-		// This is the worst-case scenario.
-		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
-	{
-		size, _ := unsafe2.Layout[T]()
-		borrowed := unsafe2.Slice(
-			unsafe2.Cast[T](unsafe2.Add(p1.c().src, zc.start())),
-			zc.len()/size,
-		)
+	// If r.raw is off-arena, it will have len==cap, so it will force a
+	// realloc when we call Append.
 
-		*slot = slice.Append(p1.arena(), borrowed...).Addr()
+	{
+		s := slice.CastUntyped[T](r.raw)
+		size := layout.Size[T]()
+		borrowed := unsafe2.Slice(unsafe2.Cast[T](p1.b()), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "appending", "%v, %v", borrowed, s.Raw())
+		}
+
+		p1 = p1.advance(n)
+
+		s = s.Append(p1.arena(), borrowed...)
+		r.raw = s.Addr().Untyped()
+		if dbg.Enabled {
+			p1.log(p2, "append", "%v, %v", r.raw, s.Raw())
+		}
 	}
 
 exit:
@@ -675,24 +595,36 @@ exit:
 
 //go:nosplit
 func parseRepeatedBytes(p1 parser1, p2 parser2) (parser1, parser2) {
-	var v zc
+	var v zc.Range
 	p1, p2, v = p1.bytes(p2)
 
-	var slice *arena.SliceAddr[zc]
-	p1, p2, slice = getMutableField[arena.SliceAddr[zc]](p1, p2)
-	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
+	var r *repeatedBytes
+	p1, p2, r = getMutableField[repeatedBytes](p1, p2)
+	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
+	unsafe2.StoreNoWB(&r.src, p1.c().src)
 
 	return p1, p2
 }
 
 //go:nosplit
 func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
-	var v zc
+	var v zc.Range
 	p1, p2, v = p1.utf8(p2)
 
-	var slice *arena.SliceAddr[zc]
-	p1, p2, slice = getMutableField[arena.SliceAddr[zc]](p1, p2)
-	*slice = slice.AssertValid().AppendOne(p1.arena(), v).Addr()
+	var r *repeatedString
+	p1, p2, r = getMutableField[repeatedString](p1, p2)
+	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
+	unsafe2.StoreNoWB(&r.src, p1.c().src)
 
 	return p1, p2
 }
+
+// immutableList implements the mutation operations of a [protoreflect.List]
+// by panicking.
+type immutableList struct{}
+
+func (immutableList) Append(protoreflect.Value)         { panic(dbg.Unsupported()) }
+func (immutableList) AppendMutable() protoreflect.Value { panic(dbg.Unsupported()) }
+func (immutableList) NewElement() protoreflect.Value    { panic(dbg.Unsupported()) }
+func (immutableList) Set(int, protoreflect.Value)       { panic(dbg.Unsupported()) }
+func (immutableList) Truncate(int)                      { panic(dbg.Unsupported()) }

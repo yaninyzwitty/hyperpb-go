@@ -17,6 +17,7 @@ package unsafe2_test
 import (
 	"fmt"
 	"testing"
+	"unsafe"
 
 	"github.com/stretchr/testify/assert"
 
@@ -47,6 +48,23 @@ func TestMisalign(t *testing.T) {
 	prev, next = A(8).Misalign(8)
 	assert.Equal(t, 0, prev)
 	assert.Equal(t, 0, next)
+}
+
+func TestIndirect(t *testing.T) {
+	t.Parallel()
+
+	assert.False(t, unsafe2.InlinedAny[int]())
+	assert.False(t, unsafe2.InlinedAny[string]())
+	assert.False(t, unsafe2.InlinedAny[[]byte]())
+
+	assert.True(t, unsafe2.InlinedAny[*int]())
+	assert.True(t, unsafe2.InlinedAny[[1]*int]())
+	assert.True(t, unsafe2.InlinedAny[any]())
+	assert.True(t, unsafe2.InlinedAny[map[int]int]())
+	assert.True(t, unsafe2.InlinedAny[chan int]())
+	assert.True(t, unsafe2.InlinedAny[unsafe.Pointer]())
+	assert.True(t, unsafe2.InlinedAny[struct{ _ *int }]())
+	assert.True(t, unsafe2.InlinedAny[*struct{ _ *int }]())
 }
 
 func TestPC(t *testing.T) {

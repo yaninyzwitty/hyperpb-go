@@ -15,10 +15,11 @@
 package fastpb
 
 import (
-	"github.com/bufbuild/fastpb/internal/arena"
+	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"google.golang.org/protobuf/encoding/protowire"
 	"math/bits"
 	"unsafe"
@@ -29,11 +30,11 @@ import (
 func parseMapV32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], varintItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi varintItem[uint32]
@@ -116,11 +117,11 @@ insert:
 func parseMapV32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], varintItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi varintItem[uint64]
@@ -203,11 +204,11 @@ insert:
 func parseMapV32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], zigzagItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi zigzagItem[uint32]
@@ -290,11 +291,11 @@ insert:
 func parseMapV32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], zigzagItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi zigzagItem[uint64]
@@ -377,11 +378,11 @@ insert:
 func parseMapV32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], fixed32Item, uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi fixed32Item
@@ -464,11 +465,11 @@ insert:
 func parseMapV32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], fixed64Item, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi fixed64Item
@@ -551,11 +552,11 @@ insert:
 func parseMapV32x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], boolItem, uint32, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi boolItem
@@ -638,11 +639,11 @@ insert:
 func parseMapV32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], stringItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi stringItem
@@ -725,11 +726,11 @@ insert:
 func parseMapV32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint32], bytesItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var vi bytesItem
@@ -812,11 +813,11 @@ insert:
 func parseMapV64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], varintItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi varintItem[uint32]
@@ -899,11 +900,11 @@ insert:
 func parseMapV64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], varintItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi varintItem[uint64]
@@ -986,11 +987,11 @@ insert:
 func parseMapV64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], zigzagItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi zigzagItem[uint32]
@@ -1073,11 +1074,11 @@ insert:
 func parseMapV64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], zigzagItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi zigzagItem[uint64]
@@ -1160,11 +1161,11 @@ insert:
 func parseMapV64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], fixed32Item, uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi fixed32Item
@@ -1247,11 +1248,11 @@ insert:
 func parseMapV64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], fixed64Item, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi fixed64Item
@@ -1334,11 +1335,11 @@ insert:
 func parseMapV64x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], boolItem, uint64, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi boolItem
@@ -1421,11 +1422,11 @@ insert:
 func parseMapV64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], stringItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi stringItem
@@ -1508,11 +1509,11 @@ insert:
 func parseMapV64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[varintItem[uint64], bytesItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var vi bytesItem
@@ -1595,11 +1596,11 @@ insert:
 func parseMapZ32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], varintItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi varintItem[uint32]
@@ -1682,11 +1683,11 @@ insert:
 func parseMapZ32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], varintItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi varintItem[uint64]
@@ -1769,11 +1770,11 @@ insert:
 func parseMapZ32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi zigzagItem[uint32]
@@ -1856,11 +1857,11 @@ insert:
 func parseMapZ32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi zigzagItem[uint64]
@@ -1943,11 +1944,11 @@ insert:
 func parseMapZ32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], fixed32Item, uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi fixed32Item
@@ -2030,11 +2031,11 @@ insert:
 func parseMapZ32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], fixed64Item, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi fixed64Item
@@ -2117,11 +2118,11 @@ insert:
 func parseMapZ32x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], boolItem, uint32, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi boolItem
@@ -2204,11 +2205,11 @@ insert:
 func parseMapZ32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], stringItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi stringItem
@@ -2291,11 +2292,11 @@ insert:
 func parseMapZ32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint32], bytesItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var vi bytesItem
@@ -2378,11 +2379,11 @@ insert:
 func parseMapZ64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], varintItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi varintItem[uint32]
@@ -2465,11 +2466,11 @@ insert:
 func parseMapZ64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], varintItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi varintItem[uint64]
@@ -2552,11 +2553,11 @@ insert:
 func parseMapZ64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi zigzagItem[uint32]
@@ -2639,11 +2640,11 @@ insert:
 func parseMapZ64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi zigzagItem[uint64]
@@ -2726,11 +2727,11 @@ insert:
 func parseMapZ64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], fixed32Item, uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi fixed32Item
@@ -2813,11 +2814,11 @@ insert:
 func parseMapZ64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], fixed64Item, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi fixed64Item
@@ -2900,11 +2901,11 @@ insert:
 func parseMapZ64x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], boolItem, uint64, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi boolItem
@@ -2987,11 +2988,11 @@ insert:
 func parseMapZ64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], stringItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi stringItem
@@ -3074,11 +3075,11 @@ insert:
 func parseMapZ64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[zigzagItem[uint64], bytesItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var vi bytesItem
@@ -3161,11 +3162,11 @@ insert:
 func parseMapF32xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, varintItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi varintItem[uint32]
@@ -3248,11 +3249,11 @@ insert:
 func parseMapF32xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, varintItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi varintItem[uint64]
@@ -3335,11 +3336,11 @@ insert:
 func parseMapF32xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, zigzagItem[uint32], uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi zigzagItem[uint32]
@@ -3422,11 +3423,11 @@ insert:
 func parseMapF32xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, zigzagItem[uint64], uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi zigzagItem[uint64]
@@ -3509,11 +3510,11 @@ insert:
 func parseMapF32xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, fixed32Item, uint32, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi fixed32Item
@@ -3596,11 +3597,11 @@ insert:
 func parseMapF32xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, fixed64Item, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi fixed64Item
@@ -3683,11 +3684,11 @@ insert:
 func parseMapF32x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, boolItem, uint32, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi boolItem
@@ -3770,11 +3771,11 @@ insert:
 func parseMapF32xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, stringItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi stringItem
@@ -3857,11 +3858,11 @@ insert:
 func parseMapF32xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed32Item, bytesItem, uint32, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var vi bytesItem
@@ -3944,11 +3945,11 @@ insert:
 func parseMapF64xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, varintItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi varintItem[uint32]
@@ -4031,11 +4032,11 @@ insert:
 func parseMapF64xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, varintItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi varintItem[uint64]
@@ -4118,11 +4119,11 @@ insert:
 func parseMapF64xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, zigzagItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi zigzagItem[uint32]
@@ -4205,11 +4206,11 @@ insert:
 func parseMapF64xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, zigzagItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi zigzagItem[uint64]
@@ -4292,11 +4293,11 @@ insert:
 func parseMapF64xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, fixed32Item, uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi fixed32Item
@@ -4379,11 +4380,11 @@ insert:
 func parseMapF64xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, fixed64Item, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi fixed64Item
@@ -4466,11 +4467,11 @@ insert:
 func parseMapF64x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, boolItem, uint64, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi boolItem
@@ -4553,11 +4554,11 @@ insert:
 func parseMapF64xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, stringItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi stringItem
@@ -4640,11 +4641,11 @@ insert:
 func parseMapF64xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[fixed64Item, bytesItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var vi bytesItem
@@ -4727,11 +4728,11 @@ insert:
 func parseMapSxV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, varintItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi varintItem[uint32]
@@ -4814,11 +4815,11 @@ insert:
 func parseMapSxV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, varintItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi varintItem[uint64]
@@ -4901,11 +4902,11 @@ insert:
 func parseMapSxZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, zigzagItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi zigzagItem[uint32]
@@ -4988,11 +4989,11 @@ insert:
 func parseMapSxZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, zigzagItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi zigzagItem[uint64]
@@ -5075,11 +5076,11 @@ insert:
 func parseMapSxF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, fixed32Item, uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi fixed32Item
@@ -5162,11 +5163,11 @@ insert:
 func parseMapSxF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, fixed64Item, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi fixed64Item
@@ -5249,11 +5250,11 @@ insert:
 func parseMapSx2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, boolItem, uint64, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi boolItem
@@ -5336,11 +5337,11 @@ insert:
 func parseMapSxS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, stringItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi stringItem
@@ -5423,11 +5424,11 @@ insert:
 func parseMapSxB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[stringItem, bytesItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var vi bytesItem
@@ -5510,11 +5511,11 @@ insert:
 func parseMapBxV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, varintItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi varintItem[uint32]
@@ -5597,11 +5598,11 @@ insert:
 func parseMapBxV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, varintItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi varintItem[uint64]
@@ -5684,11 +5685,11 @@ insert:
 func parseMapBxZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, zigzagItem[uint32], uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi zigzagItem[uint32]
@@ -5771,11 +5772,11 @@ insert:
 func parseMapBxZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, zigzagItem[uint64], uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi zigzagItem[uint64]
@@ -5858,11 +5859,11 @@ insert:
 func parseMapBxF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, fixed32Item, uint64, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi fixed32Item
@@ -5945,11 +5946,11 @@ insert:
 func parseMapBxF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, fixed64Item, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi fixed64Item
@@ -6032,11 +6033,11 @@ insert:
 func parseMapBx2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, boolItem, uint64, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi boolItem
@@ -6119,11 +6120,11 @@ insert:
 func parseMapBxS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, stringItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi stringItem
@@ -6206,11 +6207,11 @@ insert:
 func parseMapBxB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[bytesItem, bytesItem, uint64, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var vi bytesItem
@@ -6293,11 +6294,11 @@ insert:
 func parseMap2xV32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, varintItem[uint32], uint8, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi varintItem[uint32]
@@ -6380,11 +6381,11 @@ insert:
 func parseMap2xV64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, varintItem[uint64], uint8, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi varintItem[uint64]
@@ -6467,11 +6468,11 @@ insert:
 func parseMap2xZ32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, zigzagItem[uint32], uint8, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi zigzagItem[uint32]
@@ -6554,11 +6555,11 @@ insert:
 func parseMap2xZ64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, zigzagItem[uint64], uint8, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi zigzagItem[uint64]
@@ -6641,11 +6642,11 @@ insert:
 func parseMap2xF32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, fixed32Item, uint8, uint32]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi fixed32Item
@@ -6728,11 +6729,11 @@ insert:
 func parseMap2xF64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, fixed64Item, uint8, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi fixed64Item
@@ -6815,11 +6816,11 @@ insert:
 func parseMap2x2(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, boolItem, uint8, uint8]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi boolItem
@@ -6902,11 +6903,11 @@ insert:
 func parseMap2xS(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, stringItem, uint8, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi stringItem
@@ -6989,11 +6990,11 @@ insert:
 func parseMap2xB(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxV[boolItem, bytesItem, uint8, uint64]
 
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var vi bytesItem
@@ -7076,11 +7077,11 @@ insert:
 
 func parseMapV32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[varintItem[uint32], uint32]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint32]
 	var k uint32
@@ -7106,7 +7107,7 @@ func parseMapV32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7129,7 +7130,7 @@ func parseMapV32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7164,19 +7165,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapV64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[varintItem[uint64], uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki varintItem[uint64]
 	var k uint64
@@ -7202,7 +7203,7 @@ func parseMapV64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7225,7 +7226,7 @@ func parseMapV64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7260,19 +7261,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapZ32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[zigzagItem[uint32], uint32]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint32]
 	var k uint32
@@ -7298,7 +7299,7 @@ func parseMapZ32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7321,7 +7322,7 @@ func parseMapZ32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7356,19 +7357,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapZ64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[zigzagItem[uint64], uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki zigzagItem[uint64]
 	var k uint64
@@ -7394,7 +7395,7 @@ func parseMapZ64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7417,7 +7418,7 @@ func parseMapZ64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7452,19 +7453,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapF32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[fixed32Item, uint32]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed32Item
 	var k uint32
@@ -7490,7 +7491,7 @@ func parseMapF32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7513,7 +7514,7 @@ func parseMapF32xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7548,19 +7549,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapF64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[fixed64Item, uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki fixed64Item
 	var k uint64
@@ -7586,7 +7587,7 @@ func parseMapF64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7609,7 +7610,7 @@ func parseMapF64xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7644,19 +7645,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapSxM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[stringItem, uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki stringItem
 	var k uint64
@@ -7682,7 +7683,7 @@ func parseMapSxM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7705,7 +7706,7 @@ func parseMapSxM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7740,19 +7741,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMapBxM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[bytesItem, uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki bytesItem
 	var k uint64
@@ -7778,7 +7779,7 @@ func parseMapBxM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7801,7 +7802,7 @@ func parseMapBxM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7836,19 +7837,19 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 func parseMap2xM(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseMapKxM[boolItem, uint8]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	var ki boolItem
 	var k uint8
@@ -7874,7 +7875,7 @@ func parseMap2xM(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1.b_++
 
 			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(int(n)) {
+			if p1.e_ > p1.b_.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -7897,7 +7898,7 @@ func parseMap2xM(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	p1.b_ = p1.e_.Add(-int(n))
+	p1.b_ = p1.e_.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
@@ -7932,11 +7933,11 @@ insert:
 
 	if fast {
 		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, int(n), v)
+		return p1.message(p2, n, v)
 	}
 
 	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, int(n), v)
+	return p1.mapEntry(p2, n, v)
 }
 
 //go:nosplit
@@ -8024,53 +8025,41 @@ func parseOptionalZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 }
 
 //go:nosplit
-func spillArena32(p1 parser1, p2 parser2, rep arena.Slice[uint32]) (parser1, parser2, arena.Slice[uint32]) {
-	_ = spillArena[uint32]
-	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
-}
-
-//go:nosplit
-func spillArena64(p1 parser1, p2 parser2, rep arena.Slice[uint64]) (parser1, parser2, arena.Slice[uint64]) {
-	_ = spillArena[uint64]
-	return p1, p2, arena.SliceOf(p1.arena(), unwrapZC(rep, p1.c().src)...)
-}
-
-//go:nosplit
 func parseRepeatedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseRepeatedVarint[uint8]
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	var slot *arena.SliceAddr[uint8]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint8]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[byte, uint8]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint8]](p1, p2)
+	p1.log(p2, "slot", "%v", r.raw)
 
-	if isZC(slice) && slice.Cap() > 0 {
-
-		zc := unwrapRawZC(slice).bytes(p1.c().src)
-		slice := arena.NewSlice[uint8](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			slice.Store(i, uint8(b))
+	if r.raw.OffArena() {
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s := slice.Make[uint8](p1.arena(), len(borrow)+1)
+		for i, b := range borrow {
+			s.Store(i, uint8(b))
 		}
-		slice.Store(slice.Len()-1, uint8(n))
-		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+		s.Store(s.Len()-1, uint8(n))
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, uint8(n))
+	s := slice.CastUntyped[uint8](r.raw)
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, uint8(n))
 
-		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
-		*slot = slice.Addr()
+		p1.log(p2, "store", "%v %v", s.Addr(), s)
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), uint8(n))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), uint8(n))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8080,36 +8069,36 @@ func parseRepeatedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	var slot *arena.SliceAddr[uint32]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[byte, uint32]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint32]](p1, p2)
+	p1.log(p2, "slot", "%v", r.raw)
 
-	if isZC(slice) && slice.Cap() > 0 {
-
-		zc := unwrapRawZC(slice).bytes(p1.c().src)
-		slice := arena.NewSlice[uint32](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			slice.Store(i, uint32(b))
+	if r.raw.OffArena() {
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s := slice.Make[uint32](p1.arena(), len(borrow)+1)
+		for i, b := range borrow {
+			s.Store(i, uint32(b))
 		}
-		slice.Store(slice.Len()-1, uint32(n))
-		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+		s.Store(s.Len()-1, uint32(n))
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, uint32(n))
+	s := slice.CastUntyped[uint32](r.raw)
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, uint32(n))
 
-		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
-		*slot = slice.Addr()
+		p1.log(p2, "store", "%v %v", s.Addr(), s)
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), uint32(n))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), uint32(n))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8119,50 +8108,50 @@ func parseRepeatedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
-	var slot *arena.SliceAddr[uint64]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[byte, uint64]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint64]](p1, p2)
+	p1.log(p2, "slot", "%v", r.raw)
 
-	if isZC(slice) && slice.Cap() > 0 {
-
-		zc := unwrapRawZC(slice).bytes(p1.c().src)
-		slice := arena.NewSlice[uint64](p1.arena(), len(zc)+1)
-		for i, b := range zc {
-			slice.Store(i, uint64(b))
+	if r.raw.OffArena() {
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s := slice.Make[uint64](p1.arena(), len(borrow)+1)
+		for i, b := range borrow {
+			s.Store(i, uint64(b))
 		}
-		slice.Store(slice.Len()-1, uint64(n))
-		p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
+		s.Store(s.Len()-1, uint64(n))
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, uint64(n))
+	s := slice.CastUntyped[uint64](r.raw)
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, uint64(n))
 
-		p1.log(p2, "store", "%v %v", slice.Addr(), slice)
-		*slot = slice.Addr()
+		p1.log(p2, "store", "%v %v", s.Addr(), s)
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), uint64(n))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), uint64(n))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
 //go:nosplit
 func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedVarint[uint8]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
@@ -8174,45 +8163,43 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	var slot *arena.SliceAddr[uint8]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint8]](p1, p2)
-	slice := slot.AssertValid()
-	if isZC(slice) {
-
-		switch {
-		case slice.Cap() > 0:
-
-			zc := unwrapRawZC(slice).bytes(p1.c().src)
-			slice = arena.NewSlice[uint8](p1.arena(), len(zc)+count)
-			for i, b := range zc {
-				slice.Store(i, uint8(b))
-			}
-			slice = slice.SetLen(len(zc))
-
-			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
-
-		case count == int(n):
-			*slot = wrapZC[uint8](newZC(p1.c().src, p1.b(), int(n))).Addr()
-
-			if dbg.Enabled {
-				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
-				p1.log(p2, "zc", "%v %v", *slot, raw)
-			}
+	var r *repeatedScalar[byte, uint8]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint8]](p1, p2)
+	var s slice.Slice[uint8]
+	switch {
+	case r.raw.Ptr == 0:
+		if count == n {
+			r.raw = slice.OffArena(p1.b(), n)
+			p1.log(p2, "zc", "%v", r.raw)
 
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-
-		default:
-			slice = slice.Grow(p1.arena(), count)
-			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := slice.Cap() - slice.Len(); spare < count {
-		slice = slice.Grow(p1.arena(), count-spare)
-		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
+		s = s.Grow(p1.arena(), count)
+		p1.log(p2, "grow", "%v %v", s.Addr(), s)
+
+	case r.raw.OffArena():
+
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s = slice.Make[uint8](p1.arena(), len(borrow)+count)
+		for i, b := range borrow {
+			s.Store(i, uint8(b))
+		}
+		s = s.SetLen(len(borrow))
+
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+
+	default:
+		s = slice.CastUntyped[uint8](r.raw)
+		if spare := s.Cap() - s.Len(); spare < count {
+			s = s.Grow(p1.arena(), count-spare)
+			p1.log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+		}
 	}
 
-	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
+	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p1.log(p2, "store at", "%v", p)
 
 	switch {
 	case count == p1.len():
@@ -8263,10 +8250,10 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
 
-	*slot = slice.Addr()
+	r.raw = s.Addr().Untyped()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -8274,14 +8261,14 @@ func parsePackedVarint8(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedVarint[uint32]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
@@ -8293,45 +8280,43 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	var slot *arena.SliceAddr[uint32]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
-	slice := slot.AssertValid()
-	if isZC(slice) {
-
-		switch {
-		case slice.Cap() > 0:
-
-			zc := unwrapRawZC(slice).bytes(p1.c().src)
-			slice = arena.NewSlice[uint32](p1.arena(), len(zc)+count)
-			for i, b := range zc {
-				slice.Store(i, uint32(b))
-			}
-			slice = slice.SetLen(len(zc))
-
-			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
-
-		case count == int(n):
-			*slot = wrapZC[uint32](newZC(p1.c().src, p1.b(), int(n))).Addr()
-
-			if dbg.Enabled {
-				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
-				p1.log(p2, "zc", "%v %v", *slot, raw)
-			}
+	var r *repeatedScalar[byte, uint32]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint32]](p1, p2)
+	var s slice.Slice[uint32]
+	switch {
+	case r.raw.Ptr == 0:
+		if count == n {
+			r.raw = slice.OffArena(p1.b(), n)
+			p1.log(p2, "zc", "%v", r.raw)
 
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-
-		default:
-			slice = slice.Grow(p1.arena(), count)
-			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := slice.Cap() - slice.Len(); spare < count {
-		slice = slice.Grow(p1.arena(), count-spare)
-		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
+		s = s.Grow(p1.arena(), count)
+		p1.log(p2, "grow", "%v %v", s.Addr(), s)
+
+	case r.raw.OffArena():
+
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s = slice.Make[uint32](p1.arena(), len(borrow)+count)
+		for i, b := range borrow {
+			s.Store(i, uint32(b))
+		}
+		s = s.SetLen(len(borrow))
+
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+
+	default:
+		s = slice.CastUntyped[uint32](r.raw)
+		if spare := s.Cap() - s.Len(); spare < count {
+			s = s.Grow(p1.arena(), count-spare)
+			p1.log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+		}
 	}
 
-	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
+	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p1.log(p2, "store at", "%v", p)
 
 	switch {
 	case count == p1.len():
@@ -8382,10 +8367,10 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
 
-	*slot = slice.Addr()
+	r.raw = s.Addr().Untyped()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -8393,14 +8378,14 @@ func parsePackedVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedVarint[uint64]
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
 	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(int(n))
+	p1.e_ = p1.b_.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
@@ -8412,45 +8397,43 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 		count += bits.OnesCount64(signBits &^ bytes)
 	}
 
-	var slot *arena.SliceAddr[uint64]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
-	slice := slot.AssertValid()
-	if isZC(slice) {
-
-		switch {
-		case slice.Cap() > 0:
-
-			zc := unwrapRawZC(slice).bytes(p1.c().src)
-			slice = arena.NewSlice[uint64](p1.arena(), len(zc)+count)
-			for i, b := range zc {
-				slice.Store(i, uint64(b))
-			}
-			slice = slice.SetLen(len(zc))
-
-			p1.log(p2, "spill", "%v %v", slice.Addr(), slice)
-
-		case count == int(n):
-			*slot = wrapZC[uint64](newZC(p1.c().src, p1.b(), int(n))).Addr()
-
-			if dbg.Enabled {
-				raw := unwrapRawZC(slot.AssertValid()).bytes(p1.c().src)
-				p1.log(p2, "zc", "%v %v", *slot, raw)
-			}
+	var r *repeatedScalar[byte, uint64]
+	p1, p2, r = getMutableField[repeatedScalar[byte, uint64]](p1, p2)
+	var s slice.Slice[uint64]
+	switch {
+	case r.raw.Ptr == 0:
+		if count == n {
+			r.raw = slice.OffArena(p1.b(), n)
+			p1.log(p2, "zc", "%v", r.raw)
 
 			p1.b_ = p1.e_
 			p1.e_ = unsafe2.Addr[byte](p2.scratch)
 			return p1, p2
-
-		default:
-			slice = slice.Grow(p1.arena(), count)
-			p1.log(p2, "grow", "%v %v", slice.Addr(), slice)
 		}
-	} else if spare := slice.Cap() - slice.Len(); spare < count {
-		slice = slice.Grow(p1.arena(), count-spare)
-		p1.log(p2, "grow", "%v %v, %d", slice.Addr(), slice, spare)
+		s = s.Grow(p1.arena(), count)
+		p1.log(p2, "grow", "%v %v", s.Addr(), s)
+
+	case r.raw.OffArena():
+
+		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		s = slice.Make[uint64](p1.arena(), len(borrow)+count)
+		for i, b := range borrow {
+			s.Store(i, uint64(b))
+		}
+		s = s.SetLen(len(borrow))
+
+		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+
+	default:
+		s = slice.CastUntyped[uint64](r.raw)
+		if spare := s.Cap() - s.Len(); spare < count {
+			s = s.Grow(p1.arena(), count-spare)
+			p1.log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+		}
 	}
 
-	p := unsafe2.AddrOf(slice.Ptr()).Add(slice.Len())
+	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p1.log(p2, "store at", "%v", p)
 
 	switch {
 	case count == p1.len():
@@ -8501,10 +8484,10 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 		}
 	}
 
-	slice = slice.SetLen(p.Sub(unsafe2.AddrOf(slice.Ptr())))
-	p1.log(p2, "append", "%v %v", slice.Addr(), slice)
+	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	p1.log(p2, "append", "%v %v", s.Addr(), s)
 
-	*slot = slice.Addr()
+	r.raw = s.Addr().Untyped()
 	p1.e_ = unsafe2.Addr[byte](p2.scratch)
 	return p1, p2
 }
@@ -8512,97 +8495,90 @@ func parsePackedVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 func appendFixed32(p1 parser1, p2 parser2, v uint32) (parser1, parser2) {
 	_ = appendFixed[uint32]
-	var slot *arena.SliceAddr[uint32]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[uint32, uint32]
+	p1, p2, r = getMutableField[repeatedScalar[uint32, uint32]](p1, p2)
+	s := slice.CastUntyped[uint32](r.raw)
 
-	if isZC(slice) && slice.Cap() > 0 {
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
-		p1, p2, slice = spillArena32(p1, p2, slice)
-		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
-	}
-
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, v)
-		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
-
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), v)
-	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
 //go:nosplit
 func appendFixed64(p1 parser1, p2 parser2, v uint64) (parser1, parser2) {
 	_ = appendFixed[uint64]
-	var slot *arena.SliceAddr[uint64]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[uint64, uint64]
+	p1, p2, r = getMutableField[repeatedScalar[uint64, uint64]](p1, p2)
+	s := slice.CastUntyped[uint64](r.raw)
 
-	if isZC(slice) && slice.Cap() > 0 {
+	if s.Len() < s.Cap() {
+		s = s.SetLen(s.Len() + 1)
+		s.Store(s.Len()-1, v)
+		p1.log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
-		p1, p2, slice = spillArena64(p1, p2, slice)
-		p1.log(p2, "repeated fixed spill", "%v %v", slice.Addr(), slice)
-	}
-
-	if slice.Len() < slice.Cap() {
-		slice = slice.SetLen(slice.Len() + 1)
-		slice.Store(slice.Len()-1, v)
-		p1.log(p2, "repeated fixed store", "%v %v", slice.Addr(), slice)
-
-		*slot = slice.Addr()
+		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	slice = slice.AppendOne(p1.arena(), v)
-	p1.log(p2, "repeated fixed append", "%v %v", slice.Addr(), slice)
-	*slot = slice.Addr()
+	s = s.AppendOne(p1.arena(), v)
+	p1.log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
+	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
 
 //go:nosplit
 func parsePackedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint32]
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	if zc.len() == 0 {
+	var n int
+	p1, p2, n = p1.lengthPrefix(p2)
+	if n == 0 {
 		return p1, p2
 	}
 
-	size, _ := unsafe2.Layout[uint32]()
-	if zc.len()%size != 0 {
+	size := layout.Size[uint32]()
+	if n%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	var slot *arena.SliceAddr[uint32]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint32]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[uint32, uint32]
+	p1, p2, r = getMutableField[repeatedScalar[uint32, uint32]](p1, p2)
 
-	switch {
-	case !isZC(slice):
+	if r.raw.Ptr == 0 {
 
-	case slice.Cap() == 0:
+		r.raw = slice.OffArena(p1.b(), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint32](r.raw))
+		}
 
-		*slot = wrapZC[uint32](zc).Addr()
+		p1 = p1.advance(n)
 		goto exit
-	default:
-
-		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
 	{
-		size, _ := unsafe2.Layout[uint32]()
-		borrowed := unsafe2.Slice(
-			unsafe2.Cast[uint32](unsafe2.Add(p1.c().src, zc.start())),
-			zc.len()/size,
-		)
+		s := slice.CastUntyped[uint32](r.raw)
+		size := layout.Size[uint32]()
+		borrowed := unsafe2.Slice(unsafe2.Cast[uint32](p1.b()), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "appending", "%v, %v", borrowed, s.Raw())
+		}
 
-		*slot = slice.Append(p1.arena(), borrowed...).Addr()
+		p1 = p1.advance(n)
+
+		s = s.Append(p1.arena(), borrowed...)
+		r.raw = s.Addr().Untyped()
+		if dbg.Enabled {
+			p1.log(p2, "append", "%v, %v", r.raw, s.Raw())
+		}
 	}
 
 exit:
@@ -8612,41 +8588,46 @@ exit:
 //go:nosplit
 func parsePackedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parsePackedFixed[uint64]
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	if zc.len() == 0 {
+	var n int
+	p1, p2, n = p1.lengthPrefix(p2)
+	if n == 0 {
 		return p1, p2
 	}
 
-	size, _ := unsafe2.Layout[uint64]()
-	if zc.len()%size != 0 {
+	size := layout.Size[uint64]()
+	if n%size != 0 {
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	var slot *arena.SliceAddr[uint64]
-	p1, p2, slot = getMutableField[arena.SliceAddr[uint64]](p1, p2)
-	slice := slot.AssertValid()
+	var r *repeatedScalar[uint64, uint64]
+	p1, p2, r = getMutableField[repeatedScalar[uint64, uint64]](p1, p2)
 
-	switch {
-	case !isZC(slice):
+	if r.raw.Ptr == 0 {
 
-	case slice.Cap() == 0:
+		r.raw = slice.OffArena(p1.b(), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint64](r.raw))
+		}
 
-		*slot = wrapZC[uint64](zc).Addr()
+		p1 = p1.advance(n)
 		goto exit
-	default:
-
-		p1, p2, slice = spillArena(p1, p2, slice)
 	}
 
 	{
-		size, _ := unsafe2.Layout[uint64]()
-		borrowed := unsafe2.Slice(
-			unsafe2.Cast[uint64](unsafe2.Add(p1.c().src, zc.start())),
-			zc.len()/size,
-		)
+		s := slice.CastUntyped[uint64](r.raw)
+		size := layout.Size[uint64]()
+		borrowed := unsafe2.Slice(unsafe2.Cast[uint64](p1.b()), n/size)
+		if dbg.Enabled {
+			p1.log(p2, "appending", "%v, %v", borrowed, s.Raw())
+		}
 
-		*slot = slice.Append(p1.arena(), borrowed...).Addr()
+		p1 = p1.advance(n)
+
+		s = s.Append(p1.arena(), borrowed...)
+		r.raw = s.Addr().Untyped()
+		if dbg.Enabled {
+			p1.log(p2, "append", "%v, %v", r.raw, s.Raw())
+		}
 	}
 
 exit:

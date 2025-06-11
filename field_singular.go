@@ -21,6 +21,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // Singular fields are implemented as a single field of the appropriate type.
@@ -37,113 +39,98 @@ import (
 var singularFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		getter:  getScalar[int32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 	protoreflect.Uint32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[uint32](),
 		getter:  getScalar[uint32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 	protoreflect.Sint32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		getter:  getScalar[int32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseZigZag32}},
 	},
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		getter:  getScalar[int64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint64}},
 	},
 	protoreflect.Uint64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[uint64](),
 		getter:  getScalar[uint64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint64}},
 	},
 	protoreflect.Sint64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		getter:  getScalar[int64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseZigZag64}},
 	},
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[uint32](),
 		getter:  getScalar[uint32],
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 	protoreflect.Sfixed32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		getter:  getScalar[int32],
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 	protoreflect.FloatKind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[float32](),
 		getter:  getFloat32,
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[uint64](),
 		getter:  getScalar[uint64],
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 	protoreflect.Sfixed64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		getter:  getScalar[int64],
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 	protoreflect.DoubleKind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[float64](),
 		getter:  getFloat64,
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		size: 0, align: 1, bits: 1,
+		layout:  layout.Of[[0]byte](),
+		bits:    1,
 		getter:  getBool,
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseBool}},
 	},
 	protoreflect.EnumKind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[protoreflect.EnumNumber](),
 		getter:  getScalar[protoreflect.EnumNumber],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 
 	// String types.
 	protoreflect.StringKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		getter:  getString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseString}},
 	},
 	proto2StringKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		getter:  getString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
 	protoreflect.BytesKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		getter:  getBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
@@ -151,8 +138,7 @@ var singularFields = map[protoreflect.Kind]*archetype{
 	// Message types.
 	protoreflect.MessageKind: {
 		// A singular message is laid out as a single *message pointer.
-		size:   uint32(unsafe2.PointerSize),
-		align:  uint32(unsafe2.PointerAlign),
+		layout: layout.Of[*message](),
 		getter: getMessage,
 		// This message parser is eager. TODO: add a lazy message archetype.
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseMessage}},
@@ -218,13 +204,13 @@ func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getString(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[zc](m, getter.offset)
+	p := getField[zc.Range](m, getter.offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
 
-	zc := *p
-	data := zc.utf8(m.context.src)
+	r := *p
+	data := r.String(m.context.src)
 
 	if data == "" {
 		return protoreflect.ValueOf(nil)
@@ -234,13 +220,13 @@ func getString(m *message, _ Type, getter getter) protoreflect.Value {
 }
 
 func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[zc](m, getter.offset)
+	p := getField[zc.Range](m, getter.offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
 
-	zc := *p
-	data := zc.bytes(m.context.src)
+	r := *p
+	data := r.Bytes(m.context.src)
 
 	if len(data) == 0 {
 		return protoreflect.ValueOf(nil)
@@ -300,18 +286,18 @@ func parseFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 }
 
 func parseString(p1 parser1, p2 parser2) (parser1, parser2) {
-	var zc zc
-	p1, p2, zc = p1.utf8(p2)
-	p2.scratch = uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.utf8(p2)
+	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
 }
 
 func parseBytes(p1 parser1, p2 parser2) (parser1, parser2) {
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	p2.scratch = uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.bytes(p2)
+	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -326,7 +312,7 @@ func parseBool(p1 parser1, p2 parser2) (parser1, parser2) {
 }
 
 func parseMessage(p1 parser1, p2 parser2) (parser1, parser2) {
-	var n uint32
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 	p2.scratch = uint64(n)
 

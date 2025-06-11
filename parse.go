@@ -29,6 +29,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/sync2"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 const (
@@ -547,7 +548,7 @@ func (p1 parser1) fixed64(p2 parser2) (parser1, parser2, uint64) {
 // lengthPrefix parses a varint up to the current length.
 //
 //go:nosplit
-func (p1 parser1) lengthPrefix(p2 parser2) (parser1, parser2, uint32) {
+func (p1 parser1) lengthPrefix(p2 parser2) (parser1, parser2, int) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
 
@@ -555,36 +556,36 @@ func (p1 parser1) lengthPrefix(p2 parser2) (parser1, parser2, uint32) {
 		// Explicit inlining of atLeast(). len() is guaranteed to fit in a
 		// uint32.
 		if n <= uint64(p1.len()) {
-			return p1, p2, uint32(n)
+			return p1, p2, int(n)
 		}
 
 		p1.fail(p2, errCodeTruncated)
 	}
 
-	return p1, p2, uint32(n)
+	return p1, p2, int(n)
 }
 
 // bytes parses a length-delimited byte buffer.
-func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc) {
-	var n uint32
+func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc.Range) {
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	zc := newRawZC(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), int(n))
-	p1 = p1.advance(int(n))
+	r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), n)
+	p1 = p1.advance(n)
 
 	if dbg.Enabled {
-		text := zc.bytes(p1.c().src)
-		p1.log(p2, "bytes", "%#v, %q", zc, text)
+		text := r.Bytes(p1.c().src)
+		p1.log(p2, "bytes", "%#v, %q", r, text)
 	}
-	return p1, p2, zc
+	return p1, p2, r
 }
 
 // utf8 parses a length-delimited byte buffer, and validates it for UTF8.
-func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc) {
-	var n uint32
+func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc.Range) {
+	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	e := p1.b_.Add(int(n))
+	e := p1.b_.Add(n)
 
 	// All non-spatial errors are accumulated so we only have to do one branch
 	// at the end.
@@ -687,14 +688,14 @@ func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc) {
 	}
 
 	if ok {
-		zc := newRawZC(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), int(n))
-		p1 = p1.advance(int(n))
+		r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), n)
+		p1 = p1.advance(n)
 
 		if dbg.Enabled {
-			text := zc.bytes(p1.c().src)
-			p1.log(p2, "utf8", "%#v, %q", zc, text)
+			text := r.Bytes(p1.c().src)
+			p1.log(p2, "utf8", "%#v, %q", r, text)
 		}
-		return p1, p2, zc
+		return p1, p2, r
 	}
 
 fail:
@@ -1036,16 +1037,16 @@ func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
 	p1 = p1.advance(m)
 
 	if !p2.t().discardUnknown {
-		zc := newZC(p1.c().src, start.AssertValid(), int(p1.b_-start))
+		r := zc.New(p1.c().src, start.AssertValid(), int(p1.b_-start))
 		cold := p2.m().mutableCold()
 		if cold.unknown.Len() > 0 {
 			last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
-			if zc.start() == last.end() {
-				*last = newRawZC(last.start(), last.len()+zc.len())
+			if r.Start() == last.End() {
+				*last = zc.NewRaw(last.Start(), last.Len()+r.Len())
 				return p1, p2
 			}
 		}
-		cold.unknown = cold.unknown.AppendOne(p1.arena(), zc)
+		cold.unknown = cold.unknown.AppendOne(p1.arena(), r)
 	}
 
 	return p1, p2

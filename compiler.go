@@ -32,6 +32,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -242,9 +243,10 @@ type pField struct {
 type sField struct {
 	tIdx []int // Index in ir.t. May be more than one!
 
-	size, align, bits uint32
-	offset            fieldOffset
-	hot               bool
+	layout layout.Layout
+	bits   uint32
+	offset fieldOffset
+	hot    bool
 }
 
 // profile returns profiling information for fd in the compiler's current
@@ -344,8 +346,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		var temp Temperature
 		for _, j := range sf.tIdx {
 			arch := ir.t[j].arch
-			sf.size = max(sf.size, arch.size)
-			sf.align = max(sf.align, arch.align)
+			sf.layout = sf.layout.Max(arch.layout)
 			sf.bits = max(sf.bits, arch.bits)
 
 			temp += ir.t[j].prof.Parse
@@ -362,14 +363,14 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 
 	// Append hidden zero-size fields at the end to ensure that the stride of
 	// this type is divisible by 8.
-	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align), hot: true})
-	ir.s = append(ir.s, sField{align: uint32(unsafe2.Int64Align), hot: false})
+	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: true})
+	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: false})
 
 	slices.SortStableFunc(ir.s, func(a, b sField) int {
 		// Sort hot fields before cold fields. This simplifies the code below.
 		switch {
 		case a.hot == b.hot:
-			return -cmp.Compare(a.align, b.align)
+			return -cmp.Compare(a.layout.Align, b.layout.Align)
 		case a.hot:
 			return -1
 		default:
@@ -382,16 +383,16 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 	bitWords := (bits + bitsPerWord - 1) / bitsPerWord // Divide and round up.
 	ir.layout.bitWords = bitWords + whichWords
 
-	ir.hot, _ = unsafe2.Layout[message]()
+	ir.hot = layout.Size[message]()
 	ir.hot += (bitWords + whichWords) * 4
 
-	ir.cold, _ = unsafe2.Layout[cold]()
+	ir.cold = layout.Size[cold]()
 
 	var nextBit uint32
 	nextWhichWord := uint32(ir.hot - whichWords*4)
 	for i := range ir.s {
 		sf := &ir.s[i]
-		if sf.align == 0 {
+		if sf.layout.Align == 0 {
 			continue
 		}
 
@@ -401,7 +402,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 			size = &ir.cold
 		}
 
-		_, up := unsafe2.Addr[byte](*size).Misalign(int(sf.align))
+		_, up := unsafe2.Addr[byte](*size).Misalign(sf.layout.Align)
 		*size += up
 		if dbg.Enabled && up > 0 {
 			// Note alignment padding required for the previous field.
@@ -417,7 +418,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		if !sf.hot {
 			sf.offset.data = ^sf.offset.data
 		}
-		*size += int(sf.size)
+		*size += sf.layout.Size
 
 		if sf.bits > 0 {
 			sf.offset.bit = nextBit
@@ -446,8 +447,8 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 			}
 
 			ir.layout.fields = append(ir.layout.fields, fieldLayout{
-				size:   sf.size,
-				align:  sf.align,
+				size:   uint32(sf.layout.Size),
+				align:  uint32(sf.layout.Align),
 				bits:   sf.bits,
 				index:  index,
 				offset: sf.offset,
@@ -466,7 +467,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		// Print the resulting layout for this struct.
 		c.log("layout", "%s, %d/%d\n%v", ir.d.FullName(), ir.hot, ir.cold,
 			dbg.Formatter(func(buf fmt.State) {
-				start, _ := unsafe2.Layout[message]()
+				start := layout.Size[message]()
 				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.bitWords, ir.layout.bitWords)
 				for _, sf := range ir.s {
 					if sf.tIdx == nil {
@@ -485,7 +486,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 					} else {
 						fmt.Fprint(buf, "(-)")
 					}
-					fmt.Fprintf(buf, "[%d:%d:%d]", sf.size, sf.align, sf.bits)
+					fmt.Fprintf(buf, "[%d:%d:%d]", sf.layout.Size, sf.layout.Align, sf.bits)
 
 					fmt.Fprintf(buf, " %s: ", name)
 					switch tf.d.Cardinality() {

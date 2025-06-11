@@ -53,6 +53,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 // Arena is an Arena for holding values of any type which does not contain
@@ -80,12 +81,12 @@ const Align = int(unsafe.Sizeof(uintptr(0)))
 
 // New allocates a new value of type T on an arena.
 func New[T any](a *Arena, value T) *T {
-	size, align := unsafe2.Layout[T]()
-	if align > Align {
+	layout := layout.Of[T]()
+	if layout.Align > Align {
 		panic("fastpb: over-aligned object")
 	}
 
-	p := unsafe2.Cast[T](a.Alloc(size))
+	p := unsafe2.Cast[T](a.Alloc(layout.Size))
 	*p = value
 	return p
 }
@@ -143,10 +144,10 @@ func (a *Arena) Free() {
 	}
 }
 
-// realloc grows an allocation.
+// Realloc grows an allocation.
 //
 //go:nosplit
-func (a *Arena) realloc(newSize, oldSize int, p *byte) *byte {
+func (a *Arena) Realloc(newSize, oldSize int, p *byte) *byte {
 	// This Just Works regardless of whether the allocation is growing or
 	// shrinking. If it's shrinking, delta will be negative, and a.left
 	// is never negative, so this will add back the spare capacity.

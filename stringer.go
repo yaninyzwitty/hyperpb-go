@@ -23,6 +23,8 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // Stringer implementations for various internal types. These are only relevant
@@ -103,12 +105,12 @@ func (m *message) dump() string {
 		return buf.String()
 	}
 
-	layout := m.ty().raw.aux.layout.Get()
+	tLayout := m.ty().raw.aux.layout.Get()
 
 	// Print out the bit words.
-	if layout.bitWords > 0 {
+	if tLayout.bitWords > 0 {
 		fmt.Fprint(buf, "bits:")
-		words := unsafe2.Beyond[byte](m).Slice(layout.bitWords * 4)
+		words := unsafe2.Beyond[byte](m).Slice(tLayout.bitWords * 4)
 		for i, word := range words {
 			if i > 0 && i%4 == 0 {
 				fmt.Fprintf(buf, "\n     ")
@@ -119,16 +121,16 @@ func (m *message) dump() string {
 	}
 
 	// Print out each field.
-	if len(layout.fields) > 0 {
+	if len(tLayout.fields) > 0 {
 		fmt.Fprintln(buf, "fields:")
 		oneofs := m.ty().Descriptor().Oneofs()
 
 		var maxBits uint32
-		for _, field := range layout.fields {
+		for _, field := range tLayout.fields {
 			maxBits = max(field.bits, maxBits)
 		}
 
-		for _, field := range layout.fields {
+		for _, field := range tLayout.fields {
 			start := buf.Len()
 			data := getField[byte](m, field.offset)
 
@@ -198,11 +200,11 @@ func (m *message) dump() string {
 				fmt.Fprintf(buf, "%02x", unsafe2.ByteLoad[byte](data, i))
 			}
 
-			if field.size == uint32(zcSize) {
-				zc := unsafe2.ByteLoad[zc](data, 0)
-				start, end := zc.start(), zc.end()
+			if int(field.size) == layout.Size[zc.Range]() {
+				zc := unsafe2.ByteLoad[zc.Range](data, 0)
+				start, end := zc.Start(), zc.End()
 				if start <= m.context.len && end <= m.context.len && start < end {
-					fmt.Fprintf(buf, " %q", zc.bytes(m.context.src))
+					fmt.Fprintf(buf, " %q", zc.Bytes(m.context.src))
 				}
 			}
 
@@ -213,7 +215,7 @@ func (m *message) dump() string {
 	if cold != nil && cold.unknown.Len() > 0 {
 		fmt.Fprint(buf, "unknown:")
 		for _, unknown := range cold.unknown.Raw() {
-			fmt.Fprintf(buf, "  %v `%x`\n", unknown, unknown.bytes(m.context.src))
+			fmt.Fprintf(buf, "  %v `%x`\n", unknown, unknown.Bytes(m.context.src))
 		}
 		fmt.Fprintln(buf)
 	}

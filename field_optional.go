@@ -18,7 +18,8 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // Optionals are implemented as one bit for presence in the hasbits array, and
@@ -30,22 +31,19 @@ import (
 var optionalFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		bits:    1,
 		getter:  getOptionalScalar[int32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalVarint32}},
 	},
 	protoreflect.Uint32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[uint32](),
 		bits:    1,
 		getter:  getOptionalScalar[uint32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalVarint32}},
 	},
 	protoreflect.Sint32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		bits:    1,
 		getter:  getOptionalScalar[int32],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalZigZag32}},
@@ -53,22 +51,19 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		bits:    1,
 		getter:  getOptionalScalar[int64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalVarint64}},
 	},
 	protoreflect.Uint64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[uint64](),
 		bits:    1,
 		getter:  getOptionalScalar[uint64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalVarint64}},
 	},
 	protoreflect.Sint64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		bits:    1,
 		getter:  getOptionalScalar[int64],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalZigZag64}},
@@ -76,22 +71,19 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[uint32](),
 		bits:    1,
 		getter:  getOptionalScalar[uint32],
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOptionalFixed32}},
 	},
 	protoreflect.Sfixed32Kind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[int32](),
 		bits:    1,
 		getter:  getOptionalScalar[int32],
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOptionalFixed32}},
 	},
 	protoreflect.FloatKind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[float32](),
 		bits:    1,
 		getter:  getOptionalScalar[float32],
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOptionalFixed32}},
@@ -99,22 +91,19 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[uint64](),
 		bits:    1,
 		getter:  getOptionalScalar[uint64],
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOptionalFixed64}},
 	},
 	protoreflect.Sfixed64Kind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[int64](),
 		bits:    1,
 		getter:  getOptionalScalar[int64],
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOptionalFixed64}},
 	},
 	protoreflect.DoubleKind: {
-		size:    uint32(unsafe2.Int64Size),
-		align:   uint32(unsafe2.Int64Align),
+		layout:  layout.Of[float64](),
 		bits:    1,
 		getter:  getOptionalScalar[float64],
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOptionalFixed64}},
@@ -122,13 +111,13 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		size: 0, align: 1, bits: 2,
+		layout:  layout.Of[struct{}](),
+		bits:    2,
 		getter:  getOptionalBool,
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalBool}},
 	},
 	protoreflect.EnumKind: {
-		size:    uint32(unsafe2.Int32Size),
-		align:   uint32(unsafe2.Int32Align),
+		layout:  layout.Of[protoreflect.EnumNumber](),
 		bits:    1,
 		getter:  getOptionalScalar[protoreflect.EnumNumber],
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOptionalVarint32}},
@@ -136,22 +125,19 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 
 	// String types.
 	protoreflect.StringKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		bits:    1,
 		getter:  getOptionalString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalString}},
 	},
 	proto2StringKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		bits:    1,
 		getter:  getOptionalString,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalBytes}},
 	},
 	protoreflect.BytesKind: {
-		size:    uint32(zcSize),
-		align:   uint32(zcAlign),
+		layout:  layout.Of[zc.Range](),
 		bits:    1,
 		getter:  getOptionalBytes,
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOptionalBytes}},
@@ -181,16 +167,16 @@ func getOptionalString(m *message, _ Type, getter getter) protoreflect.Value {
 	if !m.getBit(getter.offset.bit) {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := *getField[zc](m, getter.offset)
-	return protoreflect.ValueOf(zc.utf8(m.context.src))
+	r := *getField[zc.Range](m, getter.offset)
+	return protoreflect.ValueOf(r.String(m.context.src))
 }
 
 func getOptionalBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	if !m.getBit(getter.offset.bit) {
 		return protoreflect.ValueOf(nil)
 	}
-	zc := *getField[zc](m, getter.offset)
-	return protoreflect.ValueOf(zc.bytes(m.context.src))
+	r := *getField[zc.Range](m, getter.offset)
+	return protoreflect.ValueOf(r.Bytes(m.context.src))
 }
 
 //go:nosplit
@@ -238,9 +224,9 @@ func parseOptionalFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 
 //go:nosplit
 func parseOptionalString(p1 parser1, p2 parser2) (parser1, parser2) {
-	var zc zc
-	p1, p2, zc = p1.utf8(p2)
-	p2.scratch = uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.utf8(p2)
+	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 	p1, p2 = p1.setBit(p2)
 
@@ -249,9 +235,9 @@ func parseOptionalString(p1 parser1, p2 parser2) (parser1, parser2) {
 
 //go:nosplit
 func parseOptionalBytes(p1 parser1, p2 parser2) (parser1, parser2) {
-	var zc zc
-	p1, p2, zc = p1.bytes(p2)
-	p2.scratch = uint64(zc)
+	var r zc.Range
+	p1, p2, r = p1.bytes(p2)
+	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
 	p1, p2 = p1.setBit(p2)
 

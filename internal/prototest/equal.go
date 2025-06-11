@@ -197,6 +197,10 @@ func (e *equal) list(a, b protoreflect.List, rec bool) {
 
 func (e *equal) map_(a, b protoreflect.Map, rec bool) {
 	e.Helper()
+	if (a == nil) != (b == nil) {
+		return
+	}
+
 	// Make a set of all of the keySet.
 	keySet := make(map[any]struct{})
 	for k := range a.Range {

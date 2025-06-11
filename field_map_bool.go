@@ -18,6 +18,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // map<bool, V> is implemented as a uint8-keyed map. They could be implemented
@@ -72,7 +73,7 @@ func (m map2xI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 
 // getMap2xS is a [getterThunk] for map<bool, string>.
 func getMap2xS(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, zc]](m, getter.offset)
+	v := getField[*swiss.Table[uint8, zc.Range]](m, getter.offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -84,7 +85,7 @@ func getMap2xS(m *message, _ Type, getter getter) protoreflect.Value {
 type map2xS struct {
 	unimplementedMap
 	src   *byte
-	table *swiss.Table[uint8, zc]
+	table *swiss.Table[uint8, zc.Range]
 }
 
 func (m map2xS) Len() int                        { return m.table.Len() }
@@ -96,12 +97,12 @@ func (m map2xS) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(v.utf8(m.src))
+	return protoreflect.ValueOf(v.String(m.src))
 }
 
 func (m map2xS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(v.utf8(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(v.String(m.src))) {
 			return
 		}
 	}
@@ -109,7 +110,7 @@ func (m map2xS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 
 // getMap2xB is a [getterThunk] for map<bool, bytes>.
 func getMap2xB(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, zc]](m, getter.offset)
+	v := getField[*swiss.Table[uint8, zc.Range]](m, getter.offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -121,7 +122,7 @@ func getMap2xB(m *message, _ Type, getter getter) protoreflect.Value {
 type map2xB struct {
 	unimplementedMap
 	src   *byte
-	table *swiss.Table[uint8, zc]
+	table *swiss.Table[uint8, zc.Range]
 }
 
 func (m map2xB) Len() int                        { return m.table.Len() }
@@ -133,12 +134,12 @@ func (m map2xB) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(v.bytes(m.src))
+	return protoreflect.ValueOf(v.Bytes(m.src))
 }
 
 func (m map2xB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(v.bytes(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(v.Bytes(m.src))) {
 			return
 		}
 	}

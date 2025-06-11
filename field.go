@@ -21,6 +21,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 const (
@@ -180,7 +181,7 @@ func (f *field) get(m *message) protoreflect.Value {
 // use in the construction of a [fastpb.Type].
 type archetype struct {
 	// The layout for the field's storage in the message.
-	size, align uint32
+	layout layout.Layout
 	// Bits to allocate for this field.
 	bits uint32
 
