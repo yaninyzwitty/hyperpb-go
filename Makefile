@@ -1,3 +1,17 @@
+# Copyright 2025 Buf Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # See https://tech.davis-hansson.com/p/make/
 SHELL := bash
 .DELETE_ON_ERROR:
@@ -7,16 +21,19 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --no-print-directory
 
-BIN ?= $(abspath .tmp/bin)
-CACHE := $(abspath .tmp/cache)
+BIN := .tmp/bin
+export PATH := $(abspath $(BIN)):$(PATH)
+export GOBIN := $(abspath $(BIN))
 
-COPYRIGHT_YEARS := 2020-2025
-LICENSE_IGNORE := -E -e "/testdata/"
+COPYRIGHT_YEARS := 2025
+LICENSE_IGNORE := testdata/
 
-# Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
+BUF_VERSION := v1.50.0
+LINT_VERSION := v1.63.4
+
 GO ?= go
-GO_CMD := GOTOOLCHAIN=local $(GO)
-GO_TAGS ?= ""
+GO := GOTOOLCHAIN=local $(GO)
+TAGS ?= ""
 
 ASM_FILTER ?= ^github.com/bufbuild/fastpb
 BENCHMARK ?= .
@@ -29,12 +46,11 @@ PKG ?= .
 TESTFLAGS ?=
 BENCHFLAGS ?= -benchmem
 
-TOOLS_MOD_DIR := ./internal/tools
-PATH_SEP := ":"
-
 .PHONY: help
 help: ## Describe useful make targets
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-30s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| sort \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "%-30s %s\n", $$1, $$2}'
 
 .PHONY: all
 all: ## Build, test, and lint (default)
@@ -48,81 +64,81 @@ clean: ## Delete intermediate build artifacts
 
 .PHONY: test
 test: build ## Run unit tests
-	$(GO_CMD) test -tags=$(GO_TAGS) $(PKGS) $(TESTFLAGS)
+	$(GO) test -tags=$(TAGS) $(PKGS) $(TESTFLAGS)
 
 .PHONY: bench
 bench: build ## Run benchmarks
-	$(GO_CMD) run ./internal/prettybench -tags=$(GO_TAGS) -bench '$(BENCHMARK)' $(PKGS) $(BENCHFLAGS)
+	$(GO) run ./internal/prettybench -bench '$(BENCHMARK)' $(BENCHFLAGS) \
+		-tags=$(TAGS) \
+		$(PKGS)
 
 .PHONY: profile
 profile: build ## Profile benchmarks and open them in pprof
-	$(GO_CMD) test -bench '$(BENCHMARK)' $(BENCHFLAGS) -run '^B' \
-		-tags=$(GO_TAGS) \
+	$(GO) test -bench '$(BENCHMARK)' $(BENCHFLAGS) -run '^B' \
+		-tags=$(TAGS) \
 		-benchtime 3s \
 		-o fastpb.test \
 		-cpuprofile fastpb.prof \
-		$(PKG) $(TESTFLAGS)
-	$(GO_CMD) tool pprof -http localhost:8000 fastpb.test fastpb.prof
+		$(PKG)
+	$(GO) tool pprof -http localhost:8000 fastpb.test fastpb.prof
 
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
-	$(GO_CMD) test -tags=$(GO_TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
-	$(GO_CMD) tool objdump -gnu -s '$(ASM_FILTER)' fastpb.test | \
-		$(GO_CMD) run ./internal/prettyasm \
+	$(GO) test -tags=$(TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
+	$(GO) tool objdump -gnu -s '$(ASM_FILTER)' fastpb.test | \
+		$(GO) run ./internal/prettyasm \
 			-info fileline \
 			-prefix 'github.com/bufbuild/fastpb' \
 			-nops \
-			> fastpb.s 
-
+			> fastpb.s
+	
 .PHONY: build
 build: generate ## Build all packages
-	$(GO_CMD) build -tags=$(GO_TAGS) ./...
+	$(GO) build -tags=$(TAGS) $(PKGS)
 
 .PHONY: lint
-lint: $(BIN)/golangci-lint ## Lint Go
-	$(GO_CMD) vet -unsafeptr=false ./...
-	$(BIN)/golangci-lint run
+lint: $(BIN)/golangci-lint ## Lint
+	$(GO) vet -unsafeptr=false ./...
+	$(BIN)/golangci-lint run \
+		--modules-download-mode=readonly \
+		--timeout=3m0s
 
 .PHONY: lintfix
 lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
-	$(BIN)/golangci-lint run --fix
+	$(BIN)/golangci-lint run \
+		--modules-download-mode=readonly \
+		--timeout=3m0s \
+		--fix
 
 .PHONY: generate
-generate: $(BIN)/license-header ## Regenerate code and licenses
-	PATH="$(BIN)$(PATH_SEP)$(PATH)" $(GO_CMD) generate ./...
-	@# We want to operate on a list of modified and new files, excluding
-	@# deleted and ignored files. git-ls-files can't do this alone. comm -23 takes
-	@# two files and prints the union, dropping lines common to both (-3) and
-	@# those only in the second file (-2). We make one git-ls-files call for
-	@# the modified, cached, and new (--others) files, and a second for the
-	@# deleted files.
-	comm -23 \
-		<(git ls-files --cached --modified --others --no-empty-directory --exclude-standard | sort -u | grep -v $(LICENSE_IGNORE) ) \
-		<(git ls-files --deleted | sort -u) | \
-		xargs $(BIN)/license-header \
-			--license-type apache \
-			--copyright-holder "Buf Technologies, Inc." \
-			--year-range "$(COPYRIGHT_YEARS)"
+generate: $(BIN)/buf $(BIN)/license-header ## Regenerate code and licenses
+	$(GO) generate ./...
+	@#$(BIN)/buf generate --clean
+	$(BIN)/license-header \
+		--license-type apache \
+		--copyright-holder "Buf Technologies, Inc." \
+		--year-range "$(COPYRIGHT_YEARS)" \
+		--ignore $(LICENSE_IGNORE)
 
 .PHONY: upgrade
 upgrade: ## Upgrade dependencies
-	go get -u -t ./... && go mod tidy -v
+	go mod edit -toolchain=$(GO_MOD_GOTOOLCHAIN)
+	go get -u -t ./...
+	go mod tidy -v
 
 .PHONY: checkgenerate
 checkgenerate:
 	@# Used in CI to verify that `make generate` doesn't produce a diff.
-	@echo git status --porcelain
-	@if [[ -n "$$(git status --porcelain | tee /dev/stderr)" ]]; then \
-	  git diff; \
-	  false; \
-	fi
+	test -z "$$(git status --porcelain | tee /dev/stderr)"
 
-$(BIN)/license-header: internal/tools/go.mod internal/tools/go.sum
+$(BIN)/buf: Makefile
 	@mkdir -p $(@D)
-	cd $(TOOLS_MOD_DIR) && \
-		GOWORK=off $(GO_CMD) build -o $@ github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header
+	$(GO) install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
 
-$(BIN)/golangci-lint: internal/tools/go.mod internal/tools/go.sum
+$(BIN)/license-header: Makefile
 	@mkdir -p $(@D)
-	cd $(TOOLS_MOD_DIR) && \
-		GOWORK=off $(GO_CMD) build -o $@ github.com/golangci/golangci-lint/cmd/golangci-lint
+	$(GO) install github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@$(BUF_VERSION)
+
+$(BIN)/golangci-lint: Makefile
+	@mkdir -p $(@D)
+	$(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@$(LINT_VERSION)
