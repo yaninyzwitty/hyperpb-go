@@ -259,6 +259,12 @@ func run() error {
 	}
 
 	path := os.Getenv("GOFILE")
+	text, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	pkg := string(regexp.MustCompile(`(?:^|\n)package (\w+)`).FindSubmatch(text)[1])
+
 	dirname := filepath.Dir(path)
 	dir, err := os.ReadDir(dirname)
 	if err != nil {
@@ -283,8 +289,7 @@ func run() error {
 	var newer bool
 	for _, dirent := range dir {
 		if dirent.Type().IsDir() ||
-			!strings.HasSuffix(dirent.Name(), ".go") ||
-			strings.HasSuffix(dirent.Name(), "_test.go") != isTest {
+			!strings.HasSuffix(dirent.Name(), ".go") {
 			continue
 		}
 		files = append(files, filepath.Join(dirname, dirent.Name()))
@@ -321,7 +326,6 @@ func run() error {
 		}
 	}()
 
-	var pkg string
 	decls := make([][]ast.Decl, len(files))
 	for i, path := range files {
 		wg.Add(1)
@@ -329,10 +333,12 @@ func run() error {
 			defer wg.Done()
 			file, err := parser.ParseFile(fset, path, nil, parser.ParseComments|parser.SkipObjectResolution)
 			if err != nil {
-				ch <- err
+				ch <- fmt.Errorf("%s:%w", path, err)
 				return
 			}
-			pkg = file.Name.Name
+			if file.Name.Name != pkg {
+				return
+			}
 
 			// Build a map of import names to imports.
 			for _, imp := range file.Imports {
