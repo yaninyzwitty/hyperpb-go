@@ -292,6 +292,10 @@ func run() error {
 		info, _ := dirent.Info()
 		newer = newer || info.ModTime().After(mtime)
 	}
+	if info, err := os.Stat(os.Args[0]); err == nil {
+		// Also include the age of this executable.
+		newer = newer || info.ModTime().After(mtime)
+	}
 	if !newer {
 		return nil
 	}

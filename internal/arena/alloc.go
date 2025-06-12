@@ -25,6 +25,8 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
+//go:generate ./make_shapes.sh shapes.go 49
+
 func suggestSizeLog(bytes int) uint {
 	// Snap to the next power of two.
 	return max(6, uint(bits.Len(uint(bytes)-1)))

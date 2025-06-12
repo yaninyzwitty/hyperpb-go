@@ -37,7 +37,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
-//go:generate go run ../stencil
+//go:generate go run ../tools/stencil
 
 const (
 	minEntires = ctrlSize * 7 / 8

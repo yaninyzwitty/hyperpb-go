@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// prettybench is a script for running benchmarks and generating a
+// bench is a script for running benchmarks and generating a
 // pretty-printed report for putting into commit messages.
 package main
 
@@ -28,6 +28,7 @@ import (
 	"unicode/utf8"
 )
 
+// prefixes is a list of SI prefixes.
 var prefixes = []struct {
 	prefix string
 	mult   float64
@@ -45,6 +46,7 @@ var prefixes = []struct {
 	{"p", 1e-12},
 }
 
+// common returns the common prefix length of a and b.
 func common(a, b string) int {
 	var i int
 	for ; i < min(len(a), len(b)) && a[i] == b[i]; i++ {
@@ -53,7 +55,7 @@ func common(a, b string) int {
 }
 
 func main() {
-	argv0, ok := os.LookupEnv("GO_CMD")
+	argv0, ok := os.LookupEnv("GO")
 	if !ok {
 		argv0 = "go"
 	}

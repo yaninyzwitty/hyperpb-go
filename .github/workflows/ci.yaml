@@ -38,18 +38,18 @@ jobs:
           key: "${{ runner.os }}-fastpb-ci-${{ hashFiles('**/go.sum') }}"
           restore-keys: "${{ runner.os }}-fastpb-ci-"
 
-      - name: Test
-        run: GO_TAGS=${{ matrix.tags }} make test
-
-      - name: Benchmark
-        if: ${{ matrix.tags == '' }}
-        run: BENCHMARK="B/bench/^descriptor.yaml" make bench
-
       - name: Check Generated Files
         if: ${{ matrix.tags == '' }}
         run: |
           make generate
           make checkgenerate
+
+      - name: Test
+        run: make test TAGS=${{ matrix.tags }} 
+
+      - name: Benchmark
+        if: ${{ matrix.tags == '' }}
+        run: make bench BENCHMARK="B/bench/^descriptor.yaml" 
 
   # Linting is crazy slow because it needs to build tons of code, so we run
   # it in parallel from everything else.

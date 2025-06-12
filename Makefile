@@ -68,7 +68,7 @@ test: build ## Run unit tests
 
 .PHONY: bench
 bench: build ## Run benchmarks
-	$(GO) run ./internal/prettybench -bench '$(BENCHMARK)' $(BENCHFLAGS) \
+	$(GO) run ./internal/tools/bench -bench '$(BENCHMARK)' $(BENCHFLAGS) \
 		-tags=$(TAGS) \
 		$(PKGS)
 
@@ -85,12 +85,13 @@ profile: build ## Profile benchmarks and open them in pprof
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
 	$(GO) test -tags=$(TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
-	$(GO) tool objdump -gnu -s '$(ASM_FILTER)' fastpb.test | \
-		$(GO) run ./internal/prettyasm \
-			-info fileline \
-			-prefix 'github.com/bufbuild/fastpb' \
-			-nops \
-			> fastpb.s
+	$(GO) run ./internal/tools/objdump \
+		-s '$(ASM_FILTER)' \
+		-info fileline \
+		-prefix 'github.com/bufbuild/fastpb' \
+		-nops \
+		-o fastpb.s \
+		fastpb.test
 	
 .PHONY: build
 build: generate ## Build all packages
@@ -129,7 +130,7 @@ upgrade: ## Upgrade dependencies
 .PHONY: checkgenerate
 checkgenerate:
 	@# Used in CI to verify that `make generate` doesn't produce a diff.
-	test -z "$$(git status --porcelain | tee /dev/stderr)"
+	git --no-pager diff --exit-code >&2
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)
