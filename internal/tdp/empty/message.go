@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp"
 )
 
@@ -83,7 +83,7 @@ func (e Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 		return protoreflect.ValueOf(List{})
 
 	case fd.IsMap():
-		panic(dbg.Unsupported())
+		panic(debug.Unsupported())
 
 	case fd.Message() != nil:
 		return protoreflect.ValueOf(Message{f.Message})
@@ -97,21 +97,21 @@ func (e Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 //
 // Panics when called.
 func (e Message) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // Mutable implements [protoreflect.Message].
 //
 // Panics when called.
 func (e Message) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // NewField implements [protoreflect.Message].
 //
 // Panics when called.
 func (e Message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // GetUnknown implements [protoreflect.Message].
@@ -126,7 +126,7 @@ func (e Message) SetUnknown(raw protoreflect.RawFields) {
 	if len(raw) == 0 {
 		return
 	}
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // WhichOneof implements [protoreflect.Message].

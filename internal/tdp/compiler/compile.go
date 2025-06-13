@@ -28,7 +28,7 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 
 	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/stats"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp"
@@ -139,12 +139,12 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 
 		lib.Types[sym.ty] = ty
 
-		if dbg.Enabled {
+		if debug.Enabled {
 			*ty.Layout.Get() = c.layouts[sym.ty]
 		}
 	}
 
-	if dbg.Enabled {
+	if debug.Enabled {
 		runtime.SetFinalizer(lib.Base, func(t *tdp.Type) {
 			c.log("finalizer", "%p:%s", t, t.Descriptor.FullName())
 		})
@@ -302,7 +302,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 
 		_, up := unsafe2.Addr[byte](*size).Misalign(sf.layout.Align)
 		*size += up
-		if dbg.Enabled && up > 0 {
+		if debug.Enabled && up > 0 {
 			// Note alignment padding required for the previous field.
 			if i == 0 && sf.hot {
 				ir.layout.BitWords += up / 4
@@ -338,7 +338,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 			}
 		}
 
-		if dbg.Enabled && sf.tIdx != nil {
+		if debug.Enabled && sf.tIdx != nil {
 			index := sf.tIdx[0]
 			if ir.t[index].arch.Oneof {
 				index = ^ir.t[index].d.ContainingOneof().Index()
@@ -361,10 +361,10 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", md.FullName(), ir.cold, math.MaxInt32))
 	}
 
-	if dbg.Enabled {
+	if debug.Enabled {
 		// Print the resulting layout for this struct.
 		c.log("layout", "%s, %d/%d\n%v", ir.d.FullName(), ir.hot, ir.cold,
-			dbg.Formatter(func(buf fmt.State) {
+			debug.Formatter(func(buf fmt.State) {
 				start := layout.Size[dynamic.Message]()
 				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.BitWords, ir.layout.BitWords)
 				for _, sf := range ir.s {
@@ -491,9 +491,9 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		}
 	}
 
-	if dbg.Enabled {
+	if debug.Enabled {
 		// Print the parser CFG.
-		c.log("cfg", "%s\n%v", ir.d.FullName(), dbg.Formatter(func(buf fmt.State) {
+		c.log("cfg", "%s\n%v", ir.d.FullName(), debug.Formatter(func(buf fmt.State) {
 			for i, pf := range ir.p {
 				tf := ir.t[pf.tIdx]
 				fmt.Fprintf(buf, "  #%d: %v#%d -> #%d\n", i, tf.d.Name(), pf.aIdx, pf.next)
@@ -784,5 +784,5 @@ func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...
 }
 
 func (c *compiler) log(op, format string, args ...any) {
-	dbg.Log([]any{"%p", c}, op, format, args...)
+	debug.Log([]any{"%p", c}, op, format, args...)
 }

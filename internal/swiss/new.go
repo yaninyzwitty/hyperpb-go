@@ -18,13 +18,14 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 // Entry is an entry for building a table with [New].
 type Entry[K, V any] struct {
-	Key   K
+	Key K
+
 	Value V
 }
 
@@ -51,7 +52,7 @@ func New[K Key, V any](out []byte, extract func(K) []byte, entries ...Entry[K, V
 		*t.Insert(e.Key, extract) = e.Value
 	}
 
-	if dbg.Enabled && reflect.TypeOf(*new(V)).Comparable() {
+	if debug.Enabled && reflect.TypeOf(*new(V)).Comparable() {
 		// Perform a self-test to make sure that everything is ok.
 		var failed bool
 		for _, e := range entries {

@@ -16,7 +16,7 @@ package thunks
 
 import (
 	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
@@ -8551,7 +8551,7 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	if r.raw.Ptr == 0 {
 
 		r.raw = slice.OffArena(p1.Ptr(), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint32](r.raw))
 		}
 
@@ -8563,7 +8563,7 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s := slice.CastUntyped[uint32](r.raw)
 		size := layout.Size[uint32]()
 		borrowed := unsafe2.Slice(unsafe2.Cast[uint32](p1.Ptr()), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
 
@@ -8571,7 +8571,7 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 		s = s.Append(p1.Arena(), borrowed...)
 		r.raw = s.Addr().Untyped()
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
 		}
 	}
@@ -8600,7 +8600,7 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	if r.raw.Ptr == 0 {
 
 		r.raw = slice.OffArena(p1.Ptr(), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint64](r.raw))
 		}
 
@@ -8612,7 +8612,7 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s := slice.CastUntyped[uint64](r.raw)
 		size := layout.Size[uint64]()
 		borrowed := unsafe2.Slice(unsafe2.Cast[uint64](p1.Ptr()), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
 
@@ -8620,7 +8620,7 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 		s = s.Append(p1.Arena(), borrowed...)
 		r.raw = s.Addr().Untyped()
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
 		}
 	}

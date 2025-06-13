@@ -41,7 +41,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/bufbuild/fastpb"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	debug1 "github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/flag2"
 	_ "github.com/bufbuild/fastpb/internal/gen/test"
 	"github.com/bufbuild/fastpb/internal/prototest"
@@ -203,7 +203,7 @@ func runTests[T testingT[T]](t T, f func(T, *test)) {
 
 func parseTest(t testing.TB, path string, file []byte) *test {
 	t.Helper()
-	defer dbg.WithTesting(t)()
+	defer debug1.WithTesting(t)()
 
 	require.True(t, bytes.HasSuffix(file, []byte("\n")), "missing trailing newline in %q", path)
 
@@ -264,7 +264,7 @@ func (test *test) run(t *testing.T, ctx *fastpb.Shared) {
 		t.Helper()
 
 		debug.SetPanicOnFault(true)
-		defer dbg.WithTesting(t)()
+		defer debug1.WithTesting(t)()
 
 		// Parse using the gencode.
 		m1 := test.Type.Gencode.New().Interface()

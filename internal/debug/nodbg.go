@@ -14,7 +14,7 @@
 
 //go:build !debug
 
-package dbg
+package debug
 
 const Enabled = false
 

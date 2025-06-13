@@ -24,7 +24,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
@@ -92,16 +92,16 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 			parseErr := p3.err
 			err = &parseErr
 
-			if dbg.Enabled {
+			if debug.Enabled {
 				buf := new(strings.Builder)
 				for _, frame := range p3.stackSlice() {
 					fmt.Fprintf(buf, "- %#v\n", frame)
 				}
 
-				dbg.Log(nil, "fail",
+				debug.Log(nil, "fail",
 					"%v\n"+
 						"trace to fail() call:\n%s"+
-						"stack:\n%s", err, dbg.Stack(6), buf)
+						"stack:\n%s", err, debug.Stack(6), buf)
 			}
 		}
 
@@ -220,7 +220,7 @@ field:
 		for {
 			p1.Log(p2, "try", "%v, %v, %v", tag, tries, p2.Field())
 
-			if dbg.Enabled {
+			if debug.Enabled {
 				// Run the GC frequently in debug mode to smoke out bugs where
 				// we've left a stack root unmarked.
 				runtime.GC()
@@ -235,9 +235,9 @@ field:
 				unsafe2.Ping(p1.Shared())
 
 				thunk := (*unsafe2.PC[Thunk])(&p2.Field().Parse)
-				p1.Log(p2, "call", "%v, %#x", dbg.Func(thunk.Get()), p2.fieldAddr)
+				p1.Log(p2, "call", "%v, %#x", debug.Func(thunk.Get()), p2.fieldAddr)
 				p1, p2 = thunk.Get()(p1, p2)
-				p1.Log(p2, "ret", "%v, %#x", dbg.Func(thunk.Get()), p2.fieldAddr)
+				p1.Log(p2, "ret", "%v, %#x", debug.Func(thunk.Get()), p2.fieldAddr)
 
 				p2.fieldAddr = unsafe2.AddrOf(p2.Field().NextOk)
 
@@ -318,7 +318,7 @@ field:
 
 pop:
 	{
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(
 				p2, "finish", "%v, ty: %p:%s %v",
 				p2.messageAddr,

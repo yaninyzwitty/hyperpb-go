@@ -51,7 +51,7 @@ package arena
 import (
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -186,5 +186,5 @@ func (a *Arena) Grow(size int) {
 }
 
 func (a *Arena) Log(op, format string, args ...any) {
-	dbg.Log([]any{"%p %v:%v", a, a.Next, a.End}, op, format, args...)
+	debug.Log([]any{"%p %v:%v", a, a.Next, a.End}, op, format, args...)
 }

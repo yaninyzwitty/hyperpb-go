@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -44,7 +44,7 @@ func New(src *byte, start *byte, len int) Range {
 
 // NewRaw is like newZC, but it only takes the offset and length.
 func NewRaw(offset, len int) Range {
-	dbg.Assert(offset <= math.MaxUint32 && len <= math.MaxUint32,
+	debug.Assert(offset <= math.MaxUint32 && len <= math.MaxUint32,
 		"offset too large for zc: [%d:%d]", offset, len)
 	return Range(offset) | Range(len)<<32
 }
@@ -76,5 +76,5 @@ func (r Range) String(src *byte) string {
 
 // Format implements [fmt.Formatter].
 func (r Range) Format(s fmt.State, verb rune) {
-	dbg.Fprintf("[%d:%d]", r.Start(), r.End()).Format(s, verb)
+	debug.Fprintf("[%d:%d]", r.Start(), r.End()).Format(s, verb)
 }

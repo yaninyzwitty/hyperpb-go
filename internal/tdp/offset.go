@@ -17,7 +17,7 @@ package tdp
 import (
 	"fmt"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 )
 
 // Offset is field offset information for a generated message type's field.
@@ -41,5 +41,5 @@ type Offset struct {
 
 // Format implements [fmt.Formatter].
 func (o Offset) Format(s fmt.State, verb rune) {
-	dbg.Fprintf("%d:%d:%#04x", o.Bit, o.Number, o.Data).Format(s, verb)
+	debug.Fprintf("%d:%d:%#04x", o.Bit, o.Number, o.Data).Format(s, verb)
 }

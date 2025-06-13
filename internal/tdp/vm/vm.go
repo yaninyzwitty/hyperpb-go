@@ -29,7 +29,7 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/sync2"
 	"github.com/bufbuild/fastpb/internal/tdp"
@@ -144,7 +144,7 @@ func (p1 P1) Ptr() *byte {
 	//
 	// Annoyingly this means we also need to be careful in parser1.buf(),
 	// because we cannot form a zero-sized slice to the end of an allocation.
-	dbg.Assert(p1.PtrAddr < p1.EndAddr,
+	debug.Assert(p1.PtrAddr < p1.EndAddr,
 		"p1.b_ cannot point one past the end: need %v < %v", p1.PtrAddr, p1.EndAddr)
 	return p1.PtrAddr.AssertValid()
 }
@@ -181,7 +181,7 @@ func (p1 P1) Fail(p2 P2, err ErrorCode) {
 
 // Log logs debugging information during a parse.
 func (p1 P1) Log(p2 P2, op, format string, args ...any) {
-	if !dbg.Enabled {
+	if !debug.Enabled {
 		return
 	}
 
@@ -192,7 +192,7 @@ func (p1 P1) Log(p2 P2, op, format string, args ...any) {
 	if p1.PtrAddr < p1.EndAddr {
 		b = *p1.Ptr()
 	}
-	dbg.Log(
+	debug.Log(
 		[]any{
 			"%p:%p:%d [%d:%d] = 0x%02x",
 			p1.Shared(), p2.Message(), height, start, end, b,
@@ -230,7 +230,7 @@ func (p1 P1) Advance(n int) P1 {
 //
 //go:nosplit
 func (p1 P1) Varint(p2 P2) (P1, P2, uint64) {
-	if dbg.Enabled {
+	if debug.Enabled {
 		// Force this function to behave as if it is not nosplit in debug mode,
 		// so that we don't overflow the nosplit stack when we turn on
 		// debugging.
@@ -283,7 +283,7 @@ func (p1 P1) Bytes(p2 P2) (P1, P2, zc.Range) {
 	r := zc.NewRaw(p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())), n)
 	p1 = p1.Advance(n)
 
-	if dbg.Enabled {
+	if debug.Enabled {
 		text := r.Bytes(p1.Src())
 		p1.Log(p2, "bytes", "%#v, %q", r, text)
 	}
@@ -315,7 +315,7 @@ func (p1 P1) PushMessage(p2 P2, len int, m *dynamic.Message) (P1, P2) {
 	p1.endGroup = ^uint64(0)
 	p2.messageAddr = unsafe2.Addr[dynamic.Message](p2.Scratch)
 	p2.P3().t_ = unsafe2.AddrOf(p2.Message().Type().Parser)
-	if dbg.Enabled {
+	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
@@ -355,7 +355,7 @@ func (p1 P1) PushMapEntry(p2 P2, len int, m *dynamic.Message) (P1, P2) {
 	p1.endGroup = ^uint64(0)
 	p2.messageAddr = unsafe2.Addr[dynamic.Message](p2.Scratch)
 	p2.P3().t_ = unsafe2.AddrOf(p2.Message().Type().Parser.MapEntry)
-	if dbg.Enabled {
+	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
@@ -386,7 +386,7 @@ func (p3 *p3) stackSlice() []frame {
 //
 //go:nosplit
 func (p1 P1) push(p2 P2, end unsafe2.Addr[byte]) (P1, P2) {
-	if dbg.Enabled {
+	if debug.Enabled {
 		p1, p2 = logPush(p1, p2)
 	}
 
@@ -424,7 +424,7 @@ func logPush(p1 P1, p2 P2) (P1, P2) {
 //
 //go:nosplit
 func (p1 P1) pop(p2 P2) (P1, P2, bool) {
-	if dbg.Enabled {
+	if debug.Enabled {
 		s := &p2.P3().stack
 		p1.Log(p2, "pop", "%v/%v/%v\n%s", s.top, s.ptr, s.bottom,
 			p2.Message().Dump())

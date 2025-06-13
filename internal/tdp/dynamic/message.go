@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
@@ -133,7 +133,7 @@ func (m *Message) Dump() string {
 	fmt.Fprintf(buf, "cold: %p, %d/%#[2]x\n", cold, m.Type().ColdSize)
 	fmt.Fprintf(buf, "ctx:  %p\n", m.Shared)
 
-	if !dbg.Enabled {
+	if !debug.Enabled {
 		fmt.Fprintln(buf, "bits: ???")
 		fmt.Fprintln(buf, "fields: ???")
 		return buf.String()

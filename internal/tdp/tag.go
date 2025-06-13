@@ -19,7 +19,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -67,5 +67,5 @@ func (t Tag) Decode() uint64 {
 func (t Tag) Format(s fmt.State, verb rune) {
 	v := t.Decode()
 	n, ty := protowire.DecodeTag(v)
-	dbg.Fprintf("%#x:%d:%d", uint64(t), n, ty).Format(s, verb)
+	debug.Fprintf("%#x:%d:%d", uint64(t), n, ty).Format(s, verb)
 }

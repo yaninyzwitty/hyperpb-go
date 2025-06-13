@@ -17,7 +17,7 @@ package empty
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 )
 
 // List is an empty, untyped, immutable List.
@@ -30,8 +30,8 @@ func (List) Get(n int) protoreflect.Value {
 	return protoreflect.Value{}
 }
 
-func (List) Append(protoreflect.Value)         { panic(dbg.Unsupported()) }
-func (List) AppendMutable() protoreflect.Value { panic(dbg.Unsupported()) }
-func (List) NewElement() protoreflect.Value    { panic(dbg.Unsupported()) }
-func (List) Set(int, protoreflect.Value)       { panic(dbg.Unsupported()) }
-func (List) Truncate(int)                      { panic(dbg.Unsupported()) }
+func (List) Append(protoreflect.Value)         { panic(debug.Unsupported()) }
+func (List) AppendMutable() protoreflect.Value { panic(debug.Unsupported()) }
+func (List) NewElement() protoreflect.Value    { panic(debug.Unsupported()) }
+func (List) Set(int, protoreflect.Value)       { panic(debug.Unsupported()) }
+func (List) Truncate(int)                      { panic(debug.Unsupported()) }

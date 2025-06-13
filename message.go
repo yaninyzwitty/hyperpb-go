@@ -22,7 +22,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/tdp/thunks"
@@ -199,7 +199,7 @@ func (m *Message) Clear(protoreflect.FieldDescriptor) {
 	if m.Shared().impl.Src == nil {
 		return
 	}
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // Reset just calls [Clear]. This exists to speed up [proto.Reset].
@@ -229,21 +229,21 @@ func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 //
 // Panics when called.
 func (m *Message) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // Mutable implements [protoreflect.Message].
 //
 // Panics when called.
 func (m *Message) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // NewField implements [protoreflect.Message].
 //
 // Panics when called.
 func (m *Message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // GetUnknown implements [protoreflect.Message].
@@ -271,7 +271,7 @@ func (m *Message) SetUnknown(raw protoreflect.RawFields) {
 	if len(raw) == 0 {
 		return
 	}
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }
 
 // WhichOneof implements [protoreflect.Message].

@@ -17,7 +17,7 @@ package vm
 import (
 	"math/bits"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -133,7 +133,7 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 		r := zc.NewRaw(p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())), n)
 		p1 = p1.Advance(n)
 
-		if dbg.Enabled {
+		if debug.Enabled {
 			text := r.Bytes(p1.Src())
 			p1.Log(p2, "utf8", "%#v, %q", r, text)
 		}

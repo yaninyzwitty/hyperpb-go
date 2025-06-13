@@ -32,7 +32,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/stats"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -110,7 +110,7 @@ func Layout[K Key, V any](len int) (size, align int) {
 // data is assumed to point zeroed memory.
 func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *Table[K, V] {
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -137,7 +137,7 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 	// loop.
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -151,7 +151,7 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := t.search(h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -167,7 +167,7 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -181,7 +181,7 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := t.searchFunc(h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -347,7 +347,7 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 		// Guaranteed to terminate because there's always going to be an open
 		// spot to insert. We include a debug assert for catching when this
 		// fails to happen.
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -401,7 +401,7 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 		// Guaranteed to terminate because there's always going to be an open
 		// spot to insert. We include a debug assert for catching when this
 		// fails to happen.
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -463,7 +463,7 @@ func (t *Table[K, V]) values() *unsafe2.VLA[V] {
 }
 
 func (t *Table[K, V]) log(op, format string, args ...any) {
-	dbg.Log([]any{"%p", t}, op, format, args...)
+	debug.Log([]any{"%p", t}, op, format, args...)
 }
 
 func (t *Table[K, V]) recordProbeSeq(len int) {

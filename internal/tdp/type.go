@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -79,12 +79,12 @@ func (t *Type) ByDescriptor(fd protoreflect.FieldDescriptor) *Field {
 
 // Format implements [fmt.Formatter].
 func (t *Type) Format(s fmt.State, verb rune) {
-	dbg.Dict(
-		dbg.Fprintf("%p", t),
+	debug.Dict(
+		debug.Fprintf("%p", t),
 		"name", t.Aux.Descriptor.FullName(),
 		"size", t.Size,
 		"count", t.Count,
-		"parser", dbg.Fprintf("%p", t.Parser),
+		"parser", debug.Fprintf("%p", t.Parser),
 	).Format(s, verb)
 }
 
@@ -92,7 +92,7 @@ func (t *Type) Format(s fmt.State, verb rune) {
 // alive in the traces struct in [compiler.compile]. These rarely-accessed
 // fields ensure that parser-relevant data is closer together in cache.
 type Aux struct {
-	Layout dbg.Value[TypeLayout]
+	Layout debug.Value[TypeLayout]
 
 	Library          *Library
 	Descriptor       protoreflect.MessageDescriptor
@@ -133,8 +133,8 @@ func (p *TypeParser) Fields() *unsafe2.VLA[FieldParser] {
 
 // Format implements [fmt.Formatter].
 func (p *TypeParser) Format(s fmt.State, verb rune) {
-	dbg.Dict(
-		dbg.Fprintf("%p", p),
+	debug.Dict(
+		debug.Fprintf("%p", p),
 		"ty", p.TypeOffset,
 		"tags", p.Tags,
 	).Format(s, verb)

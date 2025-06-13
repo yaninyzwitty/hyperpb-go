@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
@@ -566,7 +566,7 @@ func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		// Empty repeated field. We can just shove the zc here.
 		// This is the best-case scenario.
 		r.raw = slice.OffArena(p1.Ptr(), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[T](r.raw))
 		}
 
@@ -581,7 +581,7 @@ func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s := slice.CastUntyped[T](r.raw)
 		size := layout.Size[T]()
 		borrowed := unsafe2.Slice(unsafe2.Cast[T](p1.Ptr()), n/size)
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
 
@@ -589,7 +589,7 @@ func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 		s = s.Append(p1.Arena(), borrowed...)
 		r.raw = s.Addr().Untyped()
-		if dbg.Enabled {
+		if debug.Enabled {
 			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
 		}
 	}

@@ -15,7 +15,7 @@
 package vm
 
 import (
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -121,7 +121,7 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	p1.Fail(p2, ErrorOverflow)
 
 exit:
-	if dbg.Enabled {
+	if debug.Enabled {
 		len := int(unsafe2.AddrOf(p) - p1.PtrAddr) // For debug only.
 		p1.Log(p2, "varint", "%d:%#x (%d bytes)", x, x, len)
 	}

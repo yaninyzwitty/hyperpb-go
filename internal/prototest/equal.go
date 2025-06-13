@@ -27,7 +27,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -272,7 +272,7 @@ func (e *equal) wrongType(a, b any) {
 
 func (e *equal) fail(format string, args ...any) {
 	e.Helper()
-	e.Errorf("failure at %s: %v", e.formatPath(), dbg.Fprintf(format, args...))
+	e.Errorf("failure at %s: %v", e.formatPath(), debug.Fprintf(format, args...))
 }
 
 func (e *equal) formatPath() string {

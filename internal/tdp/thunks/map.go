@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
@@ -972,13 +972,13 @@ func (emptyMap) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 type unimplementedMap struct{}
 
 func (unimplementedMap) IsValid() bool                                  { return true }
-func (unimplementedMap) Clear(protoreflect.MapKey)                      { panic(dbg.Unsupported()) }
-func (unimplementedMap) Get(protoreflect.MapKey) protoreflect.Value     { panic(dbg.Unsupported()) }
-func (unimplementedMap) Has(protoreflect.MapKey) bool                   { panic(dbg.Unsupported()) }
-func (unimplementedMap) Len() int                                       { panic(dbg.Unsupported()) }
-func (unimplementedMap) Mutable(protoreflect.MapKey) protoreflect.Value { panic(dbg.Unsupported()) }
-func (unimplementedMap) NewValue() protoreflect.Value                   { panic(dbg.Unsupported()) }
-func (unimplementedMap) Set(protoreflect.MapKey, protoreflect.Value)    { panic(dbg.Unsupported()) }
+func (unimplementedMap) Clear(protoreflect.MapKey)                      { panic(debug.Unsupported()) }
+func (unimplementedMap) Get(protoreflect.MapKey) protoreflect.Value     { panic(debug.Unsupported()) }
+func (unimplementedMap) Has(protoreflect.MapKey) bool                   { panic(debug.Unsupported()) }
+func (unimplementedMap) Len() int                                       { panic(debug.Unsupported()) }
+func (unimplementedMap) Mutable(protoreflect.MapKey) protoreflect.Value { panic(debug.Unsupported()) }
+func (unimplementedMap) NewValue() protoreflect.Value                   { panic(debug.Unsupported()) }
+func (unimplementedMap) Set(protoreflect.MapKey, protoreflect.Value)    { panic(debug.Unsupported()) }
 func (unimplementedMap) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
-	panic(dbg.Unsupported())
+	panic(debug.Unsupported())
 }

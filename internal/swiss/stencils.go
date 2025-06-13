@@ -16,7 +16,7 @@ package swiss
 
 import (
 	"bytes"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"math/rand/v2"
 	"unsafe"
@@ -27,7 +27,7 @@ import (
 func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extract func(uint8) []byte) *Table[uint8, uint8] {
 	_ = (*Table[uint8, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -50,7 +50,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -64,7 +64,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU8xU8(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -80,7 +80,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -94,7 +94,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU8xU8(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -113,7 +113,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], extract func(uint32) []byte) *Table[uint32, uint8] {
 	_ = (*Table[uint32, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -136,7 +136,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -150,7 +150,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU32xU8(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -166,7 +166,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -180,7 +180,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU32xU8(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -199,7 +199,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], extract func(uint64) []byte) *Table[uint64, uint8] {
 	_ = (*Table[uint64, uint8]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -222,7 +222,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -236,7 +236,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU64xU8(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -252,7 +252,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -266,7 +266,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU64xU8(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -285,7 +285,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], extract func(uint8) []byte) *Table[uint8, uint32] {
 	_ = (*Table[uint8, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -308,7 +308,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -322,7 +322,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU8xU32(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -338,7 +338,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -352,7 +352,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU8xU32(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -371,7 +371,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32], extract func(uint32) []byte) *Table[uint32, uint32] {
 	_ = (*Table[uint32, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -394,7 +394,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -408,7 +408,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU32xU32(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -424,7 +424,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -438,7 +438,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU32xU32(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -457,7 +457,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32], extract func(uint64) []byte) *Table[uint64, uint32] {
 	_ = (*Table[uint64, uint32]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -480,7 +480,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -494,7 +494,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU64xU32(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -510,7 +510,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -524,7 +524,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU64xU32(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -543,7 +543,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], extract func(uint8) []byte) *Table[uint8, uint64] {
 	_ = (*Table[uint8, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -566,7 +566,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -580,7 +580,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU8xU64(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -596,7 +596,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -610,7 +610,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU8xU64(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -629,7 +629,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64], extract func(uint32) []byte) *Table[uint32, uint64] {
 	_ = (*Table[uint32, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -652,7 +652,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -666,7 +666,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU32xU64(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -682,7 +682,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -696,7 +696,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU32xU64(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -715,7 +715,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64], extract func(uint64) []byte) *Table[uint64, uint64] {
 	_ = (*Table[uint64, uint64]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -738,7 +738,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -752,7 +752,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU64xU64(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -768,7 +768,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -782,7 +782,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU64xU64(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -801,7 +801,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsafe.Pointer], extract func(uint8) []byte) *Table[uint8, unsafe.Pointer] {
 	_ = (*Table[uint8, unsafe.Pointer]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -824,7 +824,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -838,7 +838,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU8xP(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -854,7 +854,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -868,7 +868,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU8xP(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -887,7 +887,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, unsafe.Pointer], extract func(uint32) []byte) *Table[uint32, unsafe.Pointer] {
 	_ = (*Table[uint32, unsafe.Pointer]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -910,7 +910,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -924,7 +924,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU32xP(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -940,7 +940,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -954,7 +954,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU32xP(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -973,7 +973,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, unsafe.Pointer], extract func(uint64) []byte) *Table[uint64, unsafe.Pointer] {
 	_ = (*Table[uint64, unsafe.Pointer]).Init
 	t.soft, t.hard = loadFactor(len)
-	if dbg.Enabled {
+	if debug.Enabled {
 		t.log("resize", "newLen: %d:%d:%d, from: %s", len, t.soft, t.hard, from.Dump())
 		defer func() {
 			t.log("resized", "%s", t.Dump())
@@ -996,7 +996,7 @@ func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, un
 
 	if extract == nil {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range ctrlSize {
@@ -1010,7 +1010,7 @@ func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, un
 				k := *keys1.Get(n)
 				h := t.seed.u64(zext(k))
 				idx, occupied := searchU64xP(t, h, k)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -1026,7 +1026,7 @@ func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, un
 		}
 	} else {
 		for i := 0; ; i++ {
-			dbg.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
+			debug.Assert(i < int(t.hard)/ctrlSize, "infinite loop during copy")
 
 			ctrl := *ctrl1.Get(i)
 			for j := range 8 {
@@ -1040,7 +1040,7 @@ func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, un
 				k := extract(*keys1.Get(n))
 				h := t.seed.bytes(k)
 				idx, occupied := searchFuncU64xP(t, h, k, extract)
-				dbg.Assert(!occupied, "fwo keys mapped to one slot")
+				debug.Assert(!occupied, "fwo keys mapped to one slot")
 
 				mirrored := t.mirrorIndex(idx)
 				*ctrl2.Get(idx) = h.h2()
@@ -1468,7 +1468,7 @@ func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied boo
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1519,7 +1519,7 @@ func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied 
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1570,7 +1570,7 @@ func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied 
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1621,7 +1621,7 @@ func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied b
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1672,7 +1672,7 @@ func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupie
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1723,7 +1723,7 @@ func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupie
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1774,7 +1774,7 @@ func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied b
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1825,7 +1825,7 @@ func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupie
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1876,7 +1876,7 @@ func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupie
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1927,7 +1927,7 @@ func searchU8xP(t *Table[uint8, unsafe.Pointer], h hash, k uint8) (idx int, occu
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -1978,7 +1978,7 @@ func searchU32xP(t *Table[uint32, unsafe.Pointer], h hash, k uint32) (idx int, o
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2029,7 +2029,7 @@ func searchU64xP(t *Table[uint64, unsafe.Pointer], h hash, k uint64) (idx int, o
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2079,7 +2079,7 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2128,7 +2128,7 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(ui
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2177,7 +2177,7 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(ui
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2226,7 +2226,7 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(ui
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2275,7 +2275,7 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2324,7 +2324,7 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2373,7 +2373,7 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(ui
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2422,7 +2422,7 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2471,7 +2471,7 @@ func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2520,7 +2520,7 @@ func searchFuncU8xP(t *Table[uint8, unsafe.Pointer], h hash, k []byte, extract f
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2569,7 +2569,7 @@ func searchFuncU32xP(t *Table[uint32, unsafe.Pointer], h hash, k []byte, extract
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2618,7 +2618,7 @@ func searchFuncU64xP(t *Table[uint64, unsafe.Pointer], h hash, k []byte, extract
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int
@@ -2707,7 +2707,7 @@ func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied 
 	len := 0
 	for {
 
-		dbg.Assert(p.i <= p.mask, "full table: %#v", p)
+		debug.Assert(p.i <= p.mask, "full table: %#v", p)
 		len++
 
 		var i int

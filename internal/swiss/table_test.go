@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -39,7 +39,7 @@ func TestIntTable(t *testing.T) {
 	m := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range int32(1000) {
-		defer dbg.WithTesting(t)()
+		defer debug.WithTesting(t)()
 
 		t.Log(m.Dump())
 		v := m.Insert(k, nil)
@@ -53,7 +53,7 @@ func TestIntTable(t *testing.T) {
 		*v = value{-k}
 
 		ok := t.Run(strconv.Itoa(int(k)), func(t *testing.T) {
-			defer dbg.WithTesting(t)()
+			defer debug.WithTesting(t)()
 
 			for k := range k + 1 {
 				p := m.Lookup(k)
@@ -79,7 +79,7 @@ func TestStringTable(t *testing.T) {
 	m := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range uint32(1000) {
-		defer dbg.WithTesting(t)()
+		defer debug.WithTesting(t)()
 
 		t.Log(m.Dump())
 		v := m.Insert(k, extract)
@@ -93,7 +93,7 @@ func TestStringTable(t *testing.T) {
 		*v = value{-int32(k)}
 
 		ok := t.Run(strconv.Itoa(int(k)), func(t *testing.T) {
-			defer dbg.WithTesting(t)()
+			defer debug.WithTesting(t)()
 
 			for k := range k + 1 {
 				p := m.LookupFunc(extract(k), extract)

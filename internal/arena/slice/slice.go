@@ -18,7 +18,7 @@ import (
 	"fmt"
 
 	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -73,11 +73,11 @@ func (s Slice[_]) Len() int {
 
 // SetLet directly sets the length of s.
 func (s Slice[T]) SetLen(n int) Slice[T] {
-	if dbg.Enabled && n > int(s.cap) {
+	if debug.Enabled && n > int(s.cap) {
 		panic(fmt.Errorf("runtime error: SetLen(%v) with Cap() = %v", n, s.cap))
 	}
 
-	dbg.Log(nil, "set len", "%v->%d", s.Addr(), n)
+	debug.Log(nil, "set len", "%v->%d", s.Addr(), n)
 	s.len = uint32(n)
 	return s
 }
@@ -89,7 +89,7 @@ func (s Slice[_]) Cap() int {
 
 // Load loads a value at the given index.
 func (s Slice[T]) Load(n int) T {
-	if dbg.Enabled {
+	if debug.Enabled {
 		return s.Raw()[n]
 	}
 	return unsafe2.Load(s.Ptr(), n)
@@ -97,7 +97,7 @@ func (s Slice[T]) Load(n int) T {
 
 // Store stores a value at the given index.
 func (s Slice[T]) Store(n int, v T) {
-	if dbg.Enabled {
+	if debug.Enabled {
 		s.Raw()[n] = v
 	}
 	unsafe2.Store(s.Ptr(), n, v)

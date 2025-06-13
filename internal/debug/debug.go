@@ -14,8 +14,8 @@
 
 //go:build debug
 
-// Package dbg includes debugging helpers.
-package dbg
+// Package debug includes debugging helpers.
+package debug
 
 import (
 	"flag"

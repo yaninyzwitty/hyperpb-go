@@ -20,7 +20,7 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -53,7 +53,7 @@ func (f *Field) Get(m unsafe.Pointer) protoreflect.Value {
 
 // Format implements [fmt.Formatter].
 func (f *Field) Format(s fmt.State, verb rune) {
-	dbg.Dict("", "message", f.Message, "getter", &f.Getter).Format(s, verb)
+	debug.Dict("", "message", f.Message, "getter", &f.Getter).Format(s, verb)
 }
 
 // Accessor is all the information necessary for accessing a field of a [message].
@@ -66,7 +66,7 @@ type Accessor struct {
 
 // Format implements [fmt.Formatter].
 func (a *Accessor) Format(s fmt.State, verb rune) {
-	dbg.Dict("", "offset", a.Offset, "getter", dbg.Func(a.Getter)).Format(s, verb)
+	debug.Dict("", "offset", a.Offset, "getter", debug.Func(a.Getter)).Format(s, verb)
 }
 
 // Getter is a thunk for extracting a value out of a field.
@@ -97,8 +97,8 @@ type FieldParser struct {
 
 // Format implements [fmt.Formatter].
 func (p *FieldParser) Format(s fmt.State, verb rune) {
-	dbg.Dict(
-		dbg.Fprintf("%p", p),
+	debug.Dict(
+		debug.Fprintf("%p", p),
 		"tag", p.Tag,
 		"message", func() any {
 			if p.Message == nil {
@@ -109,11 +109,11 @@ func (p *FieldParser) Format(s fmt.State, verb rune) {
 		"offset", p.Offset,
 		"next", func() any {
 			if p.NextOk == p.NextErr {
-				return dbg.Fprintf("%p", p.NextOk)
+				return debug.Fprintf("%p", p.NextOk)
 			}
-			return dbg.Fprintf("%p/%p", p.NextOk, p.NextErr)
+			return debug.Fprintf("%p/%p", p.NextOk, p.NextErr)
 		}(),
-		"thunk", dbg.Func(p.Parse),
+		"thunk", debug.Func(p.Parse),
 	).Format(s, verb)
 }
 

@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/debug"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -55,15 +55,15 @@ func (a *Arena) allocChunk(size int) (*byte, int) {
 	p := AllocTraceable(n, unsafe.Pointer(a))
 	if a.blocks == nil {
 		a.blocks = make([]*byte, 64)
-		if dbg.Enabled {
+		if debug.Enabled {
 			addr := unsafe2.AddrOf(a)
 			runtime.SetFinalizer(unsafe.SliceData(a.blocks), func(**byte) {
-				dbg.Log(nil, "arena collected", "addr: %v", addr)
+				debug.Log(nil, "arena collected", "addr: %v", addr)
 			})
 		}
 	}
 	a.blocks = a.blocks[:log+1]
-	dbg.Log(nil, "saving block", "a.blocks[%d] = %p -> %p", log, a.blocks[log], p)
+	debug.Log(nil, "saving block", "a.blocks[%d] = %p -> %p", log, a.blocks[log], p)
 	a.blocks[log] = p
 
 	return p, n
