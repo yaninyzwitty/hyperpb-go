@@ -45,6 +45,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/flag2"
 	_ "github.com/bufbuild/fastpb/internal/gen/test"
 	"github.com/bufbuild/fastpb/internal/prototest"
+	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 )
 
 var verbose bool
@@ -134,12 +135,7 @@ type test struct {
 	// If set, run this test as a benchmark.
 	Benchmark bool `yaml:"benchmark"`
 
-	PGO []struct {
-		Pattern *regexp.Regexp `yaml:"pattern"`
-		Profile struct {
-			Parse fastpb.Temperature `yaml:"parse"`
-		} `yaml:"-,inline"`
-	} `yaml:"pgo"`
+	PGO profile `yaml:"pgo"`
 
 	// Three ways to encode the test: hex, textproto, and protoscope
 	Hex        []string `yaml:"hex"`
@@ -147,6 +143,22 @@ type test struct {
 	Protoscope []string `yaml:"protoscope"`
 
 	Specimens [][]byte `yaml:"-"`
+}
+
+type profile []struct {
+	Pattern *regexp.Regexp `yaml:"pattern"`
+	Profile struct {
+		DecodeProbability float64 `yaml:"parse"`
+	} `yaml:"-,inline"`
+}
+
+func (p profile) Field(site compiler.FieldSite) compiler.FieldProfile {
+	for _, rule := range p {
+		if rule.Pattern.MatchString(string(site.Field.FullName())) {
+			return compiler.FieldProfile(rule.Profile)
+		}
+	}
+	return site.DefaultProfile()
 }
 
 //go:embed testdata/*
@@ -211,15 +223,8 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 
 	test.Type.Fast = fastpb.Compile(
 		test.Type.Gencode.Descriptor(),
-		fastpb.PGO(func(site fastpb.FieldSite) fastpb.FieldProfile {
-			for _, rule := range test.PGO {
-				if rule.Pattern.MatchString(string(site.Field.FullName())) {
-					return fastpb.FieldProfile(rule.Profile)
-				}
-			}
-			return fastpb.FieldProfile{}
-		}),
-		fastpb.ExtensionsFromRegistry(protoregistry.GlobalTypes),
+		fastpb.WithExtensionsFromRegistry(protoregistry.GlobalTypes),
+		func(o *compiler.Options) { o.Profile = test.PGO },
 	)
 
 	for _, raw := range test.Hex {

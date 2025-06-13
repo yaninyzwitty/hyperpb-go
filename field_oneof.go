@@ -19,6 +19,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
@@ -43,129 +44,129 @@ import (
 // Bool-valued oneof members are stored as a uint8, not a bool or an element of
 // a bitset or anything like that.
 
-var oneofFields = map[protoreflect.Kind]*archetype{
+var oneofFields = map[protoreflect.Kind]*compiler.Archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		layout:  layout.Of[int32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int32]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+		Layout:  layout.Of[int32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int32],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofVarint32}},
 	},
 	protoreflect.Uint32Kind: {
-		layout:  layout.Of[uint32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[uint32]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+		Layout:  layout.Of[uint32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[uint32],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofVarint32}},
 	},
 	protoreflect.Sint32Kind: {
-		layout:  layout.Of[int32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int32]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag32}},
+		Layout:  layout.Of[int32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int32],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofZigZag32}},
 	},
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		layout:  layout.Of[int64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int64]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+		Layout:  layout.Of[int64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int64],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofVarint64}},
 	},
 	protoreflect.Uint64Kind: {
-		layout:  layout.Of[uint64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[uint64]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
+		Layout:  layout.Of[uint64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[uint64],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofVarint64}},
 	},
 	protoreflect.Sint64Kind: {
-		layout:  layout.Of[int64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int64]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag64}},
+		Layout:  layout.Of[int64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int64],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofZigZag64}},
 	},
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		layout:  layout.Of[uint32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[uint32]),
-		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+		Layout:  layout.Of[uint32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[uint32],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed32Type, Thunk: parseOneofFixed32}},
 	},
 	protoreflect.Sfixed32Kind: {
-		layout:  layout.Of[int32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int32]),
-		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+		Layout:  layout.Of[int32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int32],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed32Type, Thunk: parseOneofFixed32}},
 	},
 	protoreflect.FloatKind: {
-		layout:  layout.Of[float32](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[float32]),
-		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
+		Layout:  layout.Of[float32](),
+		Oneof:   true,
+		Getter:  getOneofScalar[float32],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed32Type, Thunk: parseOneofFixed32}},
 	},
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		layout:  layout.Of[uint64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[uint64]),
-		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+		Layout:  layout.Of[uint64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[uint64],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed64Type, Thunk: parseOneofFixed64}},
 	},
 	protoreflect.Sfixed64Kind: {
-		layout:  layout.Of[int64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[int64]),
-		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+		Layout:  layout.Of[int64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[int64],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed64Type, Thunk: parseOneofFixed64}},
 	},
 	protoreflect.DoubleKind: {
-		layout:  layout.Of[float64](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[float64]),
-		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
+		Layout:  layout.Of[float64](),
+		Oneof:   true,
+		Getter:  getOneofScalar[float64],
+		Parsers: []compiler.Parser{{Kind: protowire.Fixed64Type, Thunk: parseOneofFixed64}},
 	},
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		layout:  layout.Of[byte](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofBool),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofBool}},
+		Layout:  layout.Of[byte](),
+		Oneof:   true,
+		Getter:  getOneofBool,
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofBool}},
 	},
 	protoreflect.EnumKind: {
-		layout:  layout.Of[protoreflect.EnumNumber](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofScalar[protoreflect.EnumNumber]),
-		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
+		Layout:  layout.Of[protoreflect.EnumNumber](),
+		Oneof:   true,
+		Getter:  getOneofScalar[protoreflect.EnumNumber],
+		Parsers: []compiler.Parser{{Kind: protowire.VarintType, Thunk: parseOneofVarint32}},
 	},
 
 	// String types.
 	protoreflect.StringKind: {
-		layout:  layout.Of[zc.Range](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofString),
-		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofString}},
+		Layout:  layout.Of[zc.Range](),
+		Oneof:   true,
+		Getter:  getOneofString,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Thunk: parseOneofString}},
 	},
 	proto2StringKind: {
-		layout:  layout.Of[zc.Range](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofString),
-		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
+		Layout:  layout.Of[zc.Range](),
+		Oneof:   true,
+		Getter:  getOneofString,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Thunk: parseOneofBytes}},
 	},
 	protoreflect.BytesKind: {
-		layout:  layout.Of[zc.Range](),
-		oneof:   true,
-		getter:  adaptGetter(getOneofBytes),
-		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
+		Layout:  layout.Of[zc.Range](),
+		Oneof:   true,
+		Getter:  getOneofBytes,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Thunk: parseOneofBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
 		// A singular message is laid out as a single *message pointer.
-		layout: layout.Of[*dynamic.Message](),
-		oneof:  true,
-		getter: adaptGetter(getOneofMessage),
+		Layout: layout.Of[*dynamic.Message](),
+		Oneof:  true,
+		Getter: getOneofMessage,
 		// This message parser is eager. TODO: add a lazy message archetype.
-		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofMessage}},
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Thunk: parseOneofMessage}},
 	},
 	protoreflect.GroupKind: {
 		// Not implemented.

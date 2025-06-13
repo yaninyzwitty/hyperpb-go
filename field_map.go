@@ -22,6 +22,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
@@ -36,7 +37,7 @@ import (
 
 // mapFields consists of archetypes for map fields. The first index is the key,
 // the second is the value.
-var mapFields = map[protoreflect.Kind]map[protoreflect.Kind]*archetype{
+var mapFields = map[protoreflect.Kind]map[protoreflect.Kind]*compiler.Archetype{
 	protoreflect.Int32Kind: {
 		// 32-bit varint types.
 		protoreflect.Int32Kind:  mapArch(getMapIxI[int32, int32], parseMapV32xV32),
@@ -539,18 +540,18 @@ func init() {
 	// the string archetype and using the bytes archetype's parser.
 	for _, archs := range mapFields {
 		arch := *archs[protoreflect.StringKind]
-		arch.parsers = archs[protoreflect.BytesKind].parsers
+		arch.Parsers = archs[protoreflect.BytesKind].Parsers
 		archs[proto2StringKind] = &arch
 	}
 }
 
 // mapArch is a helper for constructing map<K, V> archetypes, where K is not
 // bool.
-func mapArch(getter getterThunk, parser vm.Thunk) *archetype {
-	return &archetype{
-		layout:  layout.Of[*swiss.Table[int32, int32]](),
-		getter:  adaptGetter(getter),
-		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parser}},
+func mapArch(getter compiler.Getter, parser vm.Thunk) *compiler.Archetype {
+	return &compiler.Archetype{
+		Layout:  layout.Of[*swiss.Table[int32, int32]](),
+		Getter:  getter,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parser}},
 	}
 }
 
@@ -954,12 +955,6 @@ insert:
 
 	p1.Log(p2, "slow map entry", "%d", n)
 	return p1.PushMapEntry(p2, n, v)
-}
-
-func parseMapEntry(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var n int
-	p1, p2, n = p1.LengthPrefix(p2)
-	return p1.PushMessage(p2, n, p2.Message())
 }
 
 // emptyMap is a map with no elements.

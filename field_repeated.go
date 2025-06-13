@@ -23,6 +23,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
@@ -43,151 +44,151 @@ import (
 // of the packed field is one byte long. There is a special list implementation
 // that handles this case.
 
-var repeatedFields = map[protoreflect.Kind]*archetype{
+var repeatedFields = map[protoreflect.Kind]*compiler.Archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
-		layout: layout.Of[repeatedScalar[byte, int32]](),
-		getter: adaptGetter(getRepeatedScalar[byte, int32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint32},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
+		Layout: layout.Of[repeatedScalar[byte, int32]](),
+		Getter: getRepeatedScalar[byte, int32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint32},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Uint32Kind: {
-		layout: layout.Of[repeatedScalar[byte, uint32]](),
-		getter: adaptGetter(getRepeatedScalar[byte, uint32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint32},
-			{kind: protowire.VarintType, parser: parseRepeatedVarint32},
+		Layout: layout.Of[repeatedScalar[byte, uint32]](),
+		Getter: getRepeatedScalar[byte, uint32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint32},
+			{Kind: protowire.VarintType, Thunk: parseRepeatedVarint32},
 		},
 	},
 	protoreflect.Sint32Kind: {
-		layout: layout.Of[repeatedZigzag[byte, uint32]](),
-		getter: adaptGetter(getRepeatedZigzag[byte, int32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint32},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
+		Layout: layout.Of[repeatedZigzag[byte, uint32]](),
+		Getter: getRepeatedZigzag[byte, int32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint32},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint32},
 		},
 	},
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
-		layout: layout.Of[repeatedScalar[byte, int64]](),
-		getter: adaptGetter(getRepeatedScalar[byte, int64]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint64},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
+		Layout: layout.Of[repeatedScalar[byte, int64]](),
+		Getter: getRepeatedScalar[byte, int64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint64},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint64},
 		},
 	},
 	protoreflect.Uint64Kind: {
-		layout: layout.Of[repeatedScalar[byte, uint64]](),
-		getter: adaptGetter(getRepeatedScalar[byte, uint64]),
-		parsers: []parseKind{
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
-			{kind: protowire.BytesType, parser: parsePackedVarint64},
+		Layout: layout.Of[repeatedScalar[byte, uint64]](),
+		Getter: getRepeatedScalar[byte, uint64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint64},
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint64},
 		},
 	},
 	protoreflect.Sint64Kind: {
-		layout: layout.Of[repeatedZigzag[byte, int64]](),
-		getter: adaptGetter(getRepeatedZigzag[byte, int64]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint64},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
+		Layout: layout.Of[repeatedZigzag[byte, int64]](),
+		Getter: getRepeatedZigzag[byte, int64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint64},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint64},
 		},
 	},
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
-		layout: layout.Of[repeatedScalar[uint32, uint32]](),
-		getter: adaptGetter(getRepeatedScalar[uint32, uint32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed32},
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
+		Layout: layout.Of[repeatedScalar[uint32, uint32]](),
+		Getter: getRepeatedScalar[uint32, uint32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed32},
+			{Kind: protowire.Fixed32Type, Retry: true, Thunk: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.Sfixed32Kind: {
-		layout: layout.Of[repeatedScalar[int32, int32]](),
-		getter: adaptGetter(getRepeatedScalar[int32, int32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed32},
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
+		Layout: layout.Of[repeatedScalar[int32, int32]](),
+		Getter: getRepeatedScalar[int32, int32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed32},
+			{Kind: protowire.Fixed32Type, Retry: true, Thunk: parseRepeatedFixed32},
 		},
 	},
 	protoreflect.FloatKind: {
-		layout: layout.Of[repeatedScalar[float32, float32]](),
-		getter: adaptGetter(getRepeatedScalar[float32, float32]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed32},
-			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
+		Layout: layout.Of[repeatedScalar[float32, float32]](),
+		Getter: getRepeatedScalar[float32, float32],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed32},
+			{Kind: protowire.Fixed32Type, Retry: true, Thunk: parseRepeatedFixed32},
 		},
 	},
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
-		layout: layout.Of[repeatedScalar[uint64, uint64]](),
-		getter: adaptGetter(getRepeatedScalar[uint64, uint64]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed64},
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
+		Layout: layout.Of[repeatedScalar[uint64, uint64]](),
+		Getter: getRepeatedScalar[uint64, uint64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed64},
+			{Kind: protowire.Fixed64Type, Retry: true, Thunk: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.Sfixed64Kind: {
-		layout: layout.Of[repeatedScalar[int64, int64]](),
-		getter: adaptGetter(getRepeatedScalar[int64, int64]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed64},
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
+		Layout: layout.Of[repeatedScalar[int64, int64]](),
+		Getter: getRepeatedScalar[int64, int64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed64},
+			{Kind: protowire.Fixed64Type, Retry: true, Thunk: parseRepeatedFixed64},
 		},
 	},
 	protoreflect.DoubleKind: {
-		layout: layout.Of[repeatedScalar[float64, float64]](),
-		getter: adaptGetter(getRepeatedScalar[float64, float64]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedFixed64},
-			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
+		Layout: layout.Of[repeatedScalar[float64, float64]](),
+		Getter: getRepeatedScalar[float64, float64],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedFixed64},
+			{Kind: protowire.Fixed64Type, Retry: true, Thunk: parseRepeatedFixed64},
 		},
 	},
 
 	// Special scalar types.
 	protoreflect.BoolKind: {
-		layout: layout.Of[repeatedBool](),
-		getter: adaptGetter(getRepeatedBool),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint8},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint8},
+		Layout: layout.Of[repeatedBool](),
+		Getter: getRepeatedBool,
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint8},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint8},
 		},
 	},
 	protoreflect.EnumKind: {
-		layout: layout.Of[repeatedScalar[byte, protoreflect.EnumNumber]](),
-		getter: adaptGetter(getRepeatedScalar[byte, protoreflect.EnumNumber]),
-		parsers: []parseKind{
-			{kind: protowire.BytesType, parser: parsePackedVarint32},
-			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
+		Layout: layout.Of[repeatedScalar[byte, protoreflect.EnumNumber]](),
+		Getter: getRepeatedScalar[byte, protoreflect.EnumNumber],
+		Parsers: []compiler.Parser{
+			{Kind: protowire.BytesType, Thunk: parsePackedVarint32},
+			{Kind: protowire.VarintType, Retry: true, Thunk: parseRepeatedVarint32},
 		},
 	},
 
 	// String types.
 	protoreflect.StringKind: {
-		layout:  layout.Of[repeatedString](),
-		getter:  adaptGetter(getRepeatedString),
-		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedUTF8}},
+		Layout:  layout.Of[repeatedString](),
+		Getter:  getRepeatedString,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parseRepeatedUTF8}},
 	},
 	proto2StringKind: {
-		layout:  layout.Of[repeatedString](),
-		getter:  adaptGetter(getRepeatedString),
-		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
+		Layout:  layout.Of[repeatedString](),
+		Getter:  getRepeatedString,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parseRepeatedBytes}},
 	},
 	protoreflect.BytesKind: {
-		layout:  layout.Of[repeatedBytes](),
-		getter:  adaptGetter(getRepeatedBytes),
-		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
+		Layout:  layout.Of[repeatedBytes](),
+		Getter:  getRepeatedBytes,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parseRepeatedBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
-		layout:  layout.Of[repeatedMessage](),
-		getter:  adaptGetter(getRepeatedMessage),
-		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedMessage}},
+		Layout:  layout.Of[repeatedMessage](),
+		Getter:  getRepeatedMessage,
+		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parseRepeatedMessage}},
 	},
 	protoreflect.GroupKind: {},
 }

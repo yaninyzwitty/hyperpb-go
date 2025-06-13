@@ -12,29 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package compiler
 
 import (
-	"unsafe"
+	"fmt"
 
-	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
-
-	"github.com/bufbuild/fastpb/internal/tdp"
 )
 
-const (
-	// Custom field kinds used by archetype selection; they're all negative.
-	proto2StringKind protoreflect.Kind = ^iota
-)
-
-func zigzag64[T tdp.Int](raw uint64) T {
-	return zigzag(T(raw))
+type typeSymbol struct {
+	ty protoreflect.MessageDescriptor
 }
 
-func zigzag[T tdp.Int](raw T) T {
-	n := uint64(raw)
-	n &= (1 << (unsafe.Sizeof(raw) * 8)) - 1
+type parserSymbol struct {
+	ty       protoreflect.MessageDescriptor
+	mapEntry bool
+}
 
-	return T(protowire.DecodeZigZag(n))
+type tableSymbol struct{ sym any }
+
+type fieldParserSymbol struct {
+	parser any
+	index  int
+}
+
+func (s typeSymbol) String() string {
+	return fmt.Sprintf("typeSymbol:%s", s.ty.Name())
+}
+
+func (s parserSymbol) String() string {
+	return fmt.Sprintf("parserSymbol:%s:%v", s.ty.Name(), s.mapEntry)
 }

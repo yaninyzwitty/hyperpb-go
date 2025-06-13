@@ -324,6 +324,17 @@ func (p1 P1) PushMessage(p2 P2, len int, m *dynamic.Message) (P1, P2) {
 	return p1, p2
 }
 
+// ParseMapEntry is a shim over [PushMessage] used for map entries.
+//
+//go:nosplit
+func (p1 P1) ParseMapEntry(p2 P2) (P1, P2) {
+	var n int
+	p1, p2, n = p1.LengthPrefix(p2)
+	// This should *not* call PushMapEntry; this goes inside of the message that
+	// gets pushed by PushMapEntry itself.
+	return p1.PushMessage(p2, n, p2.Message())
+}
+
 // PushMapEntry pushes a new map entry to be parsed onto the parser stack.
 //
 //go:nosplit
