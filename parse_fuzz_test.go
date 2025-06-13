@@ -27,7 +27,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/sync2"
 )
 
-var contexts = sync2.Pool[fastpb.Context]{Reset: (*fastpb.Context).Free}
+var contexts = sync2.Pool[fastpb.Shared]{Reset: (*fastpb.Shared).Free}
 
 func FuzzScalars(f *testing.F)    { fuzz[*testpb.Scalars](f) }
 func FuzzRepeated(f *testing.F)   { fuzz[*testpb.Repeated](f) }

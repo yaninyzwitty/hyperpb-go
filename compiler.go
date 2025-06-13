@@ -31,6 +31,8 @@ import (
 	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -41,12 +43,12 @@ type CompileOption func(*compiler)
 // Compile compiles a descriptor into a [Type], for optimized parsing.
 //
 // Panics if md is too complicated (i.e. it exceeds internal limitations for the compiler).
-func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) Type {
+func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type {
 	c := &compiler{
 		symbols: make(map[any]int),
 		relos:   make(map[int]relo),
 
-		layouts: make(map[protoreflect.MessageDescriptor]typeLayout),
+		layouts: make(map[protoreflect.MessageDescriptor]tdp.TypeLayout),
 		fdCache: make(map[protoreflect.MessageDescriptor][]protoreflect.ExtensionDescriptor),
 	}
 	for _, opt := range options {
@@ -120,7 +122,7 @@ type compiler struct {
 	symbols map[any]int
 	relos   map[int]relo
 
-	layouts map[protoreflect.MessageDescriptor]typeLayout
+	layouts map[protoreflect.MessageDescriptor]tdp.TypeLayout
 
 	prof  func(FieldSite) FieldProfile
 	extns func(protoreflect.MessageDescriptor) iter.Seq[protoreflect.ExtensionDescriptor]
@@ -152,14 +154,14 @@ func (s parserSymbol) String() string {
 	return fmt.Sprintf("parserSymbol:%s:%v", s.ty.Name(), s.mapEntry)
 }
 
-func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
+func (c *compiler) compile(md protoreflect.MessageDescriptor) *Type {
 	c.message(md)
 
 	if len(c.buf) > math.MaxInt32 {
 		panic(fmt.Errorf("tdp: type has too many dependencies: %s", md.FullName()))
 	}
 
-	auxes := make([]typeAux, c.totalTypes)
+	auxes := make([]tdp.Aux, c.totalTypes)
 
 	// Copy buf onto some memory that the GC can trace through md to keep all of
 	// the descriptors alive.
@@ -171,9 +173,9 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 
 	// Resolve all message type references. This needs to be done as a separate
 	// step due to potential cycles.
-	lib := &Library{
-		base:  unsafe2.Cast[typeHeader](p),
-		types: make(map[protoreflect.MessageDescriptor]Type),
+	lib := &tdp.Library{
+		Base:  unsafe2.Cast[tdp.Type](p),
+		Types: make(map[protoreflect.MessageDescriptor]*tdp.Type),
 	}
 	var i int
 	for symbol, offset := range c.symbols {
@@ -182,30 +184,30 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) Type {
 			continue
 		}
 
-		ty := Type{raw: unsafe2.ByteAdd(lib.base, offset)}
-		ty.raw.aux = &auxes[i]
+		ty := lib.AtOffset(uint32(offset))
+		ty.Aux = &auxes[i]
 		i++
 
-		ty.raw.aux.lib = lib
-		ty.raw.aux.desc = sym.ty
-		ty.raw.aux.methods.Unmarshal = unmarshalShim
-		ty.raw.aux.methods.CheckInitialized = requiredShim
-		ty.raw.aux.fds = c.fdCache[sym.ty]
+		ty.Library = lib
+		ty.Descriptor = sym.ty
+		ty.Methods.Unmarshal = unmarshalShim
+		ty.Methods.CheckInitialized = requiredShim
+		ty.FieldDescriptors = c.fdCache[sym.ty]
 
-		lib.types[sym.ty] = ty
+		lib.Types[sym.ty] = ty
 
 		if dbg.Enabled {
-			*ty.raw.aux.layout.Get() = c.layouts[sym.ty]
+			*ty.Layout.Get() = c.layouts[sym.ty]
 		}
 	}
 
 	if dbg.Enabled {
-		runtime.SetFinalizer(lib.base, func(t *typeHeader) {
-			c.log("finalizer", "%p:%s", t, t.aux.desc.FullName())
+		runtime.SetFinalizer(lib.Base, func(t *tdp.Type) {
+			c.log("finalizer", "%p:%s", t, t.Descriptor.FullName())
 		})
 	}
 
-	return Type{raw: lib.base}
+	return newType(lib.Base)
 }
 
 // ir is analysis information about a message type for generating a parser
@@ -222,14 +224,14 @@ type ir struct {
 	s []sField
 
 	hot, cold int
-	layout    typeLayout
+	layout    tdp.TypeLayout
 }
 
 type tField struct {
 	d      protoreflect.FieldDescriptor
 	prof   FieldProfile
 	arch   *archetype
-	offset fieldOffset
+	offset tdp.Offset
 }
 
 type pField struct {
@@ -245,7 +247,7 @@ type sField struct {
 
 	layout layout.Layout
 	bits   uint32
-	offset fieldOffset
+	offset tdp.Offset
 	hot    bool
 }
 
@@ -381,12 +383,12 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 	// Figure out the number of bit words we need. We use 32-bit words.
 	const bitsPerWord = 32
 	bitWords := (bits + bitsPerWord - 1) / bitsPerWord // Divide and round up.
-	ir.layout.bitWords = bitWords + whichWords
+	ir.layout.BitWords = bitWords + whichWords
 
-	ir.hot = layout.Size[message]()
+	ir.hot = layout.Size[dynamic.Message]()
 	ir.hot += (bitWords + whichWords) * 4
 
-	ir.cold = layout.Size[cold]()
+	ir.cold = layout.Size[dynamic.Cold]()
 
 	var nextBit uint32
 	nextWhichWord := uint32(ir.hot - whichWords*4)
@@ -407,27 +409,27 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		if dbg.Enabled && up > 0 {
 			// Note alignment padding required for the previous field.
 			if i == 0 && sf.hot {
-				ir.layout.bitWords += up / 4
+				ir.layout.BitWords += up / 4
 			} else if ir.s[i-1].hot == sf.hot {
-				f := ir.layout.fields
-				f[len(f)-1].padding = uint32(up)
+				f := ir.layout.Fields
+				f[len(f)-1].Padding = uint32(up)
 			}
 		}
 
-		sf.offset.data = int32(*size)
+		sf.offset.Data = int32(*size)
 		if !sf.hot {
-			sf.offset.data = ^sf.offset.data
+			sf.offset.Data = ^sf.offset.Data
 		}
 		*size += sf.layout.Size
 
 		if sf.bits > 0 {
-			sf.offset.bit = nextBit
+			sf.offset.Bit = nextBit
 			nextBit += sf.bits
 		}
 
 		oneof := sf.tIdx != nil && ir.t[sf.tIdx[0]].arch.oneof
 		if oneof {
-			sf.offset.bit = nextWhichWord
+			sf.offset.Bit = nextWhichWord
 			nextWhichWord += 4
 		}
 
@@ -436,7 +438,7 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		for _, j := range sf.tIdx {
 			ir.t[j].offset = sf.offset
 			if oneof {
-				ir.t[j].offset.number = uint32(ir.t[j].d.Number())
+				ir.t[j].offset.Number = uint32(ir.t[j].d.Number())
 			}
 		}
 
@@ -446,12 +448,12 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 				index = ^ir.t[index].d.ContainingOneof().Index()
 			}
 
-			ir.layout.fields = append(ir.layout.fields, fieldLayout{
-				size:   uint32(sf.layout.Size),
-				align:  uint32(sf.layout.Align),
-				bits:   sf.bits,
-				index:  index,
-				offset: sf.offset,
+			ir.layout.Fields = append(ir.layout.Fields, tdp.FieldLayout{
+				Size:   uint32(sf.layout.Size),
+				Align:  uint32(sf.layout.Align),
+				Bits:   sf.bits,
+				Index:  index,
+				Offset: sf.offset,
 			})
 		}
 	}
@@ -467,8 +469,8 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 		// Print the resulting layout for this struct.
 		c.log("layout", "%s, %d/%d\n%v", ir.d.FullName(), ir.hot, ir.cold,
 			dbg.Formatter(func(buf fmt.State) {
-				start := layout.Size[message]()
-				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.bitWords, ir.layout.bitWords)
+				start := layout.Size[dynamic.Message]()
+				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.BitWords, ir.layout.BitWords)
 				for _, sf := range ir.s {
 					if sf.tIdx == nil {
 						continue
@@ -480,9 +482,9 @@ func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
 						name = "oneof:" + tf.d.ContainingOneof().Name()
 					}
 
-					fmt.Fprintf(buf, "  %#04x", sf.offset.data)
+					fmt.Fprintf(buf, "  %#04x", sf.offset.Data)
 					if sf.bits > 0 {
-						fmt.Fprintf(buf, "(%v)", sf.offset.bit)
+						fmt.Fprintf(buf, "(%v)", sf.offset.Bit)
 					} else {
 						fmt.Fprint(buf, "(-)")
 					}
@@ -614,18 +616,18 @@ func (c *compiler) codegen(ir *ir) {
 	mSym := parserSymbol{ir.d, true}
 
 	c.write(tSym,
-		typeHeader{
-			size:     uint32(ir.hot),
-			coldSize: uint32(ir.cold),
-			count:    uint32(len(ir.t)),
+		tdp.Type{
+			Size:     uint32(ir.hot),
+			ColdSize: uint32(ir.cold),
+			Count:    uint32(len(ir.t)),
 		},
 		relo{
 			symbol: pSym,
-			offset: unsafe.Offsetof(typeHeader{}.parser),
+			offset: unsafe.Offsetof(tdp.Type{}.Parser),
 		},
 		relo{
 			symbol: tableSymbol{tSym},
-			offset: unsafe.Offsetof(typeHeader{}.numbers),
+			offset: unsafe.Offsetof(tdp.Type{}.Numbers),
 		},
 	)
 
@@ -635,16 +637,16 @@ func (c *compiler) codegen(ir *ir) {
 		if md := fieldMessage(tf.d); md != nil {
 			relos = []relo{{
 				symbol: typeSymbol{md},
-				offset: unsafe.Offsetof(field{}.message),
+				offset: unsafe.Offsetof(tdp.Field{}.Message),
 			}}
 		}
 
 		// Append whatever field data we can before doing layout.
 		c.write(nil,
-			field{
-				getter: getter{
-					offset: tf.offset,
-					thunk:  tf.arch.getter,
+			tdp.Field{
+				Accessor: tdp.Accessor{
+					Offset: tf.offset,
+					Getter: tf.arch.getter,
 				},
 			},
 			relos...,
@@ -653,30 +655,30 @@ func (c *compiler) codegen(ir *ir) {
 		numbers = append(numbers, swiss.KV(int32(tf.d.Number()), uint32(i)))
 	}
 	// Append the dummy end field.
-	c.write(nil, field{})
+	c.write(nil, tdp.Field{})
 
 	// Append the field number table.
 	writeTable(c, tableSymbol{tSym}, numbers)
 
 	c.write(pSym,
-		typeParser{},
+		tdp.TypeParser{},
 		relo{
 			symbol:   tSym,
-			offset:   unsafe.Offsetof(typeParser{}.tyOffset),
+			offset:   unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
 			relative: true,
 		},
 		relo{
 			symbol: tableSymbol{pSym},
-			offset: unsafe.Offsetof(typeParser{}.tags),
+			offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
 		},
 		relo{
 			symbol: mSym,
-			offset: unsafe.Offsetof(typeParser{}.mapEntry),
+			offset: unsafe.Offsetof(tdp.TypeParser{}.MapEntry),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: pSym, index: 0},
-			offset: unsafe.Offsetof(typeParser{}.entry) +
-				unsafe.Offsetof(fieldParser{}.nextOk),
+			offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
+				unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 		},
 	)
 
@@ -686,8 +688,7 @@ func (c *compiler) codegen(ir *ir) {
 		tf := ir.t[pf.tIdx]
 		p := tf.arch.parsers[pf.aIdx]
 
-		var tag fieldTag
-		tag.encode(tf.d.Number(), p.kind)
+		tag := tdp.EncodeTag(tf.d.Number(), p.kind)
 
 		numbers = append(numbers, swiss.KV(
 			int32(protowire.EncodeTag(tf.d.Number(), p.kind)),
@@ -703,26 +704,26 @@ func (c *compiler) codegen(ir *ir) {
 		relos := []relo{
 			{
 				symbol: fieldParserSymbol{parser: pSym, index: nextOk},
-				offset: unsafe.Offsetof(fieldParser{}.nextOk),
+				offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 			},
 			{
 				symbol: fieldParserSymbol{parser: pSym, index: nextErr},
-				offset: unsafe.Offsetof(fieldParser{}.nextErr),
+				offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
 			},
 		}
 		if md := fieldMessage(tf.d); md != nil {
 			relos = append(relos, relo{
 				symbol: parserSymbol{md, false},
-				offset: unsafe.Offsetof(fieldParser{}.message),
+				offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
 			})
 		}
 
 		c.write(
 			fieldParserSymbol{parser: pSym, index: i},
-			fieldParser{
-				tag:    tag,
-				offset: tf.offset,
-				thunk:  unsafe2.NewPC(p.parser),
+			tdp.FieldParser{
+				Tag:    tag,
+				Offset: tf.offset,
+				Parse:  uintptr(unsafe2.NewPC(p.parser)),
 			},
 			relos...,
 		)
@@ -732,16 +733,16 @@ func (c *compiler) codegen(ir *ir) {
 	if len(ir.p) == 0 {
 		c.write(
 			fieldParserSymbol{parser: pSym, index: 0},
-			fieldParser{
-				tag: ^fieldTag(0), // This will never be matched.
+			tdp.FieldParser{
+				Tag: ^tdp.Tag(0), // This will never be matched.
 			},
 			relo{
 				symbol: fieldParserSymbol{parser: pSym, index: 0},
-				offset: unsafe.Offsetof(fieldParser{}.nextOk),
+				offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 			},
 			relo{
 				symbol: fieldParserSymbol{parser: pSym, index: 0},
-				offset: unsafe.Offsetof(fieldParser{}.nextErr),
+				offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
 			},
 		)
 	}
@@ -751,42 +752,42 @@ func (c *compiler) codegen(ir *ir) {
 
 	// Write the map entry parser.
 	c.write(mSym,
-		typeParser{
-			discardUnknown: true,
+		tdp.TypeParser{
+			DiscardUnknown: true,
 		},
 		relo{
 			symbol:   tSym,
-			offset:   unsafe.Offsetof(typeParser{}.tyOffset),
+			offset:   unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
 			relative: true,
 		},
 		relo{
 			symbol: tableSymbol{mSym},
-			offset: unsafe.Offsetof(typeParser{}.tags),
+			offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(typeParser{}.entry) +
-				unsafe.Offsetof(fieldParser{}.nextOk),
+			offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
+				unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 		},
 	)
-	const mapValue = 0x2<<3 | fieldTag(protowire.BytesType) // Field number 2 with bytes type (so, 0b10010).
+	const mapValue = 0x2<<3 | tdp.Tag(protowire.BytesType) // Field number 2 with bytes type (so, 0b10010).
 	c.write(
 		fieldParserSymbol{parser: mSym, index: 0},
-		fieldParser{
-			tag:   mapValue,
-			thunk: unsafe2.NewPC(parserThunk(parseMapEntry)),
+		tdp.FieldParser{
+			Tag:   mapValue,
+			Parse: uintptr(unsafe2.NewPC(parserThunk(parseMapEntry))),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(fieldParser{}.nextOk),
+			offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(fieldParser{}.nextErr),
+			offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
 		},
 		relo{
 			symbol: pSym,
-			offset: unsafe.Offsetof(fieldParser{}.message),
+			offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
 		},
 	)
 	writeTable(c, tableSymbol{mSym}, []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}})

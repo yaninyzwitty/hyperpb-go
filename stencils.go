@@ -18,6 +18,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"google.golang.org/protobuf/encoding/protowire"
@@ -7156,7 +7157,7 @@ insert:
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7252,7 +7253,7 @@ insert:
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7348,7 +7349,7 @@ insert:
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7444,7 +7445,7 @@ insert:
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7540,7 +7541,7 @@ insert:
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7636,7 +7637,7 @@ insert:
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7732,7 +7733,7 @@ insert:
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7828,7 +7829,7 @@ insert:
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7924,7 +7925,7 @@ insert:
 		vp = swiss.InsertU8xP(m2, k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 
 	p1, p2, v = p1.alloc(p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
@@ -7945,7 +7946,7 @@ func parseOneofVarint32(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofVarint[uint32]
 	p1, p2, p2.scratch = p1.varint(p2)
 	p1, p2 = storeFromScratch[uint32](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -7955,7 +7956,7 @@ func parseOneofVarint64(p1 parser1, p2 parser2) (parser1, parser2) {
 	_ = parseOneofVarint[uint64]
 	p1, p2, p2.scratch = p1.varint(p2)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -7966,7 +7967,7 @@ func parseOneofZigZag32(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, p2.scratch = p1.varint(p2)
 	p2.scratch = uint64(zigzag64[uint32](p2.scratch))
 	p1, p2 = storeFromScratch[uint32](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -7977,7 +7978,7 @@ func parseOneofZigZag64(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, p2.scratch = p1.varint(p2)
 	p2.scratch = uint64(zigzag64[uint64](p2.scratch))
 	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }

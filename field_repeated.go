@@ -22,6 +22,8 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -44,7 +46,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		layout: layout.Of[repeatedScalar[byte, int32]](),
-		getter: getRepeatedScalar[byte, int32],
+		getter: adaptGetter(getRepeatedScalar[byte, int32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
@@ -52,7 +54,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Uint32Kind: {
 		layout: layout.Of[repeatedScalar[byte, uint32]](),
-		getter: getRepeatedScalar[byte, uint32],
+		getter: adaptGetter(getRepeatedScalar[byte, uint32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, parser: parseRepeatedVarint32},
@@ -60,7 +62,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Sint32Kind: {
 		layout: layout.Of[repeatedZigzag[byte, uint32]](),
-		getter: getRepeatedZigzag[byte, int32],
+		getter: adaptGetter(getRepeatedZigzag[byte, int32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
@@ -70,7 +72,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
 		layout: layout.Of[repeatedScalar[byte, int64]](),
-		getter: getRepeatedScalar[byte, int64],
+		getter: adaptGetter(getRepeatedScalar[byte, int64]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
@@ -78,7 +80,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Uint64Kind: {
 		layout: layout.Of[repeatedScalar[byte, uint64]](),
-		getter: getRepeatedScalar[byte, uint64],
+		getter: adaptGetter(getRepeatedScalar[byte, uint64]),
 		parsers: []parseKind{
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
@@ -86,7 +88,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Sint64Kind: {
 		layout: layout.Of[repeatedZigzag[byte, int64]](),
-		getter: getRepeatedZigzag[byte, int64],
+		getter: adaptGetter(getRepeatedZigzag[byte, int64]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint64},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint64},
@@ -96,7 +98,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
 		layout: layout.Of[repeatedScalar[uint32, uint32]](),
-		getter: getRepeatedScalar[uint32, uint32],
+		getter: adaptGetter(getRepeatedScalar[uint32, uint32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
@@ -104,7 +106,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Sfixed32Kind: {
 		layout: layout.Of[repeatedScalar[int32, int32]](),
-		getter: getRepeatedScalar[int32, int32],
+		getter: adaptGetter(getRepeatedScalar[int32, int32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
@@ -112,7 +114,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.FloatKind: {
 		layout: layout.Of[repeatedScalar[float32, float32]](),
-		getter: getRepeatedScalar[float32, float32],
+		getter: adaptGetter(getRepeatedScalar[float32, float32]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed32},
 			{kind: protowire.Fixed32Type, retry: true, parser: parseRepeatedFixed32},
@@ -122,7 +124,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
 		layout: layout.Of[repeatedScalar[uint64, uint64]](),
-		getter: getRepeatedScalar[uint64, uint64],
+		getter: adaptGetter(getRepeatedScalar[uint64, uint64]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
@@ -130,7 +132,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.Sfixed64Kind: {
 		layout: layout.Of[repeatedScalar[int64, int64]](),
-		getter: getRepeatedScalar[int64, int64],
+		getter: adaptGetter(getRepeatedScalar[int64, int64]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
@@ -138,7 +140,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.DoubleKind: {
 		layout: layout.Of[repeatedScalar[float64, float64]](),
-		getter: getRepeatedScalar[float64, float64],
+		getter: adaptGetter(getRepeatedScalar[float64, float64]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedFixed64},
 			{kind: protowire.Fixed64Type, retry: true, parser: parseRepeatedFixed64},
@@ -148,7 +150,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// Special scalar types.
 	protoreflect.BoolKind: {
 		layout: layout.Of[repeatedBool](),
-		getter: getRepeatedBool,
+		getter: adaptGetter(getRepeatedBool),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint8},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint8},
@@ -156,7 +158,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	},
 	protoreflect.EnumKind: {
 		layout: layout.Of[repeatedScalar[byte, protoreflect.EnumNumber]](),
-		getter: getRepeatedScalar[byte, protoreflect.EnumNumber],
+		getter: adaptGetter(getRepeatedScalar[byte, protoreflect.EnumNumber]),
 		parsers: []parseKind{
 			{kind: protowire.BytesType, parser: parsePackedVarint32},
 			{kind: protowire.VarintType, retry: true, parser: parseRepeatedVarint32},
@@ -166,24 +168,24 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 	// String types.
 	protoreflect.StringKind: {
 		layout:  layout.Of[repeatedString](),
-		getter:  getRepeatedString,
+		getter:  adaptGetter(getRepeatedString),
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedUTF8}},
 	},
 	proto2StringKind: {
 		layout:  layout.Of[repeatedString](),
-		getter:  getRepeatedString,
+		getter:  adaptGetter(getRepeatedString),
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 	protoreflect.BytesKind: {
 		layout:  layout.Of[repeatedBytes](),
-		getter:  getRepeatedBytes,
+		getter:  adaptGetter(getRepeatedBytes),
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
 		layout:  layout.Of[repeatedMessage](),
-		getter:  getRepeatedMessage,
+		getter:  adaptGetter(getRepeatedMessage),
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parseRepeatedMessage}},
 	},
 	protoreflect.GroupKind: {},
@@ -193,8 +195,8 @@ type repeatedScalarElement interface {
 	integer | ~float32 | ~float64
 }
 
-func getRepeatedScalar[Z, E repeatedScalarElement](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedScalar[Z, E]](m, getter.offset)
+func getRepeatedScalar[Z, E repeatedScalarElement](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedScalar[Z, E]](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -225,8 +227,8 @@ func (r *repeatedScalar[Z, E]) Get(n int) protoreflect.Value {
 	return protoreflect.ValueOf(v)
 }
 
-func getRepeatedZigzag[Z, E integer](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedZigzag[Z, E]](m, getter.offset)
+func getRepeatedZigzag[Z, E integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedZigzag[Z, E]](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -257,8 +259,8 @@ func (r *repeatedZigzag[Z, E]) Get(n int) protoreflect.Value {
 	return protoreflect.ValueOf(zigzag(v))
 }
 
-func getRepeatedBool(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedString](m, getter.offset)
+func getRepeatedBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedString](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -284,8 +286,8 @@ func (r *repeatedBool) Get(n int) protoreflect.Value {
 	return protoreflect.ValueOf(v != 0)
 }
 
-func getRepeatedString(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedString](m, getter.offset)
+func getRepeatedString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedString](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -311,8 +313,8 @@ func (r *repeatedString) Get(n int) protoreflect.Value {
 	return protoreflect.ValueOf(zc.String(r.src))
 }
 
-func getRepeatedBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedBytes](m, getter.offset)
+func getRepeatedBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedBytes](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -601,7 +603,7 @@ func parseRepeatedBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	var r *repeatedBytes
 	p1, p2, r = getMutableField[repeatedBytes](p1, p2)
 	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.c().src)
+	unsafe2.StoreNoWB(&r.src, p1.src())
 
 	return p1, p2
 }
@@ -614,7 +616,7 @@ func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
 	var r *repeatedString
 	p1, p2, r = getMutableField[repeatedString](p1, p2)
 	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.c().src)
+	unsafe2.StoreNoWB(&r.src, p1.src())
 
 	return p1, p2
 }

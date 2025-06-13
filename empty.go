@@ -23,7 +23,7 @@ import (
 )
 
 // empty is an empty value of any [Type].
-type empty struct{ ty Type }
+type empty struct{ ty *Type }
 
 var (
 	_ proto.Message        = empty{}
@@ -68,8 +68,8 @@ func (e empty) Clear(protoreflect.FieldDescriptor) {}
 
 // Get implements [protoreflect.Message].
 func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	f := e.ty.byDescriptor(fd)
-	if !f.valid() {
+	f := e.ty.impl.ByDescriptor(fd)
+	if !f.IsValid() {
 		return protoreflect.ValueOf(nil)
 	}
 
@@ -81,7 +81,7 @@ func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 		panic(dbg.Unsupported())
 
 	case fd.Message() != nil:
-		return protoreflect.ValueOf(empty{f.message})
+		return protoreflect.ValueOf(empty{newType(f.Message)})
 
 	default:
 		return fd.Default()
@@ -136,7 +136,7 @@ func (e empty) IsValid() bool {
 
 // ProtoMethods implements [protoreflect.Message].
 func (e empty) ProtoMethods() *protoiface.Methods {
-	return &e.ty.raw.aux.methods
+	return &e.ty.impl.Methods
 }
 
 // emptyList is an empty untyped list.

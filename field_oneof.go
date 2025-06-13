@@ -18,6 +18,8 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -45,19 +47,19 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.Int32Kind: {
 		layout:  layout.Of[int32](),
 		oneof:   true,
-		getter:  getOneofScalar[int32],
+		getter:  adaptGetter(getOneofScalar[int32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
 	},
 	protoreflect.Uint32Kind: {
 		layout:  layout.Of[uint32](),
 		oneof:   true,
-		getter:  getOneofScalar[uint32],
+		getter:  adaptGetter(getOneofScalar[uint32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
 	},
 	protoreflect.Sint32Kind: {
 		layout:  layout.Of[int32](),
 		oneof:   true,
-		getter:  getOneofScalar[int32],
+		getter:  adaptGetter(getOneofScalar[int32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag32}},
 	},
 
@@ -65,19 +67,19 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.Int64Kind: {
 		layout:  layout.Of[int64](),
 		oneof:   true,
-		getter:  getOneofScalar[int64],
+		getter:  adaptGetter(getOneofScalar[int64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
 	},
 	protoreflect.Uint64Kind: {
 		layout:  layout.Of[uint64](),
 		oneof:   true,
-		getter:  getOneofScalar[uint64],
+		getter:  adaptGetter(getOneofScalar[uint64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint64}},
 	},
 	protoreflect.Sint64Kind: {
 		layout:  layout.Of[int64](),
 		oneof:   true,
-		getter:  getOneofScalar[int64],
+		getter:  adaptGetter(getOneofScalar[int64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofZigZag64}},
 	},
 
@@ -85,19 +87,19 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.Fixed32Kind: {
 		layout:  layout.Of[uint32](),
 		oneof:   true,
-		getter:  getOneofScalar[uint32],
+		getter:  adaptGetter(getOneofScalar[uint32]),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
 	},
 	protoreflect.Sfixed32Kind: {
 		layout:  layout.Of[int32](),
 		oneof:   true,
-		getter:  getOneofScalar[int32],
+		getter:  adaptGetter(getOneofScalar[int32]),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
 	},
 	protoreflect.FloatKind: {
 		layout:  layout.Of[float32](),
 		oneof:   true,
-		getter:  getOneofScalar[float32],
+		getter:  adaptGetter(getOneofScalar[float32]),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseOneofFixed32}},
 	},
 
@@ -105,19 +107,19 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.Fixed64Kind: {
 		layout:  layout.Of[uint64](),
 		oneof:   true,
-		getter:  getOneofScalar[uint64],
+		getter:  adaptGetter(getOneofScalar[uint64]),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
 	},
 	protoreflect.Sfixed64Kind: {
 		layout:  layout.Of[int64](),
 		oneof:   true,
-		getter:  getOneofScalar[int64],
+		getter:  adaptGetter(getOneofScalar[int64]),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
 	},
 	protoreflect.DoubleKind: {
 		layout:  layout.Of[float64](),
 		oneof:   true,
-		getter:  getOneofScalar[float64],
+		getter:  adaptGetter(getOneofScalar[float64]),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseOneofFixed64}},
 	},
 
@@ -125,13 +127,13 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.BoolKind: {
 		layout:  layout.Of[byte](),
 		oneof:   true,
-		getter:  getOneofBool,
+		getter:  adaptGetter(getOneofBool),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofBool}},
 	},
 	protoreflect.EnumKind: {
 		layout:  layout.Of[protoreflect.EnumNumber](),
 		oneof:   true,
-		getter:  getOneofScalar[protoreflect.EnumNumber],
+		getter:  adaptGetter(getOneofScalar[protoreflect.EnumNumber]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseOneofVarint32}},
 	},
 
@@ -139,28 +141,28 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	protoreflect.StringKind: {
 		layout:  layout.Of[zc.Range](),
 		oneof:   true,
-		getter:  getOneofString,
+		getter:  adaptGetter(getOneofString),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofString}},
 	},
 	proto2StringKind: {
 		layout:  layout.Of[zc.Range](),
 		oneof:   true,
-		getter:  getOneofString,
+		getter:  adaptGetter(getOneofString),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
 	},
 	protoreflect.BytesKind: {
 		layout:  layout.Of[zc.Range](),
 		oneof:   true,
-		getter:  getOneofBytes,
+		getter:  adaptGetter(getOneofBytes),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
 		// A singular message is laid out as a single *message pointer.
-		layout: layout.Of[*message](),
+		layout: layout.Of[*dynamic.Message](),
 		oneof:  true,
-		getter: getOneofMessage,
+		getter: adaptGetter(getOneofMessage),
 		// This message parser is eager. TODO: add a lazy message archetype.
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseOneofMessage}},
 	},
@@ -169,48 +171,48 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	},
 }
 
-func getOneofScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
-	if which != getter.offset.number {
+func getOneofScalar[T scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
+	if which != getter.Offset.Number {
 		return protoreflect.ValueOf(nil)
 	}
-	v := *getField[T](m, getter.offset)
+	v := *dynamic.GetField[T](m, getter.Offset)
 	return protoreflect.ValueOf(v)
 }
 
-func getOneofBool(m *message, _ Type, getter getter) protoreflect.Value {
-	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
-	if which != getter.offset.number {
+func getOneofBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
+	if which != getter.Offset.Number {
 		return protoreflect.ValueOf(nil)
 	}
-	v := *getField[byte](m, getter.offset)
+	v := *dynamic.GetField[byte](m, getter.Offset)
 	return protoreflect.ValueOf(v != 0)
 }
 
-func getOneofString(m *message, _ Type, getter getter) protoreflect.Value {
-	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
-	if which != getter.offset.number {
+func getOneofString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
+	if which != getter.Offset.Number {
 		return protoreflect.ValueOf(nil)
 	}
-	r := *getField[zc.Range](m, getter.offset)
-	return protoreflect.ValueOf(r.String(m.context.src))
+	r := *dynamic.GetField[zc.Range](m, getter.Offset)
+	return protoreflect.ValueOf(r.String(m.Shared.Src))
 }
 
-func getOneofBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
-	if which != getter.offset.number {
+func getOneofBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
+	if which != getter.Offset.Number {
 		return protoreflect.ValueOf(nil)
 	}
-	r := *getField[zc.Range](m, getter.offset)
-	return protoreflect.ValueOf(r.Bytes(m.context.src))
+	r := *dynamic.GetField[zc.Range](m, getter.Offset)
+	return protoreflect.ValueOf(r.Bytes(m.Shared.Src))
 }
 
-func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
-	which := unsafe2.ByteLoad[uint32](m, getter.offset.bit)
-	if which != getter.offset.number {
-		return protoreflect.ValueOf(empty{ty})
+func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
+	if which != getter.Offset.Number {
+		return protoreflect.ValueOf(empty{newType(ty)})
 	}
-	ptr := *getField[*message](m, getter.offset)
+	ptr := *dynamic.GetField[*Message](m, getter.Offset)
 	return protoreflect.ValueOf(ptr)
 }
 
@@ -220,7 +222,7 @@ func getOneofMessage(m *message, ty Type, getter getter) protoreflect.Value {
 func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, p2.scratch = p1.varint(p2)
 	p1, p2 = storeFromScratch[T](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -232,7 +234,7 @@ func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, p2.scratch = p1.varint(p2)
 	p2.scratch = uint64(zigzag64[T](p2.scratch))
 	p1, p2 = storeFromScratch[T](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -243,7 +245,7 @@ func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, n = p1.fixed32(p2)
 	p2.scratch = uint64(n)
 	p1, p2 = storeFromScratch[uint32](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -252,7 +254,7 @@ func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, p2.scratch = p1.fixed64(p2)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -263,7 +265,7 @@ func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, r = p1.utf8(p2)
 	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -274,7 +276,7 @@ func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, r = p1.bytes(p2)
 	p2.scratch = uint64(r)
 	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
@@ -287,12 +289,12 @@ func parseOneofBool(p1 parser1, p2 parser2) (parser1, parser2) {
 	}
 	p2.scratch = n
 	p1, p2 = storeFromScratch[byte](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 
 	return p1, p2
 }
 
 func parseOneofMessage(p1 parser1, p2 parser2) (parser1, parser2) {
-	unsafe2.ByteStore(p2.m(), p2.f().offset.bit, p2.f().offset.number)
+	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
 	return parseMessage(p1, p2)
 }

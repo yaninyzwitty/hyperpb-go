@@ -18,6 +18,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/zc"
 )
 
@@ -36,8 +38,8 @@ func b8(b bool) uint8 {
 }
 
 // getMap2xI is a [getterThunk] for map<bool, V> where V is an integer type.
-func getMap2xI[V any](m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, V]](m, getter.offset)
+func getMap2xI[V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[uint8, V]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -72,13 +74,13 @@ func (m map2xI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 }
 
 // getMap2xS is a [getterThunk] for map<bool, string>.
-func getMap2xS(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, zc.Range]](m, getter.offset)
+func getMap2xS(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[uint8, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(map2xS{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(map2xS{src: m.Shared.Src, table: *v})
 }
 
 // map2xS is a [protoreflect.Map] for map<bool, string>.
@@ -109,13 +111,13 @@ func (m map2xS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 }
 
 // getMap2xB is a [getterThunk] for map<bool, bytes>.
-func getMap2xB(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, zc.Range]](m, getter.offset)
+func getMap2xB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[uint8, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(map2xB{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(map2xB{src: m.Shared.Src, table: *v})
 }
 
 // map2xB is a [protoreflect.Map] for map<bool, bytes>.
@@ -146,8 +148,8 @@ func (m map2xB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 }
 
 // getMap2x2 is a [getterThunk] for map<bool, bytes>.
-func getMap2x2(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, uint8]](m, getter.offset)
+func getMap2x2(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[uint8, uint8]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -182,8 +184,8 @@ func (m map2x2) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 }
 
 // getMap2xM is a [getterThunk] for map<bool, V> where V is a message type.
-func getMap2xM(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[uint8, *message]](m, getter.offset)
+func getMap2xM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[uint8, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
@@ -194,7 +196,7 @@ func getMap2xM(m *message, _ Type, getter getter) protoreflect.Value {
 // map2xM is a [protoreflect.Map] for map<bool, V> where V is a message type.
 type map2xM struct {
 	unimplementedMap
-	table *swiss.Table[uint8, *message]
+	table *swiss.Table[uint8, *dynamic.Message]
 }
 
 func (m map2xM) Len() int                        { return m.table.Len() }
@@ -206,12 +208,12 @@ func (m map2xM) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(*v)
+	return protoreflect.ValueOf(newMessage(*v))
 }
 
 func (m map2xM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k != 0)), protoreflect.ValueOf(newMessage(v))) {
 			return
 		}
 	}

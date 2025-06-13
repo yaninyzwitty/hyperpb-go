@@ -18,18 +18,20 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/zc"
 )
 
 // getMapSxI is a [getterThunk] for map<string, V> where V is an integer type.
-func getMapSxI[V any](m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[zc.Range, V]](m, getter.offset)
+func getMapSxI[V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[zc.Range, V]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(mapSxI[V]{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(mapSxI[V]{src: m.Shared.Src, table: *v})
 }
 
 // mapSxI is a [protoreflect.Map] for map<string, V> where V is an integer type.
@@ -65,13 +67,13 @@ func (m mapSxI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 }
 
 // getMapSxS is a [protoreflect.Map] for map<string, string>.
-func getMapSxS(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[zc.Range, zc.Range]](m, getter.offset)
+func getMapSxS(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[zc.Range, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(mapSxS{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(mapSxS{src: m.Shared.Src, table: *v})
 }
 
 // mapSxS is a [protoreflect.Map] for map<string, string>.
@@ -108,13 +110,13 @@ func (m mapSxS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 }
 
 // getMapSxS is a [protoreflect.Map] for map<string, bytes>.
-func getMapSxB(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[zc.Range, zc.Range]](m, getter.offset)
+func getMapSxB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[zc.Range, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(mapSxB{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(mapSxB{src: m.Shared.Src, table: *v})
 }
 
 // stringScalarMap is a [protoreflect.Map] for map<string, bytes>.
@@ -151,20 +153,20 @@ func (m mapSxB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 }
 
 // getMapSxM is a [getterThunk] for map<string, V> where V is a message type.
-func getMapSxM(m *message, _ Type, getter getter) protoreflect.Value {
-	v := getField[*swiss.Table[zc.Range, *message]](m, getter.offset)
+func getMapSxM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.GetField[*swiss.Table[zc.Range, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
 	}
 
-	return protoreflect.ValueOf(mapSxM{src: m.context.src, table: *v})
+	return protoreflect.ValueOf(mapSxM{src: m.Shared.Src, table: *v})
 }
 
 // mapSxM is a [protoreflect.Map] for map<string, V> where V is a message type.
 type mapSxM struct {
 	unimplementedMap
 	src   *byte
-	table *swiss.Table[zc.Range, *message]
+	table *swiss.Table[zc.Range, *dynamic.Message]
 }
 
 func (m mapSxM) extract() func(zc.Range) []byte {
@@ -180,13 +182,13 @@ func (m mapSxM) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(*v)
+	return protoreflect.ValueOf(newMessage(*v))
 }
 
 func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(newMessage(v))) {
 			return
 		}
 	}

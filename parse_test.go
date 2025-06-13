@@ -86,7 +86,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 			b.Run("amortize", func(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
-				ctx := new(fastpb.Context)
+				ctx := new(fastpb.Shared)
 				for range b.N {
 					m := ctx.New(test.Type.Fast)
 					_ = proto.Unmarshal(specimen, m)
@@ -128,7 +128,7 @@ type test struct {
 	TypeName string `yaml:"type"`
 	Type     struct {
 		Gencode protoreflect.MessageType
-		Fast    fastpb.Type
+		Fast    *fastpb.Type
 	} `yaml:"-"`
 
 	// If set, run this test as a benchmark.
@@ -252,7 +252,7 @@ func parseTest(t testing.TB, path string, file []byte) *test {
 	return test
 }
 
-func (test *test) run(t *testing.T, ctx *fastpb.Context) {
+func (test *test) run(t *testing.T, ctx *fastpb.Shared) {
 	t.Helper()
 
 	run := func(t *testing.T, specimen []byte) {

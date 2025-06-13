@@ -18,6 +18,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/arena/slice"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -27,8 +29,8 @@ import (
 // and outlined modes; the hasbit is set in the latter case. We switch to the
 // outlined mode to avoid needing to copy parsed messages on slice resize.
 
-func getRepeatedMessage(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[repeatedMessage](m, getter.offset)
+func getRepeatedMessage(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[repeatedMessage](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
@@ -64,10 +66,10 @@ func (r *repeatedMessage) Get(n int) protoreflect.Value {
 	if r.stride != 0 {
 		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
 		p := unsafe2.ByteAdd(r.raw.Ptr.AssertValid(), n*int(r.stride))
-		return protoreflect.ValueOf(unsafe2.Cast[message](p))
+		return protoreflect.ValueOf(unsafe2.Cast[Message](p))
 	}
 
-	raw := slice.CastUntyped[*message](r.raw).Raw()
+	raw := slice.CastUntyped[*Message](r.raw).Raw()
 	return protoreflect.ValueOf(raw[n])
 }
 
@@ -80,15 +82,15 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, r = getMutableField[repeatedMessage](p1, p2)
 	p1.log(p2, "repeated message", "%v", r.raw)
 
-	var m *message
+	var m *dynamic.Message
 
 	if r.raw.Ptr != 0 && r.stride == 0 {
 		goto pointers
 	}
 
 	{
-		ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-		stride := int(ty.raw.size)
+		ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+		stride := int(ty.Size)
 		s := slice.CastUntyped[byte](r.raw)
 
 		if r.raw.Ptr == 0 {
@@ -114,7 +116,7 @@ pointers:
 	{
 		p1, p2, m = p1.alloc(p2)
 
-		r := unsafe2.Cast[slice.Addr[unsafe2.Addr[message]]](r)
+		r := unsafe2.Cast[slice.Addr[unsafe2.Addr[dynamic.Message]]](r)
 		s := r.AssertValid()
 		if s.Len() == s.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
@@ -139,8 +141,8 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1
 	//
 	// TODO: Add a profiling knob for setting the default number of
 	// elements.
-	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	stride := ty.raw.size
+	ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+	stride := ty.Size
 
 	s := slice.Make[byte](p1.arena(), int(stride))
 	s = s.SetLen(0)
@@ -153,15 +155,15 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1
 
 //go:noinline
 func spillInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1, parser2) {
-	ty := p1.c().lib.fromOffset(p2.f().message.tyOffset)
-	stride := int(ty.raw.size)
+	ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+	stride := int(ty.Size)
 	s := slice.CastUntyped[byte](r.raw)
 
 	// Spill all of the messages onto a pointer slice.
-	spill := slice.Make[unsafe2.Addr[message]](p1.arena(), s.Cap()/stride*2)
+	spill := slice.Make[unsafe2.Addr[dynamic.Message]](p1.arena(), s.Cap()/stride*2)
 	var j int
 	for i := 0; i < s.Len(); i += stride {
-		m := unsafe2.Cast[message](unsafe2.Add(s.Ptr(), i))
+		m := unsafe2.Cast[dynamic.Message](unsafe2.Add(s.Ptr(), i))
 		spill.Store(j, unsafe2.AddrOf(m))
 		j++
 	}
@@ -174,10 +176,10 @@ func spillInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parse
 }
 
 //go:noinline
-func appendOneMessage(p1 parser1, p2 parser2, m *message) (parser1, parser2, *message) {
+func appendOneMessage(p1 parser1, p2 parser2, m *dynamic.Message) (parser1, parser2, *dynamic.Message) {
 	var slot *repeatedMessage
 	p1, p2, slot = getMutableField[repeatedMessage](p1, p2)
-	s := slice.CastUntyped[unsafe2.Addr[message]](slot.raw)
+	s := slice.CastUntyped[unsafe2.Addr[dynamic.Message]](slot.raw)
 	slot.raw = s.AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr().Untyped()
 	return p1, p2, m
 }

@@ -28,6 +28,8 @@ import (
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/sync2"
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/zc"
 )
@@ -69,8 +71,8 @@ func MaxDepth(n int) UnmarshalOption {
 }
 
 // startParse is the top-level entry point for message parsing.
-func startParse(m *message, data []byte, options ...UnmarshalOption) (err error) {
-	if m.context.src != nil {
+func startParse(m *dynamic.Message, data []byte, options ...UnmarshalOption) (err error) {
+	if m.Shared.Src != nil {
 		panic("fastpb: attempted to parse message using in-use Context")
 	}
 
@@ -78,7 +80,7 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 		return &errParse{code: errCodeTooBig}
 	}
 
-	m.context.lock.Lock()
+	m.Shared.Lock.Lock()
 
 	pp := ppPool.Get()
 	pp.maxMisses = defaultMaxMisses
@@ -90,8 +92,8 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 		}
 	}
 
-	m.context.src = ensure9BytesPastEnd(data, false)
-	m.context.len = len(data)
+	m.Shared.Src = ensure9BytesPastEnd(data, false)
+	m.Shared.Len = len(data)
 	// The arena keeps m.context alive, so we don't need to KeepAlive src.
 
 	if len(data) == 0 {
@@ -132,12 +134,12 @@ func startParse(m *message, data []byte, options ...UnmarshalOption) (err error)
 		// defer is noticeably faster.
 		stackPool.Put(stack)
 		ppPool.Put(pp)
-		m.context.lock.Unlock()
+		m.Shared.Lock.Unlock()
 	}()
 
 	p1 := parser1{
-		c_: unsafe2.AddrOf(m.context),
-		b_: unsafe2.AddrOf(m.context.src),
+		c_: unsafe2.AddrOf(m.Shared),
+		b_: unsafe2.AddrOf(m.Shared.Src),
 	}
 	p2 := parser2{
 		pp_: unsafe2.AddrOf(pp),
@@ -208,7 +210,7 @@ func ensure9BytesPastEnd(data []byte, forceCopy bool) *byte {
 // is because it will force the caller to spill the parser state across the
 // call.
 type parser1 struct {
-	c_ unsafe2.Addr[Context]
+	c_ unsafe2.Addr[dynamic.Shared]
 	b_ unsafe2.Addr[byte]
 	e_ unsafe2.Addr[byte] // One past the end of the stream.
 	g_ uint64             // End-of-group tag.
@@ -216,8 +218,8 @@ type parser1 struct {
 
 // parser2 is the other half of the state for the TDP parser. See [parser1].
 type parser2 struct {
-	m_  unsafe2.Addr[message]
-	f_  unsafe2.Addr[fieldParser]
+	m_  unsafe2.Addr[dynamic.Message]
+	f_  unsafe2.Addr[tdp.FieldParser]
 	pp_ unsafe2.Addr[parserP]
 
 	// A scratch register that is preserved across *most* calls. Thunks
@@ -236,7 +238,7 @@ type parserP struct {
 		top, bottom unsafe2.Addr[parserFrame]
 	}
 
-	t_ unsafe2.Addr[typeParser]
+	t_ unsafe2.Addr[tdp.TypeParser]
 
 	maxMisses, maxDepth int
 }
@@ -245,17 +247,21 @@ type parserP struct {
 type parserFrame struct {
 	e unsafe2.Addr[byte]
 	g uint64
-	m unsafe2.Addr[message]
-	t unsafe2.Addr[typeParser]
-	f unsafe2.Addr[fieldParser]
+	m unsafe2.Addr[dynamic.Message]
+	t unsafe2.Addr[tdp.TypeParser]
+	f unsafe2.Addr[tdp.FieldParser]
 }
 
-func (p1 parser1) c() *Context {
+func (p1 parser1) c() *dynamic.Shared {
 	return p1.c_.AssertValid()
 }
 
 func (p1 parser1) arena() *arena.Arena {
-	return &p1.c_.AssertValid().arena
+	return p1.c_.AssertValid().Arena()
+}
+
+func (p1 parser1) src() *byte {
+	return p1.c_.AssertValid().Src
 }
 
 func (p1 parser1) b() *byte {
@@ -276,15 +282,15 @@ func (p1 parser1) b() *byte {
 	return p1.b_.AssertValid()
 }
 
-func (p2 parser2) m() *message {
+func (p2 parser2) m() *dynamic.Message {
 	return p2.m_.AssertValid()
 }
 
-func (p2 parser2) t() *typeParser {
+func (p2 parser2) t() *tdp.TypeParser {
 	return p2.pp().t_.AssertValid()
 }
 
-func (p2 parser2) f() *fieldParser {
+func (p2 parser2) f() *tdp.FieldParser {
 	return p2.f_.AssertValid()
 }
 
@@ -300,7 +306,7 @@ func (p1 parser1) len() int {
 func (p1 parser1) fail(p2 parser2, err errCode) {
 	p2.pp().err = errParse{
 		code:   err,
-		offset: p1.b_.Sub(unsafe2.AddrOf(p1.c().src)),
+		offset: p1.b_.Sub(unsafe2.AddrOf(p1.src())),
 	}
 
 	_ = *(*byte)(nil) // Trigger a panic without calling runtime.gopanic. Linters hate this!
@@ -356,7 +362,7 @@ func (p1 parser1) pop(p2 parser2) (parser1, parser2, bool) {
 	if dbg.Enabled {
 		s := &p2.pp().stack
 		p1.log(p2, "pop", "%v/%v/%v\n%s", s.top, s.ptr, s.bottom,
-			p2.m().dump())
+			p2.m().Dump())
 	}
 
 	last := p2.pp().stack.ptr.AssertValid()
@@ -570,11 +576,11 @@ func (p1 parser1) bytes(p2 parser2) (parser1, parser2, zc.Range) {
 	var n int
 	p1, p2, n = p1.lengthPrefix(p2)
 
-	r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), n)
+	r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.src())), n)
 	p1 = p1.advance(n)
 
 	if dbg.Enabled {
-		text := r.Bytes(p1.c().src)
+		text := r.Bytes(p1.src())
 		p1.log(p2, "bytes", "%#v, %q", r, text)
 	}
 	return p1, p2, r
@@ -688,11 +694,11 @@ func (p1 parser1) utf8(p2 parser2) (parser1, parser2, zc.Range) {
 	}
 
 	if ok {
-		r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.c().src)), n)
+		r := zc.NewRaw(p1.b_.Sub(unsafe2.AddrOf(p1.src())), n)
 		p1 = p1.advance(n)
 
 		if dbg.Enabled {
-			text := r.Bytes(p1.c().src)
+			text := r.Bytes(p1.src())
 			p1.log(p2, "utf8", "%#v, %q", r, text)
 		}
 		return p1, p2, r
@@ -706,7 +712,7 @@ fail:
 // message pushes a new message to be parsed onto the parser stack.
 //
 //go:nosplit
-func (p1 parser1) message(p2 parser2, len int, m *message) (parser1, parser2) {
+func (p1 parser1) message(p2 parser2, len int, m *dynamic.Message) (parser1, parser2) {
 	if len == 0 {
 		return p1, p2
 	}
@@ -721,13 +727,13 @@ func (p1 parser1) message(p2 parser2, len int, m *message) (parser1, parser2) {
 	}
 
 	p1.g_ = ^uint64(0)
-	p2.m_ = unsafe2.Addr[message](p2.scratch)
-	p2.pp().t_ = unsafe2.AddrOf(p2.m().ty().raw.parser)
+	p2.m_ = unsafe2.Addr[dynamic.Message](p2.scratch)
+	p2.pp().t_ = unsafe2.AddrOf(p2.m().Type().Parser)
 	if dbg.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().entry)
+	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().Entrypoint)
 
 	return p1, p2
 }
@@ -735,7 +741,7 @@ func (p1 parser1) message(p2 parser2, len int, m *message) (parser1, parser2) {
 // message pushes a new map entry to be parsed onto the parser stack.
 //
 //go:nosplit
-func (p1 parser1) mapEntry(p2 parser2, len int, m *message) (parser1, parser2) {
+func (p1 parser1) mapEntry(p2 parser2, len int, m *dynamic.Message) (parser1, parser2) {
 	if len == 0 {
 		return p1, p2
 	}
@@ -750,13 +756,13 @@ func (p1 parser1) mapEntry(p2 parser2, len int, m *message) (parser1, parser2) {
 	}
 
 	p1.g_ = ^uint64(0)
-	p2.m_ = unsafe2.Addr[message](p2.scratch)
-	p2.pp().t_ = unsafe2.AddrOf(p2.m().ty().raw.parser.mapEntry)
+	p2.m_ = unsafe2.Addr[dynamic.Message](p2.scratch)
+	p2.pp().t_ = unsafe2.AddrOf(p2.m().Type().Parser.MapEntry)
 	if dbg.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().entry)
+	p2.f_ = unsafe2.AddrOf(&p2.pp().t_.AssertValid().Entrypoint)
 
 	return p1, p2
 }
@@ -766,19 +772,18 @@ func (p1 parser1) mapEntry(p2 parser2, len int, m *message) (parser1, parser2) {
 //go:noinline
 func logMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1.log(
-		p2, "new", "%#x, %v, %v",
+		p2, "new", "%#x, %v",
 		p2.m_,
-		p2.m().ty(),
-		p2.m().ty().raw,
+		p2.m().Type(),
 	)
-	p1.log(p2, "tags", "%v%v\n", p2.t().tags.Dump(), p2.t().tags)
+	p1.log(p2, "tags", "%v%v\n", p2.t().Tags.Dump(), p2.t().Tags)
 	return p1, p2
 }
 
 // loop is the core parser loop. This function is not recursive.
 func loop(p1 parser1, p2 parser2) {
 	// Need this to match the ABI of returning from a thunk.
-	p2.f_ = unsafe2.AddrOf(p2.f().nextOk)
+	p2.f_ = unsafe2.AddrOf(p2.f().NextOk)
 
 	// This code is dynamically unreachable, but it forces Go to schedule
 	// the fail block slightly differently in a way that is more in our favor
@@ -794,7 +799,7 @@ checkDone:
 
 number:
 	{
-		var tag fieldTag
+		var tag tdp.Tag
 		// The purpose of this block is to decode a varint without actually doing
 		// any of the shifts to delete the sign bits. Instead:
 		//
@@ -827,7 +832,7 @@ number:
 		// reasons.
 
 		// Load up to eight bytes for the varint (at most 5 will be used).
-		tag = unsafe2.ByteLoad[fieldTag](p1.b(), 0)
+		tag = unsafe2.ByteLoad[tdp.Tag](p1.b(), 0)
 		// Flip all of the sign bits. This essentially clears the sign bits
 		// of all of the varint bytes except the highest one's.
 		tag ^= signBits
@@ -843,7 +848,7 @@ number:
 		// 0x100 to save on an add instruction on bytes.
 		// The &63 is to ensure that Go does not generate a cmov to implement
 		// the x<<64 == 0 case.
-		tag &= (fieldTag(0b10) << ((tagBits - 1) & 63)) - 1
+		tag &= (tdp.Tag(0b10) << ((tagBits - 1) & 63)) - 1
 		// No need to strip the sign bits, the ^= above already did that.
 
 		// Consume the tag.
@@ -865,7 +870,7 @@ number:
 field:
 	{
 		tries := p2.pp().maxMisses
-		tag := fieldTag(p2.scratch)
+		tag := tdp.Tag(p2.scratch)
 		for {
 			p1.log(p2, "try", "%v, %v, %v", tag, tries, p2.f())
 
@@ -875,7 +880,7 @@ field:
 				runtime.GC()
 			}
 
-			if p2.f().tag == tag {
+			if p2.f().Tag == tag {
 				// Try to keep the Context in L1 cache by loading a byte from it
 				// before every thunk. This makes sure that short thunks that
 				// do not allocate any memory do not cause it to fall out of
@@ -883,18 +888,18 @@ field:
 				// to pull the arena's internal pointers from L2 cache.
 				unsafe2.Ping(p1.c())
 
-				thunk := &p2.f().thunk
+				thunk := (*unsafe2.PC[parserThunk])(&p2.f().Parse)
 				p1.log(p2, "call", "%v, %#x", dbg.Func(thunk.Get()), p2.f_)
 				p1, p2 = thunk.Get()(p1, p2)
 				p1.log(p2, "ret", "%v, %#x", dbg.Func(thunk.Get()), p2.f_)
 
-				p2.f_ = unsafe2.AddrOf(p2.f().nextOk)
+				p2.f_ = unsafe2.AddrOf(p2.f().NextOk)
 
 				p2.scratch = 0 // Make sure no one relies on this being preserved.
 				goto checkDone
 			}
 
-			p2.f_ = unsafe2.AddrOf(p2.f().nextErr)
+			p2.f_ = unsafe2.AddrOf(p2.f().NextErr)
 
 			tries--
 			if tries > 0 {
@@ -912,7 +917,7 @@ field:
 
 		// Finish parsing number into a varint.
 		// This is a manual inlining of tag.decode.
-		mask := fieldTag(0x7f)
+		mask := tdp.Tag(0x7f)
 		i := 0
 		// Repeated 5 times.
 		var tag2 uint64
@@ -971,9 +976,9 @@ pop:
 			p1.log(
 				p2, "finish", "%v, ty: %p:%s %v",
 				p2.m_,
-				p2.m().ty().raw,
-				p2.m().ty().Descriptor().FullName(),
-				p2.m().ty().raw,
+				p2.m().Type(),
+				p2.m().Type().Descriptor.FullName(),
+				p2.m().Type(),
 			)
 		}
 
@@ -997,12 +1002,12 @@ truncated:
 
 func (p1 parser1) byTag(p2 parser2, tag2 uint64) (parser1, parser2, uint64) {
 	t := p2.t()
-	p := swiss.LookupI32xU32(t.tags, int32(tag2))
+	p := swiss.LookupI32xU32(t.Tags, int32(tag2))
 	if p == nil {
 		p2.f_ = 0
 		return p1, p2, tag2
 	}
-	p2.f_ = unsafe2.AddrOf(t.fields().Get(int(*p)))
+	p2.f_ = unsafe2.AddrOf(t.Fields().Get(int(*p)))
 	return p1, p2, tag2
 }
 
@@ -1036,17 +1041,17 @@ func (p1 parser1) unknown(p2 parser2, tag2 uint64) (parser1, parser2) {
 	}
 	p1 = p1.advance(m)
 
-	if !p2.t().discardUnknown {
-		r := zc.New(p1.c().src, start.AssertValid(), int(p1.b_-start))
-		cold := p2.m().mutableCold()
-		if cold.unknown.Len() > 0 {
-			last := unsafe2.Add(cold.unknown.Ptr(), cold.unknown.Len()-1)
+	if !p2.t().DiscardUnknown {
+		r := zc.New(p1.src(), start.AssertValid(), int(p1.b_-start))
+		cold := p2.m().MutableCold()
+		if cold.Unknown.Len() > 0 {
+			last := unsafe2.Add(cold.Unknown.Ptr(), cold.Unknown.Len()-1)
 			if r.Start() == last.End() {
 				*last = zc.NewRaw(last.Start(), last.Len()+r.Len())
 				return p1, p2
 			}
 		}
-		cold.unknown = cold.unknown.AppendOne(p1.arena(), r)
+		cold.Unknown = cold.Unknown.AppendOne(p1.arena(), r)
 	}
 
 	return p1, p2
@@ -1076,8 +1081,8 @@ func (p1 parser1) log(p2 parser2, op, format string, args ...any) {
 		return
 	}
 
-	start := p1.b_.Sub(unsafe2.AddrOf(p1.c().src))
-	end := p1.e_.Sub(unsafe2.AddrOf(p1.c().src))
+	start := p1.b_.Sub(unsafe2.AddrOf(p1.src()))
+	end := p1.e_.Sub(unsafe2.AddrOf(p1.src()))
 	height := p2.pp().stack.bottom.Sub(p2.pp().stack.ptr)
 	var b byte
 	if p1.b_ < p1.e_ {

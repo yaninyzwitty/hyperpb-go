@@ -20,6 +20,8 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -40,68 +42,68 @@ var singularFields = map[protoreflect.Kind]*archetype{
 	// 32-bit varint types.
 	protoreflect.Int32Kind: {
 		layout:  layout.Of[int32](),
-		getter:  getScalar[int32],
+		getter:  adaptGetter(getScalar[int32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 	protoreflect.Uint32Kind: {
 		layout:  layout.Of[uint32](),
-		getter:  getScalar[uint32],
+		getter:  adaptGetter(getScalar[uint32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 	protoreflect.Sint32Kind: {
 		layout:  layout.Of[int32](),
-		getter:  getScalar[int32],
+		getter:  adaptGetter(getScalar[int32]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseZigZag32}},
 	},
 
 	// 64-bit varint types.
 	protoreflect.Int64Kind: {
 		layout:  layout.Of[int64](),
-		getter:  getScalar[int64],
+		getter:  adaptGetter(getScalar[int64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint64}},
 	},
 	protoreflect.Uint64Kind: {
 		layout:  layout.Of[uint64](),
-		getter:  getScalar[uint64],
+		getter:  adaptGetter(getScalar[uint64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint64}},
 	},
 	protoreflect.Sint64Kind: {
 		layout:  layout.Of[int64](),
-		getter:  getScalar[int64],
+		getter:  adaptGetter(getScalar[int64]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseZigZag64}},
 	},
 
 	// 32-bit fixed types.
 	protoreflect.Fixed32Kind: {
 		layout:  layout.Of[uint32](),
-		getter:  getScalar[uint32],
+		getter:  adaptGetter(getScalar[uint32]),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 	protoreflect.Sfixed32Kind: {
 		layout:  layout.Of[int32](),
-		getter:  getScalar[int32],
+		getter:  adaptGetter(getScalar[int32]),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 	protoreflect.FloatKind: {
 		layout:  layout.Of[float32](),
-		getter:  getFloat32,
+		getter:  adaptGetter(getFloat32),
 		parsers: []parseKind{{kind: protowire.Fixed32Type, parser: parseFixed32}},
 	},
 
 	// 64-bit fixed types.
 	protoreflect.Fixed64Kind: {
 		layout:  layout.Of[uint64](),
-		getter:  getScalar[uint64],
+		getter:  adaptGetter(getScalar[uint64]),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 	protoreflect.Sfixed64Kind: {
 		layout:  layout.Of[int64](),
-		getter:  getScalar[int64],
+		getter:  adaptGetter(getScalar[int64]),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 	protoreflect.DoubleKind: {
 		layout:  layout.Of[float64](),
-		getter:  getFloat64,
+		getter:  adaptGetter(getFloat64),
 		parsers: []parseKind{{kind: protowire.Fixed64Type, parser: parseFixed64}},
 	},
 
@@ -109,37 +111,37 @@ var singularFields = map[protoreflect.Kind]*archetype{
 	protoreflect.BoolKind: {
 		layout:  layout.Of[[0]byte](),
 		bits:    1,
-		getter:  getBool,
+		getter:  adaptGetter(getBool),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseBool}},
 	},
 	protoreflect.EnumKind: {
 		layout:  layout.Of[protoreflect.EnumNumber](),
-		getter:  getScalar[protoreflect.EnumNumber],
+		getter:  adaptGetter(getScalar[protoreflect.EnumNumber]),
 		parsers: []parseKind{{kind: protowire.VarintType, parser: parseVarint32}},
 	},
 
 	// String types.
 	protoreflect.StringKind: {
 		layout:  layout.Of[zc.Range](),
-		getter:  getString,
+		getter:  adaptGetter(getString),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseString}},
 	},
 	proto2StringKind: {
 		layout:  layout.Of[zc.Range](),
-		getter:  getString,
+		getter:  adaptGetter(getString),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
 	protoreflect.BytesKind: {
 		layout:  layout.Of[zc.Range](),
-		getter:  getBytes,
+		getter:  adaptGetter(getBytes),
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseBytes}},
 	},
 
 	// Message types.
 	protoreflect.MessageKind: {
 		// A singular message is laid out as a single *message pointer.
-		layout: layout.Of[*message](),
-		getter: getMessage,
+		layout: layout.Of[*dynamic.Message](),
+		getter: adaptGetter(getMessage),
 		// This message parser is eager. TODO: add a lazy message archetype.
 		parsers: []parseKind{{kind: protowire.BytesType, parser: parseMessage}},
 	},
@@ -148,8 +150,8 @@ var singularFields = map[protoreflect.Kind]*archetype{
 	},
 }
 
-func getScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[T](m, getter.offset)
+func getScalar[T scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[T](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
@@ -163,8 +165,8 @@ func getScalar[T scalar](m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(v)
 }
 
-func getBool(m *message, _ Type, getter getter) protoreflect.Value {
-	b := m.getBit(getter.offset.bit)
+func getBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	b := m.GetBit(getter.Offset.Bit)
 	if !b {
 		return protoreflect.ValueOf(nil)
 	}
@@ -177,8 +179,8 @@ func getBool(m *message, _ Type, getter getter) protoreflect.Value {
 //
 // This also avoids a potential equality comparison with a signaling NaN, which
 // can cause all sorts of mayhem.
-func getFloat32(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[uint32](m, getter.offset)
+func getFloat32(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[uint32](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
@@ -190,8 +192,8 @@ func getFloat32(m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(math.Float32frombits(v))
 }
 
-func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[uint64](m, getter.offset)
+func getFloat64(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[uint64](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
@@ -203,14 +205,14 @@ func getFloat64(m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(math.Float64frombits(v))
 }
 
-func getString(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[zc.Range](m, getter.offset)
+func getString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[zc.Range](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
 
 	r := *p
-	data := r.String(m.context.src)
+	data := r.String(m.Shared.Src)
 
 	if data == "" {
 		return protoreflect.ValueOf(nil)
@@ -219,14 +221,14 @@ func getString(m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(data)
 }
 
-func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
-	p := getField[zc.Range](m, getter.offset)
+func getBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[zc.Range](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
 
 	r := *p
-	data := r.Bytes(m.context.src)
+	data := r.Bytes(m.Shared.Src)
 
 	if len(data) == 0 {
 		return protoreflect.ValueOf(nil)
@@ -235,17 +237,17 @@ func getBytes(m *message, _ Type, getter getter) protoreflect.Value {
 	return protoreflect.ValueOf(data)
 }
 
-func getMessage(m *message, ty Type, getter getter) protoreflect.Value {
-	p := getField[*message](m, getter.offset)
+func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	p := dynamic.GetField[*Message](m, getter.Offset)
 	if p == nil {
 		return protoreflect.ValueOf(nil)
 	}
 
-	m = *p
-	if m == nil {
-		return protoreflect.ValueOf(empty{ty})
+	sub := *p
+	if sub == nil {
+		return protoreflect.ValueOf(empty{newType(ty)})
 	}
-	return protoreflect.ValueOf(m)
+	return protoreflect.ValueOf(sub)
 }
 
 //go:nosplit
@@ -306,7 +308,7 @@ func parseBytes(p1 parser1, p2 parser2) (parser1, parser2) {
 func parseBool(p1 parser1, p2 parser2) (parser1, parser2) {
 	var n uint64
 	p1, p2, n = p1.varint(p2)
-	p2.m().setBit(p2.f().offset.bit, n != 0)
+	p2.m().SetBit(p2.f().Offset.Bit, n != 0)
 
 	return p1, p2
 }
@@ -316,8 +318,8 @@ func parseMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	p1, p2, n = p1.lengthPrefix(p2)
 	p2.scratch = uint64(n)
 
-	var mp **message
-	p1, p2, mp = getMutableField[*message](p1, p2)
+	var mp **dynamic.Message
+	p1, p2, mp = getMutableField[*dynamic.Message](p1, p2)
 	m := *mp
 	if m == nil {
 		p1, p2, m = p1.alloc(p2)

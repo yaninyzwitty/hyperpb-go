@@ -20,6 +20,8 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -54,125 +56,10 @@ func zigzag[T integer](raw T) T {
 	return T(protowire.DecodeZigZag(n))
 }
 
-// field is an optimized descriptor for a field.
-type field struct {
-	_ unsafe2.NoCopy
-	// The message type for this field, if there is one.
-	message Type
-	getter  getter
-}
-
 type (
-	getterThunk func(*message, Type, getter) protoreflect.Value
+	getterThunk func(*dynamic.Message, *tdp.Type, *tdp.Accessor) protoreflect.Value
 	parserThunk func(parser1, parser2) (parser1, parser2)
 )
-
-// getter is all the information necessary for accessing a field of a [message].
-type getter struct {
-	offset fieldOffset
-
-	// The thunk for extracting the field.
-	thunk getterThunk
-}
-
-// fieldParser is a parser for a single field.
-type fieldParser struct {
-	_ unsafe2.NoCopy
-	// The expected, partially decoded tag value for the field.
-	tag fieldTag
-
-	// Byte offset to the typeParser this fieldParser uses, if any.
-	message *typeParser
-
-	// Field offset information for the field this parser parses. Duplicated
-	// from [getter].
-	offset fieldOffset
-
-	// The parser to jump to after this one, depending on whether the parse
-	// succeeds or fails.
-	nextOk, nextErr *fieldParser
-
-	// The thunk to call for this field. The bool return must always return
-	// true.
-	thunk unsafe2.PC[parserThunk]
-}
-
-// fieldOffset is field offset information for a generated message type's field.
-type fieldOffset struct {
-	// First bit index for bits allocated to this field.
-	//
-	// If this is a oneof field, this is instead an offset into the
-	// oneof word table.
-	bit uint32
-
-	// Byte offset within the containing message to the data for this field.
-	//
-	// If negative, this is a cold field, and this is the negation of an offset
-	// into the cold field area.
-	data int32
-
-	// This field's number. Only used by oneof fields; all other fields have
-	// a zero here.
-	number uint32
-}
-
-// fieldTag is a specially-formatted tag for the parser.
-//
-// The tag is formatted in the way it would be when encoded in a Protobuf
-// message, but with the high bit of each byte cleared.
-//
-//nolint:recvcheck
-type fieldTag uint64
-
-// encode encodes this field tag from the given number and type.
-func (ft *fieldTag) encode(n protowire.Number, t protowire.Type) {
-	protowire.AppendTag(unsafe2.Bytes(ft)[:0], n, t)
-	*ft &^= signBits
-}
-
-// decode decodes this field tag into a number and a type.
-func (ft fieldTag) decode() uint64 {
-	var tag uint64
-	mask := uint64(0x7f)
-	i := 0
-
-	tag |= (uint64(ft) & mask) >> i
-	mask <<= 8
-	i++
-	tag |= (uint64(ft) & mask) >> i
-	mask <<= 8
-	i++
-	tag |= (uint64(ft) & mask) >> i
-	mask <<= 8
-	i++
-	tag |= (uint64(ft) & mask) >> i
-	mask <<= 8
-	i++
-	tag |= (uint64(ft) & mask) >> i
-	mask <<= 8
-	i++
-
-	_, _ = i, mask
-	return tag
-}
-
-// valid returns whether or not this is the sentinel invalid field in a [Type]'s
-// field table.
-func (f *field) valid() bool {
-	return f.getter.thunk != nil
-}
-
-// get gets the value of this field out of a message of appropriate type.
-// Returns nil if the field is unset.
-//
-// This performs no type-checking! Callers are responsible for ensuring that m
-// is of the correct type.
-func (f *field) get(m *message) protoreflect.Value {
-	if !f.valid() {
-		return protoreflect.ValueOf(nil)
-	}
-	return f.getter.thunk(m, f.message, f.getter)
-}
 
 // archetype represents a class of fields that have the same layout within a
 // *message. This includes parsing and access information.
@@ -192,10 +79,14 @@ type archetype struct {
 	//
 	// This func MUST be a reference to a function or a global closure, so that
 	// it is not a GC-managed pointer.
-	getter getterThunk
+	getter tdp.Getter
 
 	// Parsers available for different forms of this field.
 	parsers []parseKind
+}
+
+func adaptGetter(f getterThunk) tdp.Getter {
+	return unsafe2.BitCast[tdp.Getter](f)
 }
 
 type parseKind struct {

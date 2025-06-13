@@ -22,6 +22,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
+	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -547,7 +548,7 @@ func init() {
 func mapArch(getter getterThunk, parser parserThunk) *archetype {
 	return &archetype{
 		layout:  layout.Of[*swiss.Table[int32, int32]](),
-		getter:  getter,
+		getter:  adaptGetter(getter),
 		parsers: []parseKind{{kind: protowire.BytesType, retry: true, parser: parser}},
 	}
 }
@@ -640,14 +641,14 @@ func (fixed32Item) extract(parser1, parser2) func(uint32) []byte { return nil }
 func (fixed64Item) extract(parser1, parser2) func(uint64) []byte { return nil }
 func (boolItem) extract(parser1, parser2) func(uint8) []byte     { return nil }
 func (stringItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
-	src := p1.c().src
+	src := p1.src()
 	return func(u uint64) []byte {
 		return zc.Range(u).Bytes(src)
 	}
 }
 
 func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
-	src := p1.c().src
+	src := p1.src()
 	return func(u uint64) []byte {
 		return zc.Range(u).Bytes(src)
 	}
@@ -934,7 +935,7 @@ insert:
 		vp = m2.Insert(k, extract)
 	}
 
-	var v *message
+	var v *dynamic.Message
 	// Allocate unconditionally to match Go protobuf's behavior.
 	// TODO: This could instead clear, but that optimization will almost never
 	// be relevant, because no serializer will ever emit the same key twice.
