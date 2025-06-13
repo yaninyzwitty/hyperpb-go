@@ -20,17 +20,11 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
+	"github.com/bufbuild/fastpb/internal/tdp/thunks"
 )
 
 // CompileOption is a configuration setting for [Compile].
 type CompileOption func(*compiler.Options)
-
-// PGO adds profile-guided optimization information to a compiler.
-//
-// Profile is a function that returns profiling information for a given field.
-// func PGO(prof func(site FieldSite) FieldProfile) CompileOption {
-// 	return func(c *compiler) { c.prof = prof }
-// }
 
 // WithExtensions provides an extension resolver for a compiler.
 //
@@ -68,45 +62,10 @@ func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type 
 type backend struct{}
 
 func (*backend) SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile) *compiler.Archetype {
-	var a *compiler.Archetype
-	od := fd.ContainingOneof()
-	switch {
-	case fd.IsMap():
-		k := fieldKind(fd.MapKey())
-		v := fieldKind(fd.MapValue())
-		a = mapFields[k][v]
-	case fd.IsList():
-		a = repeatedFields[fieldKind(fd)]
-	case od != nil && od.Fields().Len() > 1:
-		// One-element oneofs are treated like optional fields.
-		a = oneofFields[fieldKind(fd)]
-	case fd.HasPresence():
-		a = optionalFields[fieldKind(fd)]
-	default:
-		a = singularFields[fieldKind(fd)]
-	}
-
-	return a
+	return thunks.SelectArchetype(fd, prof)
 }
 
 func (*backend) PopulateMethods(methods *protoiface.Methods) {
 	methods.Unmarshal = unmarshalShim
 	methods.CheckInitialized = requiredShim
-}
-
-// fieldKind extracts the field kind from a descriptor.
-//
-// This returns negative values for "custom" kinds.
-func fieldKind(fd protoreflect.FieldDescriptor) protoreflect.Kind {
-	switch k := fd.Kind(); k {
-	case protoreflect.StringKind:
-		fd2, ok := fd.(interface{ EnforceUTF8() bool })
-		if fd.Syntax() == protoreflect.Proto3 || (ok && fd2.EnforceUTF8()) {
-			return protoreflect.StringKind
-		}
-		return proto2StringKind
-
-	default:
-		return k
-	}
 }

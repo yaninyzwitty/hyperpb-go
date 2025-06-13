@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"unsafe"
 
 	"google.golang.org/protobuf/encoding/protowire"
-	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/tdp"
 )
 
-const (
-	// Custom field kinds used by archetype selection; they're all negative.
-	proto2StringKind protoreflect.Kind = ^iota
-)
-
-func zigzag64[T tdp.Int](raw uint64) T {
-	return zigzag(T(raw))
-}
-
+// zigzag decodes a zigzag-encoded value of any type.
+//
+// Calling DecodeZigZag does not work correctly when sign extension is involved.
 func zigzag[T tdp.Int](raw T) T {
 	n := uint64(raw)
 	n &= (1 << (unsafe.Sizeof(raw) * 8)) - 1
 
 	return T(protowire.DecodeZigZag(n))
+}
+
+// zigzag64 is a helper for calling zigzag with a raw 64-bit input.
+func zigzag64[T tdp.Int](raw uint64) T {
+	return zigzag(T(raw))
 }

@@ -20,6 +20,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -45,7 +46,7 @@ func (t *Type) New() protoreflect.Message {
 
 // Zero implements [protoreflect.MessageType].
 func (t *Type) Zero() protoreflect.Message {
-	return empty{t}
+	return empty.NewMessage(&t.impl)
 }
 
 // Format implements [fmt.Formatter].
@@ -60,4 +61,10 @@ func (t *Type) Format(f fmt.State, verb rune) {
 // newType wraps an internal Type pointer.
 func newType(s *tdp.Type) *Type {
 	return unsafe2.Cast[Type](s)
+}
+
+func init() {
+	empty.WrapType = func(t *tdp.Type) protoreflect.MessageType {
+		return newType(t)
+	}
 }

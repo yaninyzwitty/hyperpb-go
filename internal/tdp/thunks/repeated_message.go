@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -20,6 +20,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -37,7 +38,7 @@ func getRepeatedMessage(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) p
 
 // repeatedMessage is a [protoreflect.List] implementation for message types.
 type repeatedMessage struct {
-	immutableList
+	empty.List
 
 	// Slice[byte] if stride is non-nil, Slice[*message] otherwise.
 	raw slice.Untyped
@@ -67,11 +68,12 @@ func (r *repeatedMessage) Get(n int) protoreflect.Value {
 	if r.stride != 0 {
 		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
 		p := unsafe2.ByteAdd(r.raw.Ptr.AssertValid(), n*int(r.stride))
-		return protoreflect.ValueOf(unsafe2.Cast[Message](p))
+		m := unsafe2.Cast[dynamic.Message](p)
+		return protoreflect.ValueOf(WrapMessage(m))
 	}
 
-	raw := slice.CastUntyped[*Message](r.raw).Raw()
-	return protoreflect.ValueOf(raw[n])
+	raw := slice.CastUntyped[*dynamic.Message](r.raw).Raw()
+	return protoreflect.ValueOf(WrapMessage(raw[n]))
 }
 
 //go:nosplit

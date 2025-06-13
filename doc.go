@@ -38,5 +38,3 @@
 package fastpb
 
 import _ "github.com/bufbuild/fastpb/internal/unsafe2/support"
-
-//go:generate go run ./internal/tools/stencil

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -158,12 +158,12 @@ func (m mapIxM[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.ValueOf(nil)
 	}
 
-	return protoreflect.ValueOf(newMessage(*v))
+	return protoreflect.ValueOf(WrapMessage(*v))
 }
 
 func (m mapIxM[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(newMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(WrapMessage(v))) {
 			return
 		}
 	}

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"google.golang.org/protobuf/encoding/protowire"
@@ -21,6 +21,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
@@ -212,10 +213,10 @@ func getOneofBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protor
 func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(empty{newType(ty)})
+		return protoreflect.ValueOf(empty.NewMessage(ty))
 	}
-	ptr := *dynamic.GetField[*Message](m, getter.Offset)
-	return protoreflect.ValueOf(ptr)
+	ptr := *dynamic.GetField[*dynamic.Message](m, getter.Offset)
+	return protoreflect.ValueOf(WrapMessage(ptr))
 }
 
 //go:nosplit

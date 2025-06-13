@@ -24,6 +24,8 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
+	"github.com/bufbuild/fastpb/internal/tdp/thunks"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
@@ -70,20 +72,20 @@ func (m *Message) Unmarshal(data []byte, options ...UnmarshalOption) error {
 // CompileOption is a configuration setting for [Type.Unmarshal].
 type UnmarshalOption func(*vm.Options)
 
-// MaxDecodeMisses sets the number of decode misses allowed in the parser before
+// WithMaxDecodeMisses sets the number of decode misses allowed in the parser before
 // switching to the slow path.
 //
 // Large values may improve performance for common protos, but introduce a
 // potential DoS vector due to quadratic worst case performance. The default
 // is 8.
-func MaxDecodeMisses(n int) UnmarshalOption {
+func WithMaxDecodeMisses(n int) UnmarshalOption {
 	return func(opts *vm.Options) { opts.MaxMisses = n }
 }
 
-// MaxDepth sets the maximum recursion depth for the parser.
+// WithMaxDepth sets the maximum recursion depth for the parser.
 //
 // Setting a large value enables potential DoS vectors.
-func MaxDepth(n int) UnmarshalOption {
+func WithMaxDepth(n int) UnmarshalOption {
 	return func(opts *vm.Options) { opts.MaxDepth = min(n, math.MaxUint32) }
 }
 
@@ -146,7 +148,7 @@ func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 			}
 
 		case fd.Message() != nil:
-			if _, empty := v.Interface().(empty); empty {
+			if _, empty := v.Interface().(empty.Message); empty {
 				goto skip
 			}
 		}
@@ -184,7 +186,7 @@ func (m *Message) Has(fd protoreflect.FieldDescriptor) bool {
 		return v.Map().Len() > 0
 
 	case fd.Message() != nil:
-		_, empty := v.Interface().(empty)
+		_, empty := v.Interface().(empty.Message)
 		return !empty
 
 	default:
@@ -307,16 +309,24 @@ func (m *Message) ProtoMethods() *protoiface.Methods {
 }
 
 // newMessage wraps an internal Message pointer.
-func newMessage(s *dynamic.Message) *Message {
-	return unsafe2.Cast[Message](s)
+func newMessage(m *dynamic.Message) *Message {
+	return unsafe2.Cast[Message](m)
 }
 
+func init() {
+	thunks.WrapMessage = func(m *dynamic.Message) protoreflect.Message {
+		return newMessage(m)
+	}
+}
+
+// unmarshalShim implements [protoiface.Methods].Unmarshal.
 func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
 	m := in.Message.(*Message) //nolint:errcheck // Only called on *Message values.
 	err = m.Unmarshal(in.Buf)
 	return out, err
 }
 
+// requiredShim implements [protoiface.Methods].CheckInitialized.
 func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInitializedOutput, err error) {
 	// Required fields are not real.
 	return out, nil

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package empty
 
 import (
 	"google.golang.org/protobuf/proto"
@@ -20,68 +20,73 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 
 	"github.com/bufbuild/fastpb/internal/dbg"
+	"github.com/bufbuild/fastpb/internal/tdp"
 )
 
-// empty is an empty value of any [Type].
-type empty struct{ ty *Type }
+// Callback for constructing the actual MessageType implementation defined in
+// the root package.
+var WrapType func(*tdp.Type) protoreflect.MessageType
 
-var (
-	_ proto.Message        = empty{}
-	_ protoreflect.Message = empty{}
-)
+// Message is an Message value of any [Type].
+type Message struct{ ty *tdp.Type }
+
+// NewMessage creates a new, empty message.
+func NewMessage(ty *tdp.Type) Message {
+	return Message{ty}
+}
 
 // ProtoReflect implements [proto.Message].
-func (e empty) ProtoReflect() protoreflect.Message {
+func (e Message) ProtoReflect() protoreflect.Message {
 	return e
 }
 
 // Descriptor implements [protoreflect.Message].
-func (e empty) Descriptor() protoreflect.MessageDescriptor {
-	return e.ty.Descriptor()
+func (e Message) Descriptor() protoreflect.MessageDescriptor {
+	return e.ty.Descriptor
 }
 
 // Type implements {protoreflect.Message}.
-func (e empty) Type() protoreflect.MessageType {
-	return e.ty
+func (e Message) Type() protoreflect.MessageType {
+	return WrapType(e.ty)
 }
 
 // New implements [protoreflect.Message].
-func (e empty) New() protoreflect.Message {
-	return e.ty.New()
+func (e Message) New() protoreflect.Message {
+	return e.Type().New()
 }
 
 // Interface implements [protoreflect.Message].
-func (e empty) Interface() protoreflect.ProtoMessage {
+func (e Message) Interface() protoreflect.ProtoMessage {
 	return e
 }
 
 // Range implements [protoreflect.Message].
-func (e empty) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {}
+func (e Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {}
 
 // Has implements [protoreflect.Message].
-func (e empty) Has(fd protoreflect.FieldDescriptor) bool {
+func (e Message) Has(fd protoreflect.FieldDescriptor) bool {
 	return false
 }
 
 // Clear implements [protoreflect.Message].
-func (e empty) Clear(protoreflect.FieldDescriptor) {}
+func (e Message) Clear(protoreflect.FieldDescriptor) {}
 
 // Get implements [protoreflect.Message].
-func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	f := e.ty.impl.ByDescriptor(fd)
+func (e Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	f := e.ty.ByDescriptor(fd)
 	if !f.IsValid() {
 		return protoreflect.ValueOf(nil)
 	}
 
 	switch {
 	case fd.IsList():
-		return protoreflect.ValueOf(emptyList{})
+		return protoreflect.ValueOf(List{})
 
 	case fd.IsMap():
 		panic(dbg.Unsupported())
 
 	case fd.Message() != nil:
-		return protoreflect.ValueOf(empty{newType(f.Message)})
+		return protoreflect.ValueOf(Message{f.Message})
 
 	default:
 		return fd.Default()
@@ -91,33 +96,33 @@ func (e empty) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 // Set implements [protoreflect.Message].
 //
 // Panics when called.
-func (e empty) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
+func (e Message) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
 	panic(dbg.Unsupported())
 }
 
 // Mutable implements [protoreflect.Message].
 //
 // Panics when called.
-func (e empty) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
+func (e Message) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
 	panic(dbg.Unsupported())
 }
 
 // NewField implements [protoreflect.Message].
 //
 // Panics when called.
-func (e empty) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
+func (e Message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
 	panic(dbg.Unsupported())
 }
 
 // GetUnknown implements [protoreflect.Message].
-func (e empty) GetUnknown() protoreflect.RawFields {
+func (e Message) GetUnknown() protoreflect.RawFields {
 	return nil
 }
 
 // SetUnknown implements [protoreflect.Message].
 //
 // Panics when called.
-func (e empty) SetUnknown(raw protoreflect.RawFields) {
+func (e Message) SetUnknown(raw protoreflect.RawFields) {
 	if len(raw) == 0 {
 		return
 	}
@@ -125,28 +130,21 @@ func (e empty) SetUnknown(raw protoreflect.RawFields) {
 }
 
 // WhichOneof implements [protoreflect.Message].
-func (e empty) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (e Message) WhichOneof(protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	return nil
 }
 
 // IsValid implements [protoreflect.Message].
-func (e empty) IsValid() bool {
+func (e Message) IsValid() bool {
 	return false
 }
 
 // ProtoMethods implements [protoreflect.Message].
-func (e empty) ProtoMethods() *protoiface.Methods {
-	return &e.ty.impl.Methods
+func (e Message) ProtoMethods() *protoiface.Methods {
+	return nil
 }
 
-// emptyList is an empty untyped list.
-type emptyList struct {
-	immutableList
-}
-
-func (emptyList) IsValid() bool { return false }
-func (emptyList) Len() int      { return 0 }
-func (emptyList) Get(n int) protoreflect.Value {
-	_ = []byte{}[n] // Trigger a bounds check.
-	return protoreflect.Value{}
-}
+var (
+	_ proto.Message        = Message{}
+	_ protoreflect.Message = Message{}
+)

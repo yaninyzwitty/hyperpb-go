@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"math"
@@ -23,6 +23,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
@@ -240,16 +241,16 @@ func getBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflec
 }
 
 func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
-	p := dynamic.GetField[*Message](m, getter.Offset)
+	p := dynamic.GetField[*dynamic.Message](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.ValueOf(empty.NewMessage(ty))
 	}
 
 	sub := *p
 	if sub == nil {
-		return protoreflect.ValueOf(empty{newType(ty)})
+		return protoreflect.ValueOf(empty.NewMessage(ty))
 	}
-	return protoreflect.ValueOf(sub)
+	return protoreflect.ValueOf(WrapMessage(sub))
 }
 
 //go:nosplit

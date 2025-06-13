@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package thunks
 
 import (
 	"math/bits"
@@ -25,6 +25,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/compiler"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/empty"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
@@ -203,7 +204,7 @@ func getRepeatedScalar[Z, E repeatedScalarElement](m *dynamic.Message, _ *tdp.Ty
 }
 
 type repeatedScalar[Z, E repeatedScalarElement] struct {
-	immutableList
+	empty.List
 	raw slice.Untyped
 }
 
@@ -235,7 +236,7 @@ func getRepeatedZigzag[Z, E tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *td
 }
 
 type repeatedZigzag[Z, E tdp.Int] struct {
-	immutableList
+	empty.List
 	raw slice.Untyped
 }
 
@@ -267,7 +268,7 @@ func getRepeatedBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) prot
 }
 
 type repeatedBool struct {
-	immutableList
+	empty.List
 	raw slice.Addr[byte]
 }
 
@@ -295,7 +296,7 @@ func getRepeatedString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pr
 
 // repeatedString is a [protoreflect.List] implementation for string.
 type repeatedString struct {
-	immutableList
+	empty.List
 	src *byte
 	raw slice.Addr[zc.Range]
 }
@@ -322,7 +323,7 @@ func getRepeatedBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 
 // repeatedBytes is a [protoreflect.List] implementation for string.
 type repeatedBytes struct {
-	immutableList
+	empty.List
 	src *byte
 	raw slice.Addr[zc.Range]
 }
@@ -622,13 +623,3 @@ func parseRepeatedUTF8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	return p1, p2
 }
-
-// immutableList implements the mutation operations of a [protoreflect.List]
-// by panicking.
-type immutableList struct{}
-
-func (immutableList) Append(protoreflect.Value)         { panic(dbg.Unsupported()) }
-func (immutableList) AppendMutable() protoreflect.Value { panic(dbg.Unsupported()) }
-func (immutableList) NewElement() protoreflect.Value    { panic(dbg.Unsupported()) }
-func (immutableList) Set(int, protoreflect.Value)       { panic(dbg.Unsupported()) }
-func (immutableList) Truncate(int)                      { panic(dbg.Unsupported()) }
