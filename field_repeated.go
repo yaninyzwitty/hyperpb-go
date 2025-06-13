@@ -24,6 +24,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -192,7 +193,7 @@ var repeatedFields = map[protoreflect.Kind]*archetype{
 }
 
 type repeatedScalarElement interface {
-	integer | ~float32 | ~float64
+	tdp.Int | ~float32 | ~float64
 }
 
 func getRepeatedScalar[Z, E repeatedScalarElement](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
@@ -227,12 +228,12 @@ func (r *repeatedScalar[Z, E]) Get(n int) protoreflect.Value {
 	return protoreflect.ValueOf(v)
 }
 
-func getRepeatedZigzag[Z, E integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getRepeatedZigzag[Z, E tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedZigzag[Z, E]](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 
-type repeatedZigzag[Z, E integer] struct {
+type repeatedZigzag[Z, E tdp.Int] struct {
 	immutableList
 	raw slice.Untyped
 }
@@ -344,24 +345,24 @@ func (r *repeatedBytes) Get(n int) protoreflect.Value {
 //fastpb:stencil parseRepeatedVarint8 parseRepeatedVarint[uint8] appendVarint -> appendVarint8
 //fastpb:stencil parseRepeatedVarint32 parseRepeatedVarint[uint32] appendVarint -> appendVarint32
 //fastpb:stencil parseRepeatedVarint64 parseRepeatedVarint[uint64] appendVarint -> appendVarint64
-func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+func parseRepeatedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
+	p1, p2, n = p1.Varint(p2)
 
 	var r *repeatedScalar[byte, T]
-	p1, p2, r = getMutableField[repeatedScalar[byte, T]](p1, p2)
-	p1.log(p2, "slot", "%v", r.raw)
+	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, T]](p1, p2)
+	p1.Log(p2, "slot", "%v", r.raw)
 
 	// Check if we're already an arena, or an empty repeated field which looks like
 	// an empty arena slice.
 	if r.raw.OffArena() {
 		borrow := slice.CastUntyped[byte](r.raw).Raw()
-		s := slice.Make[T](p1.arena(), len(borrow)+1)
+		s := slice.Make[T](p1.Arena(), len(borrow)+1)
 		for i, b := range borrow {
 			s.Store(i, T(b))
 		}
 		s.Store(s.Len()-1, T(n))
-		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
@@ -372,13 +373,13 @@ func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, T(n))
 
-		p1.log(p2, "store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "store", "%v %v", s.Addr(), s)
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	s = s.AppendOne(p1.arena(), T(n))
-	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	s = s.AppendOne(p1.Arena(), T(n))
+	p1.Log(p2, "append", "%v %v", s.Addr(), s)
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -387,64 +388,64 @@ func parseRepeatedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //fastpb:stencil parsePackedVarint8 parsePackedVarint[uint8]
 //fastpb:stencil parsePackedVarint32 parsePackedVarint[uint32]
 //fastpb:stencil parsePackedVarint64 parsePackedVarint[uint64]
-func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
+	p1, p2, n = p1.LengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
-	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(n)
+	p2.Scratch = uint64(p1.EndAddr)
+	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
 	var count int
-	for p := p1.b_; p < p1.e_; p += 8 {
-		n := min(8, p1.e_-p)
+	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
+		n := min(8, p1.EndAddr-p)
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= signBits << (n * 8)
-		count += bits.OnesCount64(signBits &^ bytes)
+		bytes |= tdp.SignBits << (n * 8)
+		count += bits.OnesCount64(tdp.SignBits &^ bytes)
 	}
 
 	var r *repeatedScalar[byte, T]
-	p1, p2, r = getMutableField[repeatedScalar[byte, T]](p1, p2)
+	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, T]](p1, p2)
 	var s slice.Slice[T]
 	switch {
 	case r.raw.Ptr == 0:
 		if count == n {
-			r.raw = slice.OffArena(p1.b(), n)
-			p1.log(p2, "zc", "%v", r.raw)
+			r.raw = slice.OffArena(p1.Ptr(), n)
+			p1.Log(p2, "zc", "%v", r.raw)
 
-			p1.b_ = p1.e_
-			p1.e_ = unsafe2.Addr[byte](p2.scratch)
+			p1.PtrAddr = p1.EndAddr
+			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
 			return p1, p2
 		}
-		s = s.Grow(p1.arena(), count)
-		p1.log(p2, "grow", "%v %v", s.Addr(), s)
+		s = s.Grow(p1.Arena(), count)
+		p1.Log(p2, "grow", "%v %v", s.Addr(), s)
 
 	case r.raw.OffArena():
 		// Already holds a borrow. Need to spill to arena.
 		// This is the worst-case scenario.
 		borrow := slice.CastUntyped[byte](r.raw).Raw()
-		s = slice.Make[T](p1.arena(), len(borrow)+count)
+		s = slice.Make[T](p1.Arena(), len(borrow)+count)
 		for i, b := range borrow {
 			s.Store(i, T(b))
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
 
 	default:
 		s = slice.CastUntyped[T](r.raw)
 		if spare := s.Cap() - s.Len(); spare < count {
-			s = s.Grow(p1.arena(), count-spare)
-			p1.log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+			s = s.Grow(p1.Arena(), count-spare)
+			p1.Log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
 		}
 	}
 
 	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
-	p1.log(p2, "store at", "%v", p)
+	p1.Log(p2, "store at", "%v", p)
 
 	// There are three variants of this loop: one for the cases where every
 	// varint is small (one byte; common). One for the cases where most varints
@@ -452,34 +453,34 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	// and when many varints are large so the aforementioned branches would
 	// not be predicted well.
 	switch {
-	case count == p1.len():
+	case count == p1.Len():
 		for {
-			*p.AssertValid() = T(*p1.b())
-			p1.b_++
+			*p.AssertValid() = T(*p1.Ptr())
+			p1.PtrAddr++
 			p = p.Add(1)
 
-			if p1.b_ != p1.e_ {
+			if p1.PtrAddr != p1.EndAddr {
 				continue
 			}
 
 			break
 		}
-	case count >= p1.len()/2:
+	case count >= p1.Len()/2:
 		for {
 			var x uint64
-			if v := *p1.b(); int8(v) >= 0 {
+			if v := *p1.Ptr(); int8(v) >= 0 {
 				x = uint64(v)
-				p1.b_++
-			} else if c := p1.b_.Add(1); c != p1.e_ && int8(*c.AssertValid()) >= 0 {
-				x = uint64(*p1.b()&0x7f) | uint64(*c.AssertValid())<<7
-				p1.b_ += 2
+				p1.PtrAddr++
+			} else if c := p1.PtrAddr.Add(1); c != p1.EndAddr && int8(*c.AssertValid()) >= 0 {
+				x = uint64(*p1.Ptr()&0x7f) | uint64(*c.AssertValid())<<7
+				p1.PtrAddr += 2
 			} else {
-				p1, p2, x = p1.varint(p2)
+				p1, p2, x = p1.Varint(p2)
 			}
 
 			*p.AssertValid() = T(x)
 			p = p.Add(1)
-			if p1.b_ != p1.e_ {
+			if p1.PtrAddr != p1.EndAddr {
 				continue
 			}
 
@@ -488,11 +489,11 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	default:
 		for {
 			var x uint64
-			p1, p2, x = p1.varint(p2)
+			p1, p2, x = p1.Varint(p2)
 
 			*p.AssertValid() = T(x)
 			p = p.Add(1)
-			if p1.b_ != p1.e_ {
+			if p1.PtrAddr != p1.EndAddr {
 				continue
 			}
 
@@ -501,42 +502,42 @@ func parsePackedVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	}
 
 	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
-	p1.log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v %v", s.Addr(), s)
 
 	r.raw = s.Addr().Untyped()
-	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
 	return p1, p2
 }
 
 //go:nosplit
-func parseRepeatedFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
-	return appendFixed32(p1.fixed32(p2))
+func parseRepeatedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	return appendFixed32(p1.Fixed32(p2))
 }
 
 //go:nosplit
-func parseRepeatedFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	return appendFixed64(p1.fixed64(p2))
+func parseRepeatedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	return appendFixed64(p1.Fixed64(p2))
 }
 
 //go:nosplit
 //fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
 //fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
-func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parser2) {
+func appendFixed[T uint32 | uint64](p1 vm.P1, p2 vm.P2, v T) (vm.P1, vm.P2) {
 	var r *repeatedScalar[T, T]
-	p1, p2, r = getMutableField[repeatedScalar[T, T]](p1, p2)
+	p1, p2, r = vm.GetMutableField[repeatedScalar[T, T]](p1, p2)
 	s := slice.CastUntyped[T](r.raw)
 
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, v)
-		p1.log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	s = s.AppendOne(p1.arena(), v)
-	p1.log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
+	s = s.AppendOne(p1.Arena(), v)
+	p1.Log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -544,30 +545,30 @@ func appendFixed[T uint32 | uint64](p1 parser1, p2 parser2, v T) (parser1, parse
 //go:nosplit
 //fastpb:stencil parsePackedFixed32 parsePackedFixed[uint32]
 //fastpb:stencil parsePackedFixed64 parsePackedFixed[uint64]
-func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
+func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
+	p1, p2, n = p1.LengthPrefix(p2)
 	if n == 0 {
 		return p1, p2
 	}
 
 	size := layout.Size[T]()
 	if n%size != 0 {
-		p1.fail(p2, errCodeTruncated)
+		p1.Fail(p2, vm.ErrorTruncated)
 	}
 
 	var r *repeatedScalar[T, T]
-	p1, p2, r = getMutableField[repeatedScalar[T, T]](p1, p2)
+	p1, p2, r = vm.GetMutableField[repeatedScalar[T, T]](p1, p2)
 
 	if r.raw.Ptr == 0 {
 		// Empty repeated field. We can just shove the zc here.
 		// This is the best-case scenario.
-		r.raw = slice.OffArena(p1.b(), n/size)
+		r.raw = slice.OffArena(p1.Ptr(), n/size)
 		if dbg.Enabled {
-			p1.log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[T](r.raw))
+			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[T](r.raw))
 		}
 
-		p1 = p1.advance(n)
+		p1 = p1.Advance(n)
 		goto exit
 	}
 
@@ -577,17 +578,17 @@ func parsePackedFixed[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 	{
 		s := slice.CastUntyped[T](r.raw)
 		size := layout.Size[T]()
-		borrowed := unsafe2.Slice(unsafe2.Cast[T](p1.b()), n/size)
+		borrowed := unsafe2.Slice(unsafe2.Cast[T](p1.Ptr()), n/size)
 		if dbg.Enabled {
-			p1.log(p2, "appending", "%v, %v", borrowed, s.Raw())
+			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
 
-		p1 = p1.advance(n)
+		p1 = p1.Advance(n)
 
-		s = s.Append(p1.arena(), borrowed...)
+		s = s.Append(p1.Arena(), borrowed...)
 		r.raw = s.Addr().Untyped()
 		if dbg.Enabled {
-			p1.log(p2, "append", "%v, %v", r.raw, s.Raw())
+			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
 		}
 	}
 
@@ -596,27 +597,27 @@ exit:
 }
 
 //go:nosplit
-func parseRepeatedBytes(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseRepeatedBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var v zc.Range
-	p1, p2, v = p1.bytes(p2)
+	p1, p2, v = p1.Bytes(p2)
 
 	var r *repeatedBytes
-	p1, p2, r = getMutableField[repeatedBytes](p1, p2)
-	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.src())
+	p1, p2, r = vm.GetMutableField[repeatedBytes](p1, p2)
+	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
+	unsafe2.StoreNoWB(&r.src, p1.Src())
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseRepeatedUTF8(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseRepeatedUTF8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var v zc.Range
-	p1, p2, v = p1.utf8(p2)
+	p1, p2, v = p1.UTF8(p2)
 
 	var r *repeatedString
-	p1, p2, r = getMutableField[repeatedString](p1, p2)
-	r.raw = r.raw.AssertValid().AppendOne(p1.arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.src())
+	p1, p2, r = vm.GetMutableField[repeatedString](p1, p2)
+	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
+	unsafe2.StoreNoWB(&r.src, p1.Src())
 
 	return p1, p2
 }

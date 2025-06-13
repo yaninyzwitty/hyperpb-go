@@ -20,6 +20,7 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -38,7 +39,7 @@ type rawValue struct {
 // reflectValueScalar extracts a scalar value out of a protoreflect.Value.
 //
 // Panics if this is the wrong type.
-func reflectValueScalar[T integer](v protoreflect.Value) T {
+func reflectValueScalar[T tdp.Int](v protoreflect.Value) T {
 	var z T
 	rv := unwrapReflectValue(v)
 	if rv.typ != unsafe2.AnyType(z) {

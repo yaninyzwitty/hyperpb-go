@@ -20,6 +20,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -171,7 +172,7 @@ var oneofFields = map[protoreflect.Kind]*archetype{
 	},
 }
 
-func getOneofScalar[T scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getOneofScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
 		return protoreflect.ValueOf(nil)
@@ -219,10 +220,10 @@ func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) pro
 //go:nosplit
 //fastpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
 //fastpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
-func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.varint(p2)
-	p1, p2 = storeFromScratch[T](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+func parseOneofVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
@@ -230,71 +231,71 @@ func parseOneofVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
 //go:nosplit
 //fastpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
 //fastpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
-func parseOneofZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.varint(p2)
-	p2.scratch = uint64(zigzag64[T](p2.scratch))
-	p1, p2 = storeFromScratch[T](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+func parseOneofZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Varint(p2)
+	p2.Scratch = uint64(zigzag64[T](p2.Scratch))
+	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseOneofFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOneofFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint32
-	p1, p2, n = p1.fixed32(p2)
-	p2.scratch = uint64(n)
-	p1, p2 = storeFromScratch[uint32](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+	p1, p2, n = p1.Fixed32(p2)
+	p2.Scratch = uint64(n)
+	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseOneofFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.fixed64(p2)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+func parseOneofFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Fixed64(p2)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseOneofString(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOneofString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
-	p1, p2, r = p1.utf8(p2)
-	p2.scratch = uint64(r)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+	p1, p2, r = p1.UTF8(p2)
+	p2.Scratch = uint64(r)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseOneofBytes(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOneofBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
-	p1, p2, r = p1.bytes(p2)
-	p2.scratch = uint64(r)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+	p1, p2, r = p1.Bytes(p2)
+	p2.Scratch = uint64(r)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
-func parseOneofBool(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOneofBool(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
+	p1, p2, n = p1.Varint(p2)
 	if n != 0 {
 		n = 1
 	}
-	p2.scratch = n
-	p1, p2 = storeFromScratch[byte](p1, p2)
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+	p2.Scratch = n
+	p1, p2 = vm.StoreFromScratch[byte](p1, p2)
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
 }
 
-func parseOneofMessage(p1 parser1, p2 parser2) (parser1, parser2) {
-	unsafe2.ByteStore(p2.m(), p2.f().Offset.Bit, p2.f().Offset.Number)
+func parseOneofMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 	return parseMessage(p1, p2)
 }

@@ -23,6 +23,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
@@ -545,7 +546,7 @@ func init() {
 
 // mapArch is a helper for constructing map<K, V> archetypes, where K is not
 // bool.
-func mapArch(getter getterThunk, parser parserThunk) *archetype {
+func mapArch(getter getterThunk, parser vm.Thunk) *archetype {
 	return &archetype{
 		layout:  layout.Of[*swiss.Table[int32, int32]](),
 		getter:  adaptGetter(getter),
@@ -561,10 +562,10 @@ type mapItem[V any] interface {
 	kind() protowire.Type
 
 	// Parses a value of this item type and returns it.
-	parse(parser1, parser2) (parser1, parser2, V)
+	parse(vm.P1, vm.P2) (vm.P1, vm.P2, V)
 
 	// Returns the key extraction function used with swiss.Table.Insert.
-	extract(parser1, parser2) func(V) []byte
+	extract(vm.P1, vm.P2) func(V) []byte
 }
 
 type (
@@ -594,61 +595,61 @@ func (fixed64Item) kind() protowire.Type   { return protowire.Fixed64Type }
 func (stringItem) kind() protowire.Type    { return protowire.BytesType }
 func (bytesItem) kind() protowire.Type     { return protowire.BytesType }
 
-func (varintItem[T]) parse(p1 parser1, p2 parser2) (parser1, parser2, T) {
+func (varintItem[T]) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, T) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
+	p1, p2, n = p1.Varint(p2)
 	return p1, p2, T(n)
 }
 
-func (zigzagItem[T]) parse(p1 parser1, p2 parser2) (parser1, parser2, T) {
+func (zigzagItem[T]) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, T) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
+	p1, p2, n = p1.Varint(p2)
 	return p1, p2, zigzag64[T](n)
 }
 
-func (boolItem) parse(p1 parser1, p2 parser2) (parser1, parser2, uint8) {
+func (boolItem) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint8) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
+	p1, p2, n = p1.Varint(p2)
 	if n != 0 {
 		n = 1
 	}
 	return p1, p2, uint8(n)
 }
 
-func (fixed32Item) parse(p1 parser1, p2 parser2) (parser1, parser2, uint32) {
-	return p1.fixed32(p2)
+func (fixed32Item) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint32) {
+	return p1.Fixed32(p2)
 }
 
-func (fixed64Item) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
-	return p1.fixed64(p2)
+func (fixed64Item) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint64) {
+	return p1.Fixed64(p2)
 }
 
-func (stringItem) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
+func (stringItem) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint64) {
 	var r zc.Range
-	p1, p2, r = p1.utf8(p2)
+	p1, p2, r = p1.UTF8(p2)
 	return p1, p2, uint64(r)
 }
 
-func (bytesItem) parse(p1 parser1, p2 parser2) (parser1, parser2, uint64) {
+func (bytesItem) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint64) {
 	var r zc.Range
-	p1, p2, r = p1.bytes(p2)
+	p1, p2, r = p1.Bytes(p2)
 	return p1, p2, uint64(r)
 }
 
-func (varintItem[T]) extract(parser1, parser2) func(T) []byte    { return nil }
-func (zigzagItem[T]) extract(parser1, parser2) func(T) []byte    { return nil }
-func (fixed32Item) extract(parser1, parser2) func(uint32) []byte { return nil }
-func (fixed64Item) extract(parser1, parser2) func(uint64) []byte { return nil }
-func (boolItem) extract(parser1, parser2) func(uint8) []byte     { return nil }
-func (stringItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
-	src := p1.src()
+func (varintItem[T]) extract(vm.P1, vm.P2) func(T) []byte    { return nil }
+func (zigzagItem[T]) extract(vm.P1, vm.P2) func(T) []byte    { return nil }
+func (fixed32Item) extract(vm.P1, vm.P2) func(uint32) []byte { return nil }
+func (fixed64Item) extract(vm.P1, vm.P2) func(uint64) []byte { return nil }
+func (boolItem) extract(vm.P1, vm.P2) func(uint8) []byte     { return nil }
+func (stringItem) extract(p1 vm.P1, _ vm.P2) func(uint64) []byte {
+	src := p1.Src()
 	return func(u uint64) []byte {
 		return zc.Range(u).Bytes(src)
 	}
 }
 
-func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
-	src := p1.src()
+func (bytesItem) extract(p1 vm.P1, _ vm.P2) func(uint64) []byte {
+	src := p1.Src()
 	return func(u uint64) []byte {
 		return zc.Range(u).Bytes(src)
 	}
@@ -748,12 +749,12 @@ func (bytesItem) extract(p1 parser1, _ parser2) func(uint64) []byte {
 func parseMapKxV[
 	KI mapItem[K], VI mapItem[V],
 	K swiss.Key, V any,
-](p1 parser1, p2 parser2) (parser1, parser2) {
+](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
+	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(n)
+	p2.Scratch = uint64(p1.EndAddr)
+	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki KI
 	var vi VI
@@ -765,26 +766,26 @@ func parseMapKxV[
 
 	// Basically every map ever encodes its fields in order and does not
 	// have duplicate fields, so this is a hot fast path.
-	if p1.len() == 0 {
+	if p1.Len() == 0 {
 		goto insert
 	}
-	p1.log(p2, "first byte", "%#02x", *p1.b())
-	if *p1.b() == byte(kTag) {
-		p1.b_++
+	p1.Log(p2, "first byte", "%#02x", *p1.Ptr())
+	if *p1.Ptr() == byte(kTag) {
+		p1.PtrAddr++
 		p1, p2, k = ki.parse(p1, p2)
-		if p1.len() == 0 {
+		if p1.Len() == 0 {
 			goto insert
 		}
-		p1.log(p2, "second byte", "%#02x", *p1.b())
-		if *p1.b() == byte(vTag) {
-			p1.b_++
+		p1.Log(p2, "second byte", "%#02x", *p1.Ptr())
+		if *p1.Ptr() == byte(vTag) {
+			p1.PtrAddr++
 			p1, p2, v = vi.parse(p1, p2)
-			p1.log(p2, "map done?",
+			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
-				p1.b_, p1.e_,
+				p1.PtrAddr, p1.EndAddr,
 				k, unsafe2.Bytes(&k),
 				v, unsafe2.Bytes(&v))
-			if p1.b_ == p1.e_ {
+			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
 		}
@@ -792,9 +793,9 @@ func parseMapKxV[
 
 	// Slow fallback. This code should almost never be executed so we can
 	// afford to call varint() each time we parse a tag.
-	for p1.b_ < p1.e_ {
+	for p1.PtrAddr < p1.EndAddr {
 		var tag uint64
-		p1, p2, tag = p1.varint(p2)
+		p1, p2, tag = p1.Varint(p2)
 		switch tag {
 		case kTag:
 			p1, p2, k = ki.parse(p1, p2)
@@ -802,23 +803,23 @@ func parseMapKxV[
 			p1, p2, v = vi.parse(p1, p2)
 		default:
 			n, t := protowire.DecodeTag(tag)
-			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			m := protowire.ConsumeFieldValue(n, t, p1.Buf())
 			if m < 0 {
-				p1.fail(p2, -errCode(m))
+				p1.Fail(p2, -vm.ErrorCode(m))
 			}
-			p1.b_ = p1.b_.Add(m)
+			p1.PtrAddr = p1.PtrAddr.Add(m)
 		}
 	}
 
 insert:
 	extract := ki.extract(p1, p2)
 	var mp **swiss.Table[K, V]
-	p1, p2, mp = getMutableField[*swiss.Table[K, V]](p1, p2)
+	p1, p2, mp = vm.GetMutableField[*swiss.Table[K, V]](p1, p2)
 
 	m := *mp
 	if m == nil {
 		size, _ := swiss.Layout[K, V](1)
-		m = unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
 		m.Init(1, nil, extract)
 	}
@@ -826,7 +827,7 @@ insert:
 	vp := m.Insert(k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[K, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
 		vp = m2.Insert(k, extract)
@@ -834,7 +835,7 @@ insert:
 
 	*vp = v
 
-	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
 	return p1, p2
 }
 
@@ -849,12 +850,12 @@ insert:
 //fastpb:stencil parseMap2xM   parseMapKxM[boolItem, uint8] Init -> swiss.InitU8xP Insert -> swiss.InsertU8xP
 
 // parseMapKxM parses a map type whose value is a message type.
-func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, parser2) {
+func parseMapKxM[KI mapItem[K], K swiss.Key](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
+	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.scratch = uint64(p1.e_)
-	p1.e_ = p1.b_.Add(n)
+	p2.Scratch = uint64(p1.EndAddr)
+	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki KI
 	var k K
@@ -865,25 +866,25 @@ func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, p
 
 	// Basically every map ever encodes its fields in order and does not
 	// have duplicate fields, so this is a hot fast path.
-	if p1.len() == 0 {
+	if p1.Len() == 0 {
 		fast = true
 		goto insert
 	}
-	p1.log(p2, "first byte", "%#02x", *p1.b())
-	if *p1.b() == byte(kTag) {
-		p1.b_++
+	p1.Log(p2, "first byte", "%#02x", *p1.Ptr())
+	if *p1.Ptr() == byte(kTag) {
+		p1.PtrAddr++
 		p1, p2, k = ki.parse(p1, p2)
-		if p1.len() == 0 {
+		if p1.Len() == 0 {
 			fast = true
 			goto insert
 		}
-		p1.log(p2, "second byte", "%#02x", *p1.b())
-		if *p1.b() == byte(vTag) {
-			p1.b_++
+		p1.Log(p2, "second byte", "%#02x", *p1.Ptr())
+		if *p1.Ptr() == byte(vTag) {
+			p1.PtrAddr++
 			// Need to parse a length prefix and check if it reaches all the
 			// way to the end of the message.
-			p1, p2, n = p1.lengthPrefix(p2)
-			if p1.e_ > p1.b_.Add(n) {
+			p1, p2, n = p1.LengthPrefix(p2)
+			if p1.EndAddr > p1.PtrAddr.Add(n) {
 				fast = true
 				goto insert
 			}
@@ -892,36 +893,36 @@ func parseMapKxM[KI mapItem[K], K swiss.Key](p1 parser1, p2 parser2) (parser1, p
 
 	// Slow fallback. This code should almost never be executed so we can
 	// afford to call varint() each time we parse a tag.
-	for p1.b_ < p1.e_ {
+	for p1.PtrAddr < p1.EndAddr {
 		var tag uint64
-		p1, p2, tag = p1.varint(p2)
+		p1, p2, tag = p1.Varint(p2)
 		switch tag {
 		case kTag:
 			p1, p2, k = ki.parse(p1, p2)
 		default:
 			n, t := protowire.DecodeTag(tag)
-			m := protowire.ConsumeFieldValue(n, t, p1.buf())
+			m := protowire.ConsumeFieldValue(n, t, p1.Buf())
 			if m < 0 {
-				p1.fail(p2, -errCode(m))
+				p1.Fail(p2, -vm.ErrorCode(m))
 			}
-			p1.b_ = p1.b_.Add(m)
+			p1.PtrAddr = p1.PtrAddr.Add(m)
 		}
 	}
 
 	// Now we need to rewind back to the beginning.
-	p1.b_ = p1.e_.Add(-n)
+	p1.PtrAddr = p1.EndAddr.Add(-n)
 
 insert:
 	type V = unsafe.Pointer
 
 	extract := ki.extract(p1, p2)
 	var mp **swiss.Table[K, V]
-	p1, p2, mp = getMutableField[*swiss.Table[K, V]](p1, p2)
+	p1, p2, mp = vm.GetMutableField[*swiss.Table[K, V]](p1, p2)
 
 	m := *mp
 	if m == nil {
 		size, _ := swiss.Layout[K, V](1)
-		m = unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
 		m.Init(1, nil, extract)
 	}
@@ -929,7 +930,7 @@ insert:
 	vp := m.Insert(k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[K, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.arena().Alloc(size))
+		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
 		vp = m2.Insert(k, extract)
@@ -939,26 +940,26 @@ insert:
 	// Allocate unconditionally to match Go protobuf's behavior.
 	// TODO: This could instead clear, but that optimization will almost never
 	// be relevant, because no serializer will ever emit the same key twice.
-	p1, p2, v = p1.alloc(p2)
+	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
 	// Unspill the old end pointer.
-	p1.e_ = unsafe2.Addr[byte](p2.scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
 
 	// Schedule a message parse.
 	if fast {
-		p1.log(p2, "fast map entry", "%d", n)
-		return p1.message(p2, n, v)
+		p1.Log(p2, "fast map entry", "%d", n)
+		return p1.PushMessage(p2, n, v)
 	}
 
-	p1.log(p2, "slow map entry", "%d", n)
-	return p1.mapEntry(p2, n, v)
+	p1.Log(p2, "slow map entry", "%d", n)
+	return p1.PushMapEntry(p2, n, v)
 }
 
-func parseMapEntry(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseMapEntry(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
-	return p1.message(p2, n, p2.m())
+	p1, p2, n = p1.LengthPrefix(p2)
+	return p1.PushMessage(p2, n, p2.Message())
 }
 
 // emptyMap is a map with no elements.

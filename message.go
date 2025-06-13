@@ -15,15 +15,16 @@
 package fastpb
 
 import (
+	"math"
 	"unsafe"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/dbg"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -36,11 +37,6 @@ type Message struct {
 	impl dynamic.Message
 }
 
-var (
-	_ proto.Message        = new(Message)
-	_ protoreflect.Message = new(Message)
-)
-
 // New allocates a new [Message] of the given [Type].
 //
 // See [Shared.New].
@@ -48,13 +44,52 @@ func New(ty *Type) *Message {
 	return new(Shared).New(ty)
 }
 
+// Unmarshal is like [proto.Unmarshal], but permits fastpb-specific
+// tuning options to be set.
+//
+// Calling this function may be much faster than calling proto.Unmarshal ifAdd commentMore actions
+// the message is small; proto.Unmarshal includes several nanoseconds of
+// overhead that can become noticeable for message in the 16 byte regime.
+//
+// The returned error may additionally implement a method with the signature
+//
+//	Offset() int
+//
+// This function will return the approximate offset into data at which the
+// error occurred.
+func (m *Message) Unmarshal(data []byte, options ...UnmarshalOption) error {
+	opts := vm.NewOptions()
+	for _, opt := range options {
+		if opt != nil {
+			opt(&opts)
+		}
+	}
+	return vm.Run(&m.impl, data, opts)
+}
+
+// CompileOption is a configuration setting for [Type.Unmarshal].
+type UnmarshalOption func(*vm.Options)
+
+// MaxDecodeMisses sets the number of decode misses allowed in the parser before
+// switching to the slow path.
+//
+// Large values may improve performance for common protos, but introduce a
+// potential DoS vector due to quadratic worst case performance. The default
+// is 8.
+func MaxDecodeMisses(n int) UnmarshalOption {
+	return func(opts *vm.Options) { opts.MaxMisses = n }
+}
+
+// MaxDepth sets the maximum recursion depth for the parser.
+//
+// Setting a large value enables potential DoS vectors.
+func MaxDepth(n int) UnmarshalOption {
+	return func(opts *vm.Options) { opts.MaxDepth = min(n, math.MaxUint32) }
+}
+
 // Shared returns state shared by this message and its submessages.
 func (m *Message) Shared() *Shared {
 	return newShared(m.impl.Shared)
-}
-
-func (m *Message) Unmarshal(data []byte, options ...UnmarshalOption) error {
-	return startParse(&m.impl, data, options...)
 }
 
 // ProtoReflect implements [proto.Message].
@@ -287,111 +322,7 @@ func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInit
 	return out, nil
 }
 
-// mutableCold is like [message.mutableCold], but with a parser-friendly ABI.
-func (p1 parser1) mutableCold(p2 parser2) (parser1, parser2, *dynamic.Cold) {
-	if p2.m().ColdIndex < 0 {
-		size := int(p2.m().Type().ColdSize)
-		cold := unsafe2.Cast[dynamic.Cold](p1.arena().Alloc(size))
-		p2.m().ColdIndex = int32(len(p1.c().Cold))
-		p1.c().Cold = append(p1.c().Cold, cold)
-		return p1, p2, cold
-	}
-	return p1, p2, unsafe2.LoadSlice(p1.c().Cold, p2.m().ColdIndex)
-}
-
-// getMutableField returns the field data for a given message. Uses p2.m and p2.f for
-// the message and offset.
-//
-// If this field is in the cold region, it allocates one.
-func getMutableField[T any](p1 parser1, p2 parser2) (parser1, parser2, *T) {
-	var p unsafe.Pointer
-	p1, p2, p = getUntypedMutableField(p1, p2)
-	return p1, p2, (*T)(p)
-}
-
-//go:nosplit
-func getUntypedMutableField(p1 parser1, p2 parser2) (parser1, parser2, unsafe.Pointer) {
-	offset := p2.f().Offset.Data
-	if offset >= 0 {
-		return p1, p2, unsafe.Add(unsafe.Pointer(p2.m()), offset)
-	}
-	var cold *dynamic.Cold
-	p1, p2, cold = p1.mutableCold(p2)
-	return p1, p2, unsafe.Add(unsafe.Pointer(cold), ^offset)
-}
-
-// storeField loads a field pointer using [getMutableField] and stores v to it.
-//
-//nolint:unused
-func storeField[T any](p1 parser1, p2 parser2, v T) (parser1, parser2) {
-	var p unsafe.Pointer
-	p1, p2, p = getUntypedMutableField(p1, p2)
-	*(*T)(p) = v
-	return p1, p2
-}
-
-// storeFromScratch is like storeField, but it uses p2.scratch as the value to
-// store. This is useful for avoiding spills, by writing the temporary parsed
-// value into the call-preserved scratch register.
-func storeFromScratch[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	var p unsafe.Pointer
-	p1, p2, p = getUntypedMutableField(p1, p2)
-	*(*T)(p) = T(p2.scratch)
-	return p1, p2
-}
-
-// setBit is like [message.setBit], but with a different ABI that keeps parser
-// state in registers.
-//
-// It can only be used to set bits to true, and it draws m and n from
-// p1 and p2.
-func (p1 parser1) setBit(p2 parser2) (parser1, parser2) {
-	n := int(p2.f().Offset.Bit)
-	word := unsafe2.Add(unsafe2.Cast[uint32](unsafe2.Add(p2.m(), 1)), n/32)
-	mask := uint32(1) << (n % 32)
-	*word |= mask
-	return p1, p2
-}
-
-//go:noinline
-func (p1 parser1) alloc(p2 parser2) (parser1, parser2, *dynamic.Message) {
-	ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
-	size := int(ty.Size)
-
-	// Open-coded copy of arena.Alloc, which otherwise would not inline.
-	a := p1.arena()
-	// Messages are always pointer-aligned, so we can skip this part.
-	// size += arena.Align - 1
-	// size &^= arena.Align - 1
-
-	var n unsafe2.Addr[byte]
-	n, a.Next = a.Next, a.Next.Add(size)
-	if a.Next <= a.End {
-		p := n.AssertValid()
-		a.Log("alloc", "%v:%v, %d:%d", p, a.Next, size, arena.Align)
-
-		// Go seems unwilling to inline allocInPlace() here.
-		m := unsafe2.Cast[dynamic.Message](p)
-		unsafe2.StoreNoWB(&m.Shared, p1.c())
-		m.TypeOffset = p2.f().Message.TypeOffset
-		m.ColdIndex = -1
-		return p1, p2, m
-	}
-
-	a.Next = n
-	a.Grow(size)
-
-	// This call is guaranteed to not infinite recurse.
-	// Doing a goto to the top of the function seems to confuse Go's register
-	// allocator, causing it to spill p1 and p2 in the prologue.
-	return p1.alloc(p2)
-}
-
-//go:nosplit
-func (p1 parser1) allocInPlace(p2 parser2, data *byte) (parser1, parser2, *dynamic.Message) {
-	m := unsafe2.Cast[dynamic.Message](data)
-	unsafe2.StoreNoWB(&m.Shared, p1.c())
-	m.TypeOffset = p2.f().Message.TypeOffset
-	m.ColdIndex = -1
-	return p1, p2, m
-}
+var (
+	_ proto.Message        = new(Message)
+	_ protoreflect.Message = new(Message)
+)

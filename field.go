@@ -22,6 +22,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -31,25 +32,11 @@ const (
 	proto2StringKind protoreflect.Kind = ^iota
 )
 
-// scalar is a Protobuf scalar type.
-type scalar interface {
-	int32 | int64 |
-		uint32 | uint64 |
-		float32 | float64 |
-		protoreflect.EnumNumber
-}
-
-// integer is any of the integer types that this package has to handle
-// generically.
-type integer interface {
-	~int8 | ~uint8 | ~int32 | ~int64 | ~uint32 | ~uint64
-}
-
-func zigzag64[T integer](raw uint64) T {
+func zigzag64[T tdp.Int](raw uint64) T {
 	return zigzag(T(raw))
 }
 
-func zigzag[T integer](raw T) T {
+func zigzag[T tdp.Int](raw T) T {
 	n := uint64(raw)
 	n &= (1 << (unsafe.Sizeof(raw) * 8)) - 1
 
@@ -58,7 +45,6 @@ func zigzag[T integer](raw T) T {
 
 type (
 	getterThunk func(*dynamic.Message, *tdp.Type, *tdp.Accessor) protoreflect.Value
-	parserThunk func(parser1, parser2) (parser1, parser2)
 )
 
 // archetype represents a class of fields that have the same layout within a
@@ -100,7 +86,7 @@ type parseKind struct {
 	//
 	// This func MUST be a reference to a function or a global closure, so that
 	// it is not a GC-managed pointer.
-	parser parserThunk
+	parser vm.Thunk
 }
 
 // selectArchetype classifies a field into a particular archetype.

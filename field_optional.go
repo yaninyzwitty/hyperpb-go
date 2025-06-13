@@ -20,6 +20,7 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 	"github.com/bufbuild/fastpb/internal/zc"
 )
@@ -150,7 +151,7 @@ var optionalFields = map[protoreflect.Kind]*archetype{
 	protoreflect.GroupKind:   singularFields[protoreflect.GroupKind],
 }
 
-func getOptionalScalar[T scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getOptionalScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	if !m.GetBit(getter.Offset.Bit) {
 		return protoreflect.ValueOf(nil)
 	}
@@ -184,73 +185,61 @@ func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 //go:nosplit
 //fastpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
 //fastpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
-func parseOptionalVarint[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.varint(p2)
-	p1, p2 = storeFromScratch[T](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
 //fastpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
 //fastpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
-func parseOptionalZigZag[T integer](p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.varint(p2)
-	p2.scratch = uint64(zigzag64[T](p2.scratch))
-	p1, p2 = storeFromScratch[T](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Varint(p2)
+	p2.Scratch = uint64(zigzag64[T](p2.Scratch))
+	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
-func parseOptionalFixed32(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOptionalFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint32
-	p1, p2, n = p1.fixed32(p2)
-	p2.scratch = uint64(n)
-	p1, p2 = storeFromScratch[uint32](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+	p1, p2, n = p1.Fixed32(p2)
+	p2.Scratch = uint64(n)
+	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
-func parseOptionalFixed64(p1 parser1, p2 parser2) (parser1, parser2) {
-	p1, p2, p2.scratch = p1.fixed64(p2)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+func parseOptionalFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, p2.Scratch = p1.Fixed64(p2)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
-func parseOptionalString(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOptionalString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
-	p1, p2, r = p1.utf8(p2)
-	p2.scratch = uint64(r)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+	p1, p2, r = p1.UTF8(p2)
+	p2.Scratch = uint64(r)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
-func parseOptionalBytes(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOptionalBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
-	p1, p2, r = p1.bytes(p2)
-	p2.scratch = uint64(r)
-	p1, p2 = storeFromScratch[uint64](p1, p2)
-	p1, p2 = p1.setBit(p2)
-
-	return p1, p2
+	p1, p2, r = p1.Bytes(p2)
+	p2.Scratch = uint64(r)
+	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	return vm.SetBit(p1, p2)
 }
 
-func parseOptionalBool(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseOptionalBool(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
-	p1, p2, n = p1.varint(p2)
-	p1, p2 = p1.setBit(p2)
-	p2.m().SetBit(p2.f().Offset.Bit+1, n != 0)
+	p1, p2, n = p1.Varint(p2)
+	p1, p2 = vm.SetBit(p1, p2)
+	p2.Message().SetBit(p2.Field().Offset.Bit+1, n != 0)
 
 	return p1, p2
 }

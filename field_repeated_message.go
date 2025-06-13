@@ -20,6 +20,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/arena/slice"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
@@ -74,13 +75,13 @@ func (r *repeatedMessage) Get(n int) protoreflect.Value {
 }
 
 //go:nosplit
-func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
+func parseRepeatedMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
-	p1, p2, n = p1.lengthPrefix(p2)
+	p1, p2, n = p1.LengthPrefix(p2)
 
 	var r *repeatedMessage
-	p1, p2, r = getMutableField[repeatedMessage](p1, p2)
-	p1.log(p2, "repeated message", "%v", r.raw)
+	p1, p2, r = vm.GetMutableField[repeatedMessage](p1, p2)
+	p1.Log(p2, "repeated message", "%v", r.raw)
 
 	var m *dynamic.Message
 
@@ -89,7 +90,7 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 	}
 
 	{
-		ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+		ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 		stride := int(ty.Size)
 		s := slice.CastUntyped[byte](r.raw)
 
@@ -97,7 +98,7 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 			p1, p2, r = newInlineRepeatedField(p1, p2, r)
 		} else if s.Len()+stride > s.Cap() {
 			p1, p2 = spillInlineRepeatedField(p1, p2, r)
-			p1.log(p2, "repeated message spill", "%v->%v", s.Addr(), *r)
+			p1.Log(p2, "repeated message spill", "%v->%v", s.Addr(), *r)
 
 			goto pointers
 		}
@@ -107,44 +108,44 @@ func parseRepeatedMessage(p1 parser1, p2 parser2) (parser1, parser2) {
 		s = s.SetLen(s.Len() + stride)
 		r.raw = s.Addr().Untyped()
 
-		p1.log(p2, "inline repeated message", "%v, %p/%d", s.Addr(), p, stride)
-		p1, p2, m = p1.allocInPlace(p2, p)
+		p1.Log(p2, "inline repeated message", "%v, %p/%d", s.Addr(), p, stride)
+		p1, p2, m = vm.AllocInPlace(p1, p2, p)
 		goto exit
 	}
 
 pointers:
 	{
-		p1, p2, m = p1.alloc(p2)
+		p1, p2, m = vm.AllocMessage(p1, p2)
 
 		r := unsafe2.Cast[slice.Addr[unsafe2.Addr[dynamic.Message]]](r)
 		s := r.AssertValid()
 		if s.Len() == s.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
-			p1.log(p2, "outline repeated message", "%v, %p", *r, m)
+			p1.Log(p2, "outline repeated message", "%v, %p", *r, m)
 			goto exit
 		}
 
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, unsafe2.AddrOf(m))
-		p1.log(p2, "outline repeated message", "%v, %p", s.Addr(), m)
+		p1.Log(p2, "outline repeated message", "%v, %p", s.Addr(), m)
 		*r = s.Addr()
 	}
 
 exit:
-	return p1.message(p2, n, m)
+	return p1.PushMessage(p2, n, m)
 }
 
 //go:noinline
-func newInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1, parser2, *repeatedMessage) {
+func newInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P2, *repeatedMessage) {
 	// First element of this field. Allocate a byte array large enough to
 	// hold one element.
 	//
 	// TODO: Add a profiling knob for setting the default number of
 	// elements.
-	ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+	ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 	stride := ty.Size
 
-	s := slice.Make[byte](p1.arena(), int(stride))
+	s := slice.Make[byte](p1.Arena(), int(stride))
 	s = s.SetLen(0)
 
 	r.raw = s.Addr().Untyped()
@@ -154,13 +155,13 @@ func newInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1
 }
 
 //go:noinline
-func spillInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parser1, parser2) {
-	ty := p1.c().Library().AtOffset(p2.f().Message.TypeOffset)
+func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P2) {
+	ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 	stride := int(ty.Size)
 	s := slice.CastUntyped[byte](r.raw)
 
 	// Spill all of the messages onto a pointer slice.
-	spill := slice.Make[unsafe2.Addr[dynamic.Message]](p1.arena(), s.Cap()/stride*2)
+	spill := slice.Make[unsafe2.Addr[dynamic.Message]](p1.Arena(), s.Cap()/stride*2)
 	var j int
 	for i := 0; i < s.Len(); i += stride {
 		m := unsafe2.Cast[dynamic.Message](unsafe2.Add(s.Ptr(), i))
@@ -176,10 +177,10 @@ func spillInlineRepeatedField(p1 parser1, p2 parser2, r *repeatedMessage) (parse
 }
 
 //go:noinline
-func appendOneMessage(p1 parser1, p2 parser2, m *dynamic.Message) (parser1, parser2, *dynamic.Message) {
+func appendOneMessage(p1 vm.P1, p2 vm.P2, m *dynamic.Message) (vm.P1, vm.P2, *dynamic.Message) {
 	var slot *repeatedMessage
-	p1, p2, slot = getMutableField[repeatedMessage](p1, p2)
+	p1, p2, slot = vm.GetMutableField[repeatedMessage](p1, p2)
 	s := slice.CastUntyped[unsafe2.Addr[dynamic.Message]](slot.raw)
-	slot.raw = s.AppendOne(p1.arena(), unsafe2.AddrOf(m)).Addr().Untyped()
+	slot.raw = s.AppendOne(p1.Arena(), unsafe2.AddrOf(m)).Addr().Untyped()
 	return p1, p2, m
 }

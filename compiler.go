@@ -33,6 +33,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp"
 	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
+	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
 	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
@@ -775,7 +776,7 @@ func (c *compiler) codegen(ir *ir) {
 		fieldParserSymbol{parser: mSym, index: 0},
 		tdp.FieldParser{
 			Tag:   mapValue,
-			Parse: uintptr(unsafe2.NewPC(parserThunk(parseMapEntry))),
+			Parse: uintptr(unsafe2.NewPC(vm.Thunk(parseMapEntry))),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: mSym, index: 0},

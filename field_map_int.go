@@ -24,7 +24,7 @@ import (
 )
 
 // getMapIxI is a [getterThunk] for map<K, V> where K and V are both integer types.
-func getMapIxI[K integer, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getMapIxI[K tdp.Int, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, V]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
@@ -34,7 +34,7 @@ func getMapIxI[K integer, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Ac
 }
 
 // mapIxI is a [protoreflect.Map] for map<K, V> where K and V are both integer types.
-type mapIxI[K integer, V any] struct {
+type mapIxI[K tdp.Int, V any] struct {
 	unimplementedMap
 	table *swiss.Table[K, V]
 }
@@ -60,7 +60,7 @@ func (m mapIxI[K, V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) 
 }
 
 // getMapIxS is a [getterThunk] for map<K, string> where K is an integer type.
-func getMapIxS[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getMapIxS[K tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
@@ -70,7 +70,7 @@ func getMapIxS[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor)
 }
 
 // mapIxS is a [protoreflect.Map] for map<K, string> where K is an integer type.
-type mapIxS[K integer] struct {
+type mapIxS[K tdp.Int] struct {
 	unimplementedMap
 	src   *byte
 	table *swiss.Table[K, zc.Range]
@@ -97,7 +97,7 @@ func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 }
 
 // getMapIxB is a [getterThunk] for map<K, bytes> where K is an integer type.
-func getMapIxB[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getMapIxB[K tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
@@ -107,7 +107,7 @@ func getMapIxB[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor)
 }
 
 // mapIxB is a [protoreflect.Map] for map<K, bytes> where K is an integer type.
-type mapIxB[K integer] struct {
+type mapIxB[K tdp.Int] struct {
 	unimplementedMap
 	src   *byte
 	table *swiss.Table[K, zc.Range]
@@ -134,7 +134,7 @@ func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 }
 
 // getMapIxM is a [getterThunk] for map<string, V> where V is an integer type.
-func getMapIxM[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+func getMapIxM[K tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
 		return protoreflect.ValueOf(emptyMap{})
@@ -144,7 +144,7 @@ func getMapIxM[K integer](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor)
 }
 
 // mapIxM is a [protoreflect.Map] for map<string, V> where V is an integer type.
-type mapIxM[K integer] struct {
+type mapIxM[K tdp.Int] struct {
 	unimplementedMap
 	table *swiss.Table[K, *dynamic.Message]
 }
