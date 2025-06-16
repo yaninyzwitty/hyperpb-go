@@ -364,7 +364,7 @@ func parseRepeatedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			s.Store(i, T(b))
 		}
 		s.Store(s.Len()-1, T(n))
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
@@ -375,13 +375,13 @@ func parseRepeatedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, T(n))
 
-		p1.Log(p2, "store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "store", "%v", s.Addr())
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), T(n))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -424,7 +424,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
-		p1.Log(p2, "grow", "%v %v", s.Addr(), s)
+		p1.Log(p2, "grow", "%v", s.Addr())
 
 	case r.raw.OffArena():
 		// Already holds a borrow. Need to spill to arena.
@@ -436,13 +436,13 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 	default:
 		s = slice.CastUntyped[T](r.raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
-			p1.Log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
 		}
 	}
 
@@ -504,7 +504,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
 	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)

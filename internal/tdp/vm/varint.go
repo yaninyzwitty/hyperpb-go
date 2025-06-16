@@ -15,8 +15,9 @@
 package vm
 
 import (
+	"runtime"
+
 	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
 )
 
 // parseVarint is the core varint parsing implementation.
@@ -28,10 +29,26 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	var b byte
 	var x uint64
 	var i int
-	p := p1.Ptr()
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	start := p1.PtrAddr
+
+	// NOTE: Previously, we would load *p and then increment it before checking
+	// if b's sign bit was clear. This resulted in the accidental creation of
+	// a one-past-the-end pointer, which would result in a rather nasty and
+	// rare GC crash, if the GC happened to preempt this function in one of
+	// a very small subset of PC values.
+	//
+	// We also need to perform length checks here, since invalid input can cause
+	// the creation of a one-past-the-end pointer. Because the input is
+	// untrusted, we have to make the check. The check is carefully written in
+	// such a way as to produce the best code and be as
+	// branch-predictor-friendly as possible.
+
+	// No bounds check for the first one; we assume parseVarint is not called
+	// when the buffer is empty.
+
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -39,8 +56,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -48,8 +68,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -57,8 +80,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -66,8 +92,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -75,8 +104,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -84,8 +116,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -93,8 +128,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -102,8 +140,11 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	if p1.PtrAddr == p1.EndAddr {
+		goto fail
+	}
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if int8(b) >= 0 {
 		goto exit
@@ -111,8 +152,8 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 	x -= 0x80 << (i * 7)
 	i++
 
-	b = *p
-	p = unsafe2.Add(p, 1)
+	b = *p1.PtrAddr.AssertValid()
+	p1.PtrAddr++
 	x |= uint64(b) << (i * 7)
 	if b <= 1 {
 		goto exit
@@ -122,16 +163,16 @@ func parseVarint(p1 P1, p2 P2) (P1, P2, uint64) {
 
 exit:
 	if debug.Enabled {
-		len := int(unsafe2.AddrOf(p) - p1.PtrAddr) // For debug only.
+		len := int(p1.PtrAddr - start) // For debug only.
 		p1.Log(p2, "varint", "%d:%#x (%d bytes)", x, x, len)
-	}
-
-	p1.PtrAddr = unsafe2.AddrOf(p)
-	if p1.Len() < 0 {
-		p1.Fail(p2, ErrorTruncated)
+		runtime.GC() // This checks for the above crash bug.
 	}
 
 	return p1, p2, x
+
+fail:
+	p1.Fail(p2, ErrorTruncated)
+	goto fail
 }
 
 //go:noinline

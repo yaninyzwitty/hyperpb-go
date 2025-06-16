@@ -145,7 +145,7 @@ func (p1 P1) Ptr() *byte {
 	// Annoyingly this means we also need to be careful in parser1.buf(),
 	// because we cannot form a zero-sized slice to the end of an allocation.
 	debug.Assert(p1.PtrAddr < p1.EndAddr,
-		"p1.b_ cannot point one past the end: need %v < %v", p1.PtrAddr, p1.EndAddr)
+		"p1.PtrAddr cannot point one past the end: need %v < %v", p1.PtrAddr, p1.EndAddr)
 	return p1.PtrAddr.AssertValid()
 }
 

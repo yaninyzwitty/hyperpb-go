@@ -8036,7 +8036,7 @@ func parseRepeatedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			s.Store(i, uint8(b))
 		}
 		s.Store(s.Len()-1, uint8(n))
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
@@ -8047,13 +8047,13 @@ func parseRepeatedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint8(n))
 
-		p1.Log(p2, "store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "store", "%v", s.Addr())
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint8(n))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -8075,7 +8075,7 @@ func parseRepeatedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			s.Store(i, uint32(b))
 		}
 		s.Store(s.Len()-1, uint32(n))
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
@@ -8086,13 +8086,13 @@ func parseRepeatedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint32(n))
 
-		p1.Log(p2, "store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "store", "%v", s.Addr())
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint32(n))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -8114,7 +8114,7 @@ func parseRepeatedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			s.Store(i, uint64(b))
 		}
 		s.Store(s.Len()-1, uint64(n))
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
@@ -8125,13 +8125,13 @@ func parseRepeatedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint64(n))
 
-		p1.Log(p2, "store", "%v %v", s.Addr(), s)
+		p1.Log(p2, "store", "%v", s.Addr())
 		r.raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint64(n))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 	r.raw = s.Addr().Untyped()
 	return p1, p2
 }
@@ -8172,7 +8172,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
-		p1.Log(p2, "grow", "%v %v", s.Addr(), s)
+		p1.Log(p2, "grow", "%v", s.Addr())
 
 	case r.raw.OffArena():
 
@@ -8183,13 +8183,13 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 	default:
 		s = slice.CastUntyped[uint8](r.raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
-			p1.Log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
 		}
 	}
 
@@ -8246,7 +8246,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
 	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
@@ -8289,7 +8289,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
-		p1.Log(p2, "grow", "%v %v", s.Addr(), s)
+		p1.Log(p2, "grow", "%v", s.Addr())
 
 	case r.raw.OffArena():
 
@@ -8300,13 +8300,13 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 	default:
 		s = slice.CastUntyped[uint32](r.raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
-			p1.Log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
 		}
 	}
 
@@ -8363,7 +8363,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
 	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
@@ -8406,7 +8406,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
-		p1.Log(p2, "grow", "%v %v", s.Addr(), s)
+		p1.Log(p2, "grow", "%v", s.Addr())
 
 	case r.raw.OffArena():
 
@@ -8417,13 +8417,13 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v %v", r.raw, s.Addr(), s)
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 
 	default:
 		s = slice.CastUntyped[uint64](r.raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
-			p1.Log(p2, "grow", "%v %v, %d", s.Addr(), s, spare)
+			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
 		}
 	}
 
@@ -8480,7 +8480,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
-	p1.Log(p2, "append", "%v %v", s.Addr(), s)
+	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
 	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)

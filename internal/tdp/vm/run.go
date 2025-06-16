@@ -71,7 +71,7 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	m.Shared.Len = len(data)
 	// The arena keeps m.context alive, so we don't need to KeepAlive src.
 
-	if len(data) == 0 {
+	if m.Shared.Len == 0 {
 		return nil
 	}
 
@@ -120,7 +120,12 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 		p3Addr: unsafe2.AddrOf(p3),
 	}
 
-	p1, p2 = p1.PushMessage(p2, len(data), m)
+	if debug.Enabled {
+		p1.Log(p2, "start", "%p:%d, %p:%v",
+			m.Shared.Src, m.Shared.Len, m.Type(), m.Type().Descriptor.FullName())
+	}
+
+	p1, p2 = p1.PushMessage(p2, m.Shared.Len, m)
 	p2.Scratch = 0
 	loop(p1, p2)
 	return nil
