@@ -25,6 +25,7 @@ import (
 	"github.com/bufbuild/fastpb"
 	testpb "github.com/bufbuild/fastpb/internal/gen/test"
 	"github.com/bufbuild/fastpb/internal/sync2"
+	"github.com/bufbuild/fastpb/internal/testdata"
 )
 
 var contexts = sync2.Pool[fastpb.Shared]{Reset: (*fastpb.Shared).Free}
@@ -41,7 +42,7 @@ func fuzz[M proto.Message](f *testing.F) {
 	f.Helper()
 
 	var z M
-	test := new(test)
+	test := new(testdata.TestCase)
 	test.Type.Gencode = z.ProtoReflect().Type()
 	test.Type.Fast = fastpb.Compile(test.Type.Gencode.Descriptor())
 
@@ -51,6 +52,6 @@ func fuzz[M proto.Message](f *testing.F) {
 
 		test := *test
 		test.Specimens = [][]byte{b}
-		test.run(t, ctx)
+		test.Run(t, ctx, verbose)
 	})
 }
