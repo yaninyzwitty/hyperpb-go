@@ -19,37 +19,39 @@ Schematically, this package can be thought of as having two major components.
 ## Benchmarking and Profiling
 
 To ensure that your changes don't make performance worse, you should use the
-provided benchmarks. `make benchmark` will run all benchmarks; `make profile`
+provided benchmarks. `make bench` will run all benchmarks; `make profile`
 will run a CPU profile and display it in a local `pprof` instance.
+`make asm` will dump the assembly of the benchmarks for manual inspection.
 
 The benchmarks are also run against `protobuf-go`'s generated code, and
-`dynamicpb`, which this package replaces.
+`dynamicpb`, which this package replaces.Benchmarks are defined by `.yaml`
+files in the `internal/testdata` directory.
 
 When filing a PR, it is recommended that it include a before/after comparison
 of the benchmarks.
 
 ## File Structure
 
-The main package, `fastpb`, is relatively large. The files contain roughly
-the following:
+The main package, `fastpb`, is mostly a facade over a collection of internal
+packages. The bulk of the complicated stuff lives in `internal/tdp`:
 
-* `compiler.go`, `type.go` - Compiler stuff.
-* `error.go`, `parse.go` - Exclusively parser-related stuff.
-* `field_*.go` - Field archetype definitions. There's a lot of them.
-   * `field_map_*.go` - Includes `protoreflect.Map` implementations.
-   * `field_repeated_*.go` - Includes `protoreflect.List` implementations.
-* `message.go` - `protoreflect.Message` implementation.
-* `stringer.go` - Pretty-printers for debugging.
-* `reflect.go`, `zc.go` - Utilities.
+* `tdp` itself contains the "tables", or "executable format", of the
+  parser VM.
+* `tdp/dynamic` contains the rudiments for dynamic message types based
+  on the layout information from `tdp`. See also `tdp/empty`.
+* `tdp/vm` is the parser VM itself.
+* `tdp/compiler` is the compiler that generates the tables from `tdp`.
+* `tdp/thunks` is the specialized code for parsing each of the hundreds
+  of field type combinations.
 
-The most important internal packages are:
+The other important internal packages are:
 
-* `internal/arena` - All allocations go through here. See
+* `arena` - All allocations go through here. See
   <https://mcyoung.xyz/2025/04/21/go-arenas/> for an introduction.
-* `internal/dbg` - Debugging utilities. Enable with `-tags debug`.
-* `internal/stencil` - Code generator for manually specializing generic functions.
-* `internal/swiss` - Full-fledged Swisstable implementation.
-* `internal/unsafe2` - Unsafe helpers.
+* `debug` - Debugging utilities. Enable with `-tags debug`.
+* `swiss` - Full-fledged Swisstable implementation.
+* `tools/stencil` - Code generator for manually specializing generic functions.
+* `unsafe2` - Unsafe helpers.
 
 # Implementation Details
 
@@ -128,15 +130,15 @@ specifies:
      into them.
 
 The compiler is responsible for laying out the in-memory representation of
-each message. A message consists of a fixed header (the fields of `message`),
-an array of "bitfield words", which are used to store has-bits of optional
-fields and the values of bool fields, and the storage for all of the field
-values. For example, an optional int32 compiles to one bit plus four bytes of
-storage.
+each message. A message consists of a fixed header (the fields of 
+`dynamic.Message`), an array of "bitfield words", which are used to store
+has-bits of optional fields and the values of `bool` fields, and the storage for
+all of the field values. For example, an `optional int32` compiles to one bit
+plus four bytes of storage.
 
 The offsets for the storage of a given field, plus a thunk for actually
 extracting the field value as a `protobuf.Value`, are stored in the field's
-`getter`. There are dozens of storage strategies for a field; rather than
+`Getter`. There are dozens of storage strategies for a field; rather than
 storing the field's type information, we record the address of a thunk that
 implicitly contains this information. This means that getting a field costs
 an indirect branch, instead of whatever mess Go would choose to codegen for
@@ -151,16 +153,10 @@ is responsible for assembling this key.
 
 This compiler's equivalent of instruction selection (which we call archetype
 selection) is the mechanism by which a `FieldDescriptor` is associated with one
-of dozens of `archetype`s, which represent the various ways in which a field
-can be parsed and accessed. For example, for each `protoreflect.Kind`, there
-is an archetype for that field appearing as implicit presence (called
+of dozens of `compiler.Archetype`s, which represent the various ways in which a
+field can be parsed and accessed. For example, for each `protoreflect.Kind`,
+there is an archetype for that field appearing as implicit presence (called
 "singular" here), explicit presence (i.e. "optional") or repeated.
-
-Other archetypes that are not yet implemented include:
-
-- Archetypes for each kind appearing as a oneof.
-- Archetypes for the 12 * 17 = 204 possible map kinds.
-- Archetypes for non-UTF-8-validated string fields.
 
 The addition of extra archetypes is not a performance penalty if they are
 not used in a particular parser, which allows for arbitrary levels of
@@ -170,27 +166,23 @@ fields) could be directly inlined into the message.
 
 ## Type Representation
 
-All of the types that a particular compiled `Type` depends on live on a giant
-byte buffer; each `Type` is a pointer to this buffer. This buffer also
-contains a pointer to the descriptor the `Type` was compiled from, to ensure
-that the GC does not sweep the descriptors while the `Type` is still alive.
+All of the types that a particular compiled `tdp.Type` depends on live on a
+giant byte buffer, called a `tdp.Library`. Each `*tdp.Type` is a pointer to this
+buffer. This buffer also contains a pointer to the descriptor the `tdp.Type` was
+compiled from, to ensure that the GC does not sweep the descriptors while the
+`tdp.Type` is still alive.
 
-Each `Type` points to a `typeHeader` which is followed by at least one
-`field`. The fields are laid out in field index order, and there is a special
-"stop" value at the end of the field array, so that the parser can walk field
-by field and wrap around when it gets to the end. This is because the parser
-is written under the assumption that records within a Protobuf message are
-laid out in field index order (this assumption si true of any message
-serialized using generated code in virtually any language).
+Each `tdp.Type` is followed by at least one `tdp.Field`. The fields are laid out
+in field index order. This is useful for efficiently implementing reflection.
 
-Each field includes an offset to its message type (if it has one). This is
-a signed byte offset to add to the containing `Type` to get a pointer to its
-message type. It also includes a getter and the parsers described above.
+It also contains a `tdp.TypeParser`, which contains `tdp.FieldParsers`.
+Each includes an pointer to a `tdp.Type` for its message type, if it has one,
+as well as offset and parsing information.
 
-Note that the compiled `Type` does NOT contain a `reflect.Type` for the
+Note that the compiled `tdp.Type` does NOT contain a `reflect.Type` for the
 struct that the compiler laid out for it. Go reflection is not used for
 manipulating dynamic message types; instead, we rely on raw loads and stores,
-and the value allocated from a `Type` does not have a GC shape that contains
+and the value allocated from a `tdp.Type` does not have a GC shape that contains
 pointers.
 
 This allows us to never perform stores of types which contain pointers, even
@@ -200,27 +192,27 @@ touching a highly-contended atomic global, triggering a guaranteed cache
 miss. This in turn is fine, because the pointers we manipulate are arena
 pointers that are marked for us via other means.
 
-Finally, each type contains a hand-written hashmap that maps field numbers
-to field indices, for quickly re-synchronizing the parser in the event of
-encountering fields out of the expected order. Currently, all types have a
+Finally, each `tdp.TypeParser` contains a hand-written hashmap that maps field
+numbers to field indices, for quickly re-synchronizing the parser in the event
+of encountering fields out of the expected order. Currently, all types have a
 number table, but many message types have number/index relationships that are
 1:1, in which case number == index for all fields; as a future optimization,
 we should remove the table in this case.
 
 ## Parser Design
 
-The parser is an interpreter for the programs encoded in `Type`s. It is a
+The parser is an VM for the programs encoded in `tdp.TypeParser`s. It is a
 threaded interpreter, which means that all of its state is threaded by-value
 through function calls, to minimize the need for spilling state to the stack
 across calls (regardless, Go's mediocre register allocator still
 unnecessarily spills a lot of state).
 
-The parser state is split across three types, `parser1`, `parser2`, and
-`parserP`, to work around various bugs in Go's codegen that would result in
+The parser state is split across three types, `vm.P1`, `vm.P2`, and
+`vm.p3`, to work around various bugs in Go's codegen that would result in
 worse performance. These structs should be thought of as being the same
 entity.
 
-The main loop of the interpreter is `parser1.loop`, which is not actually
+The main loop of the interpreter is `vm.P1.loop`, which is not actually
 a loop but rather a strongly connected component of blocks joined by `goto`s.
 This is because the main loop has three different sections which we want
 to be able to jump to from any other section. These are:

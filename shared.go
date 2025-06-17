@@ -22,12 +22,12 @@ import (
 // Shared is state that is shared by all messages in a particular tree of
 // messages.
 //
-// A zero context is ready to use.
+// The zero value is ready to use: construct it with new(Shared).
 type Shared struct {
 	impl dynamic.Shared
 }
 
-// New allocates a new message in this context.
+// New allocates a new message using this value's resources.
 func (s *Shared) New(ty *Type) *Message {
 	if s == nil {
 		s = new(Shared)
@@ -49,9 +49,9 @@ func (s *Shared) New(ty *Type) *Message {
 	return newMessage(s.impl.New(&ty.impl))
 }
 
-// Free releases any resources held by this context, allowing them to be re-used.
+// Free releases any resources held by this value, allowing them to be re-used.
 //
-// Any messages previously parsed using this context must not be reused.
+// Any messages previously parsed using this value must not be reused.
 func (s *Shared) Free() { s.impl.Free() }
 
 // newShared wraps an internal Shared pointer.

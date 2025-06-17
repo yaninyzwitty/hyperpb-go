@@ -2,8 +2,11 @@ version: v2
 managed:
   enabled: true
   override:
-   - file_option: go_package_prefix
-     value: 'github.com/bufbuild/fastpb/internal/gen'
+  - file_option: go_package_prefix
+    value: 'github.com/bufbuild/fastpb/internal/gen'
+  disable:
+  - file_option: go_package
+    module: buf.build/bufbuild/protovalidate
 plugins:
   - remote: buf.build/protocolbuffers/go
     out: internal/gen

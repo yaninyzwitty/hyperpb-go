@@ -69,6 +69,7 @@ type Options struct {
 func Compile(md protoreflect.MessageDescriptor, options Options) *tdp.Type {
 	c := &compiler{
 		Options: options,
+		root:    md,
 
 		symbols: make(map[any]int),
 		relos:   make(map[int]relo),
@@ -83,6 +84,7 @@ func Compile(md protoreflect.MessageDescriptor, options Options) *tdp.Type {
 // compiler converts descriptors into [tdp.Type]s.
 type compiler struct {
 	Options
+	root protoreflect.MessageDescriptor
 
 	buf        []byte
 	totalTypes int
@@ -700,9 +702,8 @@ func (c *compiler) message(md protoreflect.MessageDescriptor) {
 	c.codegen(ir)
 	c.layouts[ir.d] = ir.layout
 
-	fields := md.Fields()
-	for i := range fields.Len() {
-		if m := fieldMessage(fields.Get(i)); m != nil {
+	for _, t := range ir.t {
+		if m := fieldMessage(t.d); m != nil {
 			c.message(m)
 		}
 	}
@@ -726,7 +727,7 @@ func (c *compiler) link(base *byte) {
 	for target, relo := range c.relos {
 		offset, ok := c.symbols[relo.symbol]
 		if !ok {
-			panic(fmt.Sprintf("fastpb: undefined symbol: %v", relo.symbol))
+			panic(fmt.Sprintf("fastpb: undefined symbol while linking %v: %v", c.root.FullName(), relo.symbol))
 		}
 
 		if relo.relative {

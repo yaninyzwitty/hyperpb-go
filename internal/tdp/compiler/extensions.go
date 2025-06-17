@@ -45,3 +45,27 @@ func (e *ExtensionsFromRegistry) FindExtensionsByMessage(
 	})
 	return out
 }
+
+// ExtensionMap implements [ExtensionResolver] using a map.
+type ExtensionMap map[protoreflect.FullName][]protoreflect.ExtensionDescriptor
+
+// ExtensionsFromFile builds an ExtensionMap from the given collection of files.
+func ExtensionsFromFile(files *protoregistry.Files) ExtensionMap {
+	extnMap := make(ExtensionMap)
+	for file := range files.RangeFiles {
+		extns := file.Extensions()
+		for i := range extns.Len() {
+			extn := extns.Get(i)
+			extendee := extn.ContainingMessage()
+			extnMap[extendee.FullName()] = append(extnMap[extendee.FullName()], extn)
+		}
+	}
+	return extnMap
+}
+
+// FindExtensionsByMessage implements [ExtensionResolver].
+func (e ExtensionMap) FindExtensionsByMessage(
+	name protoreflect.FullName,
+) []protoreflect.ExtensionDescriptor {
+	return e[name]
+}

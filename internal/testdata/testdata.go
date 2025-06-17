@@ -195,7 +195,7 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 
 	test.Type.Fast = fastpb.Compile(
 		test.Type.Gencode.Descriptor(),
-		fastpb.WithExtensionsFromRegistry(protoregistry.GlobalTypes),
+		fastpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
 		func(o *compiler.Options) { o.Profile = test.PGO },
 	)
 

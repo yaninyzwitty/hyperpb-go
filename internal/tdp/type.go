@@ -64,6 +64,8 @@ func (t *Type) ByIndex(n int) *Field {
 // ByDescriptor returns the field with the given descriptor.
 func (t *Type) ByDescriptor(fd protoreflect.FieldDescriptor) *Field {
 	switch {
+	case fd == nil:
+		return nil
 	case fd.ContainingMessage() != t.Descriptor:
 		return nil
 	case fd.IsExtension():

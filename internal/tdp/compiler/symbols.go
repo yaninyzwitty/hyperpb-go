@@ -37,9 +37,9 @@ type fieldParserSymbol struct {
 }
 
 func (s typeSymbol) String() string {
-	return fmt.Sprintf("typeSymbol:%s", s.ty.Name())
+	return fmt.Sprintf("type:%q", s.ty.FullName())
 }
 
 func (s parserSymbol) String() string {
-	return fmt.Sprintf("parserSymbol:%s:%v", s.ty.Name(), s.mapEntry)
+	return fmt.Sprintf("parser:%q:%v", s.ty.FullName(), s.mapEntry)
 }

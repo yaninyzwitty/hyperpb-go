@@ -49,7 +49,7 @@ func New(ty *Type) *Message {
 // Unmarshal is like [proto.Unmarshal], but permits fastpb-specific
 // tuning options to be set.
 //
-// Calling this function may be much faster than calling proto.Unmarshal ifAdd commentMore actions
+// Calling this function may be much faster than calling proto.Unmarshal if
 // the message is small; proto.Unmarshal includes several nanoseconds of
 // overhead that can become noticeable for message in the 16 byte regime.
 //
@@ -77,7 +77,7 @@ type UnmarshalOption func(*vm.Options)
 //
 // Large values may improve performance for common protos, but introduce a
 // potential DoS vector due to quadratic worst case performance. The default
-// is 8.
+// is 4.
 func WithMaxDecodeMisses(n int) UnmarshalOption {
 	return func(opts *vm.Options) { opts.MaxMisses = n }
 }
@@ -99,28 +99,41 @@ func (m *Message) ProtoReflect() protoreflect.Message {
 	return m
 }
 
+// Descriptor returns message descriptor, which contains only the Protobuf
+// type information for the message.
+//
 // Descriptor implements [protoreflect.Message].
 func (m *Message) Descriptor() protoreflect.MessageDescriptor {
 	return m.impl.Type().Descriptor
 }
 
-// Type implements [protoreflect.Message].
+// Type returns the message type, which encapsulates both Go and Protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
 //
-// Always returns *[Type].
+// Type implements [protoreflect.Message]; Always returns *[Type].
 func (m *Message) Type() protoreflect.MessageType {
 	return newType(m.impl.Type())
 }
 
+// New returns a newly allocated empty message.
+//
 // New implements [protoreflect.Message].
 func (m *Message) New() protoreflect.Message {
 	return newType(m.impl.Type()).New()
 }
 
+// Interface returns m.
+//
 // Interface implements [protoreflect.Message].
 func (m *Message) Interface() protoreflect.ProtoMessage {
 	return m
 }
 
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+//
 // Range implements [protoreflect.Message].
 func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if !m.IsValid() {
@@ -163,6 +176,18 @@ func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 	}
 }
 
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+//
 // Has implements [protoreflect.Message].
 func (m *Message) Has(fd protoreflect.FieldDescriptor) bool {
 	if !m.IsValid() {
@@ -194,6 +219,8 @@ func (m *Message) Has(fd protoreflect.FieldDescriptor) bool {
 	}
 }
 
+// Clear panics, unless this message has not been unmarshaled yet.
+//
 // Clear implements [protoreflect.Message].
 func (m *Message) Clear(protoreflect.FieldDescriptor) {
 	if m.Shared().impl.Src == nil {
@@ -202,9 +229,18 @@ func (m *Message) Clear(protoreflect.FieldDescriptor) {
 	panic(debug.Unsupported())
 }
 
-// Reset just calls [Clear]. This exists to speed up [proto.Reset].
+// Reset panics, unless this message has not been unmarshaled yet
+//
+// Implements an interface used to speed up [proto.Reset].
 func (m *Message) Reset() { m.Clear(nil) }
 
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value.
+//
 // Get implements [protoreflect.Message].
 func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	if !m.IsValid() {
@@ -225,27 +261,57 @@ func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	return fd.Default()
 }
 
-// Set implements [protoreflect.Message].
+// Set panics.
 //
-// Panics when called.
+// Set implements [protoreflect.Message].
 func (m *Message) Set(protoreflect.FieldDescriptor, protoreflect.Value) {
 	panic(debug.Unsupported())
 }
 
-// Mutable implements [protoreflect.Message].
+// Mutable panics.
 //
-// Panics when called.
+// Mutable implements [protoreflect.Message].
 func (m *Message) Mutable(protoreflect.FieldDescriptor) protoreflect.Value {
 	panic(debug.Unsupported())
 }
 
-// NewField implements [protoreflect.Message].
+// NewField panics.
 //
-// Panics when called.
+// NewField implements [protoreflect.Message].
 func (m *Message) NewField(protoreflect.FieldDescriptor) protoreflect.Value {
 	panic(debug.Unsupported())
 }
 
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+//
+// WhichOneof implements [protoreflect.Message].
+func (m *Message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	if !m.IsValid() {
+		return nil
+	}
+
+	fd := od.Fields().Get(0)
+	f := m.impl.Type().ByDescriptor(fd)
+	if !f.IsValid() {
+		panic("invalid oneof descriptor " + string(od.FullName()) + " for message " + string(m.Descriptor().FullName()))
+	}
+
+	if f.Accessor.Offset.Number == 0 {
+		// Not implemented internally as a oneof.
+		if !m.Has(fd) {
+			return nil
+		}
+		return fd
+	}
+
+	which := unsafe2.ByteLoad[uint32](m, f.Accessor.Offset.Bit)
+	return fd.ContainingMessage().Fields().ByNumber(protoreflect.FieldNumber(which))
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+//
 // GetUnknown implements [protoreflect.Message].
 func (m *Message) GetUnknown() protoreflect.RawFields {
 	cold := m.impl.Cold()
@@ -264,9 +330,9 @@ func (m *Message) GetUnknown() protoreflect.RawFields {
 	return out
 }
 
-// SetUnknown implements [protoreflect.Message].
+// SetUnknown panics, unless raw is zero-length, in which case it does nothing.
 //
-// Panics when called.
+// SetUnknown implements [protoreflect.Message].
 func (m *Message) SetUnknown(raw protoreflect.RawFields) {
 	if len(raw) == 0 {
 		return
@@ -274,35 +340,22 @@ func (m *Message) SetUnknown(raw protoreflect.RawFields) {
 	panic(debug.Unsupported())
 }
 
-// WhichOneof implements [protoreflect.Message].
-func (m *Message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	if !m.IsValid() {
-		return nil
-	}
-
-	fd := od.Fields().Get(0)
-	f := m.impl.Type().ByDescriptor(fd)
-	if !f.IsValid() {
-		return nil
-	}
-
-	if f.Accessor.Offset.Number == 0 {
-		// Not implemented internally as a oneof.
-		if !m.Has(fd) {
-			return nil
-		}
-		return fd
-	}
-
-	which := unsafe2.ByteLoad[uint32](m, f.Accessor.Offset.Bit)
-	return fd.ContainingMessage().Fields().ByNumber(protoreflect.FieldNumber(which))
-}
-
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+//
 // IsValid implements [protoreflect.Message].
 func (m *Message) IsValid() bool {
 	return m != nil
 }
 
+// ProtoMethods returns optional fast-path implementations of various operations.
+//
 // ProtoMethods implements [protoreflect.Message].
 func (m *Message) ProtoMethods() *protoiface.Methods {
 	return &m.impl.Type().Methods

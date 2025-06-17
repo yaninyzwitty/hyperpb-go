@@ -31,6 +31,8 @@ type Type struct {
 	impl tdp.Type
 }
 
+// Descriptor returns the message descriptor.
+//
 // Descriptor implements [protoreflect.MessageType].
 func (t *Type) Descriptor() protoreflect.MessageDescriptor {
 	if t == nil {
@@ -39,11 +41,17 @@ func (t *Type) Descriptor() protoreflect.MessageDescriptor {
 	return t.impl.Descriptor
 }
 
+// New returns a newly allocated empty message.
+// It may return nil for synthetic messages representing a map entry.
+//
 // New implements [protoreflect.MessageType].
 func (t *Type) New() protoreflect.Message {
 	return new(Shared).New(t).ProtoReflect()
 }
 
+// Zero returns an empty, read-only message.
+// It may return nil for synthetic messages representing a map entry.
+//
 // Zero implements [protoreflect.MessageType].
 func (t *Type) Zero() protoreflect.Message {
 	return empty.NewMessage(&t.impl)
