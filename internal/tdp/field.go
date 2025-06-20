@@ -36,7 +36,7 @@ type Field struct {
 // IsValid returns whether or not this is the sentinel invalid field in a [Type]'s
 // field table.
 func (f *Field) IsValid() bool {
-	return f.Accessor.Getter != nil
+	return f.Getter != nil
 }
 
 // Get gets the value of this field out of a message of appropriate type.
@@ -48,7 +48,7 @@ func (f *Field) Get(m unsafe.Pointer) protoreflect.Value {
 	if !f.IsValid() {
 		return protoreflect.ValueOf(nil)
 	}
-	return f.Accessor.Getter(m, f.Message, &f.Accessor)
+	return f.Getter(m, f.Message, &f.Accessor)
 }
 
 // Format implements [fmt.Formatter].

@@ -298,7 +298,7 @@ func (m *Message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.Field
 		panic("invalid oneof descriptor " + string(od.FullName()) + " for message " + string(m.Descriptor().FullName()))
 	}
 
-	if f.Accessor.Offset.Number == 0 {
+	if f.Offset.Number == 0 {
 		// Not implemented internally as a oneof.
 		if !m.Has(fd) {
 			return nil
@@ -306,7 +306,7 @@ func (m *Message) WhichOneof(od protoreflect.OneofDescriptor) protoreflect.Field
 		return fd
 	}
 
-	which := unsafe2.ByteLoad[uint32](m, f.Accessor.Offset.Bit)
+	which := unsafe2.ByteLoad[uint32](m, f.Offset.Bit)
 	return fd.ContainingMessage().Fields().ByNumber(protoreflect.FieldNumber(which))
 }
 

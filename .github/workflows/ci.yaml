@@ -51,8 +51,6 @@ jobs:
         if: ${{ matrix.tags == '' }}
         run: make bench BENCHMARK="B/bench/^descriptor.yaml" 
 
-  # Linting is crazy slow because it needs to build tons of code, so we run
-  # it in parallel from everything else.
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -68,12 +66,6 @@ jobs:
         uses: actions/setup-go@v5
         with: {go-version: "${{ matrix.go-version }}"}
 
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: "${{ runner.os }}-fastpb-ci-${{ hashFiles('**/go.sum') }}"
-          restore-keys: "${{ runner.os }}-fastpb-ci-"
-
       - name: Lint
-        run: make lint
+        uses: golangci/golangci-lint-action@v8
+        with: {version: v2.1.6} # Keep in sync with the Makefile.

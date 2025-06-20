@@ -29,6 +29,11 @@ import (
 // compiler, which can be found here: <https://github.com/rust-lang/rustc-hash>.
 type hash uint64
 
+// String implements [fmt.Stringer].
+func (h hash) String() string {
+	return fmt.Sprintf("%015x:%02x", h.h1(), h.h2())
+}
+
 func (h hash) h1() uint64 { return uint64(h >> 7) }
 func (h hash) h2() byte   { return ^(byte(h) & 0x7f) }
 
@@ -102,11 +107,6 @@ func (h hash) bytes(in []byte) hash {
 	}
 
 	return h.u64(mix(x0, x1) ^ n)
-}
-
-// String implements [fmt.Stringer].
-func (h hash) String() string {
-	return fmt.Sprintf("%015x:%02x", h.h1(), h.h2())
 }
 
 // mix mixes together the bits of a and b.

@@ -29,7 +29,7 @@ COPYRIGHT_YEARS := 2025
 LICENSE_IGNORE := testdata/
 
 BUF_VERSION := v1.50.0
-LINT_VERSION := v1.63.4
+LINT_VERSION := v2.1.6 # Keep in sync w/ .github/workflows/ci.yaml.
 
 GO ?= go
 GO := GOTOOLCHAIN=local $(GO)
@@ -142,4 +142,4 @@ $(BIN)/license-header: Makefile
 
 $(BIN)/golangci-lint: Makefile
 	@mkdir -p $(@D)
-	$(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@$(LINT_VERSION)
+	$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(LINT_VERSION)

@@ -67,6 +67,11 @@ func (p prober) next() (prober, int, ctrl) {
 // ctrl is a control word, the heart of the Swisstable data structure.
 type ctrl struct{ x0 uint64 }
 
+// String implements [fmt.Stringer].
+func (c ctrl) String() string {
+	return fmt.Sprintf("%016x", c.x0)
+}
+
 // broadcast returns a control word whose bytes are each b.
 func broadcast(b byte) ctrl {
 	return ctrl{uint64(b) * lows}
@@ -99,9 +104,4 @@ func (c ctrl) next() (ctrl, bool) {
 func (c ctrl) first(needle ctrl) int {
 	n0 := bits.TrailingZeros64(c.matches(needle).x0) / 8
 	return n0
-}
-
-// String implements [fmt.Stringer].
-func (c ctrl) String() string {
-	return fmt.Sprintf("%016x", c.x0)
 }

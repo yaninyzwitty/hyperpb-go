@@ -83,10 +83,6 @@ type mapSxS struct {
 	table *swiss.Table[zc.Range, zc.Range]
 }
 
-func (m mapSxS) extract() func(zc.Range) []byte {
-	return func(r zc.Range) []byte { return r.Bytes(m.src) }
-}
-
 func (m mapSxS) Len() int                        { return m.table.Len() }
 func (m mapSxS) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapSxS) Get(mk protoreflect.MapKey) protoreflect.Value {
@@ -109,6 +105,10 @@ func (m mapSxS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 	}
 }
 
+func (m mapSxS) extract() func(zc.Range) []byte {
+	return func(r zc.Range) []byte { return r.Bytes(m.src) }
+}
+
 // getMapSxS is a [protoreflect.Map] for map<string, bytes>.
 func getMapSxB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, zc.Range]](m, getter.Offset)
@@ -124,10 +124,6 @@ type mapSxB struct {
 	unimplementedMap
 	src   *byte
 	table *swiss.Table[zc.Range, zc.Range]
-}
-
-func (m mapSxB) extract() func(zc.Range) []byte {
-	return func(r zc.Range) []byte { return r.Bytes(m.src) }
 }
 
 func (m mapSxB) Len() int                        { return m.table.Len() }
@@ -152,6 +148,10 @@ func (m mapSxB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 	}
 }
 
+func (m mapSxB) extract() func(zc.Range) []byte {
+	return func(r zc.Range) []byte { return r.Bytes(m.src) }
+}
+
 // getMapSxM is a [getterThunk] for map<string, V> where V is a message type.
 func getMapSxM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, *dynamic.Message]](m, getter.Offset)
@@ -167,10 +167,6 @@ type mapSxM struct {
 	unimplementedMap
 	src   *byte
 	table *swiss.Table[zc.Range, *dynamic.Message]
-}
-
-func (m mapSxM) extract() func(zc.Range) []byte {
-	return func(r zc.Range) []byte { return r.Bytes(m.src) }
 }
 
 func (m mapSxM) Len() int                        { return m.table.Len() }
@@ -192,4 +188,8 @@ func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) 
 			return
 		}
 	}
+}
+
+func (m mapSxM) extract() func(zc.Range) []byte {
+	return func(r zc.Range) []byte { return r.Bytes(m.src) }
 }
