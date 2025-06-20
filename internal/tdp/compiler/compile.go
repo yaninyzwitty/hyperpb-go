@@ -17,6 +17,7 @@ package compiler
 import (
 	"cmp"
 	"fmt"
+	"iter"
 	"math"
 	"reflect"
 	"runtime"
@@ -29,13 +30,11 @@ import (
 
 	"github.com/bufbuild/fastpb/internal/arena"
 	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/stats"
+	"github.com/bufbuild/fastpb/internal/scc"
 	"github.com/bufbuild/fastpb/internal/swiss"
 	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -71,10 +70,12 @@ func Compile(md protoreflect.MessageDescriptor, options Options) *tdp.Type {
 		Options: options,
 		root:    md,
 
+		types:   make(map[protoreflect.MessageDescriptor]*ir),
+		sccInfo: make(map[*scc.Component[*ir]]*sccInfo),
+
 		symbols: make(map[any]int),
 		relos:   make(map[int]relo),
 
-		layouts: make(map[protoreflect.MessageDescriptor]tdp.TypeLayout),
 		fdCache: make(map[protoreflect.MessageDescriptor][]protoreflect.ExtensionDescriptor),
 	}
 
@@ -84,10 +85,13 @@ func Compile(md protoreflect.MessageDescriptor, options Options) *tdp.Type {
 // compiler converts descriptors into [tdp.Type]s.
 type compiler struct {
 	Options
-	root protoreflect.MessageDescriptor
+	root  protoreflect.MessageDescriptor
+	types map[protoreflect.MessageDescriptor]*ir
 
-	buf        []byte
-	totalTypes int
+	buf []byte
+
+	dag     *scc.DAG[*ir]
+	sccInfo map[*scc.Component[*ir]]*sccInfo
 
 	// Maps used for linking. Symbols maps arbitrary keys to an offset in buf
 	// and relos maps offsets to pointer values that should be filled in with
@@ -95,18 +99,37 @@ type compiler struct {
 	symbols map[any]int
 	relos   map[int]relo
 
-	layouts map[protoreflect.MessageDescriptor]tdp.TypeLayout
 	fdCache map[protoreflect.MessageDescriptor][]protoreflect.FieldDescriptor
 }
 
 func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
-	c.message(md)
+	c.recurse(md)
+	c.dag = scc.Sort(c.types[md], func(ty *ir) iter.Seq[*ir] {
+		return func(yield func(*ir) bool) {
+			for _, t := range ty.t {
+				md := fieldMessage(t.d)
+				if md != nil && !yield(c.types[md]) {
+					return
+				}
+			}
+		}
+	})
+
+	for cycle := range c.dag.Topological() {
+		c.sccInfo[cycle] = newSCCInfo(c, cycle)
+
+		for _, ir := range cycle.Members() {
+			ir.doLayout(c)
+			ir.doSchedule(c)
+			c.codegen(ir)
+		}
+	}
 
 	if len(c.buf) > math.MaxInt32 {
 		panic(fmt.Errorf("tdp: type has too many dependencies: %s", md.FullName()))
 	}
 
-	auxes := make([]tdp.Aux, c.totalTypes)
+	auxes := make([]tdp.Aux, len(c.types))
 
 	// Copy buf onto some memory that the GC can trace through md to keep all of
 	// the descriptors alive.
@@ -122,6 +145,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 		Base:  unsafe2.Cast[tdp.Type](p),
 		Types: make(map[protoreflect.MessageDescriptor]*tdp.Type),
 	}
+	requiredSet := make(map[int32]struct{})
 	var i int
 	for symbol, offset := range c.symbols {
 		sym, ok := symbol.(typeSymbol)
@@ -139,10 +163,34 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 
 		c.Backend.PopulateMethods(&ty.Methods)
 
+		// Find which fields are required or contain required fields.
+		for _, fd := range ty.FieldDescriptors {
+			if fd.IsExtension() {
+				// Extensions cannot be required. Once we see one extension
+				// we're all done.
+				break
+			}
+
+			if fd.Cardinality() == protoreflect.Required {
+				requiredSet[int32(fd.Index())] = struct{}{}
+			}
+
+			m := fieldMessage(fd)
+			if m != nil && c.sccInfo[c.dag.ForNode(c.types[m])].hasRequired {
+				requiredSet[^int32(fd.Index())] = struct{}{}
+			}
+		}
+		for i := range requiredSet {
+			ty.Required = append(ty.Required, i)
+		}
+		slices.Sort(ty.Required)
+		slices.Reverse(ty.Required)
+		clear(requiredSet)
+
 		lib.Types[sym.ty] = ty
 
 		if debug.Enabled {
-			*ty.Layout.Get() = c.layouts[sym.ty]
+			*ty.Layout.Get() = c.types[sym.ty].layout
 		}
 	}
 
@@ -152,7 +200,9 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 		})
 	}
 
-	return lib.Base
+	entry := lib.Types[md]
+	c.log("done", "%v", entry)
+	return entry
 }
 
 // profile returns profiling information for fd in the compiler's current
@@ -194,316 +244,20 @@ func (c *compiler) fields(md protoreflect.MessageDescriptor) []protoreflect.Fiel
 	return fields
 }
 
-// analyze generates an intermediate representation for a given message,
-// performing the necessary layout and scheduling analysis for its parser(s).
-func (c *compiler) analyze(md protoreflect.MessageDescriptor) *ir {
-	ir := &ir{d: md}
-
-	// Classify all of the fields into archetypes.
-	for _, fd := range c.fields(md) {
-		prof := c.profile(fd)
-
-		hot := prof.DecodeProbability >= 0.5
-		arch := c.Backend.SelectArchetype(fd, prof)
-
-		if arch.Bits > 0 && arch.Oneof {
-			panic(fmt.Sprintf("oneof archetype for %v requested bits; this is a bug", fd.FullName()))
-		}
-
-		tIdx := len(ir.t)
-		ir.t = append(ir.t, tField{
-			d:    fd,
-			prof: prof,
-			arch: arch,
-		})
-
-		for j := range arch.Parsers {
-			ir.p = append(ir.p, pField{
-				tIdx: tIdx,
-				aIdx: j,
-				hot:  j == 0 && hot,
-			})
-		}
-
-		// Protoc will always place oneof members contiguously in the fields
-		// array of a message. This means that if this is not the first member
-		// of a oneof, the most recent value in ir.s will be the current oneof's
-		// struct slot.
-		if arch.Oneof &&
-			fd.ContainingOneof().Fields().Get(0).Index() != fd.Index() {
-			last := &ir.s[len(ir.s)-1]
-			last.tIdx = append(last.tIdx, tIdx)
-		} else {
-			ir.s = append(ir.s, sField{
-				tIdx: []int{tIdx},
-			})
-		}
+// recurse calls analyze recursively.
+func (c *compiler) recurse(md protoreflect.MessageDescriptor) {
+	if c.types[md] != nil {
+		return
 	}
 
-	// Next, lay out the struct by sorting the struct members by alignment.
-	var bits, whichWords int
-	for i := range ir.s {
-		sf := &ir.s[i]
-		var temp stats.Mean
-		for _, j := range sf.tIdx {
-			arch := ir.t[j].arch
-			sf.layout = sf.layout.Max(arch.Layout)
-			sf.bits = max(sf.bits, arch.Bits)
-
-			temp.Record(ir.t[j].prof.DecodeProbability)
-		}
-
-		bits += int(sf.bits)
-		sf.hot = temp.Get() >= 0
-
-		if ir.t[sf.tIdx[0]].arch.Oneof {
-			whichWords++
+	c.log("message", "%s", md.FullName())
+	ir := newIR(c, md)
+	c.types[md] = ir
+	for _, t := range ir.t {
+		if m := fieldMessage(t.d); m != nil {
+			c.recurse(m)
 		}
 	}
-
-	// Append hidden zero-size fields at the end to ensure that the stride of
-	// this type is divisible by 8.
-	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: true})
-	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: false})
-
-	slices.SortStableFunc(ir.s, func(a, b sField) int {
-		// Sort hot fields before cold fields. This simplifies the code below.
-		switch {
-		case a.hot == b.hot:
-			return -cmp.Compare(a.layout.Align, b.layout.Align)
-		case a.hot:
-			return -1
-		default:
-			return 1
-		}
-	})
-
-	// Figure out the number of bit words we need. We use 32-bit words.
-	const bitsPerWord = 32
-	bitWords := (bits + bitsPerWord - 1) / bitsPerWord // Divide and round up.
-	ir.layout.BitWords = bitWords + whichWords
-
-	ir.hot = layout.Size[dynamic.Message]()
-	ir.hot += (bitWords + whichWords) * 4
-
-	ir.cold = layout.Size[dynamic.Cold]()
-
-	var nextBit uint32
-	nextWhichWord := uint32(ir.hot - whichWords*4)
-	for i := range ir.s {
-		sf := &ir.s[i]
-		if sf.layout.Align == 0 {
-			continue
-		}
-
-		// Allocate bit and byte storage for this field.
-		size := &ir.hot
-		if !sf.hot {
-			size = &ir.cold
-		}
-
-		_, up := unsafe2.Addr[byte](*size).Misalign(sf.layout.Align)
-		*size += up
-		if debug.Enabled && up > 0 {
-			// Note alignment padding required for the previous field.
-			if i == 0 && sf.hot {
-				ir.layout.BitWords += up / 4
-			} else if ir.s[i-1].hot == sf.hot {
-				f := ir.layout.Fields
-				f[len(f)-1].Padding = uint32(up)
-			}
-		}
-
-		sf.offset.Data = int32(*size)
-		if !sf.hot {
-			sf.offset.Data = ^sf.offset.Data
-		}
-		*size += sf.layout.Size
-
-		if sf.bits > 0 {
-			sf.offset.Bit = nextBit
-			nextBit += sf.bits
-		}
-
-		oneof := sf.tIdx != nil && ir.t[sf.tIdx[0]].arch.Oneof
-		if oneof {
-			sf.offset.Bit = nextWhichWord
-			nextWhichWord += 4
-		}
-
-		// Copy the offset information into each field that uses this struct
-		// slot.
-		for _, j := range sf.tIdx {
-			ir.t[j].offset = sf.offset
-			if oneof {
-				ir.t[j].offset.Number = uint32(ir.t[j].d.Number())
-			}
-		}
-
-		if debug.Enabled && sf.tIdx != nil {
-			index := sf.tIdx[0]
-			if ir.t[index].arch.Oneof {
-				index = ^ir.t[index].d.ContainingOneof().Index()
-			}
-
-			ir.layout.Fields = append(ir.layout.Fields, tdp.FieldLayout{
-				Size:   uint32(sf.layout.Size),
-				Align:  uint32(sf.layout.Align),
-				Bits:   sf.bits,
-				Index:  index,
-				Offset: sf.offset,
-			})
-		}
-	}
-
-	if ir.hot > math.MaxInt32 {
-		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", md.FullName(), ir.hot, math.MaxInt32))
-	}
-	if ir.cold > math.MaxInt32 {
-		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", md.FullName(), ir.cold, math.MaxInt32))
-	}
-
-	if debug.Enabled {
-		// Print the resulting layout for this struct.
-		c.log("layout", "%s, %d/%d\n%v", ir.d.FullName(), ir.hot, ir.cold,
-			debug.Formatter(func(buf fmt.State) {
-				start := layout.Size[dynamic.Message]()
-				fmt.Fprintf(buf, "  %#04x(-)[%d:4:0] [%d]uint32\n", start, 4*ir.layout.BitWords, ir.layout.BitWords)
-				for _, sf := range ir.s {
-					if sf.tIdx == nil {
-						continue
-					}
-
-					tf := ir.t[sf.tIdx[0]]
-					name := tf.d.Name()
-					if tf.arch.Oneof {
-						name = "oneof:" + tf.d.ContainingOneof().Name()
-					}
-
-					fmt.Fprintf(buf, "  %#04x", sf.offset.Data)
-					if sf.bits > 0 {
-						fmt.Fprintf(buf, "(%v)", sf.offset.Bit)
-					} else {
-						fmt.Fprint(buf, "(-)")
-					}
-					fmt.Fprintf(buf, "[%d:%d:%d]", sf.layout.Size, sf.layout.Align, sf.bits)
-
-					fmt.Fprintf(buf, " %s: ", name)
-					switch tf.d.Cardinality() {
-					case protoreflect.Optional:
-						if tf.d.HasOptionalKeyword() {
-							fmt.Fprint(buf, "optional ")
-						}
-					case protoreflect.Repeated:
-						fmt.Fprint(buf, "repeated ")
-					case protoreflect.Required:
-						fmt.Fprint(buf, "required ")
-					}
-					if m := tf.d.Message(); m != nil {
-						fmt.Fprintf(buf, "%v (%v) ", m.FullName(), tf.d.Kind())
-					} else if e := tf.d.Enum(); e != nil {
-						fmt.Fprintf(buf, "%v (%v) ", e.FullName(), tf.d.Kind())
-					} else {
-						fmt.Fprintf(buf, "%v ", tf.d.Kind())
-					}
-					fmt.Fprintln(buf)
-				}
-			}))
-	}
-
-	// Now, sort the parsers into the hot and cold sides. Stable sort is
-	// particularly important here!
-	slices.SortStableFunc(ir.p, func(a, b pField) int {
-		var aCold, bCold int
-		if !a.hot {
-			aCold = 1
-		}
-		if !b.hot {
-			bCold = 1
-		}
-		return cmp.Compare(aCold, bCold)
-	})
-
-	// Now, lay out control flow between parsers. Each parser points to the
-	// first one after it that refers to a different field or oneof, except
-	// for cold parsers, which always point to a hot parser.
-	//
-	// For this purpose, we build a table of the index of the first hot parser
-	// for each field/oneof. Oneof indices are entered as their complements.
-	table := make(map[int]int, len(ir.t))
-	idx := func(tIdx int) int {
-		tf := ir.t[tIdx]
-		if tf.arch.Oneof {
-			return ^tf.d.ContainingOneof().Index()
-		}
-		return tf.d.Index()
-	}
-
-	for i, pf := range ir.p {
-		if !pf.hot {
-			continue
-		}
-
-		j := idx(pf.tIdx)
-		if _, ok := table[j]; !ok {
-			table[j] = i
-		}
-	}
-
-	for i := range ir.p {
-		pf := &ir.p[i]
-
-		p := ir.t[pf.tIdx].arch.Parsers[pf.aIdx]
-		if p.Retry {
-			pf.next = i
-			continue
-		}
-
-		orig := idx(pf.tIdx)
-	loop:
-		for tIdx := pf.tIdx; tIdx < len(ir.t); tIdx++ {
-			i := idx(tIdx)
-			j, ok := table[i]
-			if !ok {
-				continue
-			}
-
-			// j is the index of *some* hot parser. This may be for the same
-			// field/oneof as the current index, so we need to keep incrementing
-			// it until it either:
-			//
-			// 1. Points to a cold parser, and hence it should just wrap around
-			//    to the first parser in the stream.
-			//
-			// 2. We hit a parser for a different field/oneof.
-			for ; ; j++ {
-				if j == len(ir.p) {
-					break loop // Wraparound.
-				}
-				next := ir.p[j]
-				if !next.hot {
-					break loop // We reached the cold section.
-				}
-
-				if idx(next.tIdx) != orig {
-					pf.next = j
-					break loop
-				}
-			}
-		}
-	}
-
-	if debug.Enabled {
-		// Print the parser CFG.
-		c.log("cfg", "%s\n%v", ir.d.FullName(), debug.Formatter(func(buf fmt.State) {
-			for i, pf := range ir.p {
-				tf := ir.t[pf.tIdx]
-				fmt.Fprintf(buf, "  #%d: %v#%d -> #%d\n", i, tf.d.Name(), pf.aIdx, pf.next)
-			}
-		}))
-	}
-
-	return ir
 }
 
 // codegen code-generates the analyzed contents of an intermediate
@@ -689,24 +443,6 @@ func (c *compiler) codegen(ir *ir) {
 		},
 	)
 	writeTable(c, tableSymbol{mSym}, []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}})
-}
-
-func (c *compiler) message(md protoreflect.MessageDescriptor) {
-	if _, ok := c.symbols[typeSymbol{md}]; ok {
-		return
-	}
-	c.totalTypes++
-
-	c.log("message", "%s", md.FullName())
-	ir := c.analyze(md)
-	c.codegen(ir)
-	c.layouts[ir.d] = ir.layout
-
-	for _, t := range ir.t {
-		if m := fieldMessage(t.d); m != nil {
-			c.message(m)
-		}
-	}
 }
 
 func fieldMessage(fd protoreflect.FieldDescriptor) protoreflect.MessageDescriptor {

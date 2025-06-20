@@ -66,13 +66,21 @@ func BenchmarkUnmarshal(b *testing.B) {
 					_ = proto.Unmarshal(specimen, m)
 				}
 			})
-			b.Run("amortize", func(b *testing.B) {
+			b.Run("zerocopy", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				for range b.N {
+					m := fastpb.New(test.Type.Fast)
+					_ = m.Unmarshal(specimen, fastpb.WithAllowAlias(true))
+				}
+			})
+			b.Run("arena", func(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
 				ctx := new(fastpb.Shared)
 				for range b.N {
 					m := ctx.New(test.Type.Fast)
-					_ = proto.Unmarshal(specimen, m)
+					_ = m.Unmarshal(specimen, fastpb.WithAllowAlias(true))
 					ctx.Free()
 				}
 			})

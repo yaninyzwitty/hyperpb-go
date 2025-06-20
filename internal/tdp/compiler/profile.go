@@ -33,6 +33,9 @@ type FieldSite struct {
 type FieldProfile struct {
 	// How likely this field is to be seen on the wire, from 0 to 1.
 	DecodeProbability float64
+
+	// Should this field assume it never sees non-UTF-8 data?
+	AssumeUTF8 bool
 }
 
 // DefaultProfile returns the default profile for a field.

@@ -38,18 +38,18 @@ func SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile
 	od := fd.ContainingOneof()
 	switch {
 	case fd.IsMap():
-		k := fieldKind(fd.MapKey())
-		v := fieldKind(fd.MapValue())
+		k := fieldKind(fd.MapKey(), prof)
+		v := fieldKind(fd.MapValue(), prof)
 		a = mapFields[k][v]
 	case fd.IsList():
-		a = repeatedFields[fieldKind(fd)]
+		a = repeatedFields[fieldKind(fd, prof)]
 	case od != nil && od.Fields().Len() > 1:
 		// One-element oneofs are treated like optional fields.
-		a = oneofFields[fieldKind(fd)]
+		a = oneofFields[fieldKind(fd, prof)]
 	case fd.HasPresence():
-		a = optionalFields[fieldKind(fd)]
+		a = optionalFields[fieldKind(fd, prof)]
 	default:
-		a = singularFields[fieldKind(fd)]
+		a = singularFields[fieldKind(fd, prof)]
 	}
 
 	return a
@@ -58,11 +58,11 @@ func SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile
 // fieldKind extracts the field kind from a descriptor.
 //
 // This returns negative values for "custom" kinds.
-func fieldKind(fd protoreflect.FieldDescriptor) protoreflect.Kind {
+func fieldKind(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile) protoreflect.Kind {
 	switch k := fd.Kind(); k {
 	case protoreflect.StringKind:
 		fd2, ok := fd.(interface{ EnforceUTF8() bool })
-		if fd.Syntax() == protoreflect.Proto3 || (ok && fd2.EnforceUTF8()) {
+		if !prof.AssumeUTF8 && (fd.Syntax() == protoreflect.Proto3 || (ok && fd2.EnforceUTF8())) {
 			return protoreflect.StringKind
 		}
 		return proto2StringKind

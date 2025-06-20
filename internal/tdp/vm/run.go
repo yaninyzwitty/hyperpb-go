@@ -38,6 +38,12 @@ type Options struct {
 
 	// Maximum recursion depth.
 	MaxDepth int
+
+	// If set, unknown fields are discarded.
+	DiscardUnknown bool
+
+	// If set, the input data will not be copied before the parse begins.
+	AllowAlias bool
 }
 
 // NewOptions returns the default settings for [Options].
@@ -67,7 +73,7 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	p3 := p3Pool.Get()
 	p3.Options = options
 
-	m.Shared.Src = conditionInputBuffer(data, false)
+	m.Shared.Src = conditionInputBuffer(data, !p3.AllowAlias)
 	m.Shared.Len = len(data)
 	// The arena keeps m.context alive, so we don't need to KeepAlive src.
 
@@ -384,7 +390,7 @@ func handleUnknown(p1 P1, p2 P2, tag2 uint64) (P1, P2) {
 	}
 	p1 = p1.Advance(m)
 
-	if !p2.Type().DiscardUnknown {
+	if !p2.P3().DiscardUnknown && !p2.Type().DiscardUnknown {
 		r := zc.New(p1.Src(), start.AssertValid(), int(p1.PtrAddr-start))
 		cold := p2.Message().MutableCold()
 		if cold.Unknown.Len() > 0 {

@@ -41,3 +41,19 @@ extend Extensions {
 
   repeated Extensions z = 50;
 }
+
+message Required {
+  message Empty {}
+
+  // buf:lint:ignore FIELD_NOT_REQUIRED
+  required int32 x = 1;
+  optional Required y = 2;
+  // buf:lint:ignore FIELD_NOT_REQUIRED
+  required Empty z = 3;
+}
+
+message DependsOnRequired {
+  optional Required a = 1;
+  repeated Required b = 2;
+  map<int32, Required> c = 3;
+}

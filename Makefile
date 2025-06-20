@@ -100,7 +100,7 @@ build: generate ## Build all packages
 .PHONY: lint
 lint: $(BIN)/golangci-lint ## Lint
 	$(GO) vet -unsafeptr=false ./...
-	$(BIN)/golangci-lint run \
+	$(BIN)/golangci-lint -v run \
 		--timeout 3m0s \
 		--modules-download-mode=readonly
 

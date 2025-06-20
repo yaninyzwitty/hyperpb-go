@@ -75,6 +75,164 @@ func (*Extensions) Descriptor() ([]byte, []int) {
 	return file_test_proto2_proto_rawDescGZIP(), []int{0}
 }
 
+type Required struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// buf:lint:ignore FIELD_NOT_REQUIRED
+	X *int32    `protobuf:"varint,1,req,name=x" json:"x,omitempty"`
+	Y *Required `protobuf:"bytes,2,opt,name=y" json:"y,omitempty"`
+	// buf:lint:ignore FIELD_NOT_REQUIRED
+	Z             *Required_Empty `protobuf:"bytes,3,req,name=z" json:"z,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Required) Reset() {
+	*x = Required{}
+	mi := &file_test_proto2_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Required) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Required) ProtoMessage() {}
+
+func (x *Required) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Required.ProtoReflect.Descriptor instead.
+func (*Required) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Required) GetX() int32 {
+	if x != nil && x.X != nil {
+		return *x.X
+	}
+	return 0
+}
+
+func (x *Required) GetY() *Required {
+	if x != nil {
+		return x.Y
+	}
+	return nil
+}
+
+func (x *Required) GetZ() *Required_Empty {
+	if x != nil {
+		return x.Z
+	}
+	return nil
+}
+
+type DependsOnRequired struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	A             *Required              `protobuf:"bytes,1,opt,name=a" json:"a,omitempty"`
+	B             []*Required            `protobuf:"bytes,2,rep,name=b" json:"b,omitempty"`
+	C             map[int32]*Required    `protobuf:"bytes,3,rep,name=c" json:"c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DependsOnRequired) Reset() {
+	*x = DependsOnRequired{}
+	mi := &file_test_proto2_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DependsOnRequired) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DependsOnRequired) ProtoMessage() {}
+
+func (x *DependsOnRequired) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DependsOnRequired.ProtoReflect.Descriptor instead.
+func (*DependsOnRequired) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DependsOnRequired) GetA() *Required {
+	if x != nil {
+		return x.A
+	}
+	return nil
+}
+
+func (x *DependsOnRequired) GetB() []*Required {
+	if x != nil {
+		return x.B
+	}
+	return nil
+}
+
+func (x *DependsOnRequired) GetC() map[int32]*Required {
+	if x != nil {
+		return x.C
+	}
+	return nil
+}
+
+type Required_Empty struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Required_Empty) Reset() {
+	*x = Required_Empty{}
+	mi := &file_test_proto2_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Required_Empty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Required_Empty) ProtoMessage() {}
+
+func (x *Required_Empty) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Required_Empty.ProtoReflect.Descriptor instead.
+func (*Required_Empty) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{1, 0}
+}
+
 var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
 		ExtendedType:  (*Extensions)(nil),
@@ -248,7 +406,19 @@ const file_test_proto2_proto_rawDesc = "" +
 	"\n" +
 	"\x11test/proto2.proto\x12\vfastpb.test\"\x16\n" +
 	"\n" +
-	"Extensions*\b\b\x01\x10\x80\x80\x80\x80\x02:'\n" +
+	"Extensions*\b\b\x01\x10\x80\x80\x80\x80\x02\"q\n" +
+	"\bRequired\x12\f\n" +
+	"\x01x\x18\x01 \x02(\x05R\x01x\x12#\n" +
+	"\x01y\x18\x02 \x01(\v2\x15.fastpb.test.RequiredR\x01y\x12)\n" +
+	"\x01z\x18\x03 \x02(\v2\x1b.fastpb.test.Required.EmptyR\x01z\x1a\a\n" +
+	"\x05Empty\"\xdf\x01\n" +
+	"\x11DependsOnRequired\x12#\n" +
+	"\x01a\x18\x01 \x01(\v2\x15.fastpb.test.RequiredR\x01a\x12#\n" +
+	"\x01b\x18\x02 \x03(\v2\x15.fastpb.test.RequiredR\x01b\x123\n" +
+	"\x01c\x18\x03 \x03(\v2%.fastpb.test.DependsOnRequired.CEntryR\x01c\x1aK\n" +
+	"\x06CEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12+\n" +
+	"\x05value\x18\x02 \x01(\v2\x15.fastpb.test.RequiredR\x05value:\x028\x01:'\n" +
 	"\x02b1\x12\x17.fastpb.test.Extensions\x18\x15 \x01(\x05R\x02b1:'\n" +
 	"\x02b2\x12\x17.fastpb.test.Extensions\x18\x16 \x01(\x03R\x02b2:'\n" +
 	"\x02b3\x12\x17.fastpb.test.Extensions\x18\x17 \x01(\rR\x02b3:'\n" +
@@ -279,33 +449,43 @@ func file_test_proto2_proto_rawDescGZIP() []byte {
 	return file_test_proto2_proto_rawDescData
 }
 
-var file_test_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_test_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_test_proto2_proto_goTypes = []any{
-	(*Extensions)(nil), // 0: fastpb.test.Extensions
+	(*Extensions)(nil),        // 0: fastpb.test.Extensions
+	(*Required)(nil),          // 1: fastpb.test.Required
+	(*DependsOnRequired)(nil), // 2: fastpb.test.DependsOnRequired
+	(*Required_Empty)(nil),    // 3: fastpb.test.Required.Empty
+	nil,                       // 4: fastpb.test.DependsOnRequired.CEntry
 }
 var file_test_proto2_proto_depIdxs = []int32{
-	0,  // 0: fastpb.test.b1:extendee -> fastpb.test.Extensions
-	0,  // 1: fastpb.test.b2:extendee -> fastpb.test.Extensions
-	0,  // 2: fastpb.test.b3:extendee -> fastpb.test.Extensions
-	0,  // 3: fastpb.test.b4:extendee -> fastpb.test.Extensions
-	0,  // 4: fastpb.test.b5:extendee -> fastpb.test.Extensions
-	0,  // 5: fastpb.test.b6:extendee -> fastpb.test.Extensions
-	0,  // 6: fastpb.test.b7:extendee -> fastpb.test.Extensions
-	0,  // 7: fastpb.test.b8:extendee -> fastpb.test.Extensions
-	0,  // 8: fastpb.test.b9:extendee -> fastpb.test.Extensions
-	0,  // 9: fastpb.test.b10:extendee -> fastpb.test.Extensions
-	0,  // 10: fastpb.test.b11:extendee -> fastpb.test.Extensions
-	0,  // 11: fastpb.test.b12:extendee -> fastpb.test.Extensions
-	0,  // 12: fastpb.test.b13:extendee -> fastpb.test.Extensions
-	0,  // 13: fastpb.test.b14:extendee -> fastpb.test.Extensions
-	0,  // 14: fastpb.test.b15:extendee -> fastpb.test.Extensions
-	0,  // 15: fastpb.test.z:extendee -> fastpb.test.Extensions
-	0,  // 16: fastpb.test.z:type_name -> fastpb.test.Extensions
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	16, // [16:17] is the sub-list for extension type_name
-	0,  // [0:16] is the sub-list for extension extendee
-	0,  // [0:0] is the sub-list for field type_name
+	1,  // 0: fastpb.test.Required.y:type_name -> fastpb.test.Required
+	3,  // 1: fastpb.test.Required.z:type_name -> fastpb.test.Required.Empty
+	1,  // 2: fastpb.test.DependsOnRequired.a:type_name -> fastpb.test.Required
+	1,  // 3: fastpb.test.DependsOnRequired.b:type_name -> fastpb.test.Required
+	4,  // 4: fastpb.test.DependsOnRequired.c:type_name -> fastpb.test.DependsOnRequired.CEntry
+	1,  // 5: fastpb.test.DependsOnRequired.CEntry.value:type_name -> fastpb.test.Required
+	0,  // 6: fastpb.test.b1:extendee -> fastpb.test.Extensions
+	0,  // 7: fastpb.test.b2:extendee -> fastpb.test.Extensions
+	0,  // 8: fastpb.test.b3:extendee -> fastpb.test.Extensions
+	0,  // 9: fastpb.test.b4:extendee -> fastpb.test.Extensions
+	0,  // 10: fastpb.test.b5:extendee -> fastpb.test.Extensions
+	0,  // 11: fastpb.test.b6:extendee -> fastpb.test.Extensions
+	0,  // 12: fastpb.test.b7:extendee -> fastpb.test.Extensions
+	0,  // 13: fastpb.test.b8:extendee -> fastpb.test.Extensions
+	0,  // 14: fastpb.test.b9:extendee -> fastpb.test.Extensions
+	0,  // 15: fastpb.test.b10:extendee -> fastpb.test.Extensions
+	0,  // 16: fastpb.test.b11:extendee -> fastpb.test.Extensions
+	0,  // 17: fastpb.test.b12:extendee -> fastpb.test.Extensions
+	0,  // 18: fastpb.test.b13:extendee -> fastpb.test.Extensions
+	0,  // 19: fastpb.test.b14:extendee -> fastpb.test.Extensions
+	0,  // 20: fastpb.test.b15:extendee -> fastpb.test.Extensions
+	0,  // 21: fastpb.test.z:extendee -> fastpb.test.Extensions
+	0,  // 22: fastpb.test.z:type_name -> fastpb.test.Extensions
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	22, // [22:23] is the sub-list for extension type_name
+	6,  // [6:22] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_test_proto2_proto_init() }
@@ -319,7 +499,7 @@ func file_test_proto2_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_proto2_proto_rawDesc), len(file_test_proto2_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   5,
 			NumExtensions: 16,
 			NumServices:   0,
 		},

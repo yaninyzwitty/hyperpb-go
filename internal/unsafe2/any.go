@@ -53,6 +53,12 @@ func AnyBytes(v any) []byte {
 	return unsafe.Slice(p, reflect.TypeOf(v).Size())
 }
 
+// MakeAny builds an any out of the given data.
+func MakeAny(typ uintptr, data *byte) any {
+	raw := iface{typ, data}
+	return BitCast[any](raw)
+}
+
 // InlinedAny returns whether converting T into an interface requires calling
 // the allocator.
 //

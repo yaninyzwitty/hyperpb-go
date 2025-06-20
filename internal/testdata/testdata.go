@@ -67,6 +67,7 @@ type Profile []struct {
 	Pattern *regexp.Regexp `yaml:"pattern"`
 	Profile struct {
 		DecodeProbability float64 `yaml:"parse"`
+		AssumeUTF8        bool    `yaml:"assume_utf8"`
 	} `yaml:"-,inline"`
 }
 

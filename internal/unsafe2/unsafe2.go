@@ -82,6 +82,11 @@ func ByteAdd[P ~*E, E any, I Int](p P, n I) P {
 	return P(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + uintptr(n)))
 }
 
+// Sub computes the difference between two pointers, without scaling.
+func ByteSub[P ~*E, E any](p1, p2 P) int {
+	return int(uintptr(unsafe.Pointer(p1)) - uintptr(unsafe.Pointer(p2)))
+}
+
 // ByteLoad loads a value of the given type at the given byte offset.
 func ByteLoad[T any, P ~*E, E any, I Int](p P, n I) T {
 	return *Cast[T](ByteAdd(p, n))

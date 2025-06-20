@@ -70,7 +70,7 @@ func (s *Shared) New(ty *tdp.Type) *Message {
 	data := s.arena.Alloc(int(ty.Size))
 	m := unsafe2.Cast[Message](data)
 	unsafe2.StoreNoWB(&m.Shared, s)
-	m.TypeOffset = uint32(unsafe2.Sub(ty, s.lib.Base))
+	m.TypeOffset = uint32(unsafe2.ByteSub(ty, s.lib.Base))
 	m.ColdIndex = -1
 	return m
 }

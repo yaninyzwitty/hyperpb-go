@@ -15,6 +15,8 @@
 package fastpb
 
 import (
+	"errors"
+	"fmt"
 	"math"
 	"unsafe"
 
@@ -28,6 +30,7 @@ import (
 	"github.com/bufbuild/fastpb/internal/tdp/thunks"
 	"github.com/bufbuild/fastpb/internal/tdp/vm"
 	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/fastpb/internal/unsafe2/protoreflect2"
 )
 
 // Message is a dynamic message value constructed with this package.
@@ -78,15 +81,32 @@ type UnmarshalOption func(*vm.Options)
 // Large values may improve performance for common protos, but introduce a
 // potential DoS vector due to quadratic worst case performance. The default
 // is 4.
-func WithMaxDecodeMisses(n int) UnmarshalOption {
-	return func(opts *vm.Options) { opts.MaxMisses = n }
+func WithMaxDecodeMisses(maxMisses int) UnmarshalOption {
+	return func(opts *vm.Options) { opts.MaxMisses = maxMisses }
 }
 
 // WithMaxDepth sets the maximum recursion depth for the parser.
 //
 // Setting a large value enables potential DoS vectors.
-func WithMaxDepth(n int) UnmarshalOption {
-	return func(opts *vm.Options) { opts.MaxDepth = min(n, math.MaxUint32) }
+func WithMaxDepth(depth int) UnmarshalOption {
+	return func(opts *vm.Options) { opts.MaxDepth = min(depth, math.MaxUint32) }
+}
+
+// WithDiscardUnknown sets whether unknown fields should be discarded while
+// parsing. Analogous to [proto.UnmarshalOptions].
+//
+// Setting this option will break round-tripping, but will also improve parse
+// speeds of messages with many unknown fields.
+func WithDiscardUnknown(discard bool) UnmarshalOption {
+	return func(opts *vm.Options) { opts.DiscardUnknown = discard }
+}
+
+// WithAllowAlias sets whether aliasing the input buffer is allowed. This avoids
+// an expensive copy at the start of parsing.
+//
+// Analogous to [protoimpl.UnmarshalAliasBuffer].
+func WithAllowAlias(allow bool) UnmarshalOption {
+	return func(opts *vm.Options) { opts.AllowAlias = allow }
 }
 
 // Shared returns state shared by this message and its submessages.
@@ -234,6 +254,67 @@ func (m *Message) Clear(protoreflect.FieldDescriptor) {
 // Implements an interface used to speed up [proto.Reset].
 func (m *Message) Reset() { m.Clear(nil) }
 
+// Initialized returns whether m contains any unset required fields.
+func (m *Message) Initialized() error {
+	if !m.IsValid() {
+		return errInvalid
+	}
+
+	r := m.impl.Type().Required
+	if r == nil {
+		// Fast path!
+		return nil
+	}
+
+	for _, idx := range r {
+		if idx >= 0 {
+			// This field is guaranteed to be singular.
+			f := m.impl.Type().ByIndex(int(idx))
+			v := f.Get(unsafe.Pointer(m))
+			if !v.IsValid() {
+				return fmt.Errorf(
+					"fastpb: uninitialized required field: %v",
+					m.impl.Type().FieldDescriptors[idx],
+				)
+			}
+			if _, empty := v.Interface().(empty.Message); empty {
+				return fmt.Errorf(
+					"fastpb: uninitialized required field: %v",
+					m.impl.Type().FieldDescriptors[idx],
+				)
+			}
+			continue
+		}
+
+		// This is a message field, which we need to recurse into.
+		f := m.impl.Type().ByIndex(int(^idx))
+		switch v := f.Get(unsafe.Pointer(m)).Interface().(type) {
+		case empty.Message:
+			continue
+		case *Message:
+			if err := v.Initialized(); err != nil {
+				return err
+			}
+		case protoreflect.List:
+			for i := range v.Len() {
+				m := protoreflect2.GetMessage[*Message](v.Get(i))
+				if err := m.Initialized(); err != nil {
+					return err
+				}
+			}
+		case protoreflect.Map:
+			for _, v := range v.Range {
+				m := protoreflect2.GetMessage[*Message](v)
+				if err := m.Initialized(); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
 // Get retrieves the value for a field.
 //
 // For unpopulated scalars, it returns the default value, where
@@ -375,17 +456,25 @@ func init() {
 // unmarshalShim implements [protoiface.Methods].Unmarshal.
 func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
 	m := in.Message.(*Message) //nolint:errcheck // Only called on *Message values.
-	err = m.Unmarshal(in.Buf)
+	err = m.Unmarshal(
+		in.Buf,
+		WithDiscardUnknown(in.Flags&protoiface.UnmarshalDiscardUnknown != 0),
+	)
+	if m.impl.Type().Required == nil {
+		out.Flags |= protoiface.UnmarshalInitialized
+	}
 	return out, err
 }
 
 // requiredShim implements [protoiface.Methods].CheckInitialized.
 func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInitializedOutput, err error) {
-	// Required fields are not real.
-	return out, nil
+	//nolint:errcheck // This conversion will never fail.
+	return out, in.Message.(*Message).Initialized()
 }
 
 var (
 	_ proto.Message        = new(Message)
 	_ protoreflect.Message = new(Message)
+
+	errInvalid = errors.New("fastpb: invalid message")
 )

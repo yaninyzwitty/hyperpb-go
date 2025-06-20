@@ -84,6 +84,7 @@ func (t *Type) Format(s fmt.State, verb rune) {
 	debug.Dict(
 		debug.Fprintf("%p", t),
 		"name", t.Aux.Descriptor.FullName(),
+		"methods", t.Aux.Methods,
 		"size", t.Size,
 		"count", t.Count,
 		"parser", debug.Fprintf("%p", t.Parser),
@@ -100,6 +101,11 @@ type Aux struct {
 	Descriptor       protoreflect.MessageDescriptor
 	Methods          protoiface.Methods
 	FieldDescriptors []protoreflect.FieldDescriptor
+
+	// Field indices that are required or contain required fields.
+	// Negative numbers are the complement of a message field which
+	// might contain required fields.
+	Required []int32
 }
 
 // TypeLayout is layout information for a [Type]. Only for debugging.
