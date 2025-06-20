@@ -19,25 +19,25 @@ syntax = "proto2";
 package fastpb.test;
 
 message Extensions {
-    extensions 1 to max;
+  extensions 1 to max;
 }
 
 extend Extensions {
-    optional int32 b1 = 21;
-    optional int64 b2 = 22;
-    optional uint32 b3 = 23;
-    optional uint64 b4 = 24;
-    optional sint32 b5 = 25;
-    optional sint64 b6 = 26;
-    optional fixed32 b7 = 27;
-    optional fixed64 b8 = 28;
-    optional sfixed32 b9 = 29;
-    optional sfixed64 b10 = 30;
-    optional float b11 = 31;
-    optional double b12 = 32;   
-    optional bool b13 = 33;
-    optional string b14 = 34;   
-    optional bytes b15 = 35;
+  optional int32 b1 = 21;
+  optional int64 b2 = 22;
+  optional uint32 b3 = 23;
+  optional uint64 b4 = 24;
+  optional sint32 b5 = 25;
+  optional sint64 b6 = 26;
+  optional fixed32 b7 = 27;
+  optional fixed64 b8 = 28;
+  optional sfixed32 b9 = 29;
+  optional sfixed64 b10 = 30;
+  optional float b11 = 31;
+  optional double b12 = 32;
+  optional bool b13 = 33;
+  optional string b14 = 34;
+  optional bytes b15 = 35;
 
-    repeated Extensions z = 50;
+  repeated Extensions z = 50;
 }

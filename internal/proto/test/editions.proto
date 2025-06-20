@@ -19,12 +19,12 @@ edition = "2023";
 package fastpb.test;
 
 message Proto2Strings {
-    string s1 = 1 [features.utf8_validation = NONE];
-    repeated string s2 = 2 [features.utf8_validation = NONE];
-    map<string, string> s3 = 3 [features.utf8_validation = NONE];
+  string s1 = 1 [features.utf8_validation = NONE];
+  repeated string s2 = 2 [features.utf8_validation = NONE];
+  map<string, string> s3 = 3 [features.utf8_validation = NONE];
 
-    oneof o {
-        string s4 = 4 [features.utf8_validation = NONE];
-        int32 z = 5;
-    }
+  oneof o {
+    string s4 = 4 [features.utf8_validation = NONE];
+    int32 z = 5;
+  }
 }

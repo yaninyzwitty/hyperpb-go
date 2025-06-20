@@ -6,6 +6,8 @@ deps:
 lint:
   use:
     - STANDARD
+  ignore:
+    - internal/proto/test/descriptor.proto
 breaking:
   use:
     - WIRE_JSON

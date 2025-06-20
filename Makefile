@@ -101,20 +101,19 @@ build: generate ## Build all packages
 lint: $(BIN)/golangci-lint ## Lint
 	$(GO) vet -unsafeptr=false ./...
 	$(BIN)/golangci-lint run \
-		--modules-download-mode=readonly \
-		--timeout=3m0s
+		--timeout 3m0s \
+		--modules-download-mode=readonly
 
 .PHONY: lintfix
 lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 	$(BIN)/golangci-lint run \
+		--timeout 3m0s \
 		--modules-download-mode=readonly \
-		--timeout=3m0s \
 		--fix
 
 .PHONY: generate
-generate: $(BIN)/buf $(BIN)/license-header ## Regenerate code and licenses
+generate: internal/gen/test/*.pb.go $(BIN)/license-header ## Regenerate code and licenses
 	$(GO) generate ./...
-	@#$(BIN)/buf generate --clean
 	$(BIN)/license-header \
 		--license-type apache \
 		--copyright-holder "Buf Technologies, Inc." \
@@ -131,6 +130,11 @@ upgrade: ## Upgrade dependencies
 checkgenerate:
 	@# Used in CI to verify that `make generate` doesn't produce a diff.
 	git --no-pager diff --exit-code >&2
+
+internal/gen/test/*.pb.go: $(BIN)/buf internal/proto/test/*.proto
+	$(BIN)/buf generate --clean
+	$(BIN)/buf generate --template buf.gen.vt.yaml \
+		--exclude-path internal/proto/test/editions.proto # Work around a bug.
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)

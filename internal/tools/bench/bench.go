@@ -18,6 +18,7 @@ package main
 
 import (
 	"cmp"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
@@ -54,6 +55,18 @@ func common(a, b string) int {
 	return i
 }
 
+func map2slice[K cmp.Ordered, V any](s []K, m map[K]V, sort func(K, K) int) []K {
+	n := len(s)
+	for k := range m {
+		s = append(s, k)
+	}
+	if sort == nil {
+		sort = cmp.Compare[K]
+	}
+	slices.SortStableFunc(s[n:], sort)
+	return s
+}
+
 func main() {
 	argv0, ok := os.LookupEnv("GO")
 	if !ok {
@@ -83,10 +96,14 @@ func main() {
 		column string
 		row    int
 	}
+	type value struct {
+		pretty string
+		exact  float64
+	}
 
 	names := []string{}
 	prettyNames := []string{}
-	values := map[key]string{}
+	values := map[key]value{}
 	order := map[string]int{}
 	units := map[string]string{}
 	var i int
@@ -143,7 +160,7 @@ func main() {
 					continue
 				}
 
-				value, err := strconv.ParseFloat(num, 64)
+				v, err := strconv.ParseFloat(num, 64)
 				if err != nil {
 					panic(err)
 				}
@@ -155,11 +172,11 @@ func main() {
 				case "ns":
 					column = "time"
 					unit = "s"
-					value *= 1e-9
+					v *= 1e-9
 				case "MB/s":
 					column = "throughput"
 					unit = "B/s"
-					value *= 1e6
+					v *= 1e6
 				case "B":
 					column = "memory"
 				case "allocs":
@@ -173,20 +190,21 @@ func main() {
 				units[column] = unit
 
 				// Pick the largest unit prefix smaller than field.units.
-				if value == 0 {
+				exact := v
+				if v == 0 {
 					unit = " " + unit
 				} else {
 					for _, prefix := range prefixes {
-						if prefix.mult <= value {
-							value /= prefix.mult
+						if prefix.mult <= v {
+							v /= prefix.mult
 							unit = prefix.prefix + unit
 							break
 						}
 					}
 				}
 
-				cell := fmt.Sprintf("%.03f %v", value, unit)
-				values[key{column, i}] = cell
+				cell := fmt.Sprintf("%.03f %v", v, unit)
+				values[key{column, i}] = value{cell, exact}
 				order[column] = max(j, order[column])
 			}
 		}
@@ -194,12 +212,7 @@ func main() {
 		i++
 	}
 
-	// Lay out the table.
-	header := []string{""}
-	for k := range order {
-		header = append(header, k)
-	}
-	slices.SortStableFunc(header[1:], func(a, b string) int {
+	props := map2slice(nil, order, func(a, b string) int {
 		x, y := order[a], order[b]
 		if x != y {
 			return x - y
@@ -207,15 +220,67 @@ func main() {
 		return cmp.Compare(a, b)
 	})
 
+	// Lay out a csv file. We want to pick the last component of
+	// each benchmark as the columns of the CSV.
+	cols := map[string]int{}
+	for i, name := range names {
+		last := name[strings.LastIndex(name, "/")+1:]
+		if _, ok := cols[last]; !ok {
+			cols[last] = i
+		}
+	}
+
+	subtests := map2slice(nil, cols, func(a, b string) int {
+		return cmp.Compare(cols[a], cols[b])
+	})
+
+	header := []string{"benchmark"}
+	for _, prop := range props {
+		for _, subtest := range subtests {
+			header = append(header, prop+"/"+subtest)
+		}
+	}
+
+	cells := [][]string{header}
+
+	rows := map[string]int{}
+	for i, name := range names {
+		name := strings.TrimPrefix(name, "./")
+		cut := strings.LastIndex(name, "/")
+		name, subtest := name[:cut], name[cut+1:]
+
+		idx, ok := rows[name]
+		if !ok {
+			idx = len(cells)
+			cells = append(cells,
+				append([]string{name}, make([]string, len(props)*len(cols))...),
+			)
+			rows[name] = idx
+		}
+
+		for j, prop := range props {
+			value := values[key{prop, i}]
+			col := j*len(cols) + cols[subtest] + 1
+			cells[idx][col] = strconv.FormatFloat(value.exact, 'f', -1, 64)
+		}
+	}
+
+	out, _ := os.Create("fastpb.csv")
+	_ = csv.NewWriter(out).WriteAll(cells)
+
+	// Lay out the header.
+	header = append([]string{"benchmark"}, props...)
+
+	// Lay out the pretty table.
 	table := [][]string{header}
 	for i, name := range prettyNames {
 		fields := []string{name}
-		for _, k := range header[1:] {
+		for _, k := range props {
 			value := values[key{k, i}]
-			if value == "" {
-				value = "n/a  " + units[k]
+			if value.pretty == "" {
+				value.pretty = "n/a  " + units[k]
 			}
-			fields = append(fields, value)
+			fields = append(fields, value.pretty)
 		}
 		table = append(table, fields)
 	}
@@ -245,5 +310,6 @@ func main() {
 		}
 		fmt.Println()
 	}
+
 	fmt.Println()
 }
