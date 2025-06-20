@@ -118,6 +118,11 @@ type TypeLayout struct {
 type TypeParser struct {
 	_ unsafe2.NoCopy
 
+	// Maps offsets to field tags for the first 128 field tags. A value of
+	// -1 means that if there is a parser at that position, it is farther away
+	// than the first 256 fields.
+	TagLUT [128]uint8
+
 	TypeOffset     uint32 // The type that this parser parses.
 	DiscardUnknown bool   // Should unknown fields be kept?
 

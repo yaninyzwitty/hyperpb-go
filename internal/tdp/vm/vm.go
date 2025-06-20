@@ -38,9 +38,6 @@ import (
 	"github.com/bufbuild/fastpb/internal/zc"
 )
 
-// 29 total bits.
-const maxFieldTag = 0b00001111_01111111_01111111_01111111_01111111
-
 var (
 	stackPool = sync2.Pool[[]frame]{}
 	p3Pool    = sync2.Pool[p3]{
@@ -76,6 +73,11 @@ var (
 // Note that returning no values is slower than returning the parser state: this
 // is because it will force the caller to spill the parser state across the
 // call.
+//
+// The Go register ABI means P1 and P2 occupy the following registers:
+//
+//	x86:     rax, rbx, rcx, rdi, rsi,  r8,  r9, r10
+//	aarch64:  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7
 type P1 struct {
 	PtrAddr unsafe2.Addr[byte]
 	EndAddr unsafe2.Addr[byte] // One past the end of the stream.
@@ -177,6 +179,8 @@ func (p1 P1) Fail(p2 P2, err ErrorCode) {
 	}
 
 	_ = *(*byte)(nil) // Trigger a panic without calling runtime.gopanic. Linters hate this!
+	for {             //nolint:staticcheck // This code is unreachable.
+	}
 }
 
 // Log logs debugging information during a parse.
@@ -222,6 +226,8 @@ func (p1 P1) Buf() []byte {
 }
 
 func (p1 P1) Advance(n int) P1 {
+	debug.Assert(p1.Len() >= n, "parser overflow")
+
 	p1.PtrAddr = p1.PtrAddr.Add(n)
 	return p1
 }

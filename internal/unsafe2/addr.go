@@ -41,6 +41,11 @@ func (a Addr[T]) Add(n int) Addr[T] {
 	return a + Addr[T](n*layout.Size[T]())
 }
 
+// ByteAdd adds the given unscaled offset to this address.
+func (a Addr[T]) ByteAdd(n int) Addr[T] {
+	return a + Addr[T](n)
+}
+
 // Add adds the given offset to this address.
 func (a Addr[T]) Sub(b Addr[T]) int {
 	return int(a-b) / layout.Size[T]()

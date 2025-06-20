@@ -125,6 +125,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 		}
 	}
 
+	c.log("bytes", "%d", len(c.buf))
 	if len(c.buf) > math.MaxInt32 {
 		panic(fmt.Errorf("tdp: type has too many dependencies: %s", md.FullName()))
 	}
@@ -312,7 +313,7 @@ func (c *compiler) codegen(ir *ir) {
 	// Append the field number table.
 	writeTable(c, tableSymbol{tSym}, numbers)
 
-	c.write(pSym,
+	offset := c.write(pSym,
 		tdp.TypeParser{},
 		relo{
 			symbol:   tSym,
@@ -399,11 +400,13 @@ func (c *compiler) codegen(ir *ir) {
 		)
 	}
 
+	// Write the fast-lookup lut.
+	writeLUT(c, offset, numbers)
+
 	// Append the parser's field number table.
 	writeTable(c, tableSymbol{pSym}, numbers)
 
-	// Write the map entry parser.
-	c.write(mSym,
+	offset = c.write(mSym,
 		tdp.TypeParser{
 			DiscardUnknown: true,
 		},
@@ -422,7 +425,10 @@ func (c *compiler) codegen(ir *ir) {
 				unsafe.Offsetof(tdp.FieldParser{}.NextOk),
 		},
 	)
+
+	// Write the map entry parser.
 	const mapValue = 0x2<<3 | tdp.Tag(protowire.BytesType) // Field number 2 with bytes type (so, 0b10010).
+	numbers = []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}}
 	c.write(
 		fieldParserSymbol{parser: mSym, index: 0},
 		tdp.FieldParser{
@@ -442,7 +448,12 @@ func (c *compiler) codegen(ir *ir) {
 			offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
 		},
 	)
-	writeTable(c, tableSymbol{mSym}, []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}})
+
+	// Write the fast-lookup lut.
+	writeLUT(c, offset, numbers)
+
+	// Append the parser's field number table.
+	writeTable(c, tableSymbol{mSym}, numbers)
 }
 
 func fieldMessage(fd protoreflect.FieldDescriptor) protoreflect.MessageDescriptor {
@@ -488,6 +499,24 @@ func (c *compiler) write(symbol, v any, relos ...relo) int {
 
 		return len(b), append(b, unsafe2.AnyBytes(v)...)
 	}, relos...)
+}
+
+func writeLUT(c *compiler, offset int, entries []swiss.Entry[int32, uint32]) {
+	offset += int(unsafe.Offsetof(tdp.TypeParser{}.TagLUT))
+	lut := (*[128]uint8)(c.buf[offset : offset+128])
+
+	for i := range lut {
+		lut[i] = 0xff
+	}
+
+	for _, e := range entries {
+		if e.Key >= 0 && e.Key < 128 && e.Value <= 0xff {
+			c.log("lut write", "%#x->%#x", e.Key, e.Value)
+			lut[byte(e.Key)] = uint8(e.Value)
+		}
+	}
+
+	c.log("lut", "%x", lut)
 }
 
 func writeTable[V comparable](c *compiler, symbol any, entries []swiss.Entry[int32, V]) int {

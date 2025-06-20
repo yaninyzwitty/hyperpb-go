@@ -132,6 +132,32 @@ func (m *Scalars) CloneMessageVT() proto.Message {
 	return m.CloneVT()
 }
 
+func (m *Numbers) CloneVT() *Numbers {
+	if m == nil {
+		return (*Numbers)(nil)
+	}
+	r := new(Numbers)
+	r.A1 = m.A1
+	r.A2 = m.A2
+	r.A3 = m.A3
+	r.A4 = m.A4
+	r.A5 = m.A5
+	r.A6 = m.A6
+	r.A7 = m.A7
+	r.A8 = m.A8
+	r.A9 = m.A9
+	r.Aa = m.Aa
+	if len(m.unknownFields) > 0 {
+		r.unknownFields = make([]byte, len(m.unknownFields))
+		copy(r.unknownFields, m.unknownFields)
+	}
+	return r
+}
+
+func (m *Numbers) CloneMessageVT() proto.Message {
+	return m.CloneVT()
+}
+
 func (m *Repeated) CloneVT() *Repeated {
 	if m == nil {
 		return (*Repeated)(nil)
@@ -1922,6 +1948,52 @@ func (this *Scalars) EqualVT(that *Scalars) bool {
 
 func (this *Scalars) EqualMessageVT(thatMsg proto.Message) bool {
 	that, ok := thatMsg.(*Scalars)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *Numbers) EqualVT(that *Numbers) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.A1 != that.A1 {
+		return false
+	}
+	if this.A2 != that.A2 {
+		return false
+	}
+	if this.A3 != that.A3 {
+		return false
+	}
+	if this.A4 != that.A4 {
+		return false
+	}
+	if this.A5 != that.A5 {
+		return false
+	}
+	if this.A6 != that.A6 {
+		return false
+	}
+	if this.A7 != that.A7 {
+		return false
+	}
+	if this.A8 != that.A8 {
+		return false
+	}
+	if this.A9 != that.A9 {
+		return false
+	}
+	if this.Aa != that.Aa {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *Numbers) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*Numbers)
 	if !ok {
 		return false
 	}
@@ -5081,6 +5153,129 @@ func (m *Scalars) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A2))
 		i--
 		dAtA[i] = 0x10
+	}
+	if m.A1 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A1))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Numbers) MarshalVT() (dAtA []byte, err error) {
+	if m == nil {
+		return nil, nil
+	}
+	size := m.SizeVT()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBufferVT(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Numbers) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Numbers) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	if m == nil {
+		return 0, nil
+	}
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.unknownFields != nil {
+		i -= len(m.unknownFields)
+		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.Aa != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Aa))
+		i--
+		dAtA[i] = 0xf
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A9 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A9))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A8 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A8))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A7 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A7))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A6 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A6))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A5 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A5))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A4 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A4))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A3 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A3))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A2 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A2))
+		i--
+		dAtA[i] = 0x78
 	}
 	if m.A1 != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A1))
@@ -9708,6 +9903,129 @@ func (m *Scalars) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *Numbers) MarshalVTStrict() (dAtA []byte, err error) {
+	if m == nil {
+		return nil, nil
+	}
+	size := m.SizeVT()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBufferVTStrict(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Numbers) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Numbers) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	if m == nil {
+		return 0, nil
+	}
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.unknownFields != nil {
+		i -= len(m.unknownFields)
+		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.Aa != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Aa))
+		i--
+		dAtA[i] = 0xf
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A9 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A9))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A8 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A8))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A7 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A7))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A6 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A6))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xff
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A5 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A5))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A4 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A4))
+		i--
+		dAtA[i] = 0x7f
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.A3 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A3))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.A2 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A2))
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.A1 != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.A1))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *Repeated) MarshalVTStrict() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
@@ -14246,6 +14564,46 @@ func (m *Scalars) SizeVT() (n int) {
 	return n
 }
 
+func (m *Numbers) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.A1 != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.A1))
+	}
+	if m.A2 != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.A2))
+	}
+	if m.A3 != 0 {
+		n += 2 + protohelpers.SizeOfVarint(uint64(m.A3))
+	}
+	if m.A4 != 0 {
+		n += 2 + protohelpers.SizeOfVarint(uint64(m.A4))
+	}
+	if m.A5 != 0 {
+		n += 3 + protohelpers.SizeOfVarint(uint64(m.A5))
+	}
+	if m.A6 != 0 {
+		n += 3 + protohelpers.SizeOfVarint(uint64(m.A6))
+	}
+	if m.A7 != 0 {
+		n += 4 + protohelpers.SizeOfVarint(uint64(m.A7))
+	}
+	if m.A8 != 0 {
+		n += 4 + protohelpers.SizeOfVarint(uint64(m.A8))
+	}
+	if m.A9 != 0 {
+		n += 5 + protohelpers.SizeOfVarint(uint64(m.A9))
+	}
+	if m.Aa != 0 {
+		n += 5 + protohelpers.SizeOfVarint(uint64(m.Aa))
+	}
+	n += len(m.unknownFields)
+	return n
+}
+
 func (m *Repeated) SizeVT() (n int) {
 	if m == nil {
 		return 0
@@ -16737,6 +17095,247 @@ func (m *Scalars) UnmarshalVT(dAtA []byte) error {
 				m.B15 = []byte{}
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.unknownFields = append(m.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Numbers) UnmarshalVT(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return protohelpers.ErrIntOverflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Numbers: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Numbers: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A1", wireType)
+			}
+			m.A1 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A1 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A2", wireType)
+			}
+			m.A2 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A2 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A3", wireType)
+			}
+			m.A3 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A3 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2047:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A4", wireType)
+			}
+			m.A4 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A4 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2048:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A5", wireType)
+			}
+			m.A5 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A5 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 262143:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A6", wireType)
+			}
+			m.A6 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A6 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 262144:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A7", wireType)
+			}
+			m.A7 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A7 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 33554431:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A8", wireType)
+			}
+			m.A8 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A8 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 33554432:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A9", wireType)
+			}
+			m.A9 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A9 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 536870911:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Aa", wireType)
+			}
+			m.Aa = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Aa |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -38338,6 +38937,247 @@ func (m *Scalars) UnmarshalVTUnsafe(dAtA []byte) error {
 			}
 			m.B15 = dAtA[iNdEx:postIndex]
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.unknownFields = append(m.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Numbers) UnmarshalVTUnsafe(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return protohelpers.ErrIntOverflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Numbers: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Numbers: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A1", wireType)
+			}
+			m.A1 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A1 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A2", wireType)
+			}
+			m.A2 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A2 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A3", wireType)
+			}
+			m.A3 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A3 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2047:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A4", wireType)
+			}
+			m.A4 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A4 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2048:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A5", wireType)
+			}
+			m.A5 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A5 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 262143:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A6", wireType)
+			}
+			m.A6 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A6 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 262144:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A7", wireType)
+			}
+			m.A7 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A7 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 33554431:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A8", wireType)
+			}
+			m.A8 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A8 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 33554432:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field A9", wireType)
+			}
+			m.A9 = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.A9 |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 536870911:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Aa", wireType)
+			}
+			m.Aa = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Aa |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])

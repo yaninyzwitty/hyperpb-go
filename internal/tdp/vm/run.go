@@ -127,8 +127,8 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	}
 
 	if debug.Enabled {
-		p1.Log(p2, "start", "%p:%d, %p:%v",
-			m.Shared.Src, m.Shared.Len, m.Type(), m.Type().Descriptor.FullName())
+		p1.Log(p2, "start", "%p:%d `%x`, %p:%v",
+			m.Shared.Src, m.Shared.Len, data, m.Type(), m.Type().Descriptor.FullName())
 	}
 
 	p1, p2 = p1.PushMessage(p2, m.Shared.Len, m)
@@ -140,14 +140,7 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 // loop is the core parser loop. This function is not recursive.
 func loop(p1 P1, p2 P2) {
 	// Need this to match the ABI of returning from a thunk.
-	p2.fieldAddr = unsafe2.AddrOf(p2.Field().NextOk)
-
-	// This code is dynamically unreachable, but it forces Go to schedule
-	// the fail block slightly differently in a way that is more in our favor
-	// for branch scheduling.
-	if p2.Scratch != 0 {
-		goto truncated
-	}
+	p2.fieldAddr = p2.Field().NextOk
 
 checkDone:
 	if p1.Len() == 0 {
@@ -156,7 +149,7 @@ checkDone:
 
 number:
 	{
-		var tag tdp.Tag
+		var masked tdp.Tag
 		// The purpose of this block is to decode a varint without actually doing
 		// any of the shifts to delete the sign bits. Instead:
 		//
@@ -188,36 +181,56 @@ number:
 		// This block cannot be outlined into its own function for performance
 		// reasons.
 
+		// Fast path: if the low sign bit is cleared, this is a one-byte tag.
+		p2.Scratch = uint64(*p1.Ptr())
+		if p2.Scratch&0x80 == 0 {
+			p1 = p1.Advance(1)
+
+			t := p2.Type()
+			lut := unsafe2.ByteAdd(unsafe2.Cast[byte](t), unsafe.Offsetof(t.TagLUT))
+			offset := unsafe2.Load(lut, p2.Scratch)
+			if debug.Enabled {
+				p1.Log(p2, "small tag", "%v -> %#x, %x", tdp.Tag(p2.Scratch), offset, t.TagLUT)
+			}
+
+			if offset != 0xff {
+				p2.fieldAddr = unsafe2.AddrOf(t.Fields().Get(int(offset)))
+				goto parseField
+			}
+			goto field
+		}
+
 		// Load up to eight bytes for the varint (at most 5 will be used).
-		tag = unsafe2.ByteLoad[tdp.Tag](p1.Ptr(), 0)
+		p2.Scratch = unsafe2.ByteLoad[uint64](p1.Ptr(), 0)
+		p1.Log(p2, "raw number", "%#x", p2.Scratch)
+
 		// Flip all of the sign bits. This essentially clears the sign bits
 		// of all of the varint bytes except the highest one's.
-		tag ^= tdp.SignBits
+		p2.Scratch ^= tdp.SignBits
 
 		// Determine the number of cleared sign bits. This will tell us how
 		// many bits to mask off as "irrelevant".
 		//
 		// In a varint (big-endian order) like 0a8b8c8d, this will be looking
 		// at ctz(80000000) = 31. Thus we need to mask off 64 - 31 = 33 bits.
-		tagBits := uint(bits.TrailingZeros64(uint64(tag) & tdp.SignBits))
+		tagBits := uint(bits.TrailingZeros64(p2.Scratch & tdp.SignBits))
 
-		// tagMask will have its first (bits+1) bytes set to 0xff. Here, we shift
-		// 0x100 to save on an add instruction on bytes.
 		// The &63 is to ensure that Go does not generate a cmov to implement
 		// the x<<64 == 0 case.
-		tag &= (tdp.Tag(0b10) << ((tagBits - 1) & 63)) - 1
+		masked = tdp.Tag(p2.Scratch &^ (^uint64(0) << (tagBits & 63)))
+
 		// No need to strip the sign bits, the ^= above already did that.
 
 		// Consume the tag.
-		tagBytes := (tagBits / 8) + 1
-		p1.Log(p2, "number", "%v (%d bytes)", tag, tagBytes)
-		if tagBytes > uint(p1.Len()) {
+		tagBytes := ((tagBits - 1) / 8) + 1
+		p1.Log(p2, "number", "%v (%d bytes, %d bits)", masked, tagBytes, tagBits)
+		p1 = p1.Advance(int(tagBytes))
+		if p1.PtrAddr > p1.EndAddr {
 			goto truncated
 		}
-		p1 = p1.Advance(int(tagBytes))
 
-		p2.Scratch = uint64(tag)
 		if tagBits < 64 {
+			p2.Scratch = uint64(masked)
 			goto field
 		}
 
@@ -228,6 +241,7 @@ field:
 	{
 		tries := p2.P3().MaxMisses
 		tag := tdp.Tag(p2.Scratch)
+
 		for {
 			p1.Log(p2, "try", "%v, %v, %v", tag, tries, p2.Field())
 
@@ -238,37 +252,46 @@ field:
 			}
 
 			if p2.Field().Tag == tag {
-				// Try to keep the Context in L1 cache by loading a byte from it
-				// before every thunk. This makes sure that short thunks that
-				// do not allocate any memory do not cause it to fall out of
-				// the cache, slowing down memory allocations due to the need
-				// to pull the arena's internal pointers from L2 cache.
-				unsafe2.Ping(p1.Shared())
-
-				thunk := (*unsafe2.PC[Thunk])(&p2.Field().Parse)
-				p1.Log(p2, "call", "%v, %#x", debug.Func(thunk.Get()), p2.fieldAddr)
-				p1, p2 = thunk.Get()(p1, p2)
-				p1.Log(p2, "ret", "%v, %#x", debug.Func(thunk.Get()), p2.fieldAddr)
-
-				p2.fieldAddr = unsafe2.AddrOf(p2.Field().NextOk)
-
-				p2.Scratch = 0 // Make sure no one relies on this being preserved.
-				goto checkDone
+				break
 			}
 
-			p2.fieldAddr = unsafe2.AddrOf(p2.Field().NextErr)
+			p2.fieldAddr = p2.Field().NextErr
 
 			tries--
-			if tries > 0 {
-				continue
+			if tries == 0 {
+				goto missedField
 			}
-
-			break
 		}
+	}
+
+parseField:
+	{
+		// Try to keep the Context in L1 cache by loading a byte from it
+		// before every thunk. This makes sure that short thunks that
+		// do not allocate any memory do not cause it to fall out of
+		// the cache, slowing down memory allocations due to the need
+		// to pull the arena's internal pointers from L2 cache.
+		unsafe2.Ping(p1.Shared())
+
+		thunk := (*unsafe2.PC[Thunk])(&p2.Field().Parse).Get()
+		p1.Log(p2, "call", "%v, %#x", debug.Func(thunk), p2.fieldAddr)
+		p1, p2 = thunk(p1, p2)
+		p1.Log(p2, "ret", "%v, %#x", debug.Func(thunk), p2.fieldAddr)
+
+		p2.fieldAddr = p2.Field().NextOk
+
+		p2.Scratch = 0 // Make sure no one relies on this being preserved.
+		goto checkDone
+	}
+
+missedField:
+	{
+		tag := tdp.Tag(p2.Scratch)
+		p2.Scratch = 0 // Make sure no one relies on this being preserved.
 
 		p1.Log(p2, "miss", "%v", tag)
 		// Check for tag overflow.
-		if tag > maxFieldTag {
+		if tag.Overflows() {
 			p1.Fail(p2, ErrorOverflow)
 		}
 
@@ -301,7 +324,7 @@ field:
 		p1, p2, tag2 = p1.byTag(p2, tag2)
 		if p2.Field() != nil {
 			p1.Log(p2, "goto field", "%d", tag2)
-			goto field
+			goto parseField
 		}
 
 		// Skip this field, and keep skipping fields until we find a field
@@ -411,6 +434,8 @@ func handleUnknown(p1 P1, p2 P2, tag2 uint64) (P1, P2) {
 //
 //go:noinline
 func checkLargeVarint(p1 P1, p2 P2) (P1, P2) {
+	p1.Log(p2, "check large", "")
+
 	// This is a very large varint. We need to check the next two words.
 	// This is a slow path, so we can afford to not be efficient.
 	switch unsafe2.Load(p1.Ptr(), -1) {

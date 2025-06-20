@@ -59,6 +59,25 @@ message Scalars {
   optional bytes b15 = 35;
 }
 
+message Numbers {
+    // This message exercises every possible varint format that tags can come in.
+
+    int32 a1 = 0x1; // 0x08
+    int32 a2 = 0xf; // 0x78
+
+    int32 a3 = 0x10; // 0x0180 
+    int32 a4 = 0x7ff; // 0x7ff8 
+
+    int32 a5 = 0x800; // 0x018080
+    int32 a6 = 0x3ffff; // 0x7ffff8
+    
+    int32 a7 = 0x40000; // 0x01808080
+    int32 a8 = 0x1ffffff; // 0x7ffffff8
+
+    int32 a9 = 0x2000000; // 0x0180808080
+    int32 aa = 0x1fffffff; // 0x0ffffffff6
+}
+
 message Repeated {
   repeated int32 r1 = 1;
   repeated int64 r2 = 2;

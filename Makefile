@@ -36,6 +36,8 @@ GO := GOTOOLCHAIN=local $(GO)
 TAGS ?= ""
 
 ASM_FILTER ?= ^github.com/bufbuild/fastpb
+ASM_INFO ?= fileline
+
 BENCHMARK ?= .
 ifeq ($(PKG),)
 	PKGS := ./...
@@ -87,7 +89,7 @@ asm: build ## Generate assembly output for manual inspection
 	$(GO) test -tags=$(TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
 	$(GO) run ./internal/tools/objdump \
 		-s '$(ASM_FILTER)' \
-		-info fileline \
+		-info $(ASM_INFO) \
 		-prefix 'github.com/bufbuild/fastpb' \
 		-nops \
 		-o fastpb.s \

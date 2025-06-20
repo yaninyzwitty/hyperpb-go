@@ -16,6 +16,7 @@ package tdp
 
 import (
 	"fmt"
+	"math/bits"
 
 	"google.golang.org/protobuf/encoding/protowire"
 
@@ -68,4 +69,10 @@ func (t Tag) Format(s fmt.State, verb rune) {
 	v := t.Decode()
 	n, ty := protowire.DecodeTag(v)
 	debug.Fprintf("%#x:%d:%d", uint64(t), n, ty).Format(s, verb)
+}
+
+// Returns whether this tag is "too large", i.e., if it has more than 32 bits
+// when decoded.
+func (t Tag) Overflows() bool {
+	return bits.LeadingZeros64(uint64(t)) < (64 - 32 + 4)
 }

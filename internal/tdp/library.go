@@ -26,6 +26,7 @@ import (
 type Library struct {
 	Base  *Type
 	Types map[protoreflect.MessageDescriptor]*Type
+	Bytes int
 }
 
 // Type returns the [Type] for the given descriptor in this library.

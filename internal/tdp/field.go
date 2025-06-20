@@ -88,7 +88,7 @@ type FieldParser struct {
 
 	// The parser to jump to after this one, depending on whether the parse
 	// succeeds or fails.
-	NextOk, NextErr *FieldParser
+	NextOk, NextErr unsafe2.Addr[FieldParser]
 
 	// The thunk to call for this field. The type of this thunk is stored in
 	// the parser package.
@@ -109,9 +109,9 @@ func (p *FieldParser) Format(s fmt.State, verb rune) {
 		"offset", p.Offset,
 		"next", func() any {
 			if p.NextOk == p.NextErr {
-				return debug.Fprintf("%p", p.NextOk)
+				return debug.Fprintf("%v", p.NextOk)
 			}
-			return debug.Fprintf("%p/%p", p.NextOk, p.NextErr)
+			return debug.Fprintf("%v/%v", p.NextOk, p.NextErr)
 		}(),
 		"thunk", debug.Func(p.Parse),
 	).Format(s, verb)
