@@ -17,10 +17,10 @@ package vm
 import (
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // This file contains inlined or modified versions of functions from

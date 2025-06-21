@@ -22,13 +22,13 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/scc"
-	"github.com/bufbuild/fastpb/internal/stats"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/scc"
+	"github.com/bufbuild/hyperpb/internal/stats"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // ir is analysis information about a message type for generating a parser
@@ -263,10 +263,10 @@ func (ir *ir) doLayout(c *compiler) {
 	}
 
 	if ir.hot > math.MaxInt32 {
-		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", ir.d.FullName(), ir.hot, math.MaxInt32))
+		panic(fmt.Errorf("hyperpb: message struct for %v too large (%d bytes, max is %d)", ir.d.FullName(), ir.hot, math.MaxInt32))
 	}
 	if ir.cold > math.MaxInt32 {
-		panic(fmt.Errorf("fastpb: message struct for %v too large (%d bytes, max is %d)", ir.d.FullName(), ir.cold, math.MaxInt32))
+		panic(fmt.Errorf("hyperpb: message struct for %v too large (%d bytes, max is %d)", ir.d.FullName(), ir.cold, math.MaxInt32))
 	}
 
 	if debug.Enabled {

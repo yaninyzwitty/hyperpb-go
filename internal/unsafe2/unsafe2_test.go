@@ -21,7 +21,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 func TestMisalign(t *testing.T) {

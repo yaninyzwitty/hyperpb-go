@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package dynamic contains the implementation of fastpb's dynamic message types.
+// Package dynamic contains the implementation of hyperpb's dynamic message types.
 package dynamic
 
 import (
@@ -20,12 +20,12 @@ import (
 	"math/bits"
 	"strings"
 
-	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/arena/slice"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Cold is portions of a message that are located in context.Cold.

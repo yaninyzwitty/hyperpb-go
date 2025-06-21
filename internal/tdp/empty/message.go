@@ -19,8 +19,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/tdp"
 )
 
 // Callback for constructing the actual MessageType implementation defined in

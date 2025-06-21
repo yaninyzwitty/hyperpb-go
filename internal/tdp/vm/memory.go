@@ -17,7 +17,7 @@ package vm
 import (
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // pageBoundary is the alignment of the smallest physical memory page on any

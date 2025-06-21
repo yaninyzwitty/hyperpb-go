@@ -17,10 +17,10 @@ package slice
 import (
 	"fmt"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // Slice is a slice that points into an arena.
@@ -250,7 +250,7 @@ func (s Untyped) String() string {
 func sliceLayout[T any](n int) (size int) {
 	layout := layout.Of[T]()
 	if layout.Align > arena.Align {
-		panic("fastpb: over-aligned object")
+		panic("hyperpb: over-aligned object")
 	}
 	return arena.SuggestSize(layout.Size * n)
 }

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Oneof
+type: hyperpb.test.Oneof
 protoscope:
 - |
   1: -1

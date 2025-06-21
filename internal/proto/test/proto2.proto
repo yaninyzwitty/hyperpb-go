@@ -16,7 +16,7 @@ syntax = "proto2";
 
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
 // buf:lint:ignore PACKAGE_DIRECTORY_MATCH
-package fastpb.test;
+package hyperpb.test;
 
 message Extensions {
   extensions 1 to max;

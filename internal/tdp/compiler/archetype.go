@@ -18,18 +18,18 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // Archetype represents a class of fields that have the same layout within a
 // *message. This includes parsing and access information.
 //
 // Archetypes are used to organize field allocation and parsing strategies for
-// use in the construction of a [fastpb.Type].
+// use in the construction of a [hyperpb.Type].
 type Archetype struct {
 	// The Layout for the field's storage in the message.
 	Layout layout.Layout

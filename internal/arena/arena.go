@@ -51,9 +51,9 @@ package arena
 import (
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // Arena is an Arena for holding values of any type which does not contain
@@ -83,7 +83,7 @@ const Align = int(unsafe.Sizeof(uintptr(0)))
 func New[T any](a *Arena, value T) *T {
 	layout := layout.Of[T]()
 	if layout.Align > Align {
-		panic("fastpb: over-aligned object")
+		panic("hyperpb: over-aligned object")
 	}
 
 	p := unsafe2.Cast[T](a.Alloc(layout.Size))

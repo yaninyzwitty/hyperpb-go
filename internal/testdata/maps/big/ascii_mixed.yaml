@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Maps
+type: hyperpb.test.Maps
 benchmark: true
 protoscope:
 - | # go run testdata/repeated/gen.go -f '0xc0: { 1: {%q} 2: 42 }' -hi 32 -zipf -ascii -row 2 -n 512

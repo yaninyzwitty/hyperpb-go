@@ -13,10 +13,10 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/bufbuild/fastpb"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/prototest"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/prototest"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/protocolbuffers/protoscope"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -45,7 +45,7 @@ type TestCase struct {
 	TypeName string `yaml:"type"`
 	Type     struct {
 		Gencode protoreflect.MessageType
-		Fast    *fastpb.Type
+		Fast    *hyperpb.Type
 	} `yaml:"-"`
 
 	// If set, run this test as a benchmark.
@@ -115,7 +115,7 @@ func RunAll[T Harness[T]](t T, f func(T, *TestCase)) {
 }
 
 // Run executes a single test case.
-func (test *TestCase) Run(t *testing.T, ctx *fastpb.Shared, verbose bool) {
+func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 	t.Helper()
 
 	run := func(t *testing.T, specimen []byte) {
@@ -128,7 +128,7 @@ func (test *TestCase) Run(t *testing.T, ctx *fastpb.Shared, verbose bool) {
 		m1 := test.Type.Gencode.New().Interface()
 		err1 := proto.Unmarshal(specimen, m1)
 
-		// Parse using fastpb.
+		// Parse using hyperpb.
 		m2 := ctx.New(test.Type.Fast)
 		err2 := proto.Unmarshal(specimen, m2)
 
@@ -194,9 +194,9 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 		protoreflect.FullName(test.TypeName))
 	require.NoError(t, err, "loading type %q", test.TypeName)
 
-	test.Type.Fast = fastpb.Compile(
+	test.Type.Fast = hyperpb.Compile(
 		test.Type.Gencode.Descriptor(),
-		fastpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
+		hyperpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
 		func(o *compiler.Options) { o.Profile = test.PGO },
 	)
 

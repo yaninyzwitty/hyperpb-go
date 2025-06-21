@@ -18,14 +18,14 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/empty"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Oneofs are implemented as an actual union. The tag (or "which word") lives
@@ -220,8 +220,8 @@ func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) pro
 }
 
 //go:nosplit
-//fastpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
-//fastpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
+//hyperpb:stencil parseOneofVarint32 parseOneofVarint[uint32]
+//hyperpb:stencil parseOneofVarint64 parseOneofVarint[uint64]
 func parseOneofVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
@@ -231,8 +231,8 @@ func parseOneofVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
-//fastpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
+//hyperpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32]
+//hyperpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64]
 func parseOneofZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p2.Scratch = uint64(zigzag64[T](p2.Scratch))

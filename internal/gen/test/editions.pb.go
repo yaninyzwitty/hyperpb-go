@@ -148,18 +148,18 @@ var File_test_editions_proto protoreflect.FileDescriptor
 
 const file_test_editions_proto_rawDesc = "" +
 	"\n" +
-	"\x13test/editions.proto\x12\vfastpb.test\"\xeb\x01\n" +
+	"\x13test/editions.proto\x12\fhyperpb.test\"\xec\x01\n" +
 	"\rProto2Strings\x12\x15\n" +
 	"\x02s1\x18\x01 \x01(\tB\x05\xaa\x01\x02 \x03R\x02s1\x12\x15\n" +
-	"\x02s2\x18\x02 \x03(\tB\x05\xaa\x01\x02 \x03R\x02s2\x129\n" +
-	"\x02s3\x18\x03 \x03(\v2\".fastpb.test.Proto2Strings.S3EntryB\x05\xaa\x01\x02 \x03R\x02s3\x12\x17\n" +
+	"\x02s2\x18\x02 \x03(\tB\x05\xaa\x01\x02 \x03R\x02s2\x12:\n" +
+	"\x02s3\x18\x03 \x03(\v2#.hyperpb.test.Proto2Strings.S3EntryB\x05\xaa\x01\x02 \x03R\x02s3\x12\x17\n" +
 	"\x02s4\x18\x04 \x01(\tB\x05\xaa\x01\x02 \x03H\x00R\x02s4\x12\x0e\n" +
 	"\x01z\x18\x05 \x01(\x05H\x00R\x01z\x1aC\n" +
 	"\aS3Entry\x12\x17\n" +
 	"\x03key\x18\x01 \x01(\tB\x05\xaa\x01\x02 \x03R\x03key\x12\x1b\n" +
 	"\x05value\x18\x02 \x01(\tB\x05\xaa\x01\x02 \x03R\x05value:\x028\x01B\x03\n" +
-	"\x01oB\x9b\x01\n" +
-	"\x0fcom.fastpb.testB\rEditionsProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Testb\beditionsp\xe8\a"
+	"\x01oB\xa1\x01\n" +
+	"\x10com.hyperpb.testB\rEditionsProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\beditionsp\xe8\a"
 
 var (
 	file_test_editions_proto_rawDescOnce sync.Once
@@ -175,11 +175,11 @@ func file_test_editions_proto_rawDescGZIP() []byte {
 
 var file_test_editions_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_test_editions_proto_goTypes = []any{
-	(*Proto2Strings)(nil), // 0: fastpb.test.Proto2Strings
-	nil,                   // 1: fastpb.test.Proto2Strings.S3Entry
+	(*Proto2Strings)(nil), // 0: hyperpb.test.Proto2Strings
+	nil,                   // 1: hyperpb.test.Proto2Strings.S3Entry
 }
 var file_test_editions_proto_depIdxs = []int32{
-	1, // 0: fastpb.test.Proto2Strings.s3:type_name -> fastpb.test.Proto2Strings.S3Entry
+	1, // 0: hyperpb.test.Proto2Strings.s3:type_name -> hyperpb.test.Proto2Strings.S3Entry
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

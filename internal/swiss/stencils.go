@@ -18,8 +18,8 @@ package swiss
 
 import (
 	"bytes"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"math/rand/v2"
 	"unsafe"
 )

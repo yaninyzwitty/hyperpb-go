@@ -32,7 +32,7 @@ of the benchmarks.
 
 ## File Structure
 
-The main package, `fastpb`, is mostly a facade over a collection of internal
+The main package, `hyperpb`, is mostly a facade over a collection of internal
 packages. The bulk of the complicated stuff lives in `internal/tdp`:
 
 * `tdp` itself contains the "tables", or "executable format", of the
@@ -212,7 +212,7 @@ The parser state is split across three types, `vm.P1`, `vm.P2`, and
 worse performance. These structs should be thought of as being the same
 entity.
 
-The main loop of the interpreter is `vm.P1.loop`, which is not actually
+The main loop of the interpreter is `vm.loop`, which is not actually
 a loop but rather a strongly connected component of blocks joined by `goto`s.
 This is because the main loop has three different sections which we want
 to be able to jump to from any other section. These are:
@@ -255,7 +255,7 @@ This step also advances the parser past the varint, so there's no need to
 store the length of the varint anymore past this point.
 
 This step only needs to be performed once per record, and the resulting
-partially decoded value is cached to compare against the `fieldTag` values
+partially decoded value is cached to compare against the `tdp.Tag` values
 in the next phase. The interpreter only jumps to this block when it is ready
 to start parsing a new record.
 
@@ -286,7 +286,7 @@ and potentially skip some unknown fields.
 
 As mentioned previously, there are many, many parser thunks. This is because
 if unused, those thunks will not appear in the BHT (branch history table)
-entry for the indirect branch to the thunk in `parser1.message`. This means
+entry for the indirect branch to the thunk in `vm.P1.Field()`. This means
 that it is beneficial to hyper-specialize thunks so that within a thunk,
 additional branches are kept to a minimum. Thus, instead of having one thunk
 that handles both optional and singular fields, and branches internally based

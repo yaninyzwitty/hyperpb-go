@@ -17,14 +17,14 @@
 package thunks
 
 import (
-	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/swiss"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/arena/slice"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/swiss"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 	"google.golang.org/protobuf/encoding/protowire"
 	"math/bits"
 	"unsafe"

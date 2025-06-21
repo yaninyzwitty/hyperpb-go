@@ -22,9 +22,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/bufbuild/fastpb"
-	"github.com/bufbuild/fastpb/internal/tdp/empty"
-	"github.com/bufbuild/fastpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 )
 
 func TestScalar(t *testing.T) {
@@ -40,23 +40,23 @@ func TestScalar(t *testing.T) {
 func TestMessage(t *testing.T) {
 	t.Parallel()
 
-	ty := fastpb.CompileFor[*emptypb.Empty]()
+	ty := hyperpb.CompileFor[*emptypb.Empty]()
 	m := ty.New()
 
 	v := protoreflect.ValueOf(m)
-	assert.Same(t, m, protoreflect2.GetMessage[*fastpb.Message](v))
+	assert.Same(t, m, protoreflect2.GetMessage[*hyperpb.Message](v))
 	assert.Same(t, m, protoreflect2.GetMessage[protoreflect.Message](v))
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(nil)
-		_ = protoreflect2.GetMessage[*fastpb.Message](w)
+		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
 	})
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(int32(42))
-		_ = protoreflect2.GetMessage[*fastpb.Message](w)
+		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
 	})
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(empty.Message{})
-		_ = protoreflect2.GetMessage[*fastpb.Message](w)
+		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
 	})
 }
 

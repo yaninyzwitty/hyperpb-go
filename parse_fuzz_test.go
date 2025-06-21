@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb_test
+package hyperpb_test
 
 import (
 	"testing"
@@ -22,13 +22,13 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/bufbuild/fastpb"
-	testpb "github.com/bufbuild/fastpb/internal/gen/test"
-	"github.com/bufbuild/fastpb/internal/sync2"
-	"github.com/bufbuild/fastpb/internal/testdata"
+	"github.com/bufbuild/hyperpb"
+	testpb "github.com/bufbuild/hyperpb/internal/gen/test"
+	"github.com/bufbuild/hyperpb/internal/sync2"
+	"github.com/bufbuild/hyperpb/internal/testdata"
 )
 
-var contexts = sync2.Pool[fastpb.Shared]{Reset: (*fastpb.Shared).Free}
+var contexts = sync2.Pool[hyperpb.Shared]{Reset: (*hyperpb.Shared).Free}
 
 func FuzzScalars(f *testing.F)    { fuzz[*testpb.Scalars](f) }
 func FuzzRepeated(f *testing.F)   { fuzz[*testpb.Repeated](f) }
@@ -44,7 +44,7 @@ func fuzz[M proto.Message](f *testing.F) {
 	var z M
 	test := new(testdata.TestCase)
 	test.Type.Gencode = z.ProtoReflect().Type()
-	test.Type.Fast = fastpb.Compile(test.Type.Gencode.Descriptor())
+	test.Type.Fast = hyperpb.Compile(test.Type.Gencode.Descriptor())
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		ctx := contexts.Get()

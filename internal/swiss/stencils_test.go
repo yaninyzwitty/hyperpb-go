@@ -18,9 +18,9 @@ package swiss_test
 
 import (
 	"fmt"
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/swiss"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/swiss"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"math/rand/v2"
 	"slices"
 	"strings"

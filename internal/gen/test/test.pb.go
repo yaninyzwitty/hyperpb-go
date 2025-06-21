@@ -905,7 +905,7 @@ type Maps struct {
 	M1A           map[int32]float32      `protobuf:"bytes,26,rep,name=m1a,proto3" json:"m1a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M1B           map[int32]float64      `protobuf:"bytes,27,rep,name=m1b,proto3" json:"m1b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M1C           map[int32]bool         `protobuf:"bytes,28,rep,name=m1c,proto3" json:"m1c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M1D           map[int32]Enum         `protobuf:"bytes,29,rep,name=m1d,proto3" json:"m1d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M1D           map[int32]Enum         `protobuf:"bytes,29,rep,name=m1d,proto3" json:"m1d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M1E           map[int32]string       `protobuf:"bytes,30,rep,name=m1e,proto3" json:"m1e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M1F           map[int32][]byte       `protobuf:"bytes,31,rep,name=m1f,proto3" json:"m1f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M20           map[int64]int32        `protobuf:"bytes,32,rep,name=m20,proto3" json:"m20,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -921,7 +921,7 @@ type Maps struct {
 	M2A           map[int64]float32      `protobuf:"bytes,42,rep,name=m2a,proto3" json:"m2a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M2B           map[int64]float64      `protobuf:"bytes,43,rep,name=m2b,proto3" json:"m2b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M2C           map[int64]bool         `protobuf:"bytes,44,rep,name=m2c,proto3" json:"m2c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M2D           map[int64]Enum         `protobuf:"bytes,45,rep,name=m2d,proto3" json:"m2d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M2D           map[int64]Enum         `protobuf:"bytes,45,rep,name=m2d,proto3" json:"m2d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M2E           map[int64]string       `protobuf:"bytes,46,rep,name=m2e,proto3" json:"m2e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M2F           map[int64][]byte       `protobuf:"bytes,47,rep,name=m2f,proto3" json:"m2f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M30           map[uint32]int32       `protobuf:"bytes,48,rep,name=m30,proto3" json:"m30,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -937,7 +937,7 @@ type Maps struct {
 	M3A           map[uint32]float32     `protobuf:"bytes,58,rep,name=m3a,proto3" json:"m3a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M3B           map[uint32]float64     `protobuf:"bytes,59,rep,name=m3b,proto3" json:"m3b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M3C           map[uint32]bool        `protobuf:"bytes,60,rep,name=m3c,proto3" json:"m3c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M3D           map[uint32]Enum        `protobuf:"bytes,61,rep,name=m3d,proto3" json:"m3d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M3D           map[uint32]Enum        `protobuf:"bytes,61,rep,name=m3d,proto3" json:"m3d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M3E           map[uint32]string      `protobuf:"bytes,62,rep,name=m3e,proto3" json:"m3e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M3F           map[uint32][]byte      `protobuf:"bytes,63,rep,name=m3f,proto3" json:"m3f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M40           map[uint64]int32       `protobuf:"bytes,64,rep,name=m40,proto3" json:"m40,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -953,7 +953,7 @@ type Maps struct {
 	M4A           map[uint64]float32     `protobuf:"bytes,74,rep,name=m4a,proto3" json:"m4a,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M4B           map[uint64]float64     `protobuf:"bytes,75,rep,name=m4b,proto3" json:"m4b,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M4C           map[uint64]bool        `protobuf:"bytes,76,rep,name=m4c,proto3" json:"m4c,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M4D           map[uint64]Enum        `protobuf:"bytes,77,rep,name=m4d,proto3" json:"m4d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M4D           map[uint64]Enum        `protobuf:"bytes,77,rep,name=m4d,proto3" json:"m4d,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M4E           map[uint64]string      `protobuf:"bytes,78,rep,name=m4e,proto3" json:"m4e,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M4F           map[uint64][]byte      `protobuf:"bytes,79,rep,name=m4f,proto3" json:"m4f,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M50           map[int32]int32        `protobuf:"bytes,80,rep,name=m50,proto3" json:"m50,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -969,7 +969,7 @@ type Maps struct {
 	M5A           map[int32]float32      `protobuf:"bytes,90,rep,name=m5a,proto3" json:"m5a,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M5B           map[int32]float64      `protobuf:"bytes,91,rep,name=m5b,proto3" json:"m5b,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M5C           map[int32]bool         `protobuf:"bytes,92,rep,name=m5c,proto3" json:"m5c,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M5D           map[int32]Enum         `protobuf:"bytes,93,rep,name=m5d,proto3" json:"m5d,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M5D           map[int32]Enum         `protobuf:"bytes,93,rep,name=m5d,proto3" json:"m5d,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M5E           map[int32]string       `protobuf:"bytes,94,rep,name=m5e,proto3" json:"m5e,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M5F           map[int32][]byte       `protobuf:"bytes,95,rep,name=m5f,proto3" json:"m5f,omitempty" protobuf_key:"zigzag32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M60           map[int64]int32        `protobuf:"bytes,96,rep,name=m60,proto3" json:"m60,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -985,7 +985,7 @@ type Maps struct {
 	M6A           map[int64]float32      `protobuf:"bytes,106,rep,name=m6a,proto3" json:"m6a,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M6B           map[int64]float64      `protobuf:"bytes,107,rep,name=m6b,proto3" json:"m6b,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M6C           map[int64]bool         `protobuf:"bytes,108,rep,name=m6c,proto3" json:"m6c,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M6D           map[int64]Enum         `protobuf:"bytes,109,rep,name=m6d,proto3" json:"m6d,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M6D           map[int64]Enum         `protobuf:"bytes,109,rep,name=m6d,proto3" json:"m6d,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M6E           map[int64]string       `protobuf:"bytes,110,rep,name=m6e,proto3" json:"m6e,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M6F           map[int64][]byte       `protobuf:"bytes,111,rep,name=m6f,proto3" json:"m6f,omitempty" protobuf_key:"zigzag64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M70           map[uint32]int32       `protobuf:"bytes,112,rep,name=m70,proto3" json:"m70,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1001,7 +1001,7 @@ type Maps struct {
 	M7A           map[uint32]float32     `protobuf:"bytes,122,rep,name=m7a,proto3" json:"m7a,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M7B           map[uint32]float64     `protobuf:"bytes,123,rep,name=m7b,proto3" json:"m7b,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M7C           map[uint32]bool        `protobuf:"bytes,124,rep,name=m7c,proto3" json:"m7c,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M7D           map[uint32]Enum        `protobuf:"bytes,125,rep,name=m7d,proto3" json:"m7d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M7D           map[uint32]Enum        `protobuf:"bytes,125,rep,name=m7d,proto3" json:"m7d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M7E           map[uint32]string      `protobuf:"bytes,126,rep,name=m7e,proto3" json:"m7e,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M7F           map[uint32][]byte      `protobuf:"bytes,127,rep,name=m7f,proto3" json:"m7f,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M80           map[uint64]int32       `protobuf:"bytes,128,rep,name=m80,proto3" json:"m80,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1017,7 +1017,7 @@ type Maps struct {
 	M8A           map[uint64]float32     `protobuf:"bytes,138,rep,name=m8a,proto3" json:"m8a,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M8B           map[uint64]float64     `protobuf:"bytes,139,rep,name=m8b,proto3" json:"m8b,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M8C           map[uint64]bool        `protobuf:"bytes,140,rep,name=m8c,proto3" json:"m8c,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M8D           map[uint64]Enum        `protobuf:"bytes,141,rep,name=m8d,proto3" json:"m8d,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M8D           map[uint64]Enum        `protobuf:"bytes,141,rep,name=m8d,proto3" json:"m8d,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M8E           map[uint64]string      `protobuf:"bytes,142,rep,name=m8e,proto3" json:"m8e,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M8F           map[uint64][]byte      `protobuf:"bytes,143,rep,name=m8f,proto3" json:"m8f,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M90           map[int32]int32        `protobuf:"bytes,144,rep,name=m90,proto3" json:"m90,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1033,7 +1033,7 @@ type Maps struct {
 	M9A           map[int32]float32      `protobuf:"bytes,154,rep,name=m9a,proto3" json:"m9a,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	M9B           map[int32]float64      `protobuf:"bytes,155,rep,name=m9b,proto3" json:"m9b,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	M9C           map[int32]bool         `protobuf:"bytes,156,rep,name=m9c,proto3" json:"m9c,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	M9D           map[int32]Enum         `protobuf:"bytes,157,rep,name=m9d,proto3" json:"m9d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	M9D           map[int32]Enum         `protobuf:"bytes,157,rep,name=m9d,proto3" json:"m9d,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	M9E           map[int32]string       `protobuf:"bytes,158,rep,name=m9e,proto3" json:"m9e,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	M9F           map[int32][]byte       `protobuf:"bytes,159,rep,name=m9f,proto3" json:"m9f,omitempty" protobuf_key:"fixed32,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Ma0           map[int64]int32        `protobuf:"bytes,160,rep,name=ma0,proto3" json:"ma0,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1049,7 +1049,7 @@ type Maps struct {
 	Maa           map[int64]float32      `protobuf:"bytes,170,rep,name=maa,proto3" json:"maa,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	Mab           map[int64]float64      `protobuf:"bytes,171,rep,name=mab,proto3" json:"mab,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	Mac           map[int64]bool         `protobuf:"bytes,172,rep,name=mac,proto3" json:"mac,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	Mad           map[int64]Enum         `protobuf:"bytes,173,rep,name=mad,proto3" json:"mad,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mad           map[int64]Enum         `protobuf:"bytes,173,rep,name=mad,proto3" json:"mad,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	Mae           map[int64]string       `protobuf:"bytes,174,rep,name=mae,proto3" json:"mae,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Maf           map[int64][]byte       `protobuf:"bytes,175,rep,name=maf,proto3" json:"maf,omitempty" protobuf_key:"fixed64,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Mb0           map[bool]int32         `protobuf:"bytes,176,rep,name=mb0,proto3" json:"mb0,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1065,7 +1065,7 @@ type Maps struct {
 	Mba           map[bool]float32       `protobuf:"bytes,186,rep,name=mba,proto3" json:"mba,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	Mbb           map[bool]float64       `protobuf:"bytes,187,rep,name=mbb,proto3" json:"mbb,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	Mbc           map[bool]bool          `protobuf:"bytes,188,rep,name=mbc,proto3" json:"mbc,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	Mbd           map[bool]Enum          `protobuf:"bytes,189,rep,name=mbd,proto3" json:"mbd,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mbd           map[bool]Enum          `protobuf:"bytes,189,rep,name=mbd,proto3" json:"mbd,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	Mbe           map[bool]string        `protobuf:"bytes,190,rep,name=mbe,proto3" json:"mbe,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Mbf           map[bool][]byte        `protobuf:"bytes,191,rep,name=mbf,proto3" json:"mbf,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Mc0           map[string]int32       `protobuf:"bytes,192,rep,name=mc0,proto3" json:"mc0,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
@@ -1081,7 +1081,7 @@ type Maps struct {
 	Mca           map[string]float32     `protobuf:"bytes,202,rep,name=mca,proto3" json:"mca,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
 	Mcb           map[string]float64     `protobuf:"bytes,203,rep,name=mcb,proto3" json:"mcb,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
 	Mcc           map[string]bool        `protobuf:"bytes,204,rep,name=mcc,proto3" json:"mcc,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	Mcd           map[string]Enum        `protobuf:"bytes,205,rep,name=mcd,proto3" json:"mcd,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=fastpb.test.Enum"`
+	Mcd           map[string]Enum        `protobuf:"bytes,205,rep,name=mcd,proto3" json:"mcd,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=hyperpb.test.Enum"`
 	Mce           map[string]string      `protobuf:"bytes,206,rep,name=mce,proto3" json:"mce,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Mcf           map[string][]byte      `protobuf:"bytes,207,rep,name=mcf,proto3" json:"mcf,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
@@ -2598,7 +2598,7 @@ var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
 	"\n" +
-	"\x0ftest/test.proto\x12\vfastpb.test\"\xbb\x05\n" +
+	"\x0ftest/test.proto\x12\fhyperpb.test\"\xbb\x05\n" +
 	"\aScalars\x12\x0e\n" +
 	"\x02a1\x18\x01 \x01(\x05R\x02a1\x12\x0e\n" +
 	"\x02a2\x18\x02 \x01(\x03R\x02a2\x12\x0e\n" +
@@ -2666,11 +2666,11 @@ const file_test_test_proto_rawDesc = "" +
 	"\x02r5\x18\x05 \x03(\aR\x02r5\x12\x0e\n" +
 	"\x02r6\x18\x06 \x03(\x06R\x02r6\x12\x0e\n" +
 	"\x02r7\x18\a \x03(\tR\x02r7\x12\x0e\n" +
-	"\x02r8\x18\b \x03(\fR\x02r8\"Y\n" +
+	"\x02r8\x18\b \x03(\fR\x02r8\"[\n" +
 	"\x05Graph\x12\f\n" +
-	"\x01v\x18\x01 \x01(\x05R\x01v\x12 \n" +
-	"\x01s\x18\x02 \x01(\v2\x12.fastpb.test.GraphR\x01s\x12 \n" +
-	"\x01r\x18\x03 \x03(\v2\x12.fastpb.test.GraphR\x01r\"\x8a\x02\n" +
+	"\x01v\x18\x01 \x01(\x05R\x01v\x12!\n" +
+	"\x01s\x18\x02 \x01(\v2\x13.hyperpb.test.GraphR\x01s\x12!\n" +
+	"\x01r\x18\x03 \x03(\v2\x13.hyperpb.test.GraphR\x01r\"\x8b\x02\n" +
 	"\x05Oneof\x12\x10\n" +
 	"\x02s1\x18\x01 \x01(\x05H\x00R\x02s1\x12\x10\n" +
 	"\x02m1\x18\v \x01(\x05H\x01R\x02m1\x12\x10\n" +
@@ -2681,204 +2681,204 @@ const file_test_test_proto_rawDesc = "" +
 	"\x02m6\x18\x10 \x01(\x06H\x01R\x02m6\x12\x10\n" +
 	"\x02m7\x18\x11 \x01(\bH\x01R\x02m7\x12\x10\n" +
 	"\x02m8\x18\x12 \x01(\tH\x01R\x02m8\x12\x10\n" +
-	"\x02m9\x18\x13 \x01(\fH\x01R\x02m9\x12&\n" +
-	"\x03m10\x18\x14 \x01(\v2\x12.fastpb.test.OneofH\x01R\x03m10\x12\x12\n" +
+	"\x02m9\x18\x13 \x01(\fH\x01R\x02m9\x12'\n" +
+	"\x03m10\x18\x14 \x01(\v2\x13.hyperpb.test.OneofH\x01R\x03m10\x12\x12\n" +
 	"\x04tail\x18\x1e \x01(\x05R\x04tailB\b\n" +
 	"\x06singleB\a\n" +
-	"\x05multi\"\xba\x9b\x01\n" +
-	"\x04Maps\x12,\n" +
-	"\x03m10\x18\x10 \x03(\v2\x1a.fastpb.test.Maps.M10EntryR\x03m10\x12,\n" +
-	"\x03m11\x18\x11 \x03(\v2\x1a.fastpb.test.Maps.M11EntryR\x03m11\x12,\n" +
-	"\x03m12\x18\x12 \x03(\v2\x1a.fastpb.test.Maps.M12EntryR\x03m12\x12,\n" +
-	"\x03m13\x18\x13 \x03(\v2\x1a.fastpb.test.Maps.M13EntryR\x03m13\x12,\n" +
-	"\x03m14\x18\x14 \x03(\v2\x1a.fastpb.test.Maps.M14EntryR\x03m14\x12,\n" +
-	"\x03m15\x18\x15 \x03(\v2\x1a.fastpb.test.Maps.M15EntryR\x03m15\x12,\n" +
-	"\x03m16\x18\x16 \x03(\v2\x1a.fastpb.test.Maps.M16EntryR\x03m16\x12,\n" +
-	"\x03m17\x18\x17 \x03(\v2\x1a.fastpb.test.Maps.M17EntryR\x03m17\x12,\n" +
-	"\x03m18\x18\x18 \x03(\v2\x1a.fastpb.test.Maps.M18EntryR\x03m18\x12,\n" +
-	"\x03m19\x18\x19 \x03(\v2\x1a.fastpb.test.Maps.M19EntryR\x03m19\x12,\n" +
-	"\x03m1a\x18\x1a \x03(\v2\x1a.fastpb.test.Maps.M1aEntryR\x03m1a\x12,\n" +
-	"\x03m1b\x18\x1b \x03(\v2\x1a.fastpb.test.Maps.M1bEntryR\x03m1b\x12,\n" +
-	"\x03m1c\x18\x1c \x03(\v2\x1a.fastpb.test.Maps.M1cEntryR\x03m1c\x12,\n" +
-	"\x03m1d\x18\x1d \x03(\v2\x1a.fastpb.test.Maps.M1dEntryR\x03m1d\x12,\n" +
-	"\x03m1e\x18\x1e \x03(\v2\x1a.fastpb.test.Maps.M1eEntryR\x03m1e\x12,\n" +
-	"\x03m1f\x18\x1f \x03(\v2\x1a.fastpb.test.Maps.M1fEntryR\x03m1f\x12,\n" +
-	"\x03m20\x18  \x03(\v2\x1a.fastpb.test.Maps.M20EntryR\x03m20\x12,\n" +
-	"\x03m21\x18! \x03(\v2\x1a.fastpb.test.Maps.M21EntryR\x03m21\x12,\n" +
-	"\x03m22\x18\" \x03(\v2\x1a.fastpb.test.Maps.M22EntryR\x03m22\x12,\n" +
-	"\x03m23\x18# \x03(\v2\x1a.fastpb.test.Maps.M23EntryR\x03m23\x12,\n" +
-	"\x03m24\x18$ \x03(\v2\x1a.fastpb.test.Maps.M24EntryR\x03m24\x12,\n" +
-	"\x03m25\x18% \x03(\v2\x1a.fastpb.test.Maps.M25EntryR\x03m25\x12,\n" +
-	"\x03m26\x18& \x03(\v2\x1a.fastpb.test.Maps.M26EntryR\x03m26\x12,\n" +
-	"\x03m27\x18' \x03(\v2\x1a.fastpb.test.Maps.M27EntryR\x03m27\x12,\n" +
-	"\x03m28\x18( \x03(\v2\x1a.fastpb.test.Maps.M28EntryR\x03m28\x12,\n" +
-	"\x03m29\x18) \x03(\v2\x1a.fastpb.test.Maps.M29EntryR\x03m29\x12,\n" +
-	"\x03m2a\x18* \x03(\v2\x1a.fastpb.test.Maps.M2aEntryR\x03m2a\x12,\n" +
-	"\x03m2b\x18+ \x03(\v2\x1a.fastpb.test.Maps.M2bEntryR\x03m2b\x12,\n" +
-	"\x03m2c\x18, \x03(\v2\x1a.fastpb.test.Maps.M2cEntryR\x03m2c\x12,\n" +
-	"\x03m2d\x18- \x03(\v2\x1a.fastpb.test.Maps.M2dEntryR\x03m2d\x12,\n" +
-	"\x03m2e\x18. \x03(\v2\x1a.fastpb.test.Maps.M2eEntryR\x03m2e\x12,\n" +
-	"\x03m2f\x18/ \x03(\v2\x1a.fastpb.test.Maps.M2fEntryR\x03m2f\x12,\n" +
-	"\x03m30\x180 \x03(\v2\x1a.fastpb.test.Maps.M30EntryR\x03m30\x12,\n" +
-	"\x03m31\x181 \x03(\v2\x1a.fastpb.test.Maps.M31EntryR\x03m31\x12,\n" +
-	"\x03m32\x182 \x03(\v2\x1a.fastpb.test.Maps.M32EntryR\x03m32\x12,\n" +
-	"\x03m33\x183 \x03(\v2\x1a.fastpb.test.Maps.M33EntryR\x03m33\x12,\n" +
-	"\x03m34\x184 \x03(\v2\x1a.fastpb.test.Maps.M34EntryR\x03m34\x12,\n" +
-	"\x03m35\x185 \x03(\v2\x1a.fastpb.test.Maps.M35EntryR\x03m35\x12,\n" +
-	"\x03m36\x186 \x03(\v2\x1a.fastpb.test.Maps.M36EntryR\x03m36\x12,\n" +
-	"\x03m37\x187 \x03(\v2\x1a.fastpb.test.Maps.M37EntryR\x03m37\x12,\n" +
-	"\x03m38\x188 \x03(\v2\x1a.fastpb.test.Maps.M38EntryR\x03m38\x12,\n" +
-	"\x03m39\x189 \x03(\v2\x1a.fastpb.test.Maps.M39EntryR\x03m39\x12,\n" +
-	"\x03m3a\x18: \x03(\v2\x1a.fastpb.test.Maps.M3aEntryR\x03m3a\x12,\n" +
-	"\x03m3b\x18; \x03(\v2\x1a.fastpb.test.Maps.M3bEntryR\x03m3b\x12,\n" +
-	"\x03m3c\x18< \x03(\v2\x1a.fastpb.test.Maps.M3cEntryR\x03m3c\x12,\n" +
-	"\x03m3d\x18= \x03(\v2\x1a.fastpb.test.Maps.M3dEntryR\x03m3d\x12,\n" +
-	"\x03m3e\x18> \x03(\v2\x1a.fastpb.test.Maps.M3eEntryR\x03m3e\x12,\n" +
-	"\x03m3f\x18? \x03(\v2\x1a.fastpb.test.Maps.M3fEntryR\x03m3f\x12,\n" +
-	"\x03m40\x18@ \x03(\v2\x1a.fastpb.test.Maps.M40EntryR\x03m40\x12,\n" +
-	"\x03m41\x18A \x03(\v2\x1a.fastpb.test.Maps.M41EntryR\x03m41\x12,\n" +
-	"\x03m42\x18B \x03(\v2\x1a.fastpb.test.Maps.M42EntryR\x03m42\x12,\n" +
-	"\x03m43\x18C \x03(\v2\x1a.fastpb.test.Maps.M43EntryR\x03m43\x12,\n" +
-	"\x03m44\x18D \x03(\v2\x1a.fastpb.test.Maps.M44EntryR\x03m44\x12,\n" +
-	"\x03m45\x18E \x03(\v2\x1a.fastpb.test.Maps.M45EntryR\x03m45\x12,\n" +
-	"\x03m46\x18F \x03(\v2\x1a.fastpb.test.Maps.M46EntryR\x03m46\x12,\n" +
-	"\x03m47\x18G \x03(\v2\x1a.fastpb.test.Maps.M47EntryR\x03m47\x12,\n" +
-	"\x03m48\x18H \x03(\v2\x1a.fastpb.test.Maps.M48EntryR\x03m48\x12,\n" +
-	"\x03m49\x18I \x03(\v2\x1a.fastpb.test.Maps.M49EntryR\x03m49\x12,\n" +
-	"\x03m4a\x18J \x03(\v2\x1a.fastpb.test.Maps.M4aEntryR\x03m4a\x12,\n" +
-	"\x03m4b\x18K \x03(\v2\x1a.fastpb.test.Maps.M4bEntryR\x03m4b\x12,\n" +
-	"\x03m4c\x18L \x03(\v2\x1a.fastpb.test.Maps.M4cEntryR\x03m4c\x12,\n" +
-	"\x03m4d\x18M \x03(\v2\x1a.fastpb.test.Maps.M4dEntryR\x03m4d\x12,\n" +
-	"\x03m4e\x18N \x03(\v2\x1a.fastpb.test.Maps.M4eEntryR\x03m4e\x12,\n" +
-	"\x03m4f\x18O \x03(\v2\x1a.fastpb.test.Maps.M4fEntryR\x03m4f\x12,\n" +
-	"\x03m50\x18P \x03(\v2\x1a.fastpb.test.Maps.M50EntryR\x03m50\x12,\n" +
-	"\x03m51\x18Q \x03(\v2\x1a.fastpb.test.Maps.M51EntryR\x03m51\x12,\n" +
-	"\x03m52\x18R \x03(\v2\x1a.fastpb.test.Maps.M52EntryR\x03m52\x12,\n" +
-	"\x03m53\x18S \x03(\v2\x1a.fastpb.test.Maps.M53EntryR\x03m53\x12,\n" +
-	"\x03m54\x18T \x03(\v2\x1a.fastpb.test.Maps.M54EntryR\x03m54\x12,\n" +
-	"\x03m55\x18U \x03(\v2\x1a.fastpb.test.Maps.M55EntryR\x03m55\x12,\n" +
-	"\x03m56\x18V \x03(\v2\x1a.fastpb.test.Maps.M56EntryR\x03m56\x12,\n" +
-	"\x03m57\x18W \x03(\v2\x1a.fastpb.test.Maps.M57EntryR\x03m57\x12,\n" +
-	"\x03m58\x18X \x03(\v2\x1a.fastpb.test.Maps.M58EntryR\x03m58\x12,\n" +
-	"\x03m59\x18Y \x03(\v2\x1a.fastpb.test.Maps.M59EntryR\x03m59\x12,\n" +
-	"\x03m5a\x18Z \x03(\v2\x1a.fastpb.test.Maps.M5aEntryR\x03m5a\x12,\n" +
-	"\x03m5b\x18[ \x03(\v2\x1a.fastpb.test.Maps.M5bEntryR\x03m5b\x12,\n" +
-	"\x03m5c\x18\\ \x03(\v2\x1a.fastpb.test.Maps.M5cEntryR\x03m5c\x12,\n" +
-	"\x03m5d\x18] \x03(\v2\x1a.fastpb.test.Maps.M5dEntryR\x03m5d\x12,\n" +
-	"\x03m5e\x18^ \x03(\v2\x1a.fastpb.test.Maps.M5eEntryR\x03m5e\x12,\n" +
-	"\x03m5f\x18_ \x03(\v2\x1a.fastpb.test.Maps.M5fEntryR\x03m5f\x12,\n" +
-	"\x03m60\x18` \x03(\v2\x1a.fastpb.test.Maps.M60EntryR\x03m60\x12,\n" +
-	"\x03m61\x18a \x03(\v2\x1a.fastpb.test.Maps.M61EntryR\x03m61\x12,\n" +
-	"\x03m62\x18b \x03(\v2\x1a.fastpb.test.Maps.M62EntryR\x03m62\x12,\n" +
-	"\x03m63\x18c \x03(\v2\x1a.fastpb.test.Maps.M63EntryR\x03m63\x12,\n" +
-	"\x03m64\x18d \x03(\v2\x1a.fastpb.test.Maps.M64EntryR\x03m64\x12,\n" +
-	"\x03m65\x18e \x03(\v2\x1a.fastpb.test.Maps.M65EntryR\x03m65\x12,\n" +
-	"\x03m66\x18f \x03(\v2\x1a.fastpb.test.Maps.M66EntryR\x03m66\x12,\n" +
-	"\x03m67\x18g \x03(\v2\x1a.fastpb.test.Maps.M67EntryR\x03m67\x12,\n" +
-	"\x03m68\x18h \x03(\v2\x1a.fastpb.test.Maps.M68EntryR\x03m68\x12,\n" +
-	"\x03m69\x18i \x03(\v2\x1a.fastpb.test.Maps.M69EntryR\x03m69\x12,\n" +
-	"\x03m6a\x18j \x03(\v2\x1a.fastpb.test.Maps.M6aEntryR\x03m6a\x12,\n" +
-	"\x03m6b\x18k \x03(\v2\x1a.fastpb.test.Maps.M6bEntryR\x03m6b\x12,\n" +
-	"\x03m6c\x18l \x03(\v2\x1a.fastpb.test.Maps.M6cEntryR\x03m6c\x12,\n" +
-	"\x03m6d\x18m \x03(\v2\x1a.fastpb.test.Maps.M6dEntryR\x03m6d\x12,\n" +
-	"\x03m6e\x18n \x03(\v2\x1a.fastpb.test.Maps.M6eEntryR\x03m6e\x12,\n" +
-	"\x03m6f\x18o \x03(\v2\x1a.fastpb.test.Maps.M6fEntryR\x03m6f\x12,\n" +
-	"\x03m70\x18p \x03(\v2\x1a.fastpb.test.Maps.M70EntryR\x03m70\x12,\n" +
-	"\x03m71\x18q \x03(\v2\x1a.fastpb.test.Maps.M71EntryR\x03m71\x12,\n" +
-	"\x03m72\x18r \x03(\v2\x1a.fastpb.test.Maps.M72EntryR\x03m72\x12,\n" +
-	"\x03m73\x18s \x03(\v2\x1a.fastpb.test.Maps.M73EntryR\x03m73\x12,\n" +
-	"\x03m74\x18t \x03(\v2\x1a.fastpb.test.Maps.M74EntryR\x03m74\x12,\n" +
-	"\x03m75\x18u \x03(\v2\x1a.fastpb.test.Maps.M75EntryR\x03m75\x12,\n" +
-	"\x03m76\x18v \x03(\v2\x1a.fastpb.test.Maps.M76EntryR\x03m76\x12,\n" +
-	"\x03m77\x18w \x03(\v2\x1a.fastpb.test.Maps.M77EntryR\x03m77\x12,\n" +
-	"\x03m78\x18x \x03(\v2\x1a.fastpb.test.Maps.M78EntryR\x03m78\x12,\n" +
-	"\x03m79\x18y \x03(\v2\x1a.fastpb.test.Maps.M79EntryR\x03m79\x12,\n" +
-	"\x03m7a\x18z \x03(\v2\x1a.fastpb.test.Maps.M7aEntryR\x03m7a\x12,\n" +
-	"\x03m7b\x18{ \x03(\v2\x1a.fastpb.test.Maps.M7bEntryR\x03m7b\x12,\n" +
-	"\x03m7c\x18| \x03(\v2\x1a.fastpb.test.Maps.M7cEntryR\x03m7c\x12,\n" +
-	"\x03m7d\x18} \x03(\v2\x1a.fastpb.test.Maps.M7dEntryR\x03m7d\x12,\n" +
-	"\x03m7e\x18~ \x03(\v2\x1a.fastpb.test.Maps.M7eEntryR\x03m7e\x12,\n" +
-	"\x03m7f\x18\x7f \x03(\v2\x1a.fastpb.test.Maps.M7fEntryR\x03m7f\x12-\n" +
-	"\x03m80\x18\x80\x01 \x03(\v2\x1a.fastpb.test.Maps.M80EntryR\x03m80\x12-\n" +
-	"\x03m81\x18\x81\x01 \x03(\v2\x1a.fastpb.test.Maps.M81EntryR\x03m81\x12-\n" +
-	"\x03m82\x18\x82\x01 \x03(\v2\x1a.fastpb.test.Maps.M82EntryR\x03m82\x12-\n" +
-	"\x03m83\x18\x83\x01 \x03(\v2\x1a.fastpb.test.Maps.M83EntryR\x03m83\x12-\n" +
-	"\x03m84\x18\x84\x01 \x03(\v2\x1a.fastpb.test.Maps.M84EntryR\x03m84\x12-\n" +
-	"\x03m85\x18\x85\x01 \x03(\v2\x1a.fastpb.test.Maps.M85EntryR\x03m85\x12-\n" +
-	"\x03m86\x18\x86\x01 \x03(\v2\x1a.fastpb.test.Maps.M86EntryR\x03m86\x12-\n" +
-	"\x03m87\x18\x87\x01 \x03(\v2\x1a.fastpb.test.Maps.M87EntryR\x03m87\x12-\n" +
-	"\x03m88\x18\x88\x01 \x03(\v2\x1a.fastpb.test.Maps.M88EntryR\x03m88\x12-\n" +
-	"\x03m89\x18\x89\x01 \x03(\v2\x1a.fastpb.test.Maps.M89EntryR\x03m89\x12-\n" +
-	"\x03m8a\x18\x8a\x01 \x03(\v2\x1a.fastpb.test.Maps.M8aEntryR\x03m8a\x12-\n" +
-	"\x03m8b\x18\x8b\x01 \x03(\v2\x1a.fastpb.test.Maps.M8bEntryR\x03m8b\x12-\n" +
-	"\x03m8c\x18\x8c\x01 \x03(\v2\x1a.fastpb.test.Maps.M8cEntryR\x03m8c\x12-\n" +
-	"\x03m8d\x18\x8d\x01 \x03(\v2\x1a.fastpb.test.Maps.M8dEntryR\x03m8d\x12-\n" +
-	"\x03m8e\x18\x8e\x01 \x03(\v2\x1a.fastpb.test.Maps.M8eEntryR\x03m8e\x12-\n" +
-	"\x03m8f\x18\x8f\x01 \x03(\v2\x1a.fastpb.test.Maps.M8fEntryR\x03m8f\x12-\n" +
-	"\x03m90\x18\x90\x01 \x03(\v2\x1a.fastpb.test.Maps.M90EntryR\x03m90\x12-\n" +
-	"\x03m91\x18\x91\x01 \x03(\v2\x1a.fastpb.test.Maps.M91EntryR\x03m91\x12-\n" +
-	"\x03m92\x18\x92\x01 \x03(\v2\x1a.fastpb.test.Maps.M92EntryR\x03m92\x12-\n" +
-	"\x03m93\x18\x93\x01 \x03(\v2\x1a.fastpb.test.Maps.M93EntryR\x03m93\x12-\n" +
-	"\x03m94\x18\x94\x01 \x03(\v2\x1a.fastpb.test.Maps.M94EntryR\x03m94\x12-\n" +
-	"\x03m95\x18\x95\x01 \x03(\v2\x1a.fastpb.test.Maps.M95EntryR\x03m95\x12-\n" +
-	"\x03m96\x18\x96\x01 \x03(\v2\x1a.fastpb.test.Maps.M96EntryR\x03m96\x12-\n" +
-	"\x03m97\x18\x97\x01 \x03(\v2\x1a.fastpb.test.Maps.M97EntryR\x03m97\x12-\n" +
-	"\x03m98\x18\x98\x01 \x03(\v2\x1a.fastpb.test.Maps.M98EntryR\x03m98\x12-\n" +
-	"\x03m99\x18\x99\x01 \x03(\v2\x1a.fastpb.test.Maps.M99EntryR\x03m99\x12-\n" +
-	"\x03m9a\x18\x9a\x01 \x03(\v2\x1a.fastpb.test.Maps.M9aEntryR\x03m9a\x12-\n" +
-	"\x03m9b\x18\x9b\x01 \x03(\v2\x1a.fastpb.test.Maps.M9bEntryR\x03m9b\x12-\n" +
-	"\x03m9c\x18\x9c\x01 \x03(\v2\x1a.fastpb.test.Maps.M9cEntryR\x03m9c\x12-\n" +
-	"\x03m9d\x18\x9d\x01 \x03(\v2\x1a.fastpb.test.Maps.M9dEntryR\x03m9d\x12-\n" +
-	"\x03m9e\x18\x9e\x01 \x03(\v2\x1a.fastpb.test.Maps.M9eEntryR\x03m9e\x12-\n" +
-	"\x03m9f\x18\x9f\x01 \x03(\v2\x1a.fastpb.test.Maps.M9fEntryR\x03m9f\x12-\n" +
-	"\x03ma0\x18\xa0\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma0EntryR\x03ma0\x12-\n" +
-	"\x03ma1\x18\xa1\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma1EntryR\x03ma1\x12-\n" +
-	"\x03ma2\x18\xa2\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma2EntryR\x03ma2\x12-\n" +
-	"\x03ma3\x18\xa3\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma3EntryR\x03ma3\x12-\n" +
-	"\x03ma4\x18\xa4\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma4EntryR\x03ma4\x12-\n" +
-	"\x03ma5\x18\xa5\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma5EntryR\x03ma5\x12-\n" +
-	"\x03ma6\x18\xa6\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma6EntryR\x03ma6\x12-\n" +
-	"\x03ma7\x18\xa7\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma7EntryR\x03ma7\x12-\n" +
-	"\x03ma8\x18\xa8\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma8EntryR\x03ma8\x12-\n" +
-	"\x03ma9\x18\xa9\x01 \x03(\v2\x1a.fastpb.test.Maps.Ma9EntryR\x03ma9\x12-\n" +
-	"\x03maa\x18\xaa\x01 \x03(\v2\x1a.fastpb.test.Maps.MaaEntryR\x03maa\x12-\n" +
-	"\x03mab\x18\xab\x01 \x03(\v2\x1a.fastpb.test.Maps.MabEntryR\x03mab\x12-\n" +
-	"\x03mac\x18\xac\x01 \x03(\v2\x1a.fastpb.test.Maps.MacEntryR\x03mac\x12-\n" +
-	"\x03mad\x18\xad\x01 \x03(\v2\x1a.fastpb.test.Maps.MadEntryR\x03mad\x12-\n" +
-	"\x03mae\x18\xae\x01 \x03(\v2\x1a.fastpb.test.Maps.MaeEntryR\x03mae\x12-\n" +
-	"\x03maf\x18\xaf\x01 \x03(\v2\x1a.fastpb.test.Maps.MafEntryR\x03maf\x12-\n" +
-	"\x03mb0\x18\xb0\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb0EntryR\x03mb0\x12-\n" +
-	"\x03mb1\x18\xb1\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb1EntryR\x03mb1\x12-\n" +
-	"\x03mb2\x18\xb2\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb2EntryR\x03mb2\x12-\n" +
-	"\x03mb3\x18\xb3\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb3EntryR\x03mb3\x12-\n" +
-	"\x03mb4\x18\xb4\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb4EntryR\x03mb4\x12-\n" +
-	"\x03mb5\x18\xb5\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb5EntryR\x03mb5\x12-\n" +
-	"\x03mb6\x18\xb6\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb6EntryR\x03mb6\x12-\n" +
-	"\x03mb7\x18\xb7\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb7EntryR\x03mb7\x12-\n" +
-	"\x03mb8\x18\xb8\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb8EntryR\x03mb8\x12-\n" +
-	"\x03mb9\x18\xb9\x01 \x03(\v2\x1a.fastpb.test.Maps.Mb9EntryR\x03mb9\x12-\n" +
-	"\x03mba\x18\xba\x01 \x03(\v2\x1a.fastpb.test.Maps.MbaEntryR\x03mba\x12-\n" +
-	"\x03mbb\x18\xbb\x01 \x03(\v2\x1a.fastpb.test.Maps.MbbEntryR\x03mbb\x12-\n" +
-	"\x03mbc\x18\xbc\x01 \x03(\v2\x1a.fastpb.test.Maps.MbcEntryR\x03mbc\x12-\n" +
-	"\x03mbd\x18\xbd\x01 \x03(\v2\x1a.fastpb.test.Maps.MbdEntryR\x03mbd\x12-\n" +
-	"\x03mbe\x18\xbe\x01 \x03(\v2\x1a.fastpb.test.Maps.MbeEntryR\x03mbe\x12-\n" +
-	"\x03mbf\x18\xbf\x01 \x03(\v2\x1a.fastpb.test.Maps.MbfEntryR\x03mbf\x12-\n" +
-	"\x03mc0\x18\xc0\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc0EntryR\x03mc0\x12-\n" +
-	"\x03mc1\x18\xc1\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc1EntryR\x03mc1\x12-\n" +
-	"\x03mc2\x18\xc2\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc2EntryR\x03mc2\x12-\n" +
-	"\x03mc3\x18\xc3\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc3EntryR\x03mc3\x12-\n" +
-	"\x03mc4\x18\xc4\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc4EntryR\x03mc4\x12-\n" +
-	"\x03mc5\x18\xc5\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc5EntryR\x03mc5\x12-\n" +
-	"\x03mc6\x18\xc6\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc6EntryR\x03mc6\x12-\n" +
-	"\x03mc7\x18\xc7\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc7EntryR\x03mc7\x12-\n" +
-	"\x03mc8\x18\xc8\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc8EntryR\x03mc8\x12-\n" +
-	"\x03mc9\x18\xc9\x01 \x03(\v2\x1a.fastpb.test.Maps.Mc9EntryR\x03mc9\x12-\n" +
-	"\x03mca\x18\xca\x01 \x03(\v2\x1a.fastpb.test.Maps.McaEntryR\x03mca\x12-\n" +
-	"\x03mcb\x18\xcb\x01 \x03(\v2\x1a.fastpb.test.Maps.McbEntryR\x03mcb\x12-\n" +
-	"\x03mcc\x18\xcc\x01 \x03(\v2\x1a.fastpb.test.Maps.MccEntryR\x03mcc\x12-\n" +
-	"\x03mcd\x18\xcd\x01 \x03(\v2\x1a.fastpb.test.Maps.McdEntryR\x03mcd\x12-\n" +
-	"\x03mce\x18\xce\x01 \x03(\v2\x1a.fastpb.test.Maps.MceEntryR\x03mce\x12-\n" +
-	"\x03mcf\x18\xcf\x01 \x03(\v2\x1a.fastpb.test.Maps.McfEntryR\x03mcf\x1a6\n" +
+	"\x05multi\"\x86\x9d\x01\n" +
+	"\x04Maps\x12-\n" +
+	"\x03m10\x18\x10 \x03(\v2\x1b.hyperpb.test.Maps.M10EntryR\x03m10\x12-\n" +
+	"\x03m11\x18\x11 \x03(\v2\x1b.hyperpb.test.Maps.M11EntryR\x03m11\x12-\n" +
+	"\x03m12\x18\x12 \x03(\v2\x1b.hyperpb.test.Maps.M12EntryR\x03m12\x12-\n" +
+	"\x03m13\x18\x13 \x03(\v2\x1b.hyperpb.test.Maps.M13EntryR\x03m13\x12-\n" +
+	"\x03m14\x18\x14 \x03(\v2\x1b.hyperpb.test.Maps.M14EntryR\x03m14\x12-\n" +
+	"\x03m15\x18\x15 \x03(\v2\x1b.hyperpb.test.Maps.M15EntryR\x03m15\x12-\n" +
+	"\x03m16\x18\x16 \x03(\v2\x1b.hyperpb.test.Maps.M16EntryR\x03m16\x12-\n" +
+	"\x03m17\x18\x17 \x03(\v2\x1b.hyperpb.test.Maps.M17EntryR\x03m17\x12-\n" +
+	"\x03m18\x18\x18 \x03(\v2\x1b.hyperpb.test.Maps.M18EntryR\x03m18\x12-\n" +
+	"\x03m19\x18\x19 \x03(\v2\x1b.hyperpb.test.Maps.M19EntryR\x03m19\x12-\n" +
+	"\x03m1a\x18\x1a \x03(\v2\x1b.hyperpb.test.Maps.M1aEntryR\x03m1a\x12-\n" +
+	"\x03m1b\x18\x1b \x03(\v2\x1b.hyperpb.test.Maps.M1bEntryR\x03m1b\x12-\n" +
+	"\x03m1c\x18\x1c \x03(\v2\x1b.hyperpb.test.Maps.M1cEntryR\x03m1c\x12-\n" +
+	"\x03m1d\x18\x1d \x03(\v2\x1b.hyperpb.test.Maps.M1dEntryR\x03m1d\x12-\n" +
+	"\x03m1e\x18\x1e \x03(\v2\x1b.hyperpb.test.Maps.M1eEntryR\x03m1e\x12-\n" +
+	"\x03m1f\x18\x1f \x03(\v2\x1b.hyperpb.test.Maps.M1fEntryR\x03m1f\x12-\n" +
+	"\x03m20\x18  \x03(\v2\x1b.hyperpb.test.Maps.M20EntryR\x03m20\x12-\n" +
+	"\x03m21\x18! \x03(\v2\x1b.hyperpb.test.Maps.M21EntryR\x03m21\x12-\n" +
+	"\x03m22\x18\" \x03(\v2\x1b.hyperpb.test.Maps.M22EntryR\x03m22\x12-\n" +
+	"\x03m23\x18# \x03(\v2\x1b.hyperpb.test.Maps.M23EntryR\x03m23\x12-\n" +
+	"\x03m24\x18$ \x03(\v2\x1b.hyperpb.test.Maps.M24EntryR\x03m24\x12-\n" +
+	"\x03m25\x18% \x03(\v2\x1b.hyperpb.test.Maps.M25EntryR\x03m25\x12-\n" +
+	"\x03m26\x18& \x03(\v2\x1b.hyperpb.test.Maps.M26EntryR\x03m26\x12-\n" +
+	"\x03m27\x18' \x03(\v2\x1b.hyperpb.test.Maps.M27EntryR\x03m27\x12-\n" +
+	"\x03m28\x18( \x03(\v2\x1b.hyperpb.test.Maps.M28EntryR\x03m28\x12-\n" +
+	"\x03m29\x18) \x03(\v2\x1b.hyperpb.test.Maps.M29EntryR\x03m29\x12-\n" +
+	"\x03m2a\x18* \x03(\v2\x1b.hyperpb.test.Maps.M2aEntryR\x03m2a\x12-\n" +
+	"\x03m2b\x18+ \x03(\v2\x1b.hyperpb.test.Maps.M2bEntryR\x03m2b\x12-\n" +
+	"\x03m2c\x18, \x03(\v2\x1b.hyperpb.test.Maps.M2cEntryR\x03m2c\x12-\n" +
+	"\x03m2d\x18- \x03(\v2\x1b.hyperpb.test.Maps.M2dEntryR\x03m2d\x12-\n" +
+	"\x03m2e\x18. \x03(\v2\x1b.hyperpb.test.Maps.M2eEntryR\x03m2e\x12-\n" +
+	"\x03m2f\x18/ \x03(\v2\x1b.hyperpb.test.Maps.M2fEntryR\x03m2f\x12-\n" +
+	"\x03m30\x180 \x03(\v2\x1b.hyperpb.test.Maps.M30EntryR\x03m30\x12-\n" +
+	"\x03m31\x181 \x03(\v2\x1b.hyperpb.test.Maps.M31EntryR\x03m31\x12-\n" +
+	"\x03m32\x182 \x03(\v2\x1b.hyperpb.test.Maps.M32EntryR\x03m32\x12-\n" +
+	"\x03m33\x183 \x03(\v2\x1b.hyperpb.test.Maps.M33EntryR\x03m33\x12-\n" +
+	"\x03m34\x184 \x03(\v2\x1b.hyperpb.test.Maps.M34EntryR\x03m34\x12-\n" +
+	"\x03m35\x185 \x03(\v2\x1b.hyperpb.test.Maps.M35EntryR\x03m35\x12-\n" +
+	"\x03m36\x186 \x03(\v2\x1b.hyperpb.test.Maps.M36EntryR\x03m36\x12-\n" +
+	"\x03m37\x187 \x03(\v2\x1b.hyperpb.test.Maps.M37EntryR\x03m37\x12-\n" +
+	"\x03m38\x188 \x03(\v2\x1b.hyperpb.test.Maps.M38EntryR\x03m38\x12-\n" +
+	"\x03m39\x189 \x03(\v2\x1b.hyperpb.test.Maps.M39EntryR\x03m39\x12-\n" +
+	"\x03m3a\x18: \x03(\v2\x1b.hyperpb.test.Maps.M3aEntryR\x03m3a\x12-\n" +
+	"\x03m3b\x18; \x03(\v2\x1b.hyperpb.test.Maps.M3bEntryR\x03m3b\x12-\n" +
+	"\x03m3c\x18< \x03(\v2\x1b.hyperpb.test.Maps.M3cEntryR\x03m3c\x12-\n" +
+	"\x03m3d\x18= \x03(\v2\x1b.hyperpb.test.Maps.M3dEntryR\x03m3d\x12-\n" +
+	"\x03m3e\x18> \x03(\v2\x1b.hyperpb.test.Maps.M3eEntryR\x03m3e\x12-\n" +
+	"\x03m3f\x18? \x03(\v2\x1b.hyperpb.test.Maps.M3fEntryR\x03m3f\x12-\n" +
+	"\x03m40\x18@ \x03(\v2\x1b.hyperpb.test.Maps.M40EntryR\x03m40\x12-\n" +
+	"\x03m41\x18A \x03(\v2\x1b.hyperpb.test.Maps.M41EntryR\x03m41\x12-\n" +
+	"\x03m42\x18B \x03(\v2\x1b.hyperpb.test.Maps.M42EntryR\x03m42\x12-\n" +
+	"\x03m43\x18C \x03(\v2\x1b.hyperpb.test.Maps.M43EntryR\x03m43\x12-\n" +
+	"\x03m44\x18D \x03(\v2\x1b.hyperpb.test.Maps.M44EntryR\x03m44\x12-\n" +
+	"\x03m45\x18E \x03(\v2\x1b.hyperpb.test.Maps.M45EntryR\x03m45\x12-\n" +
+	"\x03m46\x18F \x03(\v2\x1b.hyperpb.test.Maps.M46EntryR\x03m46\x12-\n" +
+	"\x03m47\x18G \x03(\v2\x1b.hyperpb.test.Maps.M47EntryR\x03m47\x12-\n" +
+	"\x03m48\x18H \x03(\v2\x1b.hyperpb.test.Maps.M48EntryR\x03m48\x12-\n" +
+	"\x03m49\x18I \x03(\v2\x1b.hyperpb.test.Maps.M49EntryR\x03m49\x12-\n" +
+	"\x03m4a\x18J \x03(\v2\x1b.hyperpb.test.Maps.M4aEntryR\x03m4a\x12-\n" +
+	"\x03m4b\x18K \x03(\v2\x1b.hyperpb.test.Maps.M4bEntryR\x03m4b\x12-\n" +
+	"\x03m4c\x18L \x03(\v2\x1b.hyperpb.test.Maps.M4cEntryR\x03m4c\x12-\n" +
+	"\x03m4d\x18M \x03(\v2\x1b.hyperpb.test.Maps.M4dEntryR\x03m4d\x12-\n" +
+	"\x03m4e\x18N \x03(\v2\x1b.hyperpb.test.Maps.M4eEntryR\x03m4e\x12-\n" +
+	"\x03m4f\x18O \x03(\v2\x1b.hyperpb.test.Maps.M4fEntryR\x03m4f\x12-\n" +
+	"\x03m50\x18P \x03(\v2\x1b.hyperpb.test.Maps.M50EntryR\x03m50\x12-\n" +
+	"\x03m51\x18Q \x03(\v2\x1b.hyperpb.test.Maps.M51EntryR\x03m51\x12-\n" +
+	"\x03m52\x18R \x03(\v2\x1b.hyperpb.test.Maps.M52EntryR\x03m52\x12-\n" +
+	"\x03m53\x18S \x03(\v2\x1b.hyperpb.test.Maps.M53EntryR\x03m53\x12-\n" +
+	"\x03m54\x18T \x03(\v2\x1b.hyperpb.test.Maps.M54EntryR\x03m54\x12-\n" +
+	"\x03m55\x18U \x03(\v2\x1b.hyperpb.test.Maps.M55EntryR\x03m55\x12-\n" +
+	"\x03m56\x18V \x03(\v2\x1b.hyperpb.test.Maps.M56EntryR\x03m56\x12-\n" +
+	"\x03m57\x18W \x03(\v2\x1b.hyperpb.test.Maps.M57EntryR\x03m57\x12-\n" +
+	"\x03m58\x18X \x03(\v2\x1b.hyperpb.test.Maps.M58EntryR\x03m58\x12-\n" +
+	"\x03m59\x18Y \x03(\v2\x1b.hyperpb.test.Maps.M59EntryR\x03m59\x12-\n" +
+	"\x03m5a\x18Z \x03(\v2\x1b.hyperpb.test.Maps.M5aEntryR\x03m5a\x12-\n" +
+	"\x03m5b\x18[ \x03(\v2\x1b.hyperpb.test.Maps.M5bEntryR\x03m5b\x12-\n" +
+	"\x03m5c\x18\\ \x03(\v2\x1b.hyperpb.test.Maps.M5cEntryR\x03m5c\x12-\n" +
+	"\x03m5d\x18] \x03(\v2\x1b.hyperpb.test.Maps.M5dEntryR\x03m5d\x12-\n" +
+	"\x03m5e\x18^ \x03(\v2\x1b.hyperpb.test.Maps.M5eEntryR\x03m5e\x12-\n" +
+	"\x03m5f\x18_ \x03(\v2\x1b.hyperpb.test.Maps.M5fEntryR\x03m5f\x12-\n" +
+	"\x03m60\x18` \x03(\v2\x1b.hyperpb.test.Maps.M60EntryR\x03m60\x12-\n" +
+	"\x03m61\x18a \x03(\v2\x1b.hyperpb.test.Maps.M61EntryR\x03m61\x12-\n" +
+	"\x03m62\x18b \x03(\v2\x1b.hyperpb.test.Maps.M62EntryR\x03m62\x12-\n" +
+	"\x03m63\x18c \x03(\v2\x1b.hyperpb.test.Maps.M63EntryR\x03m63\x12-\n" +
+	"\x03m64\x18d \x03(\v2\x1b.hyperpb.test.Maps.M64EntryR\x03m64\x12-\n" +
+	"\x03m65\x18e \x03(\v2\x1b.hyperpb.test.Maps.M65EntryR\x03m65\x12-\n" +
+	"\x03m66\x18f \x03(\v2\x1b.hyperpb.test.Maps.M66EntryR\x03m66\x12-\n" +
+	"\x03m67\x18g \x03(\v2\x1b.hyperpb.test.Maps.M67EntryR\x03m67\x12-\n" +
+	"\x03m68\x18h \x03(\v2\x1b.hyperpb.test.Maps.M68EntryR\x03m68\x12-\n" +
+	"\x03m69\x18i \x03(\v2\x1b.hyperpb.test.Maps.M69EntryR\x03m69\x12-\n" +
+	"\x03m6a\x18j \x03(\v2\x1b.hyperpb.test.Maps.M6aEntryR\x03m6a\x12-\n" +
+	"\x03m6b\x18k \x03(\v2\x1b.hyperpb.test.Maps.M6bEntryR\x03m6b\x12-\n" +
+	"\x03m6c\x18l \x03(\v2\x1b.hyperpb.test.Maps.M6cEntryR\x03m6c\x12-\n" +
+	"\x03m6d\x18m \x03(\v2\x1b.hyperpb.test.Maps.M6dEntryR\x03m6d\x12-\n" +
+	"\x03m6e\x18n \x03(\v2\x1b.hyperpb.test.Maps.M6eEntryR\x03m6e\x12-\n" +
+	"\x03m6f\x18o \x03(\v2\x1b.hyperpb.test.Maps.M6fEntryR\x03m6f\x12-\n" +
+	"\x03m70\x18p \x03(\v2\x1b.hyperpb.test.Maps.M70EntryR\x03m70\x12-\n" +
+	"\x03m71\x18q \x03(\v2\x1b.hyperpb.test.Maps.M71EntryR\x03m71\x12-\n" +
+	"\x03m72\x18r \x03(\v2\x1b.hyperpb.test.Maps.M72EntryR\x03m72\x12-\n" +
+	"\x03m73\x18s \x03(\v2\x1b.hyperpb.test.Maps.M73EntryR\x03m73\x12-\n" +
+	"\x03m74\x18t \x03(\v2\x1b.hyperpb.test.Maps.M74EntryR\x03m74\x12-\n" +
+	"\x03m75\x18u \x03(\v2\x1b.hyperpb.test.Maps.M75EntryR\x03m75\x12-\n" +
+	"\x03m76\x18v \x03(\v2\x1b.hyperpb.test.Maps.M76EntryR\x03m76\x12-\n" +
+	"\x03m77\x18w \x03(\v2\x1b.hyperpb.test.Maps.M77EntryR\x03m77\x12-\n" +
+	"\x03m78\x18x \x03(\v2\x1b.hyperpb.test.Maps.M78EntryR\x03m78\x12-\n" +
+	"\x03m79\x18y \x03(\v2\x1b.hyperpb.test.Maps.M79EntryR\x03m79\x12-\n" +
+	"\x03m7a\x18z \x03(\v2\x1b.hyperpb.test.Maps.M7aEntryR\x03m7a\x12-\n" +
+	"\x03m7b\x18{ \x03(\v2\x1b.hyperpb.test.Maps.M7bEntryR\x03m7b\x12-\n" +
+	"\x03m7c\x18| \x03(\v2\x1b.hyperpb.test.Maps.M7cEntryR\x03m7c\x12-\n" +
+	"\x03m7d\x18} \x03(\v2\x1b.hyperpb.test.Maps.M7dEntryR\x03m7d\x12-\n" +
+	"\x03m7e\x18~ \x03(\v2\x1b.hyperpb.test.Maps.M7eEntryR\x03m7e\x12-\n" +
+	"\x03m7f\x18\x7f \x03(\v2\x1b.hyperpb.test.Maps.M7fEntryR\x03m7f\x12.\n" +
+	"\x03m80\x18\x80\x01 \x03(\v2\x1b.hyperpb.test.Maps.M80EntryR\x03m80\x12.\n" +
+	"\x03m81\x18\x81\x01 \x03(\v2\x1b.hyperpb.test.Maps.M81EntryR\x03m81\x12.\n" +
+	"\x03m82\x18\x82\x01 \x03(\v2\x1b.hyperpb.test.Maps.M82EntryR\x03m82\x12.\n" +
+	"\x03m83\x18\x83\x01 \x03(\v2\x1b.hyperpb.test.Maps.M83EntryR\x03m83\x12.\n" +
+	"\x03m84\x18\x84\x01 \x03(\v2\x1b.hyperpb.test.Maps.M84EntryR\x03m84\x12.\n" +
+	"\x03m85\x18\x85\x01 \x03(\v2\x1b.hyperpb.test.Maps.M85EntryR\x03m85\x12.\n" +
+	"\x03m86\x18\x86\x01 \x03(\v2\x1b.hyperpb.test.Maps.M86EntryR\x03m86\x12.\n" +
+	"\x03m87\x18\x87\x01 \x03(\v2\x1b.hyperpb.test.Maps.M87EntryR\x03m87\x12.\n" +
+	"\x03m88\x18\x88\x01 \x03(\v2\x1b.hyperpb.test.Maps.M88EntryR\x03m88\x12.\n" +
+	"\x03m89\x18\x89\x01 \x03(\v2\x1b.hyperpb.test.Maps.M89EntryR\x03m89\x12.\n" +
+	"\x03m8a\x18\x8a\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8aEntryR\x03m8a\x12.\n" +
+	"\x03m8b\x18\x8b\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8bEntryR\x03m8b\x12.\n" +
+	"\x03m8c\x18\x8c\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8cEntryR\x03m8c\x12.\n" +
+	"\x03m8d\x18\x8d\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8dEntryR\x03m8d\x12.\n" +
+	"\x03m8e\x18\x8e\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8eEntryR\x03m8e\x12.\n" +
+	"\x03m8f\x18\x8f\x01 \x03(\v2\x1b.hyperpb.test.Maps.M8fEntryR\x03m8f\x12.\n" +
+	"\x03m90\x18\x90\x01 \x03(\v2\x1b.hyperpb.test.Maps.M90EntryR\x03m90\x12.\n" +
+	"\x03m91\x18\x91\x01 \x03(\v2\x1b.hyperpb.test.Maps.M91EntryR\x03m91\x12.\n" +
+	"\x03m92\x18\x92\x01 \x03(\v2\x1b.hyperpb.test.Maps.M92EntryR\x03m92\x12.\n" +
+	"\x03m93\x18\x93\x01 \x03(\v2\x1b.hyperpb.test.Maps.M93EntryR\x03m93\x12.\n" +
+	"\x03m94\x18\x94\x01 \x03(\v2\x1b.hyperpb.test.Maps.M94EntryR\x03m94\x12.\n" +
+	"\x03m95\x18\x95\x01 \x03(\v2\x1b.hyperpb.test.Maps.M95EntryR\x03m95\x12.\n" +
+	"\x03m96\x18\x96\x01 \x03(\v2\x1b.hyperpb.test.Maps.M96EntryR\x03m96\x12.\n" +
+	"\x03m97\x18\x97\x01 \x03(\v2\x1b.hyperpb.test.Maps.M97EntryR\x03m97\x12.\n" +
+	"\x03m98\x18\x98\x01 \x03(\v2\x1b.hyperpb.test.Maps.M98EntryR\x03m98\x12.\n" +
+	"\x03m99\x18\x99\x01 \x03(\v2\x1b.hyperpb.test.Maps.M99EntryR\x03m99\x12.\n" +
+	"\x03m9a\x18\x9a\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9aEntryR\x03m9a\x12.\n" +
+	"\x03m9b\x18\x9b\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9bEntryR\x03m9b\x12.\n" +
+	"\x03m9c\x18\x9c\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9cEntryR\x03m9c\x12.\n" +
+	"\x03m9d\x18\x9d\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9dEntryR\x03m9d\x12.\n" +
+	"\x03m9e\x18\x9e\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9eEntryR\x03m9e\x12.\n" +
+	"\x03m9f\x18\x9f\x01 \x03(\v2\x1b.hyperpb.test.Maps.M9fEntryR\x03m9f\x12.\n" +
+	"\x03ma0\x18\xa0\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma0EntryR\x03ma0\x12.\n" +
+	"\x03ma1\x18\xa1\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma1EntryR\x03ma1\x12.\n" +
+	"\x03ma2\x18\xa2\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma2EntryR\x03ma2\x12.\n" +
+	"\x03ma3\x18\xa3\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma3EntryR\x03ma3\x12.\n" +
+	"\x03ma4\x18\xa4\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma4EntryR\x03ma4\x12.\n" +
+	"\x03ma5\x18\xa5\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma5EntryR\x03ma5\x12.\n" +
+	"\x03ma6\x18\xa6\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma6EntryR\x03ma6\x12.\n" +
+	"\x03ma7\x18\xa7\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma7EntryR\x03ma7\x12.\n" +
+	"\x03ma8\x18\xa8\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma8EntryR\x03ma8\x12.\n" +
+	"\x03ma9\x18\xa9\x01 \x03(\v2\x1b.hyperpb.test.Maps.Ma9EntryR\x03ma9\x12.\n" +
+	"\x03maa\x18\xaa\x01 \x03(\v2\x1b.hyperpb.test.Maps.MaaEntryR\x03maa\x12.\n" +
+	"\x03mab\x18\xab\x01 \x03(\v2\x1b.hyperpb.test.Maps.MabEntryR\x03mab\x12.\n" +
+	"\x03mac\x18\xac\x01 \x03(\v2\x1b.hyperpb.test.Maps.MacEntryR\x03mac\x12.\n" +
+	"\x03mad\x18\xad\x01 \x03(\v2\x1b.hyperpb.test.Maps.MadEntryR\x03mad\x12.\n" +
+	"\x03mae\x18\xae\x01 \x03(\v2\x1b.hyperpb.test.Maps.MaeEntryR\x03mae\x12.\n" +
+	"\x03maf\x18\xaf\x01 \x03(\v2\x1b.hyperpb.test.Maps.MafEntryR\x03maf\x12.\n" +
+	"\x03mb0\x18\xb0\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb0EntryR\x03mb0\x12.\n" +
+	"\x03mb1\x18\xb1\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb1EntryR\x03mb1\x12.\n" +
+	"\x03mb2\x18\xb2\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb2EntryR\x03mb2\x12.\n" +
+	"\x03mb3\x18\xb3\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb3EntryR\x03mb3\x12.\n" +
+	"\x03mb4\x18\xb4\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb4EntryR\x03mb4\x12.\n" +
+	"\x03mb5\x18\xb5\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb5EntryR\x03mb5\x12.\n" +
+	"\x03mb6\x18\xb6\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb6EntryR\x03mb6\x12.\n" +
+	"\x03mb7\x18\xb7\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb7EntryR\x03mb7\x12.\n" +
+	"\x03mb8\x18\xb8\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb8EntryR\x03mb8\x12.\n" +
+	"\x03mb9\x18\xb9\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mb9EntryR\x03mb9\x12.\n" +
+	"\x03mba\x18\xba\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbaEntryR\x03mba\x12.\n" +
+	"\x03mbb\x18\xbb\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbbEntryR\x03mbb\x12.\n" +
+	"\x03mbc\x18\xbc\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbcEntryR\x03mbc\x12.\n" +
+	"\x03mbd\x18\xbd\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbdEntryR\x03mbd\x12.\n" +
+	"\x03mbe\x18\xbe\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbeEntryR\x03mbe\x12.\n" +
+	"\x03mbf\x18\xbf\x01 \x03(\v2\x1b.hyperpb.test.Maps.MbfEntryR\x03mbf\x12.\n" +
+	"\x03mc0\x18\xc0\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc0EntryR\x03mc0\x12.\n" +
+	"\x03mc1\x18\xc1\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc1EntryR\x03mc1\x12.\n" +
+	"\x03mc2\x18\xc2\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc2EntryR\x03mc2\x12.\n" +
+	"\x03mc3\x18\xc3\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc3EntryR\x03mc3\x12.\n" +
+	"\x03mc4\x18\xc4\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc4EntryR\x03mc4\x12.\n" +
+	"\x03mc5\x18\xc5\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc5EntryR\x03mc5\x12.\n" +
+	"\x03mc6\x18\xc6\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc6EntryR\x03mc6\x12.\n" +
+	"\x03mc7\x18\xc7\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc7EntryR\x03mc7\x12.\n" +
+	"\x03mc8\x18\xc8\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc8EntryR\x03mc8\x12.\n" +
+	"\x03mc9\x18\xc9\x01 \x03(\v2\x1b.hyperpb.test.Maps.Mc9EntryR\x03mc9\x12.\n" +
+	"\x03mca\x18\xca\x01 \x03(\v2\x1b.hyperpb.test.Maps.McaEntryR\x03mca\x12.\n" +
+	"\x03mcb\x18\xcb\x01 \x03(\v2\x1b.hyperpb.test.Maps.McbEntryR\x03mcb\x12.\n" +
+	"\x03mcc\x18\xcc\x01 \x03(\v2\x1b.hyperpb.test.Maps.MccEntryR\x03mcc\x12.\n" +
+	"\x03mcd\x18\xcd\x01 \x03(\v2\x1b.hyperpb.test.Maps.McdEntryR\x03mcd\x12.\n" +
+	"\x03mce\x18\xce\x01 \x03(\v2\x1b.hyperpb.test.Maps.MceEntryR\x03mce\x12.\n" +
+	"\x03mcf\x18\xcf\x01 \x03(\v2\x1b.hyperpb.test.Maps.McfEntryR\x03mcf\x1a6\n" +
 	"\bM10Entry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a6\n" +
@@ -2917,10 +2917,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM1cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM1dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x05R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM1eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -2965,10 +2965,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM2cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM2dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x03R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM2eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3013,10 +3013,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM3cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM3dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\rR\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM3eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3061,10 +3061,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM4cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM4dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x04R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM4eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x04R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3109,10 +3109,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM5cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM5dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x11R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM5eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x11R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3157,10 +3157,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM6cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM6dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x12R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM6eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x12R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3205,10 +3205,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM7cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM7dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\aR\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM7eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\aR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3253,10 +3253,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM8cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM8dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x06R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM8eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x06R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3301,10 +3301,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bM9cEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bM9dEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x0fR\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bM9eEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x0fR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3349,10 +3349,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bMacEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bMadEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x10R\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bMaeEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x10R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3397,10 +3397,10 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bMbcEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bMbdEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\bR\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\bR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bMbeEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\bR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
@@ -3445,62 +3445,62 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\x1a6\n" +
 	"\bMccEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aI\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\x1aJ\n" +
 	"\bMcdEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12'\n" +
-	"\x05value\x18\x02 \x01(\x0e2\x11.fastpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\x0e2\x12.hyperpb.test.EnumR\x05value:\x028\x01\x1a6\n" +
 	"\bMceEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a6\n" +
 	"\bMcfEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"\xde\v\n" +
-	"\vMessageMaps\x12.\n" +
-	"\ascalars\x18\x01 \x01(\v2\x14.fastpb.test.ScalarsR\ascalars\x120\n" +
-	"\x02m1\x18\x11 \x03(\v2 .fastpb.test.MessageMaps.M1EntryR\x02m1\x120\n" +
-	"\x02m2\x18\x12 \x03(\v2 .fastpb.test.MessageMaps.M2EntryR\x02m2\x120\n" +
-	"\x02m3\x18\x13 \x03(\v2 .fastpb.test.MessageMaps.M3EntryR\x02m3\x120\n" +
-	"\x02m4\x18\x14 \x03(\v2 .fastpb.test.MessageMaps.M4EntryR\x02m4\x120\n" +
-	"\x02m5\x18\x15 \x03(\v2 .fastpb.test.MessageMaps.M5EntryR\x02m5\x120\n" +
-	"\x02m6\x18\x16 \x03(\v2 .fastpb.test.MessageMaps.M6EntryR\x02m6\x120\n" +
-	"\x02m7\x18\x17 \x03(\v2 .fastpb.test.MessageMaps.M7EntryR\x02m7\x120\n" +
-	"\x02m8\x18\x18 \x03(\v2 .fastpb.test.MessageMaps.M8EntryR\x02m8\x120\n" +
-	"\x02m9\x18\x19 \x03(\v2 .fastpb.test.MessageMaps.M9EntryR\x02m9\x120\n" +
-	"\x02ma\x18\x1a \x03(\v2 .fastpb.test.MessageMaps.MaEntryR\x02ma\x120\n" +
-	"\x02mc\x18\x1c \x03(\v2 .fastpb.test.MessageMaps.McEntryR\x02mc\x1aO\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"\xf5\v\n" +
+	"\vMessageMaps\x12/\n" +
+	"\ascalars\x18\x01 \x01(\v2\x15.hyperpb.test.ScalarsR\ascalars\x121\n" +
+	"\x02m1\x18\x11 \x03(\v2!.hyperpb.test.MessageMaps.M1EntryR\x02m1\x121\n" +
+	"\x02m2\x18\x12 \x03(\v2!.hyperpb.test.MessageMaps.M2EntryR\x02m2\x121\n" +
+	"\x02m3\x18\x13 \x03(\v2!.hyperpb.test.MessageMaps.M3EntryR\x02m3\x121\n" +
+	"\x02m4\x18\x14 \x03(\v2!.hyperpb.test.MessageMaps.M4EntryR\x02m4\x121\n" +
+	"\x02m5\x18\x15 \x03(\v2!.hyperpb.test.MessageMaps.M5EntryR\x02m5\x121\n" +
+	"\x02m6\x18\x16 \x03(\v2!.hyperpb.test.MessageMaps.M6EntryR\x02m6\x121\n" +
+	"\x02m7\x18\x17 \x03(\v2!.hyperpb.test.MessageMaps.M7EntryR\x02m7\x121\n" +
+	"\x02m8\x18\x18 \x03(\v2!.hyperpb.test.MessageMaps.M8EntryR\x02m8\x121\n" +
+	"\x02m9\x18\x19 \x03(\v2!.hyperpb.test.MessageMaps.M9EntryR\x02m9\x121\n" +
+	"\x02ma\x18\x1a \x03(\v2!.hyperpb.test.MessageMaps.MaEntryR\x02ma\x121\n" +
+	"\x02mc\x18\x1c \x03(\v2!.hyperpb.test.MessageMaps.McEntryR\x02mc\x1aP\n" +
 	"\aM1Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x05R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM2Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x03R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x03R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM3Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\rR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM4Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x04R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x04R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM5Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x11R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x11R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM6Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x12R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x12R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM7Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\aR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\aR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM8Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x06R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x06R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aM9Entry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x0fR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x0fR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aMaEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x10R\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01\x1aO\n" +
+	"\x03key\x18\x01 \x01(\x10R\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aMcEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.fastpb.test.MessageMapsR\x05value:\x028\x01*@\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01*@\n" +
 	"\x04Enum\x12\x14\n" +
 	"\x10ENUM_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3508,8 +3508,8 @@ const file_test_test_proto_rawDesc = "" +
 	"\n" +
 	"\x06ENUM_2\x10\x02\x12\n" +
 	"\n" +
-	"\x06ENUM_3\x10\x03B\x97\x01\n" +
-	"\x0fcom.fastpb.testB\tTestProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Testb\x06proto3"
+	"\x06ENUM_3\x10\x03B\x9d\x01\n" +
+	"\x10com.hyperpb.testB\tTestProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\x06proto3"
 
 var (
 	file_test_test_proto_rawDescOnce sync.Once
@@ -3526,449 +3526,449 @@ func file_test_test_proto_rawDescGZIP() []byte {
 var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 210)
 var file_test_test_proto_goTypes = []any{
-	(Enum)(0),           // 0: fastpb.test.Enum
-	(*Scalars)(nil),     // 1: fastpb.test.Scalars
-	(*Numbers)(nil),     // 2: fastpb.test.Numbers
-	(*Repeated)(nil),    // 3: fastpb.test.Repeated
-	(*Graph)(nil),       // 4: fastpb.test.Graph
-	(*Oneof)(nil),       // 5: fastpb.test.Oneof
-	(*Maps)(nil),        // 6: fastpb.test.Maps
-	(*MessageMaps)(nil), // 7: fastpb.test.MessageMaps
-	nil,                 // 8: fastpb.test.Maps.M10Entry
-	nil,                 // 9: fastpb.test.Maps.M11Entry
-	nil,                 // 10: fastpb.test.Maps.M12Entry
-	nil,                 // 11: fastpb.test.Maps.M13Entry
-	nil,                 // 12: fastpb.test.Maps.M14Entry
-	nil,                 // 13: fastpb.test.Maps.M15Entry
-	nil,                 // 14: fastpb.test.Maps.M16Entry
-	nil,                 // 15: fastpb.test.Maps.M17Entry
-	nil,                 // 16: fastpb.test.Maps.M18Entry
-	nil,                 // 17: fastpb.test.Maps.M19Entry
-	nil,                 // 18: fastpb.test.Maps.M1aEntry
-	nil,                 // 19: fastpb.test.Maps.M1bEntry
-	nil,                 // 20: fastpb.test.Maps.M1cEntry
-	nil,                 // 21: fastpb.test.Maps.M1dEntry
-	nil,                 // 22: fastpb.test.Maps.M1eEntry
-	nil,                 // 23: fastpb.test.Maps.M1fEntry
-	nil,                 // 24: fastpb.test.Maps.M20Entry
-	nil,                 // 25: fastpb.test.Maps.M21Entry
-	nil,                 // 26: fastpb.test.Maps.M22Entry
-	nil,                 // 27: fastpb.test.Maps.M23Entry
-	nil,                 // 28: fastpb.test.Maps.M24Entry
-	nil,                 // 29: fastpb.test.Maps.M25Entry
-	nil,                 // 30: fastpb.test.Maps.M26Entry
-	nil,                 // 31: fastpb.test.Maps.M27Entry
-	nil,                 // 32: fastpb.test.Maps.M28Entry
-	nil,                 // 33: fastpb.test.Maps.M29Entry
-	nil,                 // 34: fastpb.test.Maps.M2aEntry
-	nil,                 // 35: fastpb.test.Maps.M2bEntry
-	nil,                 // 36: fastpb.test.Maps.M2cEntry
-	nil,                 // 37: fastpb.test.Maps.M2dEntry
-	nil,                 // 38: fastpb.test.Maps.M2eEntry
-	nil,                 // 39: fastpb.test.Maps.M2fEntry
-	nil,                 // 40: fastpb.test.Maps.M30Entry
-	nil,                 // 41: fastpb.test.Maps.M31Entry
-	nil,                 // 42: fastpb.test.Maps.M32Entry
-	nil,                 // 43: fastpb.test.Maps.M33Entry
-	nil,                 // 44: fastpb.test.Maps.M34Entry
-	nil,                 // 45: fastpb.test.Maps.M35Entry
-	nil,                 // 46: fastpb.test.Maps.M36Entry
-	nil,                 // 47: fastpb.test.Maps.M37Entry
-	nil,                 // 48: fastpb.test.Maps.M38Entry
-	nil,                 // 49: fastpb.test.Maps.M39Entry
-	nil,                 // 50: fastpb.test.Maps.M3aEntry
-	nil,                 // 51: fastpb.test.Maps.M3bEntry
-	nil,                 // 52: fastpb.test.Maps.M3cEntry
-	nil,                 // 53: fastpb.test.Maps.M3dEntry
-	nil,                 // 54: fastpb.test.Maps.M3eEntry
-	nil,                 // 55: fastpb.test.Maps.M3fEntry
-	nil,                 // 56: fastpb.test.Maps.M40Entry
-	nil,                 // 57: fastpb.test.Maps.M41Entry
-	nil,                 // 58: fastpb.test.Maps.M42Entry
-	nil,                 // 59: fastpb.test.Maps.M43Entry
-	nil,                 // 60: fastpb.test.Maps.M44Entry
-	nil,                 // 61: fastpb.test.Maps.M45Entry
-	nil,                 // 62: fastpb.test.Maps.M46Entry
-	nil,                 // 63: fastpb.test.Maps.M47Entry
-	nil,                 // 64: fastpb.test.Maps.M48Entry
-	nil,                 // 65: fastpb.test.Maps.M49Entry
-	nil,                 // 66: fastpb.test.Maps.M4aEntry
-	nil,                 // 67: fastpb.test.Maps.M4bEntry
-	nil,                 // 68: fastpb.test.Maps.M4cEntry
-	nil,                 // 69: fastpb.test.Maps.M4dEntry
-	nil,                 // 70: fastpb.test.Maps.M4eEntry
-	nil,                 // 71: fastpb.test.Maps.M4fEntry
-	nil,                 // 72: fastpb.test.Maps.M50Entry
-	nil,                 // 73: fastpb.test.Maps.M51Entry
-	nil,                 // 74: fastpb.test.Maps.M52Entry
-	nil,                 // 75: fastpb.test.Maps.M53Entry
-	nil,                 // 76: fastpb.test.Maps.M54Entry
-	nil,                 // 77: fastpb.test.Maps.M55Entry
-	nil,                 // 78: fastpb.test.Maps.M56Entry
-	nil,                 // 79: fastpb.test.Maps.M57Entry
-	nil,                 // 80: fastpb.test.Maps.M58Entry
-	nil,                 // 81: fastpb.test.Maps.M59Entry
-	nil,                 // 82: fastpb.test.Maps.M5aEntry
-	nil,                 // 83: fastpb.test.Maps.M5bEntry
-	nil,                 // 84: fastpb.test.Maps.M5cEntry
-	nil,                 // 85: fastpb.test.Maps.M5dEntry
-	nil,                 // 86: fastpb.test.Maps.M5eEntry
-	nil,                 // 87: fastpb.test.Maps.M5fEntry
-	nil,                 // 88: fastpb.test.Maps.M60Entry
-	nil,                 // 89: fastpb.test.Maps.M61Entry
-	nil,                 // 90: fastpb.test.Maps.M62Entry
-	nil,                 // 91: fastpb.test.Maps.M63Entry
-	nil,                 // 92: fastpb.test.Maps.M64Entry
-	nil,                 // 93: fastpb.test.Maps.M65Entry
-	nil,                 // 94: fastpb.test.Maps.M66Entry
-	nil,                 // 95: fastpb.test.Maps.M67Entry
-	nil,                 // 96: fastpb.test.Maps.M68Entry
-	nil,                 // 97: fastpb.test.Maps.M69Entry
-	nil,                 // 98: fastpb.test.Maps.M6aEntry
-	nil,                 // 99: fastpb.test.Maps.M6bEntry
-	nil,                 // 100: fastpb.test.Maps.M6cEntry
-	nil,                 // 101: fastpb.test.Maps.M6dEntry
-	nil,                 // 102: fastpb.test.Maps.M6eEntry
-	nil,                 // 103: fastpb.test.Maps.M6fEntry
-	nil,                 // 104: fastpb.test.Maps.M70Entry
-	nil,                 // 105: fastpb.test.Maps.M71Entry
-	nil,                 // 106: fastpb.test.Maps.M72Entry
-	nil,                 // 107: fastpb.test.Maps.M73Entry
-	nil,                 // 108: fastpb.test.Maps.M74Entry
-	nil,                 // 109: fastpb.test.Maps.M75Entry
-	nil,                 // 110: fastpb.test.Maps.M76Entry
-	nil,                 // 111: fastpb.test.Maps.M77Entry
-	nil,                 // 112: fastpb.test.Maps.M78Entry
-	nil,                 // 113: fastpb.test.Maps.M79Entry
-	nil,                 // 114: fastpb.test.Maps.M7aEntry
-	nil,                 // 115: fastpb.test.Maps.M7bEntry
-	nil,                 // 116: fastpb.test.Maps.M7cEntry
-	nil,                 // 117: fastpb.test.Maps.M7dEntry
-	nil,                 // 118: fastpb.test.Maps.M7eEntry
-	nil,                 // 119: fastpb.test.Maps.M7fEntry
-	nil,                 // 120: fastpb.test.Maps.M80Entry
-	nil,                 // 121: fastpb.test.Maps.M81Entry
-	nil,                 // 122: fastpb.test.Maps.M82Entry
-	nil,                 // 123: fastpb.test.Maps.M83Entry
-	nil,                 // 124: fastpb.test.Maps.M84Entry
-	nil,                 // 125: fastpb.test.Maps.M85Entry
-	nil,                 // 126: fastpb.test.Maps.M86Entry
-	nil,                 // 127: fastpb.test.Maps.M87Entry
-	nil,                 // 128: fastpb.test.Maps.M88Entry
-	nil,                 // 129: fastpb.test.Maps.M89Entry
-	nil,                 // 130: fastpb.test.Maps.M8aEntry
-	nil,                 // 131: fastpb.test.Maps.M8bEntry
-	nil,                 // 132: fastpb.test.Maps.M8cEntry
-	nil,                 // 133: fastpb.test.Maps.M8dEntry
-	nil,                 // 134: fastpb.test.Maps.M8eEntry
-	nil,                 // 135: fastpb.test.Maps.M8fEntry
-	nil,                 // 136: fastpb.test.Maps.M90Entry
-	nil,                 // 137: fastpb.test.Maps.M91Entry
-	nil,                 // 138: fastpb.test.Maps.M92Entry
-	nil,                 // 139: fastpb.test.Maps.M93Entry
-	nil,                 // 140: fastpb.test.Maps.M94Entry
-	nil,                 // 141: fastpb.test.Maps.M95Entry
-	nil,                 // 142: fastpb.test.Maps.M96Entry
-	nil,                 // 143: fastpb.test.Maps.M97Entry
-	nil,                 // 144: fastpb.test.Maps.M98Entry
-	nil,                 // 145: fastpb.test.Maps.M99Entry
-	nil,                 // 146: fastpb.test.Maps.M9aEntry
-	nil,                 // 147: fastpb.test.Maps.M9bEntry
-	nil,                 // 148: fastpb.test.Maps.M9cEntry
-	nil,                 // 149: fastpb.test.Maps.M9dEntry
-	nil,                 // 150: fastpb.test.Maps.M9eEntry
-	nil,                 // 151: fastpb.test.Maps.M9fEntry
-	nil,                 // 152: fastpb.test.Maps.Ma0Entry
-	nil,                 // 153: fastpb.test.Maps.Ma1Entry
-	nil,                 // 154: fastpb.test.Maps.Ma2Entry
-	nil,                 // 155: fastpb.test.Maps.Ma3Entry
-	nil,                 // 156: fastpb.test.Maps.Ma4Entry
-	nil,                 // 157: fastpb.test.Maps.Ma5Entry
-	nil,                 // 158: fastpb.test.Maps.Ma6Entry
-	nil,                 // 159: fastpb.test.Maps.Ma7Entry
-	nil,                 // 160: fastpb.test.Maps.Ma8Entry
-	nil,                 // 161: fastpb.test.Maps.Ma9Entry
-	nil,                 // 162: fastpb.test.Maps.MaaEntry
-	nil,                 // 163: fastpb.test.Maps.MabEntry
-	nil,                 // 164: fastpb.test.Maps.MacEntry
-	nil,                 // 165: fastpb.test.Maps.MadEntry
-	nil,                 // 166: fastpb.test.Maps.MaeEntry
-	nil,                 // 167: fastpb.test.Maps.MafEntry
-	nil,                 // 168: fastpb.test.Maps.Mb0Entry
-	nil,                 // 169: fastpb.test.Maps.Mb1Entry
-	nil,                 // 170: fastpb.test.Maps.Mb2Entry
-	nil,                 // 171: fastpb.test.Maps.Mb3Entry
-	nil,                 // 172: fastpb.test.Maps.Mb4Entry
-	nil,                 // 173: fastpb.test.Maps.Mb5Entry
-	nil,                 // 174: fastpb.test.Maps.Mb6Entry
-	nil,                 // 175: fastpb.test.Maps.Mb7Entry
-	nil,                 // 176: fastpb.test.Maps.Mb8Entry
-	nil,                 // 177: fastpb.test.Maps.Mb9Entry
-	nil,                 // 178: fastpb.test.Maps.MbaEntry
-	nil,                 // 179: fastpb.test.Maps.MbbEntry
-	nil,                 // 180: fastpb.test.Maps.MbcEntry
-	nil,                 // 181: fastpb.test.Maps.MbdEntry
-	nil,                 // 182: fastpb.test.Maps.MbeEntry
-	nil,                 // 183: fastpb.test.Maps.MbfEntry
-	nil,                 // 184: fastpb.test.Maps.Mc0Entry
-	nil,                 // 185: fastpb.test.Maps.Mc1Entry
-	nil,                 // 186: fastpb.test.Maps.Mc2Entry
-	nil,                 // 187: fastpb.test.Maps.Mc3Entry
-	nil,                 // 188: fastpb.test.Maps.Mc4Entry
-	nil,                 // 189: fastpb.test.Maps.Mc5Entry
-	nil,                 // 190: fastpb.test.Maps.Mc6Entry
-	nil,                 // 191: fastpb.test.Maps.Mc7Entry
-	nil,                 // 192: fastpb.test.Maps.Mc8Entry
-	nil,                 // 193: fastpb.test.Maps.Mc9Entry
-	nil,                 // 194: fastpb.test.Maps.McaEntry
-	nil,                 // 195: fastpb.test.Maps.McbEntry
-	nil,                 // 196: fastpb.test.Maps.MccEntry
-	nil,                 // 197: fastpb.test.Maps.McdEntry
-	nil,                 // 198: fastpb.test.Maps.MceEntry
-	nil,                 // 199: fastpb.test.Maps.McfEntry
-	nil,                 // 200: fastpb.test.MessageMaps.M1Entry
-	nil,                 // 201: fastpb.test.MessageMaps.M2Entry
-	nil,                 // 202: fastpb.test.MessageMaps.M3Entry
-	nil,                 // 203: fastpb.test.MessageMaps.M4Entry
-	nil,                 // 204: fastpb.test.MessageMaps.M5Entry
-	nil,                 // 205: fastpb.test.MessageMaps.M6Entry
-	nil,                 // 206: fastpb.test.MessageMaps.M7Entry
-	nil,                 // 207: fastpb.test.MessageMaps.M8Entry
-	nil,                 // 208: fastpb.test.MessageMaps.M9Entry
-	nil,                 // 209: fastpb.test.MessageMaps.MaEntry
-	nil,                 // 210: fastpb.test.MessageMaps.McEntry
+	(Enum)(0),           // 0: hyperpb.test.Enum
+	(*Scalars)(nil),     // 1: hyperpb.test.Scalars
+	(*Numbers)(nil),     // 2: hyperpb.test.Numbers
+	(*Repeated)(nil),    // 3: hyperpb.test.Repeated
+	(*Graph)(nil),       // 4: hyperpb.test.Graph
+	(*Oneof)(nil),       // 5: hyperpb.test.Oneof
+	(*Maps)(nil),        // 6: hyperpb.test.Maps
+	(*MessageMaps)(nil), // 7: hyperpb.test.MessageMaps
+	nil,                 // 8: hyperpb.test.Maps.M10Entry
+	nil,                 // 9: hyperpb.test.Maps.M11Entry
+	nil,                 // 10: hyperpb.test.Maps.M12Entry
+	nil,                 // 11: hyperpb.test.Maps.M13Entry
+	nil,                 // 12: hyperpb.test.Maps.M14Entry
+	nil,                 // 13: hyperpb.test.Maps.M15Entry
+	nil,                 // 14: hyperpb.test.Maps.M16Entry
+	nil,                 // 15: hyperpb.test.Maps.M17Entry
+	nil,                 // 16: hyperpb.test.Maps.M18Entry
+	nil,                 // 17: hyperpb.test.Maps.M19Entry
+	nil,                 // 18: hyperpb.test.Maps.M1aEntry
+	nil,                 // 19: hyperpb.test.Maps.M1bEntry
+	nil,                 // 20: hyperpb.test.Maps.M1cEntry
+	nil,                 // 21: hyperpb.test.Maps.M1dEntry
+	nil,                 // 22: hyperpb.test.Maps.M1eEntry
+	nil,                 // 23: hyperpb.test.Maps.M1fEntry
+	nil,                 // 24: hyperpb.test.Maps.M20Entry
+	nil,                 // 25: hyperpb.test.Maps.M21Entry
+	nil,                 // 26: hyperpb.test.Maps.M22Entry
+	nil,                 // 27: hyperpb.test.Maps.M23Entry
+	nil,                 // 28: hyperpb.test.Maps.M24Entry
+	nil,                 // 29: hyperpb.test.Maps.M25Entry
+	nil,                 // 30: hyperpb.test.Maps.M26Entry
+	nil,                 // 31: hyperpb.test.Maps.M27Entry
+	nil,                 // 32: hyperpb.test.Maps.M28Entry
+	nil,                 // 33: hyperpb.test.Maps.M29Entry
+	nil,                 // 34: hyperpb.test.Maps.M2aEntry
+	nil,                 // 35: hyperpb.test.Maps.M2bEntry
+	nil,                 // 36: hyperpb.test.Maps.M2cEntry
+	nil,                 // 37: hyperpb.test.Maps.M2dEntry
+	nil,                 // 38: hyperpb.test.Maps.M2eEntry
+	nil,                 // 39: hyperpb.test.Maps.M2fEntry
+	nil,                 // 40: hyperpb.test.Maps.M30Entry
+	nil,                 // 41: hyperpb.test.Maps.M31Entry
+	nil,                 // 42: hyperpb.test.Maps.M32Entry
+	nil,                 // 43: hyperpb.test.Maps.M33Entry
+	nil,                 // 44: hyperpb.test.Maps.M34Entry
+	nil,                 // 45: hyperpb.test.Maps.M35Entry
+	nil,                 // 46: hyperpb.test.Maps.M36Entry
+	nil,                 // 47: hyperpb.test.Maps.M37Entry
+	nil,                 // 48: hyperpb.test.Maps.M38Entry
+	nil,                 // 49: hyperpb.test.Maps.M39Entry
+	nil,                 // 50: hyperpb.test.Maps.M3aEntry
+	nil,                 // 51: hyperpb.test.Maps.M3bEntry
+	nil,                 // 52: hyperpb.test.Maps.M3cEntry
+	nil,                 // 53: hyperpb.test.Maps.M3dEntry
+	nil,                 // 54: hyperpb.test.Maps.M3eEntry
+	nil,                 // 55: hyperpb.test.Maps.M3fEntry
+	nil,                 // 56: hyperpb.test.Maps.M40Entry
+	nil,                 // 57: hyperpb.test.Maps.M41Entry
+	nil,                 // 58: hyperpb.test.Maps.M42Entry
+	nil,                 // 59: hyperpb.test.Maps.M43Entry
+	nil,                 // 60: hyperpb.test.Maps.M44Entry
+	nil,                 // 61: hyperpb.test.Maps.M45Entry
+	nil,                 // 62: hyperpb.test.Maps.M46Entry
+	nil,                 // 63: hyperpb.test.Maps.M47Entry
+	nil,                 // 64: hyperpb.test.Maps.M48Entry
+	nil,                 // 65: hyperpb.test.Maps.M49Entry
+	nil,                 // 66: hyperpb.test.Maps.M4aEntry
+	nil,                 // 67: hyperpb.test.Maps.M4bEntry
+	nil,                 // 68: hyperpb.test.Maps.M4cEntry
+	nil,                 // 69: hyperpb.test.Maps.M4dEntry
+	nil,                 // 70: hyperpb.test.Maps.M4eEntry
+	nil,                 // 71: hyperpb.test.Maps.M4fEntry
+	nil,                 // 72: hyperpb.test.Maps.M50Entry
+	nil,                 // 73: hyperpb.test.Maps.M51Entry
+	nil,                 // 74: hyperpb.test.Maps.M52Entry
+	nil,                 // 75: hyperpb.test.Maps.M53Entry
+	nil,                 // 76: hyperpb.test.Maps.M54Entry
+	nil,                 // 77: hyperpb.test.Maps.M55Entry
+	nil,                 // 78: hyperpb.test.Maps.M56Entry
+	nil,                 // 79: hyperpb.test.Maps.M57Entry
+	nil,                 // 80: hyperpb.test.Maps.M58Entry
+	nil,                 // 81: hyperpb.test.Maps.M59Entry
+	nil,                 // 82: hyperpb.test.Maps.M5aEntry
+	nil,                 // 83: hyperpb.test.Maps.M5bEntry
+	nil,                 // 84: hyperpb.test.Maps.M5cEntry
+	nil,                 // 85: hyperpb.test.Maps.M5dEntry
+	nil,                 // 86: hyperpb.test.Maps.M5eEntry
+	nil,                 // 87: hyperpb.test.Maps.M5fEntry
+	nil,                 // 88: hyperpb.test.Maps.M60Entry
+	nil,                 // 89: hyperpb.test.Maps.M61Entry
+	nil,                 // 90: hyperpb.test.Maps.M62Entry
+	nil,                 // 91: hyperpb.test.Maps.M63Entry
+	nil,                 // 92: hyperpb.test.Maps.M64Entry
+	nil,                 // 93: hyperpb.test.Maps.M65Entry
+	nil,                 // 94: hyperpb.test.Maps.M66Entry
+	nil,                 // 95: hyperpb.test.Maps.M67Entry
+	nil,                 // 96: hyperpb.test.Maps.M68Entry
+	nil,                 // 97: hyperpb.test.Maps.M69Entry
+	nil,                 // 98: hyperpb.test.Maps.M6aEntry
+	nil,                 // 99: hyperpb.test.Maps.M6bEntry
+	nil,                 // 100: hyperpb.test.Maps.M6cEntry
+	nil,                 // 101: hyperpb.test.Maps.M6dEntry
+	nil,                 // 102: hyperpb.test.Maps.M6eEntry
+	nil,                 // 103: hyperpb.test.Maps.M6fEntry
+	nil,                 // 104: hyperpb.test.Maps.M70Entry
+	nil,                 // 105: hyperpb.test.Maps.M71Entry
+	nil,                 // 106: hyperpb.test.Maps.M72Entry
+	nil,                 // 107: hyperpb.test.Maps.M73Entry
+	nil,                 // 108: hyperpb.test.Maps.M74Entry
+	nil,                 // 109: hyperpb.test.Maps.M75Entry
+	nil,                 // 110: hyperpb.test.Maps.M76Entry
+	nil,                 // 111: hyperpb.test.Maps.M77Entry
+	nil,                 // 112: hyperpb.test.Maps.M78Entry
+	nil,                 // 113: hyperpb.test.Maps.M79Entry
+	nil,                 // 114: hyperpb.test.Maps.M7aEntry
+	nil,                 // 115: hyperpb.test.Maps.M7bEntry
+	nil,                 // 116: hyperpb.test.Maps.M7cEntry
+	nil,                 // 117: hyperpb.test.Maps.M7dEntry
+	nil,                 // 118: hyperpb.test.Maps.M7eEntry
+	nil,                 // 119: hyperpb.test.Maps.M7fEntry
+	nil,                 // 120: hyperpb.test.Maps.M80Entry
+	nil,                 // 121: hyperpb.test.Maps.M81Entry
+	nil,                 // 122: hyperpb.test.Maps.M82Entry
+	nil,                 // 123: hyperpb.test.Maps.M83Entry
+	nil,                 // 124: hyperpb.test.Maps.M84Entry
+	nil,                 // 125: hyperpb.test.Maps.M85Entry
+	nil,                 // 126: hyperpb.test.Maps.M86Entry
+	nil,                 // 127: hyperpb.test.Maps.M87Entry
+	nil,                 // 128: hyperpb.test.Maps.M88Entry
+	nil,                 // 129: hyperpb.test.Maps.M89Entry
+	nil,                 // 130: hyperpb.test.Maps.M8aEntry
+	nil,                 // 131: hyperpb.test.Maps.M8bEntry
+	nil,                 // 132: hyperpb.test.Maps.M8cEntry
+	nil,                 // 133: hyperpb.test.Maps.M8dEntry
+	nil,                 // 134: hyperpb.test.Maps.M8eEntry
+	nil,                 // 135: hyperpb.test.Maps.M8fEntry
+	nil,                 // 136: hyperpb.test.Maps.M90Entry
+	nil,                 // 137: hyperpb.test.Maps.M91Entry
+	nil,                 // 138: hyperpb.test.Maps.M92Entry
+	nil,                 // 139: hyperpb.test.Maps.M93Entry
+	nil,                 // 140: hyperpb.test.Maps.M94Entry
+	nil,                 // 141: hyperpb.test.Maps.M95Entry
+	nil,                 // 142: hyperpb.test.Maps.M96Entry
+	nil,                 // 143: hyperpb.test.Maps.M97Entry
+	nil,                 // 144: hyperpb.test.Maps.M98Entry
+	nil,                 // 145: hyperpb.test.Maps.M99Entry
+	nil,                 // 146: hyperpb.test.Maps.M9aEntry
+	nil,                 // 147: hyperpb.test.Maps.M9bEntry
+	nil,                 // 148: hyperpb.test.Maps.M9cEntry
+	nil,                 // 149: hyperpb.test.Maps.M9dEntry
+	nil,                 // 150: hyperpb.test.Maps.M9eEntry
+	nil,                 // 151: hyperpb.test.Maps.M9fEntry
+	nil,                 // 152: hyperpb.test.Maps.Ma0Entry
+	nil,                 // 153: hyperpb.test.Maps.Ma1Entry
+	nil,                 // 154: hyperpb.test.Maps.Ma2Entry
+	nil,                 // 155: hyperpb.test.Maps.Ma3Entry
+	nil,                 // 156: hyperpb.test.Maps.Ma4Entry
+	nil,                 // 157: hyperpb.test.Maps.Ma5Entry
+	nil,                 // 158: hyperpb.test.Maps.Ma6Entry
+	nil,                 // 159: hyperpb.test.Maps.Ma7Entry
+	nil,                 // 160: hyperpb.test.Maps.Ma8Entry
+	nil,                 // 161: hyperpb.test.Maps.Ma9Entry
+	nil,                 // 162: hyperpb.test.Maps.MaaEntry
+	nil,                 // 163: hyperpb.test.Maps.MabEntry
+	nil,                 // 164: hyperpb.test.Maps.MacEntry
+	nil,                 // 165: hyperpb.test.Maps.MadEntry
+	nil,                 // 166: hyperpb.test.Maps.MaeEntry
+	nil,                 // 167: hyperpb.test.Maps.MafEntry
+	nil,                 // 168: hyperpb.test.Maps.Mb0Entry
+	nil,                 // 169: hyperpb.test.Maps.Mb1Entry
+	nil,                 // 170: hyperpb.test.Maps.Mb2Entry
+	nil,                 // 171: hyperpb.test.Maps.Mb3Entry
+	nil,                 // 172: hyperpb.test.Maps.Mb4Entry
+	nil,                 // 173: hyperpb.test.Maps.Mb5Entry
+	nil,                 // 174: hyperpb.test.Maps.Mb6Entry
+	nil,                 // 175: hyperpb.test.Maps.Mb7Entry
+	nil,                 // 176: hyperpb.test.Maps.Mb8Entry
+	nil,                 // 177: hyperpb.test.Maps.Mb9Entry
+	nil,                 // 178: hyperpb.test.Maps.MbaEntry
+	nil,                 // 179: hyperpb.test.Maps.MbbEntry
+	nil,                 // 180: hyperpb.test.Maps.MbcEntry
+	nil,                 // 181: hyperpb.test.Maps.MbdEntry
+	nil,                 // 182: hyperpb.test.Maps.MbeEntry
+	nil,                 // 183: hyperpb.test.Maps.MbfEntry
+	nil,                 // 184: hyperpb.test.Maps.Mc0Entry
+	nil,                 // 185: hyperpb.test.Maps.Mc1Entry
+	nil,                 // 186: hyperpb.test.Maps.Mc2Entry
+	nil,                 // 187: hyperpb.test.Maps.Mc3Entry
+	nil,                 // 188: hyperpb.test.Maps.Mc4Entry
+	nil,                 // 189: hyperpb.test.Maps.Mc5Entry
+	nil,                 // 190: hyperpb.test.Maps.Mc6Entry
+	nil,                 // 191: hyperpb.test.Maps.Mc7Entry
+	nil,                 // 192: hyperpb.test.Maps.Mc8Entry
+	nil,                 // 193: hyperpb.test.Maps.Mc9Entry
+	nil,                 // 194: hyperpb.test.Maps.McaEntry
+	nil,                 // 195: hyperpb.test.Maps.McbEntry
+	nil,                 // 196: hyperpb.test.Maps.MccEntry
+	nil,                 // 197: hyperpb.test.Maps.McdEntry
+	nil,                 // 198: hyperpb.test.Maps.MceEntry
+	nil,                 // 199: hyperpb.test.Maps.McfEntry
+	nil,                 // 200: hyperpb.test.MessageMaps.M1Entry
+	nil,                 // 201: hyperpb.test.MessageMaps.M2Entry
+	nil,                 // 202: hyperpb.test.MessageMaps.M3Entry
+	nil,                 // 203: hyperpb.test.MessageMaps.M4Entry
+	nil,                 // 204: hyperpb.test.MessageMaps.M5Entry
+	nil,                 // 205: hyperpb.test.MessageMaps.M6Entry
+	nil,                 // 206: hyperpb.test.MessageMaps.M7Entry
+	nil,                 // 207: hyperpb.test.MessageMaps.M8Entry
+	nil,                 // 208: hyperpb.test.MessageMaps.M9Entry
+	nil,                 // 209: hyperpb.test.MessageMaps.MaEntry
+	nil,                 // 210: hyperpb.test.MessageMaps.McEntry
 }
 var file_test_test_proto_depIdxs = []int32{
-	4,   // 0: fastpb.test.Graph.s:type_name -> fastpb.test.Graph
-	4,   // 1: fastpb.test.Graph.r:type_name -> fastpb.test.Graph
-	5,   // 2: fastpb.test.Oneof.m10:type_name -> fastpb.test.Oneof
-	8,   // 3: fastpb.test.Maps.m10:type_name -> fastpb.test.Maps.M10Entry
-	9,   // 4: fastpb.test.Maps.m11:type_name -> fastpb.test.Maps.M11Entry
-	10,  // 5: fastpb.test.Maps.m12:type_name -> fastpb.test.Maps.M12Entry
-	11,  // 6: fastpb.test.Maps.m13:type_name -> fastpb.test.Maps.M13Entry
-	12,  // 7: fastpb.test.Maps.m14:type_name -> fastpb.test.Maps.M14Entry
-	13,  // 8: fastpb.test.Maps.m15:type_name -> fastpb.test.Maps.M15Entry
-	14,  // 9: fastpb.test.Maps.m16:type_name -> fastpb.test.Maps.M16Entry
-	15,  // 10: fastpb.test.Maps.m17:type_name -> fastpb.test.Maps.M17Entry
-	16,  // 11: fastpb.test.Maps.m18:type_name -> fastpb.test.Maps.M18Entry
-	17,  // 12: fastpb.test.Maps.m19:type_name -> fastpb.test.Maps.M19Entry
-	18,  // 13: fastpb.test.Maps.m1a:type_name -> fastpb.test.Maps.M1aEntry
-	19,  // 14: fastpb.test.Maps.m1b:type_name -> fastpb.test.Maps.M1bEntry
-	20,  // 15: fastpb.test.Maps.m1c:type_name -> fastpb.test.Maps.M1cEntry
-	21,  // 16: fastpb.test.Maps.m1d:type_name -> fastpb.test.Maps.M1dEntry
-	22,  // 17: fastpb.test.Maps.m1e:type_name -> fastpb.test.Maps.M1eEntry
-	23,  // 18: fastpb.test.Maps.m1f:type_name -> fastpb.test.Maps.M1fEntry
-	24,  // 19: fastpb.test.Maps.m20:type_name -> fastpb.test.Maps.M20Entry
-	25,  // 20: fastpb.test.Maps.m21:type_name -> fastpb.test.Maps.M21Entry
-	26,  // 21: fastpb.test.Maps.m22:type_name -> fastpb.test.Maps.M22Entry
-	27,  // 22: fastpb.test.Maps.m23:type_name -> fastpb.test.Maps.M23Entry
-	28,  // 23: fastpb.test.Maps.m24:type_name -> fastpb.test.Maps.M24Entry
-	29,  // 24: fastpb.test.Maps.m25:type_name -> fastpb.test.Maps.M25Entry
-	30,  // 25: fastpb.test.Maps.m26:type_name -> fastpb.test.Maps.M26Entry
-	31,  // 26: fastpb.test.Maps.m27:type_name -> fastpb.test.Maps.M27Entry
-	32,  // 27: fastpb.test.Maps.m28:type_name -> fastpb.test.Maps.M28Entry
-	33,  // 28: fastpb.test.Maps.m29:type_name -> fastpb.test.Maps.M29Entry
-	34,  // 29: fastpb.test.Maps.m2a:type_name -> fastpb.test.Maps.M2aEntry
-	35,  // 30: fastpb.test.Maps.m2b:type_name -> fastpb.test.Maps.M2bEntry
-	36,  // 31: fastpb.test.Maps.m2c:type_name -> fastpb.test.Maps.M2cEntry
-	37,  // 32: fastpb.test.Maps.m2d:type_name -> fastpb.test.Maps.M2dEntry
-	38,  // 33: fastpb.test.Maps.m2e:type_name -> fastpb.test.Maps.M2eEntry
-	39,  // 34: fastpb.test.Maps.m2f:type_name -> fastpb.test.Maps.M2fEntry
-	40,  // 35: fastpb.test.Maps.m30:type_name -> fastpb.test.Maps.M30Entry
-	41,  // 36: fastpb.test.Maps.m31:type_name -> fastpb.test.Maps.M31Entry
-	42,  // 37: fastpb.test.Maps.m32:type_name -> fastpb.test.Maps.M32Entry
-	43,  // 38: fastpb.test.Maps.m33:type_name -> fastpb.test.Maps.M33Entry
-	44,  // 39: fastpb.test.Maps.m34:type_name -> fastpb.test.Maps.M34Entry
-	45,  // 40: fastpb.test.Maps.m35:type_name -> fastpb.test.Maps.M35Entry
-	46,  // 41: fastpb.test.Maps.m36:type_name -> fastpb.test.Maps.M36Entry
-	47,  // 42: fastpb.test.Maps.m37:type_name -> fastpb.test.Maps.M37Entry
-	48,  // 43: fastpb.test.Maps.m38:type_name -> fastpb.test.Maps.M38Entry
-	49,  // 44: fastpb.test.Maps.m39:type_name -> fastpb.test.Maps.M39Entry
-	50,  // 45: fastpb.test.Maps.m3a:type_name -> fastpb.test.Maps.M3aEntry
-	51,  // 46: fastpb.test.Maps.m3b:type_name -> fastpb.test.Maps.M3bEntry
-	52,  // 47: fastpb.test.Maps.m3c:type_name -> fastpb.test.Maps.M3cEntry
-	53,  // 48: fastpb.test.Maps.m3d:type_name -> fastpb.test.Maps.M3dEntry
-	54,  // 49: fastpb.test.Maps.m3e:type_name -> fastpb.test.Maps.M3eEntry
-	55,  // 50: fastpb.test.Maps.m3f:type_name -> fastpb.test.Maps.M3fEntry
-	56,  // 51: fastpb.test.Maps.m40:type_name -> fastpb.test.Maps.M40Entry
-	57,  // 52: fastpb.test.Maps.m41:type_name -> fastpb.test.Maps.M41Entry
-	58,  // 53: fastpb.test.Maps.m42:type_name -> fastpb.test.Maps.M42Entry
-	59,  // 54: fastpb.test.Maps.m43:type_name -> fastpb.test.Maps.M43Entry
-	60,  // 55: fastpb.test.Maps.m44:type_name -> fastpb.test.Maps.M44Entry
-	61,  // 56: fastpb.test.Maps.m45:type_name -> fastpb.test.Maps.M45Entry
-	62,  // 57: fastpb.test.Maps.m46:type_name -> fastpb.test.Maps.M46Entry
-	63,  // 58: fastpb.test.Maps.m47:type_name -> fastpb.test.Maps.M47Entry
-	64,  // 59: fastpb.test.Maps.m48:type_name -> fastpb.test.Maps.M48Entry
-	65,  // 60: fastpb.test.Maps.m49:type_name -> fastpb.test.Maps.M49Entry
-	66,  // 61: fastpb.test.Maps.m4a:type_name -> fastpb.test.Maps.M4aEntry
-	67,  // 62: fastpb.test.Maps.m4b:type_name -> fastpb.test.Maps.M4bEntry
-	68,  // 63: fastpb.test.Maps.m4c:type_name -> fastpb.test.Maps.M4cEntry
-	69,  // 64: fastpb.test.Maps.m4d:type_name -> fastpb.test.Maps.M4dEntry
-	70,  // 65: fastpb.test.Maps.m4e:type_name -> fastpb.test.Maps.M4eEntry
-	71,  // 66: fastpb.test.Maps.m4f:type_name -> fastpb.test.Maps.M4fEntry
-	72,  // 67: fastpb.test.Maps.m50:type_name -> fastpb.test.Maps.M50Entry
-	73,  // 68: fastpb.test.Maps.m51:type_name -> fastpb.test.Maps.M51Entry
-	74,  // 69: fastpb.test.Maps.m52:type_name -> fastpb.test.Maps.M52Entry
-	75,  // 70: fastpb.test.Maps.m53:type_name -> fastpb.test.Maps.M53Entry
-	76,  // 71: fastpb.test.Maps.m54:type_name -> fastpb.test.Maps.M54Entry
-	77,  // 72: fastpb.test.Maps.m55:type_name -> fastpb.test.Maps.M55Entry
-	78,  // 73: fastpb.test.Maps.m56:type_name -> fastpb.test.Maps.M56Entry
-	79,  // 74: fastpb.test.Maps.m57:type_name -> fastpb.test.Maps.M57Entry
-	80,  // 75: fastpb.test.Maps.m58:type_name -> fastpb.test.Maps.M58Entry
-	81,  // 76: fastpb.test.Maps.m59:type_name -> fastpb.test.Maps.M59Entry
-	82,  // 77: fastpb.test.Maps.m5a:type_name -> fastpb.test.Maps.M5aEntry
-	83,  // 78: fastpb.test.Maps.m5b:type_name -> fastpb.test.Maps.M5bEntry
-	84,  // 79: fastpb.test.Maps.m5c:type_name -> fastpb.test.Maps.M5cEntry
-	85,  // 80: fastpb.test.Maps.m5d:type_name -> fastpb.test.Maps.M5dEntry
-	86,  // 81: fastpb.test.Maps.m5e:type_name -> fastpb.test.Maps.M5eEntry
-	87,  // 82: fastpb.test.Maps.m5f:type_name -> fastpb.test.Maps.M5fEntry
-	88,  // 83: fastpb.test.Maps.m60:type_name -> fastpb.test.Maps.M60Entry
-	89,  // 84: fastpb.test.Maps.m61:type_name -> fastpb.test.Maps.M61Entry
-	90,  // 85: fastpb.test.Maps.m62:type_name -> fastpb.test.Maps.M62Entry
-	91,  // 86: fastpb.test.Maps.m63:type_name -> fastpb.test.Maps.M63Entry
-	92,  // 87: fastpb.test.Maps.m64:type_name -> fastpb.test.Maps.M64Entry
-	93,  // 88: fastpb.test.Maps.m65:type_name -> fastpb.test.Maps.M65Entry
-	94,  // 89: fastpb.test.Maps.m66:type_name -> fastpb.test.Maps.M66Entry
-	95,  // 90: fastpb.test.Maps.m67:type_name -> fastpb.test.Maps.M67Entry
-	96,  // 91: fastpb.test.Maps.m68:type_name -> fastpb.test.Maps.M68Entry
-	97,  // 92: fastpb.test.Maps.m69:type_name -> fastpb.test.Maps.M69Entry
-	98,  // 93: fastpb.test.Maps.m6a:type_name -> fastpb.test.Maps.M6aEntry
-	99,  // 94: fastpb.test.Maps.m6b:type_name -> fastpb.test.Maps.M6bEntry
-	100, // 95: fastpb.test.Maps.m6c:type_name -> fastpb.test.Maps.M6cEntry
-	101, // 96: fastpb.test.Maps.m6d:type_name -> fastpb.test.Maps.M6dEntry
-	102, // 97: fastpb.test.Maps.m6e:type_name -> fastpb.test.Maps.M6eEntry
-	103, // 98: fastpb.test.Maps.m6f:type_name -> fastpb.test.Maps.M6fEntry
-	104, // 99: fastpb.test.Maps.m70:type_name -> fastpb.test.Maps.M70Entry
-	105, // 100: fastpb.test.Maps.m71:type_name -> fastpb.test.Maps.M71Entry
-	106, // 101: fastpb.test.Maps.m72:type_name -> fastpb.test.Maps.M72Entry
-	107, // 102: fastpb.test.Maps.m73:type_name -> fastpb.test.Maps.M73Entry
-	108, // 103: fastpb.test.Maps.m74:type_name -> fastpb.test.Maps.M74Entry
-	109, // 104: fastpb.test.Maps.m75:type_name -> fastpb.test.Maps.M75Entry
-	110, // 105: fastpb.test.Maps.m76:type_name -> fastpb.test.Maps.M76Entry
-	111, // 106: fastpb.test.Maps.m77:type_name -> fastpb.test.Maps.M77Entry
-	112, // 107: fastpb.test.Maps.m78:type_name -> fastpb.test.Maps.M78Entry
-	113, // 108: fastpb.test.Maps.m79:type_name -> fastpb.test.Maps.M79Entry
-	114, // 109: fastpb.test.Maps.m7a:type_name -> fastpb.test.Maps.M7aEntry
-	115, // 110: fastpb.test.Maps.m7b:type_name -> fastpb.test.Maps.M7bEntry
-	116, // 111: fastpb.test.Maps.m7c:type_name -> fastpb.test.Maps.M7cEntry
-	117, // 112: fastpb.test.Maps.m7d:type_name -> fastpb.test.Maps.M7dEntry
-	118, // 113: fastpb.test.Maps.m7e:type_name -> fastpb.test.Maps.M7eEntry
-	119, // 114: fastpb.test.Maps.m7f:type_name -> fastpb.test.Maps.M7fEntry
-	120, // 115: fastpb.test.Maps.m80:type_name -> fastpb.test.Maps.M80Entry
-	121, // 116: fastpb.test.Maps.m81:type_name -> fastpb.test.Maps.M81Entry
-	122, // 117: fastpb.test.Maps.m82:type_name -> fastpb.test.Maps.M82Entry
-	123, // 118: fastpb.test.Maps.m83:type_name -> fastpb.test.Maps.M83Entry
-	124, // 119: fastpb.test.Maps.m84:type_name -> fastpb.test.Maps.M84Entry
-	125, // 120: fastpb.test.Maps.m85:type_name -> fastpb.test.Maps.M85Entry
-	126, // 121: fastpb.test.Maps.m86:type_name -> fastpb.test.Maps.M86Entry
-	127, // 122: fastpb.test.Maps.m87:type_name -> fastpb.test.Maps.M87Entry
-	128, // 123: fastpb.test.Maps.m88:type_name -> fastpb.test.Maps.M88Entry
-	129, // 124: fastpb.test.Maps.m89:type_name -> fastpb.test.Maps.M89Entry
-	130, // 125: fastpb.test.Maps.m8a:type_name -> fastpb.test.Maps.M8aEntry
-	131, // 126: fastpb.test.Maps.m8b:type_name -> fastpb.test.Maps.M8bEntry
-	132, // 127: fastpb.test.Maps.m8c:type_name -> fastpb.test.Maps.M8cEntry
-	133, // 128: fastpb.test.Maps.m8d:type_name -> fastpb.test.Maps.M8dEntry
-	134, // 129: fastpb.test.Maps.m8e:type_name -> fastpb.test.Maps.M8eEntry
-	135, // 130: fastpb.test.Maps.m8f:type_name -> fastpb.test.Maps.M8fEntry
-	136, // 131: fastpb.test.Maps.m90:type_name -> fastpb.test.Maps.M90Entry
-	137, // 132: fastpb.test.Maps.m91:type_name -> fastpb.test.Maps.M91Entry
-	138, // 133: fastpb.test.Maps.m92:type_name -> fastpb.test.Maps.M92Entry
-	139, // 134: fastpb.test.Maps.m93:type_name -> fastpb.test.Maps.M93Entry
-	140, // 135: fastpb.test.Maps.m94:type_name -> fastpb.test.Maps.M94Entry
-	141, // 136: fastpb.test.Maps.m95:type_name -> fastpb.test.Maps.M95Entry
-	142, // 137: fastpb.test.Maps.m96:type_name -> fastpb.test.Maps.M96Entry
-	143, // 138: fastpb.test.Maps.m97:type_name -> fastpb.test.Maps.M97Entry
-	144, // 139: fastpb.test.Maps.m98:type_name -> fastpb.test.Maps.M98Entry
-	145, // 140: fastpb.test.Maps.m99:type_name -> fastpb.test.Maps.M99Entry
-	146, // 141: fastpb.test.Maps.m9a:type_name -> fastpb.test.Maps.M9aEntry
-	147, // 142: fastpb.test.Maps.m9b:type_name -> fastpb.test.Maps.M9bEntry
-	148, // 143: fastpb.test.Maps.m9c:type_name -> fastpb.test.Maps.M9cEntry
-	149, // 144: fastpb.test.Maps.m9d:type_name -> fastpb.test.Maps.M9dEntry
-	150, // 145: fastpb.test.Maps.m9e:type_name -> fastpb.test.Maps.M9eEntry
-	151, // 146: fastpb.test.Maps.m9f:type_name -> fastpb.test.Maps.M9fEntry
-	152, // 147: fastpb.test.Maps.ma0:type_name -> fastpb.test.Maps.Ma0Entry
-	153, // 148: fastpb.test.Maps.ma1:type_name -> fastpb.test.Maps.Ma1Entry
-	154, // 149: fastpb.test.Maps.ma2:type_name -> fastpb.test.Maps.Ma2Entry
-	155, // 150: fastpb.test.Maps.ma3:type_name -> fastpb.test.Maps.Ma3Entry
-	156, // 151: fastpb.test.Maps.ma4:type_name -> fastpb.test.Maps.Ma4Entry
-	157, // 152: fastpb.test.Maps.ma5:type_name -> fastpb.test.Maps.Ma5Entry
-	158, // 153: fastpb.test.Maps.ma6:type_name -> fastpb.test.Maps.Ma6Entry
-	159, // 154: fastpb.test.Maps.ma7:type_name -> fastpb.test.Maps.Ma7Entry
-	160, // 155: fastpb.test.Maps.ma8:type_name -> fastpb.test.Maps.Ma8Entry
-	161, // 156: fastpb.test.Maps.ma9:type_name -> fastpb.test.Maps.Ma9Entry
-	162, // 157: fastpb.test.Maps.maa:type_name -> fastpb.test.Maps.MaaEntry
-	163, // 158: fastpb.test.Maps.mab:type_name -> fastpb.test.Maps.MabEntry
-	164, // 159: fastpb.test.Maps.mac:type_name -> fastpb.test.Maps.MacEntry
-	165, // 160: fastpb.test.Maps.mad:type_name -> fastpb.test.Maps.MadEntry
-	166, // 161: fastpb.test.Maps.mae:type_name -> fastpb.test.Maps.MaeEntry
-	167, // 162: fastpb.test.Maps.maf:type_name -> fastpb.test.Maps.MafEntry
-	168, // 163: fastpb.test.Maps.mb0:type_name -> fastpb.test.Maps.Mb0Entry
-	169, // 164: fastpb.test.Maps.mb1:type_name -> fastpb.test.Maps.Mb1Entry
-	170, // 165: fastpb.test.Maps.mb2:type_name -> fastpb.test.Maps.Mb2Entry
-	171, // 166: fastpb.test.Maps.mb3:type_name -> fastpb.test.Maps.Mb3Entry
-	172, // 167: fastpb.test.Maps.mb4:type_name -> fastpb.test.Maps.Mb4Entry
-	173, // 168: fastpb.test.Maps.mb5:type_name -> fastpb.test.Maps.Mb5Entry
-	174, // 169: fastpb.test.Maps.mb6:type_name -> fastpb.test.Maps.Mb6Entry
-	175, // 170: fastpb.test.Maps.mb7:type_name -> fastpb.test.Maps.Mb7Entry
-	176, // 171: fastpb.test.Maps.mb8:type_name -> fastpb.test.Maps.Mb8Entry
-	177, // 172: fastpb.test.Maps.mb9:type_name -> fastpb.test.Maps.Mb9Entry
-	178, // 173: fastpb.test.Maps.mba:type_name -> fastpb.test.Maps.MbaEntry
-	179, // 174: fastpb.test.Maps.mbb:type_name -> fastpb.test.Maps.MbbEntry
-	180, // 175: fastpb.test.Maps.mbc:type_name -> fastpb.test.Maps.MbcEntry
-	181, // 176: fastpb.test.Maps.mbd:type_name -> fastpb.test.Maps.MbdEntry
-	182, // 177: fastpb.test.Maps.mbe:type_name -> fastpb.test.Maps.MbeEntry
-	183, // 178: fastpb.test.Maps.mbf:type_name -> fastpb.test.Maps.MbfEntry
-	184, // 179: fastpb.test.Maps.mc0:type_name -> fastpb.test.Maps.Mc0Entry
-	185, // 180: fastpb.test.Maps.mc1:type_name -> fastpb.test.Maps.Mc1Entry
-	186, // 181: fastpb.test.Maps.mc2:type_name -> fastpb.test.Maps.Mc2Entry
-	187, // 182: fastpb.test.Maps.mc3:type_name -> fastpb.test.Maps.Mc3Entry
-	188, // 183: fastpb.test.Maps.mc4:type_name -> fastpb.test.Maps.Mc4Entry
-	189, // 184: fastpb.test.Maps.mc5:type_name -> fastpb.test.Maps.Mc5Entry
-	190, // 185: fastpb.test.Maps.mc6:type_name -> fastpb.test.Maps.Mc6Entry
-	191, // 186: fastpb.test.Maps.mc7:type_name -> fastpb.test.Maps.Mc7Entry
-	192, // 187: fastpb.test.Maps.mc8:type_name -> fastpb.test.Maps.Mc8Entry
-	193, // 188: fastpb.test.Maps.mc9:type_name -> fastpb.test.Maps.Mc9Entry
-	194, // 189: fastpb.test.Maps.mca:type_name -> fastpb.test.Maps.McaEntry
-	195, // 190: fastpb.test.Maps.mcb:type_name -> fastpb.test.Maps.McbEntry
-	196, // 191: fastpb.test.Maps.mcc:type_name -> fastpb.test.Maps.MccEntry
-	197, // 192: fastpb.test.Maps.mcd:type_name -> fastpb.test.Maps.McdEntry
-	198, // 193: fastpb.test.Maps.mce:type_name -> fastpb.test.Maps.MceEntry
-	199, // 194: fastpb.test.Maps.mcf:type_name -> fastpb.test.Maps.McfEntry
-	1,   // 195: fastpb.test.MessageMaps.scalars:type_name -> fastpb.test.Scalars
-	200, // 196: fastpb.test.MessageMaps.m1:type_name -> fastpb.test.MessageMaps.M1Entry
-	201, // 197: fastpb.test.MessageMaps.m2:type_name -> fastpb.test.MessageMaps.M2Entry
-	202, // 198: fastpb.test.MessageMaps.m3:type_name -> fastpb.test.MessageMaps.M3Entry
-	203, // 199: fastpb.test.MessageMaps.m4:type_name -> fastpb.test.MessageMaps.M4Entry
-	204, // 200: fastpb.test.MessageMaps.m5:type_name -> fastpb.test.MessageMaps.M5Entry
-	205, // 201: fastpb.test.MessageMaps.m6:type_name -> fastpb.test.MessageMaps.M6Entry
-	206, // 202: fastpb.test.MessageMaps.m7:type_name -> fastpb.test.MessageMaps.M7Entry
-	207, // 203: fastpb.test.MessageMaps.m8:type_name -> fastpb.test.MessageMaps.M8Entry
-	208, // 204: fastpb.test.MessageMaps.m9:type_name -> fastpb.test.MessageMaps.M9Entry
-	209, // 205: fastpb.test.MessageMaps.ma:type_name -> fastpb.test.MessageMaps.MaEntry
-	210, // 206: fastpb.test.MessageMaps.mc:type_name -> fastpb.test.MessageMaps.McEntry
-	0,   // 207: fastpb.test.Maps.M1dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 208: fastpb.test.Maps.M2dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 209: fastpb.test.Maps.M3dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 210: fastpb.test.Maps.M4dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 211: fastpb.test.Maps.M5dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 212: fastpb.test.Maps.M6dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 213: fastpb.test.Maps.M7dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 214: fastpb.test.Maps.M8dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 215: fastpb.test.Maps.M9dEntry.value:type_name -> fastpb.test.Enum
-	0,   // 216: fastpb.test.Maps.MadEntry.value:type_name -> fastpb.test.Enum
-	0,   // 217: fastpb.test.Maps.MbdEntry.value:type_name -> fastpb.test.Enum
-	0,   // 218: fastpb.test.Maps.McdEntry.value:type_name -> fastpb.test.Enum
-	7,   // 219: fastpb.test.MessageMaps.M1Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 220: fastpb.test.MessageMaps.M2Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 221: fastpb.test.MessageMaps.M3Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 222: fastpb.test.MessageMaps.M4Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 223: fastpb.test.MessageMaps.M5Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 224: fastpb.test.MessageMaps.M6Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 225: fastpb.test.MessageMaps.M7Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 226: fastpb.test.MessageMaps.M8Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 227: fastpb.test.MessageMaps.M9Entry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 228: fastpb.test.MessageMaps.MaEntry.value:type_name -> fastpb.test.MessageMaps
-	7,   // 229: fastpb.test.MessageMaps.McEntry.value:type_name -> fastpb.test.MessageMaps
+	4,   // 0: hyperpb.test.Graph.s:type_name -> hyperpb.test.Graph
+	4,   // 1: hyperpb.test.Graph.r:type_name -> hyperpb.test.Graph
+	5,   // 2: hyperpb.test.Oneof.m10:type_name -> hyperpb.test.Oneof
+	8,   // 3: hyperpb.test.Maps.m10:type_name -> hyperpb.test.Maps.M10Entry
+	9,   // 4: hyperpb.test.Maps.m11:type_name -> hyperpb.test.Maps.M11Entry
+	10,  // 5: hyperpb.test.Maps.m12:type_name -> hyperpb.test.Maps.M12Entry
+	11,  // 6: hyperpb.test.Maps.m13:type_name -> hyperpb.test.Maps.M13Entry
+	12,  // 7: hyperpb.test.Maps.m14:type_name -> hyperpb.test.Maps.M14Entry
+	13,  // 8: hyperpb.test.Maps.m15:type_name -> hyperpb.test.Maps.M15Entry
+	14,  // 9: hyperpb.test.Maps.m16:type_name -> hyperpb.test.Maps.M16Entry
+	15,  // 10: hyperpb.test.Maps.m17:type_name -> hyperpb.test.Maps.M17Entry
+	16,  // 11: hyperpb.test.Maps.m18:type_name -> hyperpb.test.Maps.M18Entry
+	17,  // 12: hyperpb.test.Maps.m19:type_name -> hyperpb.test.Maps.M19Entry
+	18,  // 13: hyperpb.test.Maps.m1a:type_name -> hyperpb.test.Maps.M1aEntry
+	19,  // 14: hyperpb.test.Maps.m1b:type_name -> hyperpb.test.Maps.M1bEntry
+	20,  // 15: hyperpb.test.Maps.m1c:type_name -> hyperpb.test.Maps.M1cEntry
+	21,  // 16: hyperpb.test.Maps.m1d:type_name -> hyperpb.test.Maps.M1dEntry
+	22,  // 17: hyperpb.test.Maps.m1e:type_name -> hyperpb.test.Maps.M1eEntry
+	23,  // 18: hyperpb.test.Maps.m1f:type_name -> hyperpb.test.Maps.M1fEntry
+	24,  // 19: hyperpb.test.Maps.m20:type_name -> hyperpb.test.Maps.M20Entry
+	25,  // 20: hyperpb.test.Maps.m21:type_name -> hyperpb.test.Maps.M21Entry
+	26,  // 21: hyperpb.test.Maps.m22:type_name -> hyperpb.test.Maps.M22Entry
+	27,  // 22: hyperpb.test.Maps.m23:type_name -> hyperpb.test.Maps.M23Entry
+	28,  // 23: hyperpb.test.Maps.m24:type_name -> hyperpb.test.Maps.M24Entry
+	29,  // 24: hyperpb.test.Maps.m25:type_name -> hyperpb.test.Maps.M25Entry
+	30,  // 25: hyperpb.test.Maps.m26:type_name -> hyperpb.test.Maps.M26Entry
+	31,  // 26: hyperpb.test.Maps.m27:type_name -> hyperpb.test.Maps.M27Entry
+	32,  // 27: hyperpb.test.Maps.m28:type_name -> hyperpb.test.Maps.M28Entry
+	33,  // 28: hyperpb.test.Maps.m29:type_name -> hyperpb.test.Maps.M29Entry
+	34,  // 29: hyperpb.test.Maps.m2a:type_name -> hyperpb.test.Maps.M2aEntry
+	35,  // 30: hyperpb.test.Maps.m2b:type_name -> hyperpb.test.Maps.M2bEntry
+	36,  // 31: hyperpb.test.Maps.m2c:type_name -> hyperpb.test.Maps.M2cEntry
+	37,  // 32: hyperpb.test.Maps.m2d:type_name -> hyperpb.test.Maps.M2dEntry
+	38,  // 33: hyperpb.test.Maps.m2e:type_name -> hyperpb.test.Maps.M2eEntry
+	39,  // 34: hyperpb.test.Maps.m2f:type_name -> hyperpb.test.Maps.M2fEntry
+	40,  // 35: hyperpb.test.Maps.m30:type_name -> hyperpb.test.Maps.M30Entry
+	41,  // 36: hyperpb.test.Maps.m31:type_name -> hyperpb.test.Maps.M31Entry
+	42,  // 37: hyperpb.test.Maps.m32:type_name -> hyperpb.test.Maps.M32Entry
+	43,  // 38: hyperpb.test.Maps.m33:type_name -> hyperpb.test.Maps.M33Entry
+	44,  // 39: hyperpb.test.Maps.m34:type_name -> hyperpb.test.Maps.M34Entry
+	45,  // 40: hyperpb.test.Maps.m35:type_name -> hyperpb.test.Maps.M35Entry
+	46,  // 41: hyperpb.test.Maps.m36:type_name -> hyperpb.test.Maps.M36Entry
+	47,  // 42: hyperpb.test.Maps.m37:type_name -> hyperpb.test.Maps.M37Entry
+	48,  // 43: hyperpb.test.Maps.m38:type_name -> hyperpb.test.Maps.M38Entry
+	49,  // 44: hyperpb.test.Maps.m39:type_name -> hyperpb.test.Maps.M39Entry
+	50,  // 45: hyperpb.test.Maps.m3a:type_name -> hyperpb.test.Maps.M3aEntry
+	51,  // 46: hyperpb.test.Maps.m3b:type_name -> hyperpb.test.Maps.M3bEntry
+	52,  // 47: hyperpb.test.Maps.m3c:type_name -> hyperpb.test.Maps.M3cEntry
+	53,  // 48: hyperpb.test.Maps.m3d:type_name -> hyperpb.test.Maps.M3dEntry
+	54,  // 49: hyperpb.test.Maps.m3e:type_name -> hyperpb.test.Maps.M3eEntry
+	55,  // 50: hyperpb.test.Maps.m3f:type_name -> hyperpb.test.Maps.M3fEntry
+	56,  // 51: hyperpb.test.Maps.m40:type_name -> hyperpb.test.Maps.M40Entry
+	57,  // 52: hyperpb.test.Maps.m41:type_name -> hyperpb.test.Maps.M41Entry
+	58,  // 53: hyperpb.test.Maps.m42:type_name -> hyperpb.test.Maps.M42Entry
+	59,  // 54: hyperpb.test.Maps.m43:type_name -> hyperpb.test.Maps.M43Entry
+	60,  // 55: hyperpb.test.Maps.m44:type_name -> hyperpb.test.Maps.M44Entry
+	61,  // 56: hyperpb.test.Maps.m45:type_name -> hyperpb.test.Maps.M45Entry
+	62,  // 57: hyperpb.test.Maps.m46:type_name -> hyperpb.test.Maps.M46Entry
+	63,  // 58: hyperpb.test.Maps.m47:type_name -> hyperpb.test.Maps.M47Entry
+	64,  // 59: hyperpb.test.Maps.m48:type_name -> hyperpb.test.Maps.M48Entry
+	65,  // 60: hyperpb.test.Maps.m49:type_name -> hyperpb.test.Maps.M49Entry
+	66,  // 61: hyperpb.test.Maps.m4a:type_name -> hyperpb.test.Maps.M4aEntry
+	67,  // 62: hyperpb.test.Maps.m4b:type_name -> hyperpb.test.Maps.M4bEntry
+	68,  // 63: hyperpb.test.Maps.m4c:type_name -> hyperpb.test.Maps.M4cEntry
+	69,  // 64: hyperpb.test.Maps.m4d:type_name -> hyperpb.test.Maps.M4dEntry
+	70,  // 65: hyperpb.test.Maps.m4e:type_name -> hyperpb.test.Maps.M4eEntry
+	71,  // 66: hyperpb.test.Maps.m4f:type_name -> hyperpb.test.Maps.M4fEntry
+	72,  // 67: hyperpb.test.Maps.m50:type_name -> hyperpb.test.Maps.M50Entry
+	73,  // 68: hyperpb.test.Maps.m51:type_name -> hyperpb.test.Maps.M51Entry
+	74,  // 69: hyperpb.test.Maps.m52:type_name -> hyperpb.test.Maps.M52Entry
+	75,  // 70: hyperpb.test.Maps.m53:type_name -> hyperpb.test.Maps.M53Entry
+	76,  // 71: hyperpb.test.Maps.m54:type_name -> hyperpb.test.Maps.M54Entry
+	77,  // 72: hyperpb.test.Maps.m55:type_name -> hyperpb.test.Maps.M55Entry
+	78,  // 73: hyperpb.test.Maps.m56:type_name -> hyperpb.test.Maps.M56Entry
+	79,  // 74: hyperpb.test.Maps.m57:type_name -> hyperpb.test.Maps.M57Entry
+	80,  // 75: hyperpb.test.Maps.m58:type_name -> hyperpb.test.Maps.M58Entry
+	81,  // 76: hyperpb.test.Maps.m59:type_name -> hyperpb.test.Maps.M59Entry
+	82,  // 77: hyperpb.test.Maps.m5a:type_name -> hyperpb.test.Maps.M5aEntry
+	83,  // 78: hyperpb.test.Maps.m5b:type_name -> hyperpb.test.Maps.M5bEntry
+	84,  // 79: hyperpb.test.Maps.m5c:type_name -> hyperpb.test.Maps.M5cEntry
+	85,  // 80: hyperpb.test.Maps.m5d:type_name -> hyperpb.test.Maps.M5dEntry
+	86,  // 81: hyperpb.test.Maps.m5e:type_name -> hyperpb.test.Maps.M5eEntry
+	87,  // 82: hyperpb.test.Maps.m5f:type_name -> hyperpb.test.Maps.M5fEntry
+	88,  // 83: hyperpb.test.Maps.m60:type_name -> hyperpb.test.Maps.M60Entry
+	89,  // 84: hyperpb.test.Maps.m61:type_name -> hyperpb.test.Maps.M61Entry
+	90,  // 85: hyperpb.test.Maps.m62:type_name -> hyperpb.test.Maps.M62Entry
+	91,  // 86: hyperpb.test.Maps.m63:type_name -> hyperpb.test.Maps.M63Entry
+	92,  // 87: hyperpb.test.Maps.m64:type_name -> hyperpb.test.Maps.M64Entry
+	93,  // 88: hyperpb.test.Maps.m65:type_name -> hyperpb.test.Maps.M65Entry
+	94,  // 89: hyperpb.test.Maps.m66:type_name -> hyperpb.test.Maps.M66Entry
+	95,  // 90: hyperpb.test.Maps.m67:type_name -> hyperpb.test.Maps.M67Entry
+	96,  // 91: hyperpb.test.Maps.m68:type_name -> hyperpb.test.Maps.M68Entry
+	97,  // 92: hyperpb.test.Maps.m69:type_name -> hyperpb.test.Maps.M69Entry
+	98,  // 93: hyperpb.test.Maps.m6a:type_name -> hyperpb.test.Maps.M6aEntry
+	99,  // 94: hyperpb.test.Maps.m6b:type_name -> hyperpb.test.Maps.M6bEntry
+	100, // 95: hyperpb.test.Maps.m6c:type_name -> hyperpb.test.Maps.M6cEntry
+	101, // 96: hyperpb.test.Maps.m6d:type_name -> hyperpb.test.Maps.M6dEntry
+	102, // 97: hyperpb.test.Maps.m6e:type_name -> hyperpb.test.Maps.M6eEntry
+	103, // 98: hyperpb.test.Maps.m6f:type_name -> hyperpb.test.Maps.M6fEntry
+	104, // 99: hyperpb.test.Maps.m70:type_name -> hyperpb.test.Maps.M70Entry
+	105, // 100: hyperpb.test.Maps.m71:type_name -> hyperpb.test.Maps.M71Entry
+	106, // 101: hyperpb.test.Maps.m72:type_name -> hyperpb.test.Maps.M72Entry
+	107, // 102: hyperpb.test.Maps.m73:type_name -> hyperpb.test.Maps.M73Entry
+	108, // 103: hyperpb.test.Maps.m74:type_name -> hyperpb.test.Maps.M74Entry
+	109, // 104: hyperpb.test.Maps.m75:type_name -> hyperpb.test.Maps.M75Entry
+	110, // 105: hyperpb.test.Maps.m76:type_name -> hyperpb.test.Maps.M76Entry
+	111, // 106: hyperpb.test.Maps.m77:type_name -> hyperpb.test.Maps.M77Entry
+	112, // 107: hyperpb.test.Maps.m78:type_name -> hyperpb.test.Maps.M78Entry
+	113, // 108: hyperpb.test.Maps.m79:type_name -> hyperpb.test.Maps.M79Entry
+	114, // 109: hyperpb.test.Maps.m7a:type_name -> hyperpb.test.Maps.M7aEntry
+	115, // 110: hyperpb.test.Maps.m7b:type_name -> hyperpb.test.Maps.M7bEntry
+	116, // 111: hyperpb.test.Maps.m7c:type_name -> hyperpb.test.Maps.M7cEntry
+	117, // 112: hyperpb.test.Maps.m7d:type_name -> hyperpb.test.Maps.M7dEntry
+	118, // 113: hyperpb.test.Maps.m7e:type_name -> hyperpb.test.Maps.M7eEntry
+	119, // 114: hyperpb.test.Maps.m7f:type_name -> hyperpb.test.Maps.M7fEntry
+	120, // 115: hyperpb.test.Maps.m80:type_name -> hyperpb.test.Maps.M80Entry
+	121, // 116: hyperpb.test.Maps.m81:type_name -> hyperpb.test.Maps.M81Entry
+	122, // 117: hyperpb.test.Maps.m82:type_name -> hyperpb.test.Maps.M82Entry
+	123, // 118: hyperpb.test.Maps.m83:type_name -> hyperpb.test.Maps.M83Entry
+	124, // 119: hyperpb.test.Maps.m84:type_name -> hyperpb.test.Maps.M84Entry
+	125, // 120: hyperpb.test.Maps.m85:type_name -> hyperpb.test.Maps.M85Entry
+	126, // 121: hyperpb.test.Maps.m86:type_name -> hyperpb.test.Maps.M86Entry
+	127, // 122: hyperpb.test.Maps.m87:type_name -> hyperpb.test.Maps.M87Entry
+	128, // 123: hyperpb.test.Maps.m88:type_name -> hyperpb.test.Maps.M88Entry
+	129, // 124: hyperpb.test.Maps.m89:type_name -> hyperpb.test.Maps.M89Entry
+	130, // 125: hyperpb.test.Maps.m8a:type_name -> hyperpb.test.Maps.M8aEntry
+	131, // 126: hyperpb.test.Maps.m8b:type_name -> hyperpb.test.Maps.M8bEntry
+	132, // 127: hyperpb.test.Maps.m8c:type_name -> hyperpb.test.Maps.M8cEntry
+	133, // 128: hyperpb.test.Maps.m8d:type_name -> hyperpb.test.Maps.M8dEntry
+	134, // 129: hyperpb.test.Maps.m8e:type_name -> hyperpb.test.Maps.M8eEntry
+	135, // 130: hyperpb.test.Maps.m8f:type_name -> hyperpb.test.Maps.M8fEntry
+	136, // 131: hyperpb.test.Maps.m90:type_name -> hyperpb.test.Maps.M90Entry
+	137, // 132: hyperpb.test.Maps.m91:type_name -> hyperpb.test.Maps.M91Entry
+	138, // 133: hyperpb.test.Maps.m92:type_name -> hyperpb.test.Maps.M92Entry
+	139, // 134: hyperpb.test.Maps.m93:type_name -> hyperpb.test.Maps.M93Entry
+	140, // 135: hyperpb.test.Maps.m94:type_name -> hyperpb.test.Maps.M94Entry
+	141, // 136: hyperpb.test.Maps.m95:type_name -> hyperpb.test.Maps.M95Entry
+	142, // 137: hyperpb.test.Maps.m96:type_name -> hyperpb.test.Maps.M96Entry
+	143, // 138: hyperpb.test.Maps.m97:type_name -> hyperpb.test.Maps.M97Entry
+	144, // 139: hyperpb.test.Maps.m98:type_name -> hyperpb.test.Maps.M98Entry
+	145, // 140: hyperpb.test.Maps.m99:type_name -> hyperpb.test.Maps.M99Entry
+	146, // 141: hyperpb.test.Maps.m9a:type_name -> hyperpb.test.Maps.M9aEntry
+	147, // 142: hyperpb.test.Maps.m9b:type_name -> hyperpb.test.Maps.M9bEntry
+	148, // 143: hyperpb.test.Maps.m9c:type_name -> hyperpb.test.Maps.M9cEntry
+	149, // 144: hyperpb.test.Maps.m9d:type_name -> hyperpb.test.Maps.M9dEntry
+	150, // 145: hyperpb.test.Maps.m9e:type_name -> hyperpb.test.Maps.M9eEntry
+	151, // 146: hyperpb.test.Maps.m9f:type_name -> hyperpb.test.Maps.M9fEntry
+	152, // 147: hyperpb.test.Maps.ma0:type_name -> hyperpb.test.Maps.Ma0Entry
+	153, // 148: hyperpb.test.Maps.ma1:type_name -> hyperpb.test.Maps.Ma1Entry
+	154, // 149: hyperpb.test.Maps.ma2:type_name -> hyperpb.test.Maps.Ma2Entry
+	155, // 150: hyperpb.test.Maps.ma3:type_name -> hyperpb.test.Maps.Ma3Entry
+	156, // 151: hyperpb.test.Maps.ma4:type_name -> hyperpb.test.Maps.Ma4Entry
+	157, // 152: hyperpb.test.Maps.ma5:type_name -> hyperpb.test.Maps.Ma5Entry
+	158, // 153: hyperpb.test.Maps.ma6:type_name -> hyperpb.test.Maps.Ma6Entry
+	159, // 154: hyperpb.test.Maps.ma7:type_name -> hyperpb.test.Maps.Ma7Entry
+	160, // 155: hyperpb.test.Maps.ma8:type_name -> hyperpb.test.Maps.Ma8Entry
+	161, // 156: hyperpb.test.Maps.ma9:type_name -> hyperpb.test.Maps.Ma9Entry
+	162, // 157: hyperpb.test.Maps.maa:type_name -> hyperpb.test.Maps.MaaEntry
+	163, // 158: hyperpb.test.Maps.mab:type_name -> hyperpb.test.Maps.MabEntry
+	164, // 159: hyperpb.test.Maps.mac:type_name -> hyperpb.test.Maps.MacEntry
+	165, // 160: hyperpb.test.Maps.mad:type_name -> hyperpb.test.Maps.MadEntry
+	166, // 161: hyperpb.test.Maps.mae:type_name -> hyperpb.test.Maps.MaeEntry
+	167, // 162: hyperpb.test.Maps.maf:type_name -> hyperpb.test.Maps.MafEntry
+	168, // 163: hyperpb.test.Maps.mb0:type_name -> hyperpb.test.Maps.Mb0Entry
+	169, // 164: hyperpb.test.Maps.mb1:type_name -> hyperpb.test.Maps.Mb1Entry
+	170, // 165: hyperpb.test.Maps.mb2:type_name -> hyperpb.test.Maps.Mb2Entry
+	171, // 166: hyperpb.test.Maps.mb3:type_name -> hyperpb.test.Maps.Mb3Entry
+	172, // 167: hyperpb.test.Maps.mb4:type_name -> hyperpb.test.Maps.Mb4Entry
+	173, // 168: hyperpb.test.Maps.mb5:type_name -> hyperpb.test.Maps.Mb5Entry
+	174, // 169: hyperpb.test.Maps.mb6:type_name -> hyperpb.test.Maps.Mb6Entry
+	175, // 170: hyperpb.test.Maps.mb7:type_name -> hyperpb.test.Maps.Mb7Entry
+	176, // 171: hyperpb.test.Maps.mb8:type_name -> hyperpb.test.Maps.Mb8Entry
+	177, // 172: hyperpb.test.Maps.mb9:type_name -> hyperpb.test.Maps.Mb9Entry
+	178, // 173: hyperpb.test.Maps.mba:type_name -> hyperpb.test.Maps.MbaEntry
+	179, // 174: hyperpb.test.Maps.mbb:type_name -> hyperpb.test.Maps.MbbEntry
+	180, // 175: hyperpb.test.Maps.mbc:type_name -> hyperpb.test.Maps.MbcEntry
+	181, // 176: hyperpb.test.Maps.mbd:type_name -> hyperpb.test.Maps.MbdEntry
+	182, // 177: hyperpb.test.Maps.mbe:type_name -> hyperpb.test.Maps.MbeEntry
+	183, // 178: hyperpb.test.Maps.mbf:type_name -> hyperpb.test.Maps.MbfEntry
+	184, // 179: hyperpb.test.Maps.mc0:type_name -> hyperpb.test.Maps.Mc0Entry
+	185, // 180: hyperpb.test.Maps.mc1:type_name -> hyperpb.test.Maps.Mc1Entry
+	186, // 181: hyperpb.test.Maps.mc2:type_name -> hyperpb.test.Maps.Mc2Entry
+	187, // 182: hyperpb.test.Maps.mc3:type_name -> hyperpb.test.Maps.Mc3Entry
+	188, // 183: hyperpb.test.Maps.mc4:type_name -> hyperpb.test.Maps.Mc4Entry
+	189, // 184: hyperpb.test.Maps.mc5:type_name -> hyperpb.test.Maps.Mc5Entry
+	190, // 185: hyperpb.test.Maps.mc6:type_name -> hyperpb.test.Maps.Mc6Entry
+	191, // 186: hyperpb.test.Maps.mc7:type_name -> hyperpb.test.Maps.Mc7Entry
+	192, // 187: hyperpb.test.Maps.mc8:type_name -> hyperpb.test.Maps.Mc8Entry
+	193, // 188: hyperpb.test.Maps.mc9:type_name -> hyperpb.test.Maps.Mc9Entry
+	194, // 189: hyperpb.test.Maps.mca:type_name -> hyperpb.test.Maps.McaEntry
+	195, // 190: hyperpb.test.Maps.mcb:type_name -> hyperpb.test.Maps.McbEntry
+	196, // 191: hyperpb.test.Maps.mcc:type_name -> hyperpb.test.Maps.MccEntry
+	197, // 192: hyperpb.test.Maps.mcd:type_name -> hyperpb.test.Maps.McdEntry
+	198, // 193: hyperpb.test.Maps.mce:type_name -> hyperpb.test.Maps.MceEntry
+	199, // 194: hyperpb.test.Maps.mcf:type_name -> hyperpb.test.Maps.McfEntry
+	1,   // 195: hyperpb.test.MessageMaps.scalars:type_name -> hyperpb.test.Scalars
+	200, // 196: hyperpb.test.MessageMaps.m1:type_name -> hyperpb.test.MessageMaps.M1Entry
+	201, // 197: hyperpb.test.MessageMaps.m2:type_name -> hyperpb.test.MessageMaps.M2Entry
+	202, // 198: hyperpb.test.MessageMaps.m3:type_name -> hyperpb.test.MessageMaps.M3Entry
+	203, // 199: hyperpb.test.MessageMaps.m4:type_name -> hyperpb.test.MessageMaps.M4Entry
+	204, // 200: hyperpb.test.MessageMaps.m5:type_name -> hyperpb.test.MessageMaps.M5Entry
+	205, // 201: hyperpb.test.MessageMaps.m6:type_name -> hyperpb.test.MessageMaps.M6Entry
+	206, // 202: hyperpb.test.MessageMaps.m7:type_name -> hyperpb.test.MessageMaps.M7Entry
+	207, // 203: hyperpb.test.MessageMaps.m8:type_name -> hyperpb.test.MessageMaps.M8Entry
+	208, // 204: hyperpb.test.MessageMaps.m9:type_name -> hyperpb.test.MessageMaps.M9Entry
+	209, // 205: hyperpb.test.MessageMaps.ma:type_name -> hyperpb.test.MessageMaps.MaEntry
+	210, // 206: hyperpb.test.MessageMaps.mc:type_name -> hyperpb.test.MessageMaps.McEntry
+	0,   // 207: hyperpb.test.Maps.M1dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 208: hyperpb.test.Maps.M2dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 209: hyperpb.test.Maps.M3dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 210: hyperpb.test.Maps.M4dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 211: hyperpb.test.Maps.M5dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 212: hyperpb.test.Maps.M6dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 213: hyperpb.test.Maps.M7dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 214: hyperpb.test.Maps.M8dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 215: hyperpb.test.Maps.M9dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 216: hyperpb.test.Maps.MadEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 217: hyperpb.test.Maps.MbdEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 218: hyperpb.test.Maps.McdEntry.value:type_name -> hyperpb.test.Enum
+	7,   // 219: hyperpb.test.MessageMaps.M1Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 220: hyperpb.test.MessageMaps.M2Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 221: hyperpb.test.MessageMaps.M3Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 222: hyperpb.test.MessageMaps.M4Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 223: hyperpb.test.MessageMaps.M5Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 224: hyperpb.test.MessageMaps.M6Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 225: hyperpb.test.MessageMaps.M7Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 226: hyperpb.test.MessageMaps.M8Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 227: hyperpb.test.MessageMaps.M9Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 228: hyperpb.test.MessageMaps.MaEntry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 229: hyperpb.test.MessageMaps.McEntry.value:type_name -> hyperpb.test.MessageMaps
 	230, // [230:230] is the sub-list for method output_type
 	230, // [230:230] is the sub-list for method input_type
 	230, // [230:230] is the sub-list for extension type_name

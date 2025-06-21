@@ -17,9 +17,9 @@ package dynamic
 import (
 	"sync"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // Shared is state that is shared by all messages in a particular tree of
@@ -64,7 +64,7 @@ func (s *Shared) New(ty *tdp.Type) *Message {
 	case ty.Library:
 		break
 	default:
-		panic("fastpb: attempted to mix messages from different fastpb.Library pointers")
+		panic("hyperpb: attempted to mix messages from different hyperpb.Library pointers")
 	}
 
 	data := s.arena.Alloc(int(ty.Size))

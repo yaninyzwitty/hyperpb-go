@@ -18,12 +18,12 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Optionals are implemented as one bit for presence in the hasbits array, and
@@ -184,8 +184,8 @@ func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 }
 
 //go:nosplit
-//fastpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
-//fastpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
+//hyperpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
+//hyperpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
 func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
@@ -193,8 +193,8 @@ func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
-//fastpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
+//hyperpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
+//hyperpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
 func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p2.Scratch = uint64(zigzag64[T](p2.Scratch))

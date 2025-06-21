@@ -16,7 +16,7 @@ syntax = "proto3";
 
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
 // buf:lint:ignore PACKAGE_DIRECTORY_MATCH
-package fastpb.test;
+package hyperpb.test;
 
 enum Enum {
   ENUM_UNSPECIFIED = 0;

@@ -35,11 +35,11 @@ const Enabled = true
 
 var (
 	debugPattern *regexp.Regexp
-	nocapture    = flag.Bool("fastpb.nocapture", false, "disables capturing debug logs as test logs")
+	nocapture    = flag.Bool("hyperpb.nocapture", false, "disables capturing debug logs as test logs")
 )
 
 func init() {
-	flag.Func("fastpb.filter", "regexp to filter debug logs by", func(s string) (err error) {
+	flag.Func("hyperpb.filter", "regexp to filter debug logs by", func(s string) (err error) {
 		debugPattern, err = regexp.Compile(s)
 		return err
 	})
@@ -67,7 +67,7 @@ again:
 
 	pkg := fn.Name()
 	pkg = strings.TrimPrefix(pkg, "github.com/bufbuild/")
-	pkg = strings.TrimPrefix(pkg, "fastpb/internal/")
+	pkg = strings.TrimPrefix(pkg, "hyperpb/internal/")
 	pkg = pkg[:strings.Index(pkg, ".")]
 
 	file = filepath.Base(file)
@@ -100,7 +100,7 @@ again:
 // Assert panics if cond is false, but only in debug mode.
 func Assert(cond bool, format string, args ...any) {
 	if !cond {
-		panic(fmt.Errorf("fastpb: internal assertion failed: "+format, args...))
+		panic(fmt.Errorf("hyperpb: internal assertion failed: "+format, args...))
 	}
 }
 

@@ -238,7 +238,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int32)(nil),
 		Field:         21,
-		Name:          "fastpb.test.b1",
+		Name:          "hyperpb.test.b1",
 		Tag:           "varint,21,opt,name=b1",
 		Filename:      "test/proto2.proto",
 	},
@@ -246,7 +246,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int64)(nil),
 		Field:         22,
-		Name:          "fastpb.test.b2",
+		Name:          "hyperpb.test.b2",
 		Tag:           "varint,22,opt,name=b2",
 		Filename:      "test/proto2.proto",
 	},
@@ -254,7 +254,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*uint32)(nil),
 		Field:         23,
-		Name:          "fastpb.test.b3",
+		Name:          "hyperpb.test.b3",
 		Tag:           "varint,23,opt,name=b3",
 		Filename:      "test/proto2.proto",
 	},
@@ -262,7 +262,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*uint64)(nil),
 		Field:         24,
-		Name:          "fastpb.test.b4",
+		Name:          "hyperpb.test.b4",
 		Tag:           "varint,24,opt,name=b4",
 		Filename:      "test/proto2.proto",
 	},
@@ -270,7 +270,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int32)(nil),
 		Field:         25,
-		Name:          "fastpb.test.b5",
+		Name:          "hyperpb.test.b5",
 		Tag:           "zigzag32,25,opt,name=b5",
 		Filename:      "test/proto2.proto",
 	},
@@ -278,7 +278,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int64)(nil),
 		Field:         26,
-		Name:          "fastpb.test.b6",
+		Name:          "hyperpb.test.b6",
 		Tag:           "zigzag64,26,opt,name=b6",
 		Filename:      "test/proto2.proto",
 	},
@@ -286,7 +286,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*uint32)(nil),
 		Field:         27,
-		Name:          "fastpb.test.b7",
+		Name:          "hyperpb.test.b7",
 		Tag:           "fixed32,27,opt,name=b7",
 		Filename:      "test/proto2.proto",
 	},
@@ -294,7 +294,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*uint64)(nil),
 		Field:         28,
-		Name:          "fastpb.test.b8",
+		Name:          "hyperpb.test.b8",
 		Tag:           "fixed64,28,opt,name=b8",
 		Filename:      "test/proto2.proto",
 	},
@@ -302,7 +302,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int32)(nil),
 		Field:         29,
-		Name:          "fastpb.test.b9",
+		Name:          "hyperpb.test.b9",
 		Tag:           "fixed32,29,opt,name=b9",
 		Filename:      "test/proto2.proto",
 	},
@@ -310,7 +310,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*int64)(nil),
 		Field:         30,
-		Name:          "fastpb.test.b10",
+		Name:          "hyperpb.test.b10",
 		Tag:           "fixed64,30,opt,name=b10",
 		Filename:      "test/proto2.proto",
 	},
@@ -318,7 +318,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*float32)(nil),
 		Field:         31,
-		Name:          "fastpb.test.b11",
+		Name:          "hyperpb.test.b11",
 		Tag:           "fixed32,31,opt,name=b11",
 		Filename:      "test/proto2.proto",
 	},
@@ -326,7 +326,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*float64)(nil),
 		Field:         32,
-		Name:          "fastpb.test.b12",
+		Name:          "hyperpb.test.b12",
 		Tag:           "fixed64,32,opt,name=b12",
 		Filename:      "test/proto2.proto",
 	},
@@ -334,7 +334,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         33,
-		Name:          "fastpb.test.b13",
+		Name:          "hyperpb.test.b13",
 		Tag:           "varint,33,opt,name=b13",
 		Filename:      "test/proto2.proto",
 	},
@@ -342,7 +342,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         34,
-		Name:          "fastpb.test.b14",
+		Name:          "hyperpb.test.b14",
 		Tag:           "bytes,34,opt,name=b14",
 		Filename:      "test/proto2.proto",
 	},
@@ -350,7 +350,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: ([]byte)(nil),
 		Field:         35,
-		Name:          "fastpb.test.b15",
+		Name:          "hyperpb.test.b15",
 		Tag:           "bytes,35,opt,name=b15",
 		Filename:      "test/proto2.proto",
 	},
@@ -358,7 +358,7 @@ var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*Extensions)(nil),
 		ExtensionType: ([]*Extensions)(nil),
 		Field:         50,
-		Name:          "fastpb.test.z",
+		Name:          "hyperpb.test.z",
 		Tag:           "bytes,50,rep,name=z",
 		Filename:      "test/proto2.proto",
 	},
@@ -396,7 +396,7 @@ var (
 	E_B14 = &file_test_proto2_proto_extTypes[13]
 	// optional bytes b15 = 35;
 	E_B15 = &file_test_proto2_proto_extTypes[14]
-	// repeated fastpb.test.Extensions z = 50;
+	// repeated hyperpb.test.Extensions z = 50;
 	E_Z = &file_test_proto2_proto_extTypes[15]
 )
 
@@ -404,38 +404,38 @@ var File_test_proto2_proto protoreflect.FileDescriptor
 
 const file_test_proto2_proto_rawDesc = "" +
 	"\n" +
-	"\x11test/proto2.proto\x12\vfastpb.test\"\x16\n" +
+	"\x11test/proto2.proto\x12\fhyperpb.test\"\x16\n" +
 	"\n" +
-	"Extensions*\b\b\x01\x10\x80\x80\x80\x80\x02\"q\n" +
+	"Extensions*\b\b\x01\x10\x80\x80\x80\x80\x02\"s\n" +
 	"\bRequired\x12\f\n" +
-	"\x01x\x18\x01 \x02(\x05R\x01x\x12#\n" +
-	"\x01y\x18\x02 \x01(\v2\x15.fastpb.test.RequiredR\x01y\x12)\n" +
-	"\x01z\x18\x03 \x02(\v2\x1b.fastpb.test.Required.EmptyR\x01z\x1a\a\n" +
-	"\x05Empty\"\xdf\x01\n" +
-	"\x11DependsOnRequired\x12#\n" +
-	"\x01a\x18\x01 \x01(\v2\x15.fastpb.test.RequiredR\x01a\x12#\n" +
-	"\x01b\x18\x02 \x03(\v2\x15.fastpb.test.RequiredR\x01b\x123\n" +
-	"\x01c\x18\x03 \x03(\v2%.fastpb.test.DependsOnRequired.CEntryR\x01c\x1aK\n" +
+	"\x01x\x18\x01 \x02(\x05R\x01x\x12$\n" +
+	"\x01y\x18\x02 \x01(\v2\x16.hyperpb.test.RequiredR\x01y\x12*\n" +
+	"\x01z\x18\x03 \x02(\v2\x1c.hyperpb.test.Required.EmptyR\x01z\x1a\a\n" +
+	"\x05Empty\"\xe3\x01\n" +
+	"\x11DependsOnRequired\x12$\n" +
+	"\x01a\x18\x01 \x01(\v2\x16.hyperpb.test.RequiredR\x01a\x12$\n" +
+	"\x01b\x18\x02 \x03(\v2\x16.hyperpb.test.RequiredR\x01b\x124\n" +
+	"\x01c\x18\x03 \x03(\v2&.hyperpb.test.DependsOnRequired.CEntryR\x01c\x1aL\n" +
 	"\x06CEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\x05R\x03key\x12+\n" +
-	"\x05value\x18\x02 \x01(\v2\x15.fastpb.test.RequiredR\x05value:\x028\x01:'\n" +
-	"\x02b1\x12\x17.fastpb.test.Extensions\x18\x15 \x01(\x05R\x02b1:'\n" +
-	"\x02b2\x12\x17.fastpb.test.Extensions\x18\x16 \x01(\x03R\x02b2:'\n" +
-	"\x02b3\x12\x17.fastpb.test.Extensions\x18\x17 \x01(\rR\x02b3:'\n" +
-	"\x02b4\x12\x17.fastpb.test.Extensions\x18\x18 \x01(\x04R\x02b4:'\n" +
-	"\x02b5\x12\x17.fastpb.test.Extensions\x18\x19 \x01(\x11R\x02b5:'\n" +
-	"\x02b6\x12\x17.fastpb.test.Extensions\x18\x1a \x01(\x12R\x02b6:'\n" +
-	"\x02b7\x12\x17.fastpb.test.Extensions\x18\x1b \x01(\aR\x02b7:'\n" +
-	"\x02b8\x12\x17.fastpb.test.Extensions\x18\x1c \x01(\x06R\x02b8:'\n" +
-	"\x02b9\x12\x17.fastpb.test.Extensions\x18\x1d \x01(\x0fR\x02b9:)\n" +
-	"\x03b10\x12\x17.fastpb.test.Extensions\x18\x1e \x01(\x10R\x03b10:)\n" +
-	"\x03b11\x12\x17.fastpb.test.Extensions\x18\x1f \x01(\x02R\x03b11:)\n" +
-	"\x03b12\x12\x17.fastpb.test.Extensions\x18  \x01(\x01R\x03b12:)\n" +
-	"\x03b13\x12\x17.fastpb.test.Extensions\x18! \x01(\bR\x03b13:)\n" +
-	"\x03b14\x12\x17.fastpb.test.Extensions\x18\" \x01(\tR\x03b14:)\n" +
-	"\x03b15\x12\x17.fastpb.test.Extensions\x18# \x01(\fR\x03b15:>\n" +
-	"\x01z\x12\x17.fastpb.test.Extensions\x182 \x03(\v2\x17.fastpb.test.ExtensionsR\x01zB\x99\x01\n" +
-	"\x0fcom.fastpb.testB\vProto2ProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Test"
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12,\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.hyperpb.test.RequiredR\x05value:\x028\x01:(\n" +
+	"\x02b1\x12\x18.hyperpb.test.Extensions\x18\x15 \x01(\x05R\x02b1:(\n" +
+	"\x02b2\x12\x18.hyperpb.test.Extensions\x18\x16 \x01(\x03R\x02b2:(\n" +
+	"\x02b3\x12\x18.hyperpb.test.Extensions\x18\x17 \x01(\rR\x02b3:(\n" +
+	"\x02b4\x12\x18.hyperpb.test.Extensions\x18\x18 \x01(\x04R\x02b4:(\n" +
+	"\x02b5\x12\x18.hyperpb.test.Extensions\x18\x19 \x01(\x11R\x02b5:(\n" +
+	"\x02b6\x12\x18.hyperpb.test.Extensions\x18\x1a \x01(\x12R\x02b6:(\n" +
+	"\x02b7\x12\x18.hyperpb.test.Extensions\x18\x1b \x01(\aR\x02b7:(\n" +
+	"\x02b8\x12\x18.hyperpb.test.Extensions\x18\x1c \x01(\x06R\x02b8:(\n" +
+	"\x02b9\x12\x18.hyperpb.test.Extensions\x18\x1d \x01(\x0fR\x02b9:*\n" +
+	"\x03b10\x12\x18.hyperpb.test.Extensions\x18\x1e \x01(\x10R\x03b10:*\n" +
+	"\x03b11\x12\x18.hyperpb.test.Extensions\x18\x1f \x01(\x02R\x03b11:*\n" +
+	"\x03b12\x12\x18.hyperpb.test.Extensions\x18  \x01(\x01R\x03b12:*\n" +
+	"\x03b13\x12\x18.hyperpb.test.Extensions\x18! \x01(\bR\x03b13:*\n" +
+	"\x03b14\x12\x18.hyperpb.test.Extensions\x18\" \x01(\tR\x03b14:*\n" +
+	"\x03b15\x12\x18.hyperpb.test.Extensions\x18# \x01(\fR\x03b15:@\n" +
+	"\x01z\x12\x18.hyperpb.test.Extensions\x182 \x03(\v2\x18.hyperpb.test.ExtensionsR\x01zB\x9f\x01\n" +
+	"\x10com.hyperpb.testB\vProto2ProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
 
 var (
 	file_test_proto2_proto_rawDescOnce sync.Once
@@ -451,36 +451,36 @@ func file_test_proto2_proto_rawDescGZIP() []byte {
 
 var file_test_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_test_proto2_proto_goTypes = []any{
-	(*Extensions)(nil),        // 0: fastpb.test.Extensions
-	(*Required)(nil),          // 1: fastpb.test.Required
-	(*DependsOnRequired)(nil), // 2: fastpb.test.DependsOnRequired
-	(*Required_Empty)(nil),    // 3: fastpb.test.Required.Empty
-	nil,                       // 4: fastpb.test.DependsOnRequired.CEntry
+	(*Extensions)(nil),        // 0: hyperpb.test.Extensions
+	(*Required)(nil),          // 1: hyperpb.test.Required
+	(*DependsOnRequired)(nil), // 2: hyperpb.test.DependsOnRequired
+	(*Required_Empty)(nil),    // 3: hyperpb.test.Required.Empty
+	nil,                       // 4: hyperpb.test.DependsOnRequired.CEntry
 }
 var file_test_proto2_proto_depIdxs = []int32{
-	1,  // 0: fastpb.test.Required.y:type_name -> fastpb.test.Required
-	3,  // 1: fastpb.test.Required.z:type_name -> fastpb.test.Required.Empty
-	1,  // 2: fastpb.test.DependsOnRequired.a:type_name -> fastpb.test.Required
-	1,  // 3: fastpb.test.DependsOnRequired.b:type_name -> fastpb.test.Required
-	4,  // 4: fastpb.test.DependsOnRequired.c:type_name -> fastpb.test.DependsOnRequired.CEntry
-	1,  // 5: fastpb.test.DependsOnRequired.CEntry.value:type_name -> fastpb.test.Required
-	0,  // 6: fastpb.test.b1:extendee -> fastpb.test.Extensions
-	0,  // 7: fastpb.test.b2:extendee -> fastpb.test.Extensions
-	0,  // 8: fastpb.test.b3:extendee -> fastpb.test.Extensions
-	0,  // 9: fastpb.test.b4:extendee -> fastpb.test.Extensions
-	0,  // 10: fastpb.test.b5:extendee -> fastpb.test.Extensions
-	0,  // 11: fastpb.test.b6:extendee -> fastpb.test.Extensions
-	0,  // 12: fastpb.test.b7:extendee -> fastpb.test.Extensions
-	0,  // 13: fastpb.test.b8:extendee -> fastpb.test.Extensions
-	0,  // 14: fastpb.test.b9:extendee -> fastpb.test.Extensions
-	0,  // 15: fastpb.test.b10:extendee -> fastpb.test.Extensions
-	0,  // 16: fastpb.test.b11:extendee -> fastpb.test.Extensions
-	0,  // 17: fastpb.test.b12:extendee -> fastpb.test.Extensions
-	0,  // 18: fastpb.test.b13:extendee -> fastpb.test.Extensions
-	0,  // 19: fastpb.test.b14:extendee -> fastpb.test.Extensions
-	0,  // 20: fastpb.test.b15:extendee -> fastpb.test.Extensions
-	0,  // 21: fastpb.test.z:extendee -> fastpb.test.Extensions
-	0,  // 22: fastpb.test.z:type_name -> fastpb.test.Extensions
+	1,  // 0: hyperpb.test.Required.y:type_name -> hyperpb.test.Required
+	3,  // 1: hyperpb.test.Required.z:type_name -> hyperpb.test.Required.Empty
+	1,  // 2: hyperpb.test.DependsOnRequired.a:type_name -> hyperpb.test.Required
+	1,  // 3: hyperpb.test.DependsOnRequired.b:type_name -> hyperpb.test.Required
+	4,  // 4: hyperpb.test.DependsOnRequired.c:type_name -> hyperpb.test.DependsOnRequired.CEntry
+	1,  // 5: hyperpb.test.DependsOnRequired.CEntry.value:type_name -> hyperpb.test.Required
+	0,  // 6: hyperpb.test.b1:extendee -> hyperpb.test.Extensions
+	0,  // 7: hyperpb.test.b2:extendee -> hyperpb.test.Extensions
+	0,  // 8: hyperpb.test.b3:extendee -> hyperpb.test.Extensions
+	0,  // 9: hyperpb.test.b4:extendee -> hyperpb.test.Extensions
+	0,  // 10: hyperpb.test.b5:extendee -> hyperpb.test.Extensions
+	0,  // 11: hyperpb.test.b6:extendee -> hyperpb.test.Extensions
+	0,  // 12: hyperpb.test.b7:extendee -> hyperpb.test.Extensions
+	0,  // 13: hyperpb.test.b8:extendee -> hyperpb.test.Extensions
+	0,  // 14: hyperpb.test.b9:extendee -> hyperpb.test.Extensions
+	0,  // 15: hyperpb.test.b10:extendee -> hyperpb.test.Extensions
+	0,  // 16: hyperpb.test.b11:extendee -> hyperpb.test.Extensions
+	0,  // 17: hyperpb.test.b12:extendee -> hyperpb.test.Extensions
+	0,  // 18: hyperpb.test.b13:extendee -> hyperpb.test.Extensions
+	0,  // 19: hyperpb.test.b14:extendee -> hyperpb.test.Extensions
+	0,  // 20: hyperpb.test.b15:extendee -> hyperpb.test.Extensions
+	0,  // 21: hyperpb.test.z:extendee -> hyperpb.test.Extensions
+	0,  // 22: hyperpb.test.z:type_name -> hyperpb.test.Extensions
 	23, // [23:23] is the sub-list for method output_type
 	23, // [23:23] is the sub-list for method input_type
 	22, // [22:23] is the sub-list for extension type_name

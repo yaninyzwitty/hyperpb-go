@@ -25,9 +25,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/swiss"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/swiss"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 const (
@@ -35,7 +35,7 @@ const (
 	numKeys = 1024
 )
 
-var benchProbes = flag.Bool("fastpb.benchprobe", false, "if true, benchmark probe sequence length")
+var benchProbes = flag.Bool("hyperpb.benchprobe", false, "if true, benchmark probe sequence length")
 
 //go:generate go run ../tools/stencil
 
@@ -51,8 +51,8 @@ func BenchmarkTable(b *testing.B) {
 	u32Benchmark(b, new(urls), mapSize)
 }
 
-//fastpb:stencil u32Benchmark scalarBenchmark[uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32 Lookup -> swiss.LookupU32xU32
-//fastpb:stencil u64Benchmark scalarBenchmark[uint64] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32 Lookup -> swiss.LookupU64xU32
+//hyperpb:stencil u32Benchmark scalarBenchmark[uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32 Lookup -> swiss.LookupU32xU32
+//hyperpb:stencil u64Benchmark scalarBenchmark[uint64] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32 Lookup -> swiss.LookupU64xU32
 func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 	b.Helper()
 

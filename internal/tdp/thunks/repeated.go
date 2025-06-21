@@ -20,16 +20,16 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/arena/slice"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/empty"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/arena/slice"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Repeated fields are implemented as one an slice.Slice for some element
@@ -344,9 +344,9 @@ func (r *repeatedBytes) Get(n int) protoreflect.Value {
 }
 
 //go:nosplit
-//fastpb:stencil parseRepeatedVarint8 parseRepeatedVarint[uint8] appendVarint -> appendVarint8
-//fastpb:stencil parseRepeatedVarint32 parseRepeatedVarint[uint32] appendVarint -> appendVarint32
-//fastpb:stencil parseRepeatedVarint64 parseRepeatedVarint[uint64] appendVarint -> appendVarint64
+//hyperpb:stencil parseRepeatedVarint8 parseRepeatedVarint[uint8] appendVarint -> appendVarint8
+//hyperpb:stencil parseRepeatedVarint32 parseRepeatedVarint[uint32] appendVarint -> appendVarint32
+//hyperpb:stencil parseRepeatedVarint64 parseRepeatedVarint[uint64] appendVarint -> appendVarint64
 func parseRepeatedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
@@ -387,9 +387,9 @@ func parseRepeatedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil parsePackedVarint8 parsePackedVarint[uint8]
-//fastpb:stencil parsePackedVarint32 parsePackedVarint[uint32]
-//fastpb:stencil parsePackedVarint64 parsePackedVarint[uint64]
+//hyperpb:stencil parsePackedVarint8 parsePackedVarint[uint8]
+//hyperpb:stencil parsePackedVarint32 parsePackedVarint[uint32]
+//hyperpb:stencil parsePackedVarint64 parsePackedVarint[uint64]
 func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -522,8 +522,8 @@ func parseRepeatedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
-//fastpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
+//hyperpb:stencil appendFixed32 appendFixed[uint32] spillArena -> spillArena32
+//hyperpb:stencil appendFixed64 appendFixed[uint64] spillArena -> spillArena64
 func appendFixed[T uint32 | uint64](p1 vm.P1, p2 vm.P2, v T) (vm.P1, vm.P2) {
 	var r *repeatedScalar[T, T]
 	p1, p2, r = vm.GetMutableField[repeatedScalar[T, T]](p1, p2)
@@ -545,8 +545,8 @@ func appendFixed[T uint32 | uint64](p1 vm.P1, p2 vm.P2, v T) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil parsePackedFixed32 parsePackedFixed[uint32]
-//fastpb:stencil parsePackedFixed64 parsePackedFixed[uint64]
+//hyperpb:stencil parsePackedFixed32 parsePackedFixed[uint32]
+//hyperpb:stencil parsePackedFixed64 parsePackedFixed[uint64]
 func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)

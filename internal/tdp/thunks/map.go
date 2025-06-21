@@ -20,14 +20,14 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/swiss"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/swiss"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // map<K, V>, for K an integer type, is implemented as a swiss.Table of that
@@ -656,95 +656,95 @@ func (bytesItem) extract(p1 vm.P1, _ vm.P2) func(uint64) []byte {
 	}
 }
 
-//fastpb:stencil parseMapV32xV32 parseMapKxV[varintItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapV32xV64 parseMapKxV[varintItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapV32xZ32 parseMapKxV[varintItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapV32xZ64 parseMapKxV[varintItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapV32xF32 parseMapKxV[varintItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapV32xF64 parseMapKxV[varintItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapV32x2   parseMapKxV[varintItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseMapV32xS   parseMapKxV[varintItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapV32xB   parseMapKxV[varintItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapV32xV32 parseMapKxV[varintItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapV32xV64 parseMapKxV[varintItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapV32xZ32 parseMapKxV[varintItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapV32xZ64 parseMapKxV[varintItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapV32xF32 parseMapKxV[varintItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapV32xF64 parseMapKxV[varintItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapV32x2   parseMapKxV[varintItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//hyperpb:stencil parseMapV32xS   parseMapKxV[varintItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapV32xB   parseMapKxV[varintItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseMapV64xV32 parseMapKxV[varintItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapV64xV64 parseMapKxV[varintItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapV64xZ32 parseMapKxV[varintItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapV64xZ64 parseMapKxV[varintItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapV64xF32 parseMapKxV[varintItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapV64xF64 parseMapKxV[varintItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapV64x2   parseMapKxV[varintItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseMapV64xS   parseMapKxV[varintItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapV64xB   parseMapKxV[varintItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapV64xV32 parseMapKxV[varintItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapV64xV64 parseMapKxV[varintItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapV64xZ32 parseMapKxV[varintItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapV64xZ64 parseMapKxV[varintItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapV64xF32 parseMapKxV[varintItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapV64xF64 parseMapKxV[varintItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapV64x2   parseMapKxV[varintItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//hyperpb:stencil parseMapV64xS   parseMapKxV[varintItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapV64xB   parseMapKxV[varintItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseMapZ32xV32 parseMapKxV[zigzagItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapZ32xV64 parseMapKxV[zigzagItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapZ32xZ32 parseMapKxV[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapZ32xZ64 parseMapKxV[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapZ32xF32 parseMapKxV[zigzagItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapZ32xF64 parseMapKxV[zigzagItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapZ32x2   parseMapKxV[zigzagItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseMapZ32xS   parseMapKxV[zigzagItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapZ32xB   parseMapKxV[zigzagItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapZ32xV32 parseMapKxV[zigzagItem[uint32], varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapZ32xV64 parseMapKxV[zigzagItem[uint32], varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapZ32xZ32 parseMapKxV[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapZ32xZ64 parseMapKxV[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapZ32xF32 parseMapKxV[zigzagItem[uint32], fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapZ32xF64 parseMapKxV[zigzagItem[uint32], fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapZ32x2   parseMapKxV[zigzagItem[uint32], boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//hyperpb:stencil parseMapZ32xS   parseMapKxV[zigzagItem[uint32], stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapZ32xB   parseMapKxV[zigzagItem[uint32], bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseMapZ64xV32 parseMapKxV[zigzagItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapZ64xV64 parseMapKxV[zigzagItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapZ64xZ32 parseMapKxV[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapZ64xZ64 parseMapKxV[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapZ64xF32 parseMapKxV[zigzagItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapZ64xF64 parseMapKxV[zigzagItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapZ64x2   parseMapKxV[zigzagItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseMapZ64xS   parseMapKxV[zigzagItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapZ64xB   parseMapKxV[zigzagItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapZ64xV32 parseMapKxV[zigzagItem[uint64], varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapZ64xV64 parseMapKxV[zigzagItem[uint64], varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapZ64xZ32 parseMapKxV[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapZ64xZ64 parseMapKxV[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapZ64xF32 parseMapKxV[zigzagItem[uint64], fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapZ64xF64 parseMapKxV[zigzagItem[uint64], fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapZ64x2   parseMapKxV[zigzagItem[uint64], boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//hyperpb:stencil parseMapZ64xS   parseMapKxV[zigzagItem[uint64], stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapZ64xB   parseMapKxV[zigzagItem[uint64], bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseMapF32xV32 parseMapKxV[fixed32Item, varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapF32xV64 parseMapKxV[fixed32Item, varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapF32xZ32 parseMapKxV[fixed32Item, zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapF32xZ64 parseMapKxV[fixed32Item, zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapF32xF32 parseMapKxV[fixed32Item, fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
-//fastpb:stencil parseMapF32xF64 parseMapKxV[fixed32Item, fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapF32x2   parseMapKxV[fixed32Item, boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
-//fastpb:stencil parseMapF32xS   parseMapKxV[fixed32Item, stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
-//fastpb:stencil parseMapF32xB   parseMapKxV[fixed32Item, bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapF32xV32 parseMapKxV[fixed32Item, varintItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapF32xV64 parseMapKxV[fixed32Item, varintItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapF32xZ32 parseMapKxV[fixed32Item, zigzagItem[uint32], uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapF32xZ64 parseMapKxV[fixed32Item, zigzagItem[uint64], uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapF32xF32 parseMapKxV[fixed32Item, fixed32Item, uint32, uint32] Init -> swiss.InitU32xU32 Insert -> swiss.InsertU32xU32
+//hyperpb:stencil parseMapF32xF64 parseMapKxV[fixed32Item, fixed64Item, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapF32x2   parseMapKxV[fixed32Item, boolItem, uint32, uint8] Init -> swiss.InitU32xU8 Insert -> swiss.InsertU32xU8
+//hyperpb:stencil parseMapF32xS   parseMapKxV[fixed32Item, stringItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
+//hyperpb:stencil parseMapF32xB   parseMapKxV[fixed32Item, bytesItem, uint32, uint64] Init -> swiss.InitU32xU64 Insert -> swiss.InsertU32xU64
 
-//fastpb:stencil parseMapF64xV32 parseMapKxV[fixed64Item, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapF64xV64 parseMapKxV[fixed64Item, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapF64xZ32 parseMapKxV[fixed64Item, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapF64xZ64 parseMapKxV[fixed64Item, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapF64xF32 parseMapKxV[fixed64Item, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapF64xF64 parseMapKxV[fixed64Item, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapF64x2   parseMapKxV[fixed64Item, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseMapF64xS   parseMapKxV[fixed64Item, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapF64xB   parseMapKxV[fixed64Item, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapF64xV32 parseMapKxV[fixed64Item, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapF64xV64 parseMapKxV[fixed64Item, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapF64xZ32 parseMapKxV[fixed64Item, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapF64xZ64 parseMapKxV[fixed64Item, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapF64xF32 parseMapKxV[fixed64Item, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapF64xF64 parseMapKxV[fixed64Item, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapF64x2   parseMapKxV[fixed64Item, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//hyperpb:stencil parseMapF64xS   parseMapKxV[fixed64Item, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapF64xB   parseMapKxV[fixed64Item, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseMapSxV32 parseMapKxV[stringItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapSxV64 parseMapKxV[stringItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapSxZ32 parseMapKxV[stringItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapSxZ64 parseMapKxV[stringItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapSxF32 parseMapKxV[stringItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapSxF64 parseMapKxV[stringItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapSx2   parseMapKxV[stringItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseMapSxS   parseMapKxV[stringItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapSxB   parseMapKxV[stringItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapSxV32 parseMapKxV[stringItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapSxV64 parseMapKxV[stringItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapSxZ32 parseMapKxV[stringItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapSxZ64 parseMapKxV[stringItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapSxF32 parseMapKxV[stringItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapSxF64 parseMapKxV[stringItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapSx2   parseMapKxV[stringItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//hyperpb:stencil parseMapSxS   parseMapKxV[stringItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapSxB   parseMapKxV[stringItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseMapBxV32 parseMapKxV[bytesItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapBxV64 parseMapKxV[bytesItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapBxZ32 parseMapKxV[bytesItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapBxZ64 parseMapKxV[bytesItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapBxF32 parseMapKxV[bytesItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
-//fastpb:stencil parseMapBxF64 parseMapKxV[bytesItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapBx2   parseMapKxV[bytesItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
-//fastpb:stencil parseMapBxS   parseMapKxV[bytesItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
-//fastpb:stencil parseMapBxB   parseMapKxV[bytesItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapBxV32 parseMapKxV[bytesItem, varintItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapBxV64 parseMapKxV[bytesItem, varintItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapBxZ32 parseMapKxV[bytesItem, zigzagItem[uint32], uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapBxZ64 parseMapKxV[bytesItem, zigzagItem[uint64], uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapBxF32 parseMapKxV[bytesItem, fixed32Item, uint64, uint32] Init -> swiss.InitU64xU32 Insert -> swiss.InsertU64xU32
+//hyperpb:stencil parseMapBxF64 parseMapKxV[bytesItem, fixed64Item, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapBx2   parseMapKxV[bytesItem, boolItem, uint64, uint8] Init -> swiss.InitU64xU8 Insert -> swiss.InsertU64xU8
+//hyperpb:stencil parseMapBxS   parseMapKxV[bytesItem, stringItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
+//hyperpb:stencil parseMapBxB   parseMapKxV[bytesItem, bytesItem, uint64, uint64] Init -> swiss.InitU64xU64 Insert -> swiss.InsertU64xU64
 
-//fastpb:stencil parseMap2xV32 parseMapKxV[boolItem, varintItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
-//fastpb:stencil parseMap2xV64 parseMapKxV[boolItem, varintItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
-//fastpb:stencil parseMap2xZ32 parseMapKxV[boolItem, zigzagItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
-//fastpb:stencil parseMap2xZ64 parseMapKxV[boolItem, zigzagItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
-//fastpb:stencil parseMap2xF32 parseMapKxV[boolItem, fixed32Item, uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
-//fastpb:stencil parseMap2xF64 parseMapKxV[boolItem, fixed64Item, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
-//fastpb:stencil parseMap2x2   parseMapKxV[boolItem, boolItem, uint8, uint8] Init -> swiss.InitU8xU8 Insert -> swiss.InsertU8xU8
-//fastpb:stencil parseMap2xS   parseMapKxV[boolItem, stringItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
-//fastpb:stencil parseMap2xB   parseMapKxV[boolItem, bytesItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//hyperpb:stencil parseMap2xV32 parseMapKxV[boolItem, varintItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//hyperpb:stencil parseMap2xV64 parseMapKxV[boolItem, varintItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//hyperpb:stencil parseMap2xZ32 parseMapKxV[boolItem, zigzagItem[uint32], uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//hyperpb:stencil parseMap2xZ64 parseMapKxV[boolItem, zigzagItem[uint64], uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//hyperpb:stencil parseMap2xF32 parseMapKxV[boolItem, fixed32Item, uint8, uint32] Init -> swiss.InitU8xU32 Insert -> swiss.InsertU8xU32
+//hyperpb:stencil parseMap2xF64 parseMapKxV[boolItem, fixed64Item, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//hyperpb:stencil parseMap2x2   parseMapKxV[boolItem, boolItem, uint8, uint8] Init -> swiss.InitU8xU8 Insert -> swiss.InsertU8xU8
+//hyperpb:stencil parseMap2xS   parseMapKxV[boolItem, stringItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
+//hyperpb:stencil parseMap2xB   parseMapKxV[boolItem, bytesItem, uint8, uint64] Init -> swiss.InitU8xU64 Insert -> swiss.InsertU8xU64
 
 // parseMapKxV parses a map type whose value is a non-message type.
 func parseMapKxV[
@@ -840,15 +840,15 @@ insert:
 	return p1, p2
 }
 
-//fastpb:stencil parseMapV32xM parseMapKxM[varintItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
-//fastpb:stencil parseMapV64xM parseMapKxM[varintItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
-//fastpb:stencil parseMapZ32xM parseMapKxM[zigzagItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
-//fastpb:stencil parseMapZ64xM parseMapKxM[zigzagItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
-//fastpb:stencil parseMapF32xM parseMapKxM[fixed32Item, uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
-//fastpb:stencil parseMapF64xM parseMapKxM[fixed64Item, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
-//fastpb:stencil parseMapSxM   parseMapKxM[stringItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
-//fastpb:stencil parseMapBxM   parseMapKxM[bytesItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
-//fastpb:stencil parseMap2xM   parseMapKxM[boolItem, uint8] Init -> swiss.InitU8xP Insert -> swiss.InsertU8xP
+//hyperpb:stencil parseMapV32xM parseMapKxM[varintItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//hyperpb:stencil parseMapV64xM parseMapKxM[varintItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//hyperpb:stencil parseMapZ32xM parseMapKxM[zigzagItem[uint32], uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//hyperpb:stencil parseMapZ64xM parseMapKxM[zigzagItem[uint64], uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//hyperpb:stencil parseMapF32xM parseMapKxM[fixed32Item, uint32] Init -> swiss.InitU32xP Insert -> swiss.InsertU32xP
+//hyperpb:stencil parseMapF64xM parseMapKxM[fixed64Item, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//hyperpb:stencil parseMapSxM   parseMapKxM[stringItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//hyperpb:stencil parseMapBxM   parseMapKxM[bytesItem, uint64] Init -> swiss.InitU64xP Insert -> swiss.InsertU64xP
+//hyperpb:stencil parseMap2xM   parseMapKxM[boolItem, uint8] Init -> swiss.InitU8xP Insert -> swiss.InsertU8xP
 
 // parseMapKxM parses a map type whose value is a message type.
 func parseMapKxM[KI mapItem[K], K swiss.Key](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {

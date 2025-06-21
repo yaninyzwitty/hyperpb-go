@@ -22,8 +22,8 @@ import (
 	"slices"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // Graph is a "local" representation of a directed graph, which exposes the

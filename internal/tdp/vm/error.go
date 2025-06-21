@@ -67,5 +67,5 @@ func (e *ParseError) Unwrap() error {
 
 // Error implements [error].
 func (e *ParseError) Error() string {
-	return fmt.Sprintf("fastpb: parser error at offset %d/%#x: %v", e.offset, e.offset, e.Unwrap())
+	return fmt.Sprintf("hyperpb: parser error at offset %d/%#x: %v", e.offset, e.offset, e.Unwrap())
 }

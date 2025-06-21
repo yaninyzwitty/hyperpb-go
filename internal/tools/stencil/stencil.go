@@ -52,7 +52,7 @@ import (
 )
 
 var (
-	directive = regexp.MustCompile(`^//fastpb:stencil\s+(\w+)\s+([\w.]+)\s*\[(.+)\]\s*(:?(\w+\s*->\s*[\w.]+\s*)*)`)
+	directive = regexp.MustCompile(`^//hyperpb:stencil\s+(\w+)\s+([\w.]+)\s*\[(.+)\]\s*(:?(\w+\s*->\s*[\w.]+\s*)*)`)
 	rename    = regexp.MustCompile(`(\w+)\s*->\s*([\w.]+)`)
 )
 

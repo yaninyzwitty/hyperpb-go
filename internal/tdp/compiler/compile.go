@@ -28,13 +28,13 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/arena"
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/scc"
-	"github.com/bufbuild/fastpb/internal/swiss"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/arena"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/scc"
+	"github.com/bufbuild/hyperpb/internal/swiss"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -127,7 +127,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 
 	c.log("bytes", "%d", len(c.buf))
 	if len(c.buf) > math.MaxInt32 {
-		panic(fmt.Errorf("tdp: type has too many dependencies: %s", md.FullName()))
+		panic(fmt.Errorf("hyperpb: type has too many dependencies: %s", md.FullName()))
 	}
 
 	auxes := make([]tdp.Aux, len(c.types))
@@ -474,7 +474,7 @@ func (c *compiler) link(base *byte) {
 	for target, relo := range c.relos {
 		offset, ok := c.symbols[relo.symbol]
 		if !ok {
-			panic(fmt.Sprintf("fastpb: undefined symbol while linking %v: %v", c.root.FullName(), relo.symbol))
+			panic(fmt.Sprintf("hyperpb: undefined symbol while linking %v: %v", c.root.FullName(), relo.symbol))
 		}
 
 		if relo.relative {
@@ -533,7 +533,7 @@ func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...
 
 	if symbol != nil {
 		if old, ok := c.symbols[symbol]; ok {
-			panic(fmt.Sprintf("fastpb: symbol %#v defined twice: %#x, %#x", symbol, old, offset))
+			panic(fmt.Sprintf("hyperpb: symbol %#v defined twice: %#x, %#x", symbol, old, offset))
 		}
 		c.symbols[symbol] = offset
 	}
@@ -541,7 +541,7 @@ func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...
 	for _, relo := range relos {
 		offset := int(relo.offset) + offset
 		if _, ok := c.relos[offset]; ok {
-			panic(fmt.Sprintf("fastpb: two relocations for the same offset %#x", offset))
+			panic(fmt.Sprintf("hyperpb: two relocations for the same offset %#x", offset))
 		}
 		c.relos[offset] = relo
 	}

@@ -17,7 +17,7 @@ package tdp
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // Library represents the full output of [Compile]. Given any [Type], it can

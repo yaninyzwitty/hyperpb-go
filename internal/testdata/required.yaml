@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.DependsOnRequired
+type: hyperpb.test.DependsOnRequired
 protoscope:
 - |
   1: {1: 1 3: {}}

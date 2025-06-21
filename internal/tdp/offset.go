@@ -17,7 +17,7 @@ package tdp
 import (
 	"fmt"
 
-	"github.com/bufbuild/fastpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/debug"
 )
 
 // Offset is field offset information for a generated message type's field.

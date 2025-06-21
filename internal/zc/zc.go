@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // Range is a representation of a []byte as a slice relative to some larger byte

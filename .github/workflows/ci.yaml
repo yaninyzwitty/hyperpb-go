@@ -35,8 +35,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
-          key: "${{ runner.os }}-fastpb-ci-${{ hashFiles('**/go.sum') }}"
-          restore-keys: "${{ runner.os }}-fastpb-ci-"
+          key: "${{ runner.os }}-hyperpb-ci-${{ hashFiles('**/go.sum') }}"
+          restore-keys: "${{ runner.os }}-hyperpb-ci-"
 
       - name: Check Generated Files
         if: ${{ matrix.tags == '' }}

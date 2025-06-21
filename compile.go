@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package hyperpb
 
 import (
 	"google.golang.org/protobuf/proto"
@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/thunks"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -31,7 +31,7 @@ type CompileOption func(*compiler.Options)
 
 // WithExtensions provides an extension resolver for a compiler.
 //
-// Unlike ordinary Protobuf parsers, fastpb does not perform extension
+// Unlike ordinary Protobuf parsers, hyperpb does not perform extension
 // resolution on the fly. Instead, any extensions that should be parsed must
 // be provided up-front.
 func WithExtensions(resolver compiler.ExtensionResolver) CompileOption {
@@ -55,7 +55,7 @@ func WithExtensionsFromFiles(files *protoregistry.Files) CompileOption {
 //
 // This is useful for getting a [Type] for a message type compiled into the
 // binary. This will not work if T is some kind of dynamic type, like a
-// *dynamicpb.Message, or a *fastpb.Message.
+// *dynamicpb.Message, or a *hyperpb.Message.
 func CompileFor[T proto.Message](options ...CompileOption) *Type {
 	// Allow the caller to override the extension registry by placing our
 	// default registry first.

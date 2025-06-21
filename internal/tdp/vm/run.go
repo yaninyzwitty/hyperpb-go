@@ -24,11 +24,11 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Options is options for [Run].
@@ -61,7 +61,7 @@ type Thunk func(P1, P2) (P1, P2)
 // Run is the top-level entry point for message parsing.
 func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	if m.Shared.Src != nil {
-		panic("fastpb: attempted to parse message using in-use Context")
+		panic("hyperpb: attempted to parse message using in-use Context")
 	}
 
 	if len(data) > math.MaxUint32 {

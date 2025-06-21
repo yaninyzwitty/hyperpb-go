@@ -1,3 +1,3 @@
-fastpb.*
+hyperpb.*
 .tmp
 testdata/fuzz

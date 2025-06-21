@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb
+package hyperpb
 
 import (
 	"errors"
@@ -24,19 +24,19 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/empty"
-	"github.com/bufbuild/fastpb/internal/tdp/thunks"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 )
 
 // Message is a dynamic message value constructed with this package.
 //
 // Messages types returned by this package implement this interface.
-// The Type() function on [Message] will return a [fastpb.Type]. Any functions
+// The Type() function on [Message] will return a [hyperpb.Type]. Any functions
 // that mutate the underlying message may panic.
 type Message struct {
 	impl dynamic.Message
@@ -49,7 +49,7 @@ func New(ty *Type) *Message {
 	return new(Shared).New(ty)
 }
 
-// Unmarshal is like [proto.Unmarshal], but permits fastpb-specific
+// Unmarshal is like [proto.Unmarshal], but permits hyperpb-specific
 // tuning options to be set.
 //
 // Calling this function may be much faster than calling proto.Unmarshal if
@@ -273,13 +273,13 @@ func (m *Message) Initialized() error {
 			v := f.Get(unsafe.Pointer(m))
 			if !v.IsValid() {
 				return fmt.Errorf(
-					"fastpb: uninitialized required field: %v",
+					"hyperpb: uninitialized required field: %v",
 					m.impl.Type().FieldDescriptors[idx],
 				)
 			}
 			if _, empty := v.Interface().(empty.Message); empty {
 				return fmt.Errorf(
-					"fastpb: uninitialized required field: %v",
+					"hyperpb: uninitialized required field: %v",
 					m.impl.Type().FieldDescriptors[idx],
 				)
 			}
@@ -327,7 +327,7 @@ func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	if !m.IsValid() {
 		// We need to panic here because there's no "reasonable" way to return
 		// a default for message-typed fields here.
-		panic("called Get on nil fastpb.Message")
+		panic("called Get on nil hyperpb.Message")
 	}
 
 	f := m.impl.Type().ByDescriptor(fd)
@@ -476,5 +476,5 @@ var (
 	_ proto.Message        = new(Message)
 	_ protoreflect.Message = new(Message)
 
-	errInvalid = errors.New("fastpb: invalid message")
+	errInvalid = errors.New("hyperpb: invalid message")
 )

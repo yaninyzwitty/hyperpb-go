@@ -16,7 +16,7 @@
 package stats
 
 import (
-	"github.com/bufbuild/fastpb/internal/sync2"
+	"github.com/bufbuild/hyperpb/internal/sync2"
 )
 
 // Mean tracks an average statistic.

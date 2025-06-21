@@ -22,7 +22,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/fastpb/internal/scc"
+	"github.com/bufbuild/hyperpb/internal/scc"
 )
 
 func TestSort(t *testing.T) {

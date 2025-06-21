@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // Addr is a typed raw address.

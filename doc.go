@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package fastpb is a highly optimized dynamic message library for Protobuf or read-only
+// Package hyperpb is a highly optimized dynamic message library for Protobuf or read-only
 // workloads. It is designed to be a drop-in replacement for [dynamicpb],
 // protobuf-go's canonical solution for working with completely dynamic messages.
 //
-// fastpb's parser is an efficient VM for a special instruction set, a variant of
+// hyperpb's parser is an efficient VM for a special instruction set, a variant of
 // table-driven parsing (TDP), pioneered by [the UPB project].
 //
 // Our parser is very fast, beating dynamicpb by 10x, and often beating
@@ -25,9 +25,9 @@
 //
 // # Usage
 //
-// The core conceit of fastpb is that you must pre-compile a parser using
-// fastpb.[Compile] at runtime, much like regular expressions require that you use
-// [regexp.Compile] them. Doing this allows fastpb to run optimization passes on
+// The core conceit of hyperpb is that you must pre-compile a parser using
+// hyperpb.[Compile] at runtime, much like regular expressions require that you use
+// [regexp.Compile] them. Doing this allows hyperpb to run optimization passes on
 // your message, and delaying it to runtime allows us to continuously improve
 // layout optimizations, without making any source-breaking changes.
 //
@@ -38,19 +38,19 @@
 // our binary, and parse some data with it.
 //
 //	//Compile a type for your message. Make sure to cache this!
-//	ty := fastpb.CompileFor[*weatherv1.WeatherReport]()
+//	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
 //
 //	data := /* ... */
 //
 //	// Allocate a fresh message using that type.
-//	msg := fastpb.New(ty)
+//	msg := hyperpb.New(ty)
 //
 //	// Parse the message, using proto.Unmarshal like any other message type.
 //	if err := proto.Unmarshal(data, msg); err != nil {
 //		// Handle parse failure.
 //	}
 //
-//	// Use reflection to read some fields. fastpb currently only supports access
+//	// Use reflection to read some fields. hyperpb currently only supports access
 //	// by reflection. You can also look up fields by index using fields.Get(), which
 //	// is less legible but doesn't hit a hashmap.
 //	fields := ty.Descriptor().Fields()
@@ -77,7 +77,7 @@
 //		fmt.Println("conditions:", station.Get(fields.ByName("conditions")))
 //	}
 //
-// Currently, fastpb only supports manipulating messages through the reflection
+// Currently, hyperpb only supports manipulating messages through the reflection
 // API; it shines best when you need write a very generic service that
 // downloads types off the network and parses messages using those types, which
 // forces you to use reflection.
@@ -88,7 +88,7 @@
 //
 // # Memory Reuse
 //
-// fastpb has a memory-reuse mechanism that side-steps the Go garbage
+// hyperpb has a memory-reuse mechanism that side-steps the Go garbage
 // collector for improved allocation latency. [Shared] is book-keeping
 // state and resources shared by all messages resulting from the same parse.
 // After the message goes out of scope, these resources are ordinarily reclaimed
@@ -99,8 +99,8 @@
 // handler:
 //
 //	type requestContext struct {
-//	    shared *fastpb.Shared
-//	    types map[string]*fastpb.Type
+//	    shared *hyperpb.Shared
+//	    types map[string]*hyperpb.Type
 //	    // ...
 //	}
 //
@@ -118,7 +118,7 @@
 //
 // # Compatibility
 //
-// fastpb is experimental software, and the API may change drastically before
+// hyperpb is experimental software, and the API may change drastically before
 // v1. It also does not implement all of Protobuf: currently, the following are
 // not supported:
 //
@@ -126,12 +126,12 @@
 //   - Group-typed fields (currently parsed as unknown fields).
 //
 // [the UPB project]: https://github.com/protocolbuffers/protobuf/tree/main/upb
-package fastpb
+package hyperpb
 
 import (
 	"google.golang.org/protobuf/types/dynamicpb" // For doc links.
 
-	_ "github.com/bufbuild/fastpb/internal/unsafe2/support"
+	_ "github.com/bufbuild/hyperpb/internal/unsafe2/support"
 )
 
 var _ = dynamicpb.Message{} // Force the dynamicpb import to be kept.

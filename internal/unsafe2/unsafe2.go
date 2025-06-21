@@ -20,7 +20,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // NoCopy is a type that go vet will complain about having been moved.

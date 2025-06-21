@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.FileDescriptorSet
+type: hyperpb.test.FileDescriptorSet
 benchmark: true
 hex:
 - | # protoc -o/dev/stdout --include_source_info google/protobuf/descriptor.proto | xxd -ps

@@ -1255,7 +1255,7 @@ type FileDescriptorProto struct {
 	Options          *FileOptions              `protobuf:"bytes,8,opt,name=options" json:"options,omitempty"`
 	SourceCodeInfo   *SourceCodeInfo           `protobuf:"bytes,9,opt,name=source_code_info,json=sourceCodeInfo" json:"source_code_info,omitempty"`
 	Syntax           *string                   `protobuf:"bytes,12,opt,name=syntax" json:"syntax,omitempty"`
-	Edition          *Edition                  `protobuf:"varint,14,opt,name=edition,enum=fastpb.test.Edition" json:"edition,omitempty"`
+	Edition          *Edition                  `protobuf:"varint,14,opt,name=edition,enum=hyperpb.test.Edition" json:"edition,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1502,7 +1502,7 @@ type ExtensionRangeOptions struct {
 	UninterpretedOption []*UninterpretedOption                   `protobuf:"bytes,999,rep,name=uninterpreted_option,json=uninterpretedOption" json:"uninterpreted_option,omitempty"`
 	Declaration         []*ExtensionRangeOptions_Declaration     `protobuf:"bytes,2,rep,name=declaration" json:"declaration,omitempty"`
 	Features            *FeatureSet                              `protobuf:"bytes,50,opt,name=features" json:"features,omitempty"`
-	Verification        *ExtensionRangeOptions_VerificationState `protobuf:"varint,3,opt,name=verification,enum=fastpb.test.ExtensionRangeOptions_VerificationState,def=1" json:"verification,omitempty"`
+	Verification        *ExtensionRangeOptions_VerificationState `protobuf:"varint,3,opt,name=verification,enum=hyperpb.test.ExtensionRangeOptions_VerificationState,def=1" json:"verification,omitempty"`
 	extensionFields     protoimpl.ExtensionFields
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
@@ -1575,8 +1575,8 @@ type FieldDescriptorProto struct {
 	state          protoimpl.MessageState      `protogen:"open.v1"`
 	Name           *string                     `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	Number         *int32                      `protobuf:"varint,3,opt,name=number" json:"number,omitempty"`
-	Label          *FieldDescriptorProto_Label `protobuf:"varint,4,opt,name=label,enum=fastpb.test.FieldDescriptorProto_Label" json:"label,omitempty"`
-	Type           *FieldDescriptorProto_Type  `protobuf:"varint,5,opt,name=type,enum=fastpb.test.FieldDescriptorProto_Type" json:"type,omitempty"`
+	Label          *FieldDescriptorProto_Label `protobuf:"varint,4,opt,name=label,enum=hyperpb.test.FieldDescriptorProto_Label" json:"label,omitempty"`
+	Type           *FieldDescriptorProto_Type  `protobuf:"varint,5,opt,name=type,enum=hyperpb.test.FieldDescriptorProto_Type" json:"type,omitempty"`
 	TypeName       *string                     `protobuf:"bytes,6,opt,name=type_name,json=typeName" json:"type_name,omitempty"`
 	Extendee       *string                     `protobuf:"bytes,2,opt,name=extendee" json:"extendee,omitempty"`
 	DefaultValue   *string                     `protobuf:"bytes,7,opt,name=default_value,json=defaultValue" json:"default_value,omitempty"`
@@ -2041,7 +2041,7 @@ type FileOptions struct {
 	// Deprecated: Marked as deprecated in test/descriptor.proto.
 	JavaGenerateEqualsAndHash *bool                     `protobuf:"varint,20,opt,name=java_generate_equals_and_hash,json=javaGenerateEqualsAndHash" json:"java_generate_equals_and_hash,omitempty"`
 	JavaStringCheckUtf8       *bool                     `protobuf:"varint,27,opt,name=java_string_check_utf8,json=javaStringCheckUtf8,def=0" json:"java_string_check_utf8,omitempty"`
-	OptimizeFor               *FileOptions_OptimizeMode `protobuf:"varint,9,opt,name=optimize_for,json=optimizeFor,enum=fastpb.test.FileOptions_OptimizeMode,def=1" json:"optimize_for,omitempty"`
+	OptimizeFor               *FileOptions_OptimizeMode `protobuf:"varint,9,opt,name=optimize_for,json=optimizeFor,enum=hyperpb.test.FileOptions_OptimizeMode,def=1" json:"optimize_for,omitempty"`
 	GoPackage                 *string                   `protobuf:"bytes,11,opt,name=go_package,json=goPackage" json:"go_package,omitempty"`
 	CcGenericServices         *bool                     `protobuf:"varint,16,opt,name=cc_generic_services,json=ccGenericServices,def=0" json:"cc_generic_services,omitempty"`
 	JavaGenericServices       *bool                     `protobuf:"varint,17,opt,name=java_generic_services,json=javaGenericServices,def=0" json:"java_generic_services,omitempty"`
@@ -2356,16 +2356,16 @@ func (x *MessageOptions) GetUninterpretedOption() []*UninterpretedOption {
 
 type FieldOptions struct {
 	state               protoimpl.MessageState          `protogen:"open.v1"`
-	Ctype               *FieldOptions_CType             `protobuf:"varint,1,opt,name=ctype,enum=fastpb.test.FieldOptions_CType,def=0" json:"ctype,omitempty"`
+	Ctype               *FieldOptions_CType             `protobuf:"varint,1,opt,name=ctype,enum=hyperpb.test.FieldOptions_CType,def=0" json:"ctype,omitempty"`
 	Packed              *bool                           `protobuf:"varint,2,opt,name=packed" json:"packed,omitempty"`
-	Jstype              *FieldOptions_JSType            `protobuf:"varint,6,opt,name=jstype,enum=fastpb.test.FieldOptions_JSType,def=0" json:"jstype,omitempty"`
+	Jstype              *FieldOptions_JSType            `protobuf:"varint,6,opt,name=jstype,enum=hyperpb.test.FieldOptions_JSType,def=0" json:"jstype,omitempty"`
 	Lazy                *bool                           `protobuf:"varint,5,opt,name=lazy,def=0" json:"lazy,omitempty"`
 	UnverifiedLazy      *bool                           `protobuf:"varint,15,opt,name=unverified_lazy,json=unverifiedLazy,def=0" json:"unverified_lazy,omitempty"`
 	Deprecated          *bool                           `protobuf:"varint,3,opt,name=deprecated,def=0" json:"deprecated,omitempty"`
 	Weak                *bool                           `protobuf:"varint,10,opt,name=weak,def=0" json:"weak,omitempty"`
 	DebugRedact         *bool                           `protobuf:"varint,16,opt,name=debug_redact,json=debugRedact,def=0" json:"debug_redact,omitempty"`
-	Retention           *FieldOptions_OptionRetention   `protobuf:"varint,17,opt,name=retention,enum=fastpb.test.FieldOptions_OptionRetention" json:"retention,omitempty"`
-	Targets             []FieldOptions_OptionTargetType `protobuf:"varint,19,rep,name=targets,enum=fastpb.test.FieldOptions_OptionTargetType" json:"targets,omitempty"`
+	Retention           *FieldOptions_OptionRetention   `protobuf:"varint,17,opt,name=retention,enum=hyperpb.test.FieldOptions_OptionRetention" json:"retention,omitempty"`
+	Targets             []FieldOptions_OptionTargetType `protobuf:"varint,19,rep,name=targets,enum=hyperpb.test.FieldOptions_OptionTargetType" json:"targets,omitempty"`
 	EditionDefaults     []*FieldOptions_EditionDefault  `protobuf:"bytes,20,rep,name=edition_defaults,json=editionDefaults" json:"edition_defaults,omitempty"`
 	Features            *FeatureSet                     `protobuf:"bytes,21,opt,name=features" json:"features,omitempty"`
 	FeatureSupport      *FieldOptions_FeatureSupport    `protobuf:"bytes,22,opt,name=feature_support,json=featureSupport" json:"feature_support,omitempty"`
@@ -2803,7 +2803,7 @@ func (x *ServiceOptions) GetUninterpretedOption() []*UninterpretedOption {
 type MethodOptions struct {
 	state               protoimpl.MessageState          `protogen:"open.v1"`
 	Deprecated          *bool                           `protobuf:"varint,33,opt,name=deprecated,def=0" json:"deprecated,omitempty"`
-	IdempotencyLevel    *MethodOptions_IdempotencyLevel `protobuf:"varint,34,opt,name=idempotency_level,json=idempotencyLevel,enum=fastpb.test.MethodOptions_IdempotencyLevel,def=0" json:"idempotency_level,omitempty"`
+	IdempotencyLevel    *MethodOptions_IdempotencyLevel `protobuf:"varint,34,opt,name=idempotency_level,json=idempotencyLevel,enum=hyperpb.test.MethodOptions_IdempotencyLevel,def=0" json:"idempotency_level,omitempty"`
 	Features            *FeatureSet                     `protobuf:"bytes,35,opt,name=features" json:"features,omitempty"`
 	UninterpretedOption []*UninterpretedOption          `protobuf:"bytes,999,rep,name=uninterpreted_option,json=uninterpretedOption" json:"uninterpreted_option,omitempty"`
 	extensionFields     protoimpl.ExtensionFields
@@ -2969,13 +2969,13 @@ func (x *UninterpretedOption) GetAggregateValue() string {
 
 type FeatureSet struct {
 	state                 protoimpl.MessageState            `protogen:"open.v1"`
-	FieldPresence         *FeatureSet_FieldPresence         `protobuf:"varint,1,opt,name=field_presence,json=fieldPresence,enum=fastpb.test.FeatureSet_FieldPresence" json:"field_presence,omitempty"`
-	EnumType              *FeatureSet_EnumType              `protobuf:"varint,2,opt,name=enum_type,json=enumType,enum=fastpb.test.FeatureSet_EnumType" json:"enum_type,omitempty"`
-	RepeatedFieldEncoding *FeatureSet_RepeatedFieldEncoding `protobuf:"varint,3,opt,name=repeated_field_encoding,json=repeatedFieldEncoding,enum=fastpb.test.FeatureSet_RepeatedFieldEncoding" json:"repeated_field_encoding,omitempty"`
-	Utf8Validation        *FeatureSet_Utf8Validation        `protobuf:"varint,4,opt,name=utf8_validation,json=utf8Validation,enum=fastpb.test.FeatureSet_Utf8Validation" json:"utf8_validation,omitempty"`
-	MessageEncoding       *FeatureSet_MessageEncoding       `protobuf:"varint,5,opt,name=message_encoding,json=messageEncoding,enum=fastpb.test.FeatureSet_MessageEncoding" json:"message_encoding,omitempty"`
-	JsonFormat            *FeatureSet_JsonFormat            `protobuf:"varint,6,opt,name=json_format,json=jsonFormat,enum=fastpb.test.FeatureSet_JsonFormat" json:"json_format,omitempty"`
-	EnforceNamingStyle    *FeatureSet_EnforceNamingStyle    `protobuf:"varint,7,opt,name=enforce_naming_style,json=enforceNamingStyle,enum=fastpb.test.FeatureSet_EnforceNamingStyle" json:"enforce_naming_style,omitempty"`
+	FieldPresence         *FeatureSet_FieldPresence         `protobuf:"varint,1,opt,name=field_presence,json=fieldPresence,enum=hyperpb.test.FeatureSet_FieldPresence" json:"field_presence,omitempty"`
+	EnumType              *FeatureSet_EnumType              `protobuf:"varint,2,opt,name=enum_type,json=enumType,enum=hyperpb.test.FeatureSet_EnumType" json:"enum_type,omitempty"`
+	RepeatedFieldEncoding *FeatureSet_RepeatedFieldEncoding `protobuf:"varint,3,opt,name=repeated_field_encoding,json=repeatedFieldEncoding,enum=hyperpb.test.FeatureSet_RepeatedFieldEncoding" json:"repeated_field_encoding,omitempty"`
+	Utf8Validation        *FeatureSet_Utf8Validation        `protobuf:"varint,4,opt,name=utf8_validation,json=utf8Validation,enum=hyperpb.test.FeatureSet_Utf8Validation" json:"utf8_validation,omitempty"`
+	MessageEncoding       *FeatureSet_MessageEncoding       `protobuf:"varint,5,opt,name=message_encoding,json=messageEncoding,enum=hyperpb.test.FeatureSet_MessageEncoding" json:"message_encoding,omitempty"`
+	JsonFormat            *FeatureSet_JsonFormat            `protobuf:"varint,6,opt,name=json_format,json=jsonFormat,enum=hyperpb.test.FeatureSet_JsonFormat" json:"json_format,omitempty"`
+	EnforceNamingStyle    *FeatureSet_EnforceNamingStyle    `protobuf:"varint,7,opt,name=enforce_naming_style,json=enforceNamingStyle,enum=hyperpb.test.FeatureSet_EnforceNamingStyle" json:"enforce_naming_style,omitempty"`
 	extensionFields       protoimpl.ExtensionFields
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -3063,8 +3063,8 @@ func (x *FeatureSet) GetEnforceNamingStyle() FeatureSet_EnforceNamingStyle {
 type FeatureSetDefaults struct {
 	state          protoimpl.MessageState                         `protogen:"open.v1"`
 	Defaults       []*FeatureSetDefaults_FeatureSetEditionDefault `protobuf:"bytes,1,rep,name=defaults" json:"defaults,omitempty"`
-	MinimumEdition *Edition                                       `protobuf:"varint,4,opt,name=minimum_edition,json=minimumEdition,enum=fastpb.test.Edition" json:"minimum_edition,omitempty"`
-	MaximumEdition *Edition                                       `protobuf:"varint,5,opt,name=maximum_edition,json=maximumEdition,enum=fastpb.test.Edition" json:"maximum_edition,omitempty"`
+	MinimumEdition *Edition                                       `protobuf:"varint,4,opt,name=minimum_edition,json=minimumEdition,enum=hyperpb.test.Edition" json:"minimum_edition,omitempty"`
+	MaximumEdition *Edition                                       `protobuf:"varint,5,opt,name=maximum_edition,json=maximumEdition,enum=hyperpb.test.Edition" json:"maximum_edition,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -3451,7 +3451,7 @@ func (x *EnumDescriptorProto_EnumReservedRange) GetEnd() int32 {
 
 type FieldOptions_EditionDefault struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Edition       *Edition               `protobuf:"varint,3,opt,name=edition,enum=fastpb.test.Edition" json:"edition,omitempty"`
+	Edition       *Edition               `protobuf:"varint,3,opt,name=edition,enum=hyperpb.test.Edition" json:"edition,omitempty"`
 	Value         *string                `protobuf:"bytes,2,opt,name=value" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3503,10 +3503,10 @@ func (x *FieldOptions_EditionDefault) GetValue() string {
 
 type FieldOptions_FeatureSupport struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	EditionIntroduced  *Edition               `protobuf:"varint,1,opt,name=edition_introduced,json=editionIntroduced,enum=fastpb.test.Edition" json:"edition_introduced,omitempty"`
-	EditionDeprecated  *Edition               `protobuf:"varint,2,opt,name=edition_deprecated,json=editionDeprecated,enum=fastpb.test.Edition" json:"edition_deprecated,omitempty"`
+	EditionIntroduced  *Edition               `protobuf:"varint,1,opt,name=edition_introduced,json=editionIntroduced,enum=hyperpb.test.Edition" json:"edition_introduced,omitempty"`
+	EditionDeprecated  *Edition               `protobuf:"varint,2,opt,name=edition_deprecated,json=editionDeprecated,enum=hyperpb.test.Edition" json:"edition_deprecated,omitempty"`
 	DeprecationWarning *string                `protobuf:"bytes,3,opt,name=deprecation_warning,json=deprecationWarning" json:"deprecation_warning,omitempty"`
-	EditionRemoved     *Edition               `protobuf:"varint,4,opt,name=edition_removed,json=editionRemoved,enum=fastpb.test.Edition" json:"edition_removed,omitempty"`
+	EditionRemoved     *Edition               `protobuf:"varint,4,opt,name=edition_removed,json=editionRemoved,enum=hyperpb.test.Edition" json:"edition_removed,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -3623,7 +3623,7 @@ func (x *UninterpretedOption_NamePart) GetIsExtension() bool {
 
 type FeatureSetDefaults_FeatureSetEditionDefault struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
-	Edition             *Edition               `protobuf:"varint,3,opt,name=edition,enum=fastpb.test.Edition" json:"edition,omitempty"`
+	Edition             *Edition               `protobuf:"varint,3,opt,name=edition,enum=hyperpb.test.Edition" json:"edition,omitempty"`
 	OverridableFeatures *FeatureSet            `protobuf:"bytes,4,opt,name=overridable_features,json=overridableFeatures" json:"overridable_features,omitempty"`
 	FixedFeatures       *FeatureSet            `protobuf:"bytes,5,opt,name=fixed_features,json=fixedFeatures" json:"fixed_features,omitempty"`
 	unknownFields       protoimpl.UnknownFields
@@ -3763,7 +3763,7 @@ type GeneratedCodeInfo_Annotation struct {
 	SourceFile    *string                                `protobuf:"bytes,2,opt,name=source_file,json=sourceFile" json:"source_file,omitempty"`
 	Begin         *int32                                 `protobuf:"varint,3,opt,name=begin" json:"begin,omitempty"`
 	End           *int32                                 `protobuf:"varint,4,opt,name=end" json:"end,omitempty"`
-	Semantic      *GeneratedCodeInfo_Annotation_Semantic `protobuf:"varint,5,opt,name=semantic,enum=fastpb.test.GeneratedCodeInfo_Annotation_Semantic" json:"semantic,omitempty"`
+	Semantic      *GeneratedCodeInfo_Annotation_Semantic `protobuf:"varint,5,opt,name=semantic,enum=hyperpb.test.GeneratedCodeInfo_Annotation_Semantic" json:"semantic,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3837,9 +3837,9 @@ var File_test_descriptor_proto protoreflect.FileDescriptor
 
 const file_test_descriptor_proto_rawDesc = "" +
 	"\n" +
-	"\x15test/descriptor.proto\x12\vfastpb.test\"W\n" +
-	"\x11FileDescriptorSet\x124\n" +
-	"\x04file\x18\x01 \x03(\v2 .fastpb.test.FileDescriptorProtoR\x04file*\f\b\x80\xec\xca\xff\x01\x10\x81\xec\xca\xff\x01\"\xfc\x04\n" +
+	"\x15test/descriptor.proto\x12\fhyperpb.test\"X\n" +
+	"\x11FileDescriptorSet\x125\n" +
+	"\x04file\x18\x01 \x03(\v2!.hyperpb.test.FileDescriptorProtoR\x04file*\f\b\x80\xec\xca\xff\x01\x10\x81\xec\xca\xff\x01\"\x83\x05\n" +
 	"\x13FileDescriptorProto\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\apackage\x18\x02 \x01(\tR\apackage\x12\x1e\n" +
@@ -3848,41 +3848,41 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"dependency\x12+\n" +
 	"\x11public_dependency\x18\n" +
 	" \x03(\x05R\x10publicDependency\x12'\n" +
-	"\x0fweak_dependency\x18\v \x03(\x05R\x0eweakDependency\x12?\n" +
-	"\fmessage_type\x18\x04 \x03(\v2\x1c.fastpb.test.DescriptorProtoR\vmessageType\x12=\n" +
-	"\tenum_type\x18\x05 \x03(\v2 .fastpb.test.EnumDescriptorProtoR\benumType\x12=\n" +
-	"\aservice\x18\x06 \x03(\v2#.fastpb.test.ServiceDescriptorProtoR\aservice\x12?\n" +
-	"\textension\x18\a \x03(\v2!.fastpb.test.FieldDescriptorProtoR\textension\x122\n" +
-	"\aoptions\x18\b \x01(\v2\x18.fastpb.test.FileOptionsR\aoptions\x12E\n" +
-	"\x10source_code_info\x18\t \x01(\v2\x1b.fastpb.test.SourceCodeInfoR\x0esourceCodeInfo\x12\x16\n" +
-	"\x06syntax\x18\f \x01(\tR\x06syntax\x12.\n" +
-	"\aedition\x18\x0e \x01(\x0e2\x14.fastpb.test.EditionR\aedition\"\x95\x06\n" +
+	"\x0fweak_dependency\x18\v \x03(\x05R\x0eweakDependency\x12@\n" +
+	"\fmessage_type\x18\x04 \x03(\v2\x1d.hyperpb.test.DescriptorProtoR\vmessageType\x12>\n" +
+	"\tenum_type\x18\x05 \x03(\v2!.hyperpb.test.EnumDescriptorProtoR\benumType\x12>\n" +
+	"\aservice\x18\x06 \x03(\v2$.hyperpb.test.ServiceDescriptorProtoR\aservice\x12@\n" +
+	"\textension\x18\a \x03(\v2\".hyperpb.test.FieldDescriptorProtoR\textension\x123\n" +
+	"\aoptions\x18\b \x01(\v2\x19.hyperpb.test.FileOptionsR\aoptions\x12F\n" +
+	"\x10source_code_info\x18\t \x01(\v2\x1c.hyperpb.test.SourceCodeInfoR\x0esourceCodeInfo\x12\x16\n" +
+	"\x06syntax\x18\f \x01(\tR\x06syntax\x12/\n" +
+	"\aedition\x18\x0e \x01(\x0e2\x15.hyperpb.test.EditionR\aedition\"\x9e\x06\n" +
 	"\x0fDescriptorProto\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x127\n" +
-	"\x05field\x18\x02 \x03(\v2!.fastpb.test.FieldDescriptorProtoR\x05field\x12?\n" +
-	"\textension\x18\x06 \x03(\v2!.fastpb.test.FieldDescriptorProtoR\textension\x12=\n" +
-	"\vnested_type\x18\x03 \x03(\v2\x1c.fastpb.test.DescriptorProtoR\n" +
-	"nestedType\x12=\n" +
-	"\tenum_type\x18\x04 \x03(\v2 .fastpb.test.EnumDescriptorProtoR\benumType\x12T\n" +
-	"\x0fextension_range\x18\x05 \x03(\v2+.fastpb.test.DescriptorProto.ExtensionRangeR\x0eextensionRange\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +
+	"\x05field\x18\x02 \x03(\v2\".hyperpb.test.FieldDescriptorProtoR\x05field\x12@\n" +
+	"\textension\x18\x06 \x03(\v2\".hyperpb.test.FieldDescriptorProtoR\textension\x12>\n" +
+	"\vnested_type\x18\x03 \x03(\v2\x1d.hyperpb.test.DescriptorProtoR\n" +
+	"nestedType\x12>\n" +
+	"\tenum_type\x18\x04 \x03(\v2!.hyperpb.test.EnumDescriptorProtoR\benumType\x12U\n" +
+	"\x0fextension_range\x18\x05 \x03(\v2,.hyperpb.test.DescriptorProto.ExtensionRangeR\x0eextensionRange\x12A\n" +
 	"\n" +
-	"oneof_decl\x18\b \x03(\v2!.fastpb.test.OneofDescriptorProtoR\toneofDecl\x125\n" +
-	"\aoptions\x18\a \x01(\v2\x1b.fastpb.test.MessageOptionsR\aoptions\x12Q\n" +
-	"\x0ereserved_range\x18\t \x03(\v2*.fastpb.test.DescriptorProto.ReservedRangeR\rreservedRange\x12#\n" +
+	"oneof_decl\x18\b \x03(\v2\".hyperpb.test.OneofDescriptorProtoR\toneofDecl\x126\n" +
+	"\aoptions\x18\a \x01(\v2\x1c.hyperpb.test.MessageOptionsR\aoptions\x12R\n" +
+	"\x0ereserved_range\x18\t \x03(\v2+.hyperpb.test.DescriptorProto.ReservedRangeR\rreservedRange\x12#\n" +
 	"\rreserved_name\x18\n" +
-	" \x03(\tR\freservedName\x1av\n" +
+	" \x03(\tR\freservedName\x1aw\n" +
 	"\x0eExtensionRange\x12\x14\n" +
 	"\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n" +
-	"\x03end\x18\x02 \x01(\x05R\x03end\x12<\n" +
-	"\aoptions\x18\x03 \x01(\v2\".fastpb.test.ExtensionRangeOptionsR\aoptions\x1a7\n" +
+	"\x03end\x18\x02 \x01(\x05R\x03end\x12=\n" +
+	"\aoptions\x18\x03 \x01(\v2#.hyperpb.test.ExtensionRangeOptionsR\aoptions\x1a7\n" +
 	"\rReservedRange\x12\x14\n" +
 	"\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n" +
-	"\x03end\x18\x02 \x01(\x05R\x03end\"\xb6\x04\n" +
-	"\x15ExtensionRangeOptions\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption\x12U\n" +
-	"\vdeclaration\x18\x02 \x03(\v2..fastpb.test.ExtensionRangeOptions.DeclarationB\x03\x88\x01\x02R\vdeclaration\x123\n" +
-	"\bfeatures\x182 \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12i\n" +
-	"\fverification\x18\x03 \x01(\x0e24.fastpb.test.ExtensionRangeOptions.VerificationState:\n" +
+	"\x03end\x18\x02 \x01(\x05R\x03end\"\xba\x04\n" +
+	"\x15ExtensionRangeOptions\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption\x12V\n" +
+	"\vdeclaration\x18\x02 \x03(\v2/.hyperpb.test.ExtensionRangeOptions.DeclarationB\x03\x88\x01\x02R\vdeclaration\x124\n" +
+	"\bfeatures\x182 \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12j\n" +
+	"\fverification\x18\x03 \x01(\x0e25.hyperpb.test.ExtensionRangeOptions.VerificationState:\n" +
 	"UNVERIFIEDB\x03\x88\x01\x02R\fverification\x1a\x8e\x01\n" +
 	"\vDeclaration\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\x05R\x06number\x12\x1b\n" +
@@ -3893,20 +3893,20 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x11VerificationState\x12\x0f\n" +
 	"\vDECLARATION\x10\x00\x12\x0e\n" +
 	"\n" +
-	"UNVERIFIED\x10\x01*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xb5\x06\n" +
+	"UNVERIFIED\x10\x01*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xb8\x06\n" +
 	"\x14FieldDescriptorProto\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06number\x18\x03 \x01(\x05R\x06number\x12=\n" +
-	"\x05label\x18\x04 \x01(\x0e2'.fastpb.test.FieldDescriptorProto.LabelR\x05label\x12:\n" +
-	"\x04type\x18\x05 \x01(\x0e2&.fastpb.test.FieldDescriptorProto.TypeR\x04type\x12\x1b\n" +
+	"\x06number\x18\x03 \x01(\x05R\x06number\x12>\n" +
+	"\x05label\x18\x04 \x01(\x0e2(.hyperpb.test.FieldDescriptorProto.LabelR\x05label\x12;\n" +
+	"\x04type\x18\x05 \x01(\x0e2'.hyperpb.test.FieldDescriptorProto.TypeR\x04type\x12\x1b\n" +
 	"\ttype_name\x18\x06 \x01(\tR\btypeName\x12\x1a\n" +
 	"\bextendee\x18\x02 \x01(\tR\bextendee\x12#\n" +
 	"\rdefault_value\x18\a \x01(\tR\fdefaultValue\x12\x1f\n" +
 	"\voneof_index\x18\t \x01(\x05R\n" +
 	"oneofIndex\x12\x1b\n" +
 	"\tjson_name\x18\n" +
-	" \x01(\tR\bjsonName\x123\n" +
-	"\aoptions\x18\b \x01(\v2\x19.fastpb.test.FieldOptionsR\aoptions\x12'\n" +
+	" \x01(\tR\bjsonName\x124\n" +
+	"\aoptions\x18\b \x01(\v2\x1a.hyperpb.test.FieldOptionsR\aoptions\x12'\n" +
 	"\x0fproto3_optional\x18\x11 \x01(\bR\x0eproto3Optional\"\xb6\x02\n" +
 	"\x04Type\x12\x0f\n" +
 	"\vTYPE_DOUBLE\x10\x01\x12\x0e\n" +
@@ -3936,44 +3936,44 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x05Label\x12\x12\n" +
 	"\x0eLABEL_OPTIONAL\x10\x01\x12\x12\n" +
 	"\x0eLABEL_REPEATED\x10\x03\x12\x12\n" +
-	"\x0eLABEL_REQUIRED\x10\x02\"_\n" +
+	"\x0eLABEL_REQUIRED\x10\x02\"`\n" +
 	"\x14OneofDescriptorProto\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x123\n" +
-	"\aoptions\x18\x02 \x01(\v2\x19.fastpb.test.OneofOptionsR\aoptions\"\xd7\x02\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x124\n" +
+	"\aoptions\x18\x02 \x01(\v2\x1a.hyperpb.test.OneofOptionsR\aoptions\"\xda\x02\n" +
 	"\x13EnumDescriptorProto\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
-	"\x05value\x18\x02 \x03(\v2%.fastpb.test.EnumValueDescriptorProtoR\x05value\x122\n" +
-	"\aoptions\x18\x03 \x01(\v2\x18.fastpb.test.EnumOptionsR\aoptions\x12Y\n" +
-	"\x0ereserved_range\x18\x04 \x03(\v22.fastpb.test.EnumDescriptorProto.EnumReservedRangeR\rreservedRange\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12<\n" +
+	"\x05value\x18\x02 \x03(\v2&.hyperpb.test.EnumValueDescriptorProtoR\x05value\x123\n" +
+	"\aoptions\x18\x03 \x01(\v2\x19.hyperpb.test.EnumOptionsR\aoptions\x12Z\n" +
+	"\x0ereserved_range\x18\x04 \x03(\v23.hyperpb.test.EnumDescriptorProto.EnumReservedRangeR\rreservedRange\x12#\n" +
 	"\rreserved_name\x18\x05 \x03(\tR\freservedName\x1a;\n" +
 	"\x11EnumReservedRange\x12\x14\n" +
 	"\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n" +
-	"\x03end\x18\x02 \x01(\x05R\x03end\"\x7f\n" +
+	"\x03end\x18\x02 \x01(\x05R\x03end\"\x80\x01\n" +
 	"\x18EnumValueDescriptorProto\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06number\x18\x02 \x01(\x05R\x06number\x127\n" +
-	"\aoptions\x18\x03 \x01(\v2\x1d.fastpb.test.EnumValueOptionsR\aoptions\"\x9f\x01\n" +
+	"\x06number\x18\x02 \x01(\x05R\x06number\x128\n" +
+	"\aoptions\x18\x03 \x01(\v2\x1e.hyperpb.test.EnumValueOptionsR\aoptions\"\xa1\x01\n" +
 	"\x16ServiceDescriptorProto\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12:\n" +
-	"\x06method\x18\x02 \x03(\v2\".fastpb.test.MethodDescriptorProtoR\x06method\x125\n" +
-	"\aoptions\x18\x03 \x01(\v2\x1b.fastpb.test.ServiceOptionsR\aoptions\"\x85\x02\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
+	"\x06method\x18\x02 \x03(\v2#.hyperpb.test.MethodDescriptorProtoR\x06method\x126\n" +
+	"\aoptions\x18\x03 \x01(\v2\x1c.hyperpb.test.ServiceOptionsR\aoptions\"\x86\x02\n" +
 	"\x15MethodDescriptorProto\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"input_type\x18\x02 \x01(\tR\tinputType\x12\x1f\n" +
 	"\voutput_type\x18\x03 \x01(\tR\n" +
-	"outputType\x124\n" +
-	"\aoptions\x18\x04 \x01(\v2\x1a.fastpb.test.MethodOptionsR\aoptions\x120\n" +
+	"outputType\x125\n" +
+	"\aoptions\x18\x04 \x01(\v2\x1b.hyperpb.test.MethodOptionsR\aoptions\x120\n" +
 	"\x10client_streaming\x18\x05 \x01(\b:\x05falseR\x0fclientStreaming\x120\n" +
-	"\x10server_streaming\x18\x06 \x01(\b:\x05falseR\x0fserverStreaming\"\xff\b\n" +
+	"\x10server_streaming\x18\x06 \x01(\b:\x05falseR\x0fserverStreaming\"\x82\t\n" +
 	"\vFileOptions\x12!\n" +
 	"\fjava_package\x18\x01 \x01(\tR\vjavaPackage\x120\n" +
 	"\x14java_outer_classname\x18\b \x01(\tR\x12javaOuterClassname\x125\n" +
 	"\x13java_multiple_files\x18\n" +
 	" \x01(\b:\x05falseR\x11javaMultipleFiles\x12D\n" +
 	"\x1djava_generate_equals_and_hash\x18\x14 \x01(\bB\x02\x18\x01R\x19javaGenerateEqualsAndHash\x12:\n" +
-	"\x16java_string_check_utf8\x18\x1b \x01(\b:\x05falseR\x13javaStringCheckUtf8\x12O\n" +
-	"\foptimize_for\x18\t \x01(\x0e2%.fastpb.test.FileOptions.OptimizeMode:\x05SPEEDR\voptimizeFor\x12\x1d\n" +
+	"\x16java_string_check_utf8\x18\x1b \x01(\b:\x05falseR\x13javaStringCheckUtf8\x12P\n" +
+	"\foptimize_for\x18\t \x01(\x0e2&.hyperpb.test.FileOptions.OptimizeMode:\x05SPEEDR\voptimizeFor\x12\x1d\n" +
 	"\n" +
 	"go_package\x18\v \x01(\tR\tgoPackage\x125\n" +
 	"\x13cc_generic_services\x18\x10 \x01(\b:\x05falseR\x11ccGenericServices\x129\n" +
@@ -3989,13 +3989,13 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x10php_class_prefix\x18( \x01(\tR\x0ephpClassPrefix\x12#\n" +
 	"\rphp_namespace\x18) \x01(\tR\fphpNamespace\x124\n" +
 	"\x16php_metadata_namespace\x18, \x01(\tR\x14phpMetadataNamespace\x12!\n" +
-	"\fruby_package\x18- \x01(\tR\vrubyPackage\x123\n" +
-	"\bfeatures\x182 \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption\":\n" +
+	"\fruby_package\x18- \x01(\tR\vrubyPackage\x124\n" +
+	"\bfeatures\x182 \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption\":\n" +
 	"\fOptimizeMode\x12\t\n" +
 	"\x05SPEED\x10\x01\x12\r\n" +
 	"\tCODE_SIZE\x10\x02\x12\x10\n" +
-	"\fLITE_RUNTIME\x10\x03*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xce\x03\n" +
+	"\fLITE_RUNTIME\x10\x03*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xd0\x03\n" +
 	"\x0eMessageOptions\x12<\n" +
 	"\x17message_set_wire_format\x18\x01 \x01(\b:\x05falseR\x14messageSetWireFormat\x12L\n" +
 	"\x1fno_standard_descriptor_accessor\x18\x02 \x01(\b:\x05falseR\x1cnoStandardDescriptorAccessor\x12%\n" +
@@ -4003,13 +4003,13 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"deprecated\x18\x03 \x01(\b:\x05falseR\n" +
 	"deprecated\x12\x1b\n" +
 	"\tmap_entry\x18\a \x01(\bR\bmapEntry\x12V\n" +
-	"&deprecated_legacy_json_field_conflicts\x18\v \x01(\bB\x02\x18\x01R\"deprecatedLegacyJsonFieldConflicts\x123\n" +
-	"\bfeatures\x18\f \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xe1\f\n" +
-	"\fFieldOptions\x12=\n" +
-	"\x05ctype\x18\x01 \x01(\x0e2\x1f.fastpb.test.FieldOptions.CType:\x06STRINGR\x05ctype\x12\x16\n" +
-	"\x06packed\x18\x02 \x01(\bR\x06packed\x12C\n" +
-	"\x06jstype\x18\x06 \x01(\x0e2 .fastpb.test.FieldOptions.JSType:\tJS_NORMALR\x06jstype\x12\x19\n" +
+	"&deprecated_legacy_json_field_conflicts\x18\v \x01(\bB\x02\x18\x01R\"deprecatedLegacyJsonFieldConflicts\x124\n" +
+	"\bfeatures\x18\f \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xed\f\n" +
+	"\fFieldOptions\x12>\n" +
+	"\x05ctype\x18\x01 \x01(\x0e2 .hyperpb.test.FieldOptions.CType:\x06STRINGR\x05ctype\x12\x16\n" +
+	"\x06packed\x18\x02 \x01(\bR\x06packed\x12D\n" +
+	"\x06jstype\x18\x06 \x01(\x0e2!.hyperpb.test.FieldOptions.JSType:\tJS_NORMALR\x06jstype\x12\x19\n" +
 	"\x04lazy\x18\x05 \x01(\b:\x05falseR\x04lazy\x12.\n" +
 	"\x0funverified_lazy\x18\x0f \x01(\b:\x05falseR\x0eunverifiedLazy\x12%\n" +
 	"\n" +
@@ -4017,21 +4017,21 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"deprecated\x12\x19\n" +
 	"\x04weak\x18\n" +
 	" \x01(\b:\x05falseR\x04weak\x12(\n" +
-	"\fdebug_redact\x18\x10 \x01(\b:\x05falseR\vdebugRedact\x12G\n" +
-	"\tretention\x18\x11 \x01(\x0e2).fastpb.test.FieldOptions.OptionRetentionR\tretention\x12D\n" +
-	"\atargets\x18\x13 \x03(\x0e2*.fastpb.test.FieldOptions.OptionTargetTypeR\atargets\x12S\n" +
-	"\x10edition_defaults\x18\x14 \x03(\v2(.fastpb.test.FieldOptions.EditionDefaultR\x0feditionDefaults\x123\n" +
-	"\bfeatures\x18\x15 \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12Q\n" +
-	"\x0ffeature_support\x18\x16 \x01(\v2(.fastpb.test.FieldOptions.FeatureSupportR\x0efeatureSupport\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption\x1aV\n" +
-	"\x0eEditionDefault\x12.\n" +
-	"\aedition\x18\x03 \x01(\x0e2\x14.fastpb.test.EditionR\aedition\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\x1a\x8a\x02\n" +
-	"\x0eFeatureSupport\x12C\n" +
-	"\x12edition_introduced\x18\x01 \x01(\x0e2\x14.fastpb.test.EditionR\x11editionIntroduced\x12C\n" +
-	"\x12edition_deprecated\x18\x02 \x01(\x0e2\x14.fastpb.test.EditionR\x11editionDeprecated\x12/\n" +
-	"\x13deprecation_warning\x18\x03 \x01(\tR\x12deprecationWarning\x12=\n" +
-	"\x0fedition_removed\x18\x04 \x01(\x0e2\x14.fastpb.test.EditionR\x0eeditionRemoved\"/\n" +
+	"\fdebug_redact\x18\x10 \x01(\b:\x05falseR\vdebugRedact\x12H\n" +
+	"\tretention\x18\x11 \x01(\x0e2*.hyperpb.test.FieldOptions.OptionRetentionR\tretention\x12E\n" +
+	"\atargets\x18\x13 \x03(\x0e2+.hyperpb.test.FieldOptions.OptionTargetTypeR\atargets\x12T\n" +
+	"\x10edition_defaults\x18\x14 \x03(\v2).hyperpb.test.FieldOptions.EditionDefaultR\x0feditionDefaults\x124\n" +
+	"\bfeatures\x18\x15 \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12R\n" +
+	"\x0ffeature_support\x18\x16 \x01(\v2).hyperpb.test.FieldOptions.FeatureSupportR\x0efeatureSupport\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption\x1aW\n" +
+	"\x0eEditionDefault\x12/\n" +
+	"\aedition\x18\x03 \x01(\x0e2\x15.hyperpb.test.EditionR\aedition\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\x1a\x8d\x02\n" +
+	"\x0eFeatureSupport\x12D\n" +
+	"\x12edition_introduced\x18\x01 \x01(\x0e2\x15.hyperpb.test.EditionR\x11editionIntroduced\x12D\n" +
+	"\x12edition_deprecated\x18\x02 \x01(\x0e2\x15.hyperpb.test.EditionR\x11editionDeprecated\x12/\n" +
+	"\x13deprecation_warning\x18\x03 \x01(\tR\x12deprecationWarning\x12>\n" +
+	"\x0fedition_removed\x18\x04 \x01(\x0e2\x15.hyperpb.test.EditionR\x0eeditionRemoved\"/\n" +
 	"\x05CType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\b\n" +
@@ -4055,47 +4055,47 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x10TARGET_TYPE_ENUM\x10\x06\x12\x1a\n" +
 	"\x16TARGET_TYPE_ENUM_ENTRY\x10\a\x12\x17\n" +
 	"\x13TARGET_TYPE_SERVICE\x10\b\x12\x16\n" +
-	"\x12TARGET_TYPE_METHOD\x10\t*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xa4\x01\n" +
-	"\fOneofOptions\x123\n" +
-	"\bfeatures\x18\x01 \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xc3\x02\n" +
+	"\x12TARGET_TYPE_METHOD\x10\t*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xa6\x01\n" +
+	"\fOneofOptions\x124\n" +
+	"\bfeatures\x18\x01 \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xc5\x02\n" +
 	"\vEnumOptions\x12\x1f\n" +
 	"\vallow_alias\x18\x02 \x01(\bR\n" +
 	"allowAlias\x12%\n" +
 	"\n" +
 	"deprecated\x18\x03 \x01(\b:\x05falseR\n" +
 	"deprecated\x12V\n" +
-	"&deprecated_legacy_json_field_conflicts\x18\x06 \x01(\bB\x02\x18\x01R\"deprecatedLegacyJsonFieldConflicts\x123\n" +
-	"\bfeatures\x18\a \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xcc\x02\n" +
+	"&deprecated_legacy_json_field_conflicts\x18\x06 \x01(\bB\x02\x18\x01R\"deprecatedLegacyJsonFieldConflicts\x124\n" +
+	"\bfeatures\x18\a \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xcf\x02\n" +
 	"\x10EnumValueOptions\x12%\n" +
 	"\n" +
 	"deprecated\x18\x01 \x01(\b:\x05falseR\n" +
-	"deprecated\x123\n" +
-	"\bfeatures\x18\x02 \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12(\n" +
-	"\fdebug_redact\x18\x03 \x01(\b:\x05falseR\vdebugRedact\x12Q\n" +
-	"\x0ffeature_support\x18\x04 \x01(\v2(.fastpb.test.FieldOptions.FeatureSupportR\x0efeatureSupport\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xcd\x01\n" +
-	"\x0eServiceOptions\x123\n" +
-	"\bfeatures\x18\" \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12%\n" +
+	"deprecated\x124\n" +
+	"\bfeatures\x18\x02 \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12(\n" +
+	"\fdebug_redact\x18\x03 \x01(\b:\x05falseR\vdebugRedact\x12R\n" +
+	"\x0ffeature_support\x18\x04 \x01(\v2).hyperpb.test.FieldOptions.FeatureSupportR\x0efeatureSupport\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\xcf\x01\n" +
+	"\x0eServiceOptions\x124\n" +
+	"\bfeatures\x18\" \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12%\n" +
 	"\n" +
 	"deprecated\x18! \x01(\b:\x05falseR\n" +
-	"deprecated\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\x8d\x03\n" +
+	"deprecated\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\x90\x03\n" +
 	"\rMethodOptions\x12%\n" +
 	"\n" +
 	"deprecated\x18! \x01(\b:\x05falseR\n" +
-	"deprecated\x12m\n" +
-	"\x11idempotency_level\x18\" \x01(\x0e2+.fastpb.test.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWNR\x10idempotencyLevel\x123\n" +
-	"\bfeatures\x18# \x01(\v2\x17.fastpb.test.FeatureSetR\bfeatures\x12T\n" +
-	"\x14uninterpreted_option\x18\xe7\a \x03(\v2 .fastpb.test.UninterpretedOptionR\x13uninterpretedOption\"P\n" +
+	"deprecated\x12n\n" +
+	"\x11idempotency_level\x18\" \x01(\x0e2,.hyperpb.test.MethodOptions.IdempotencyLevel:\x13IDEMPOTENCY_UNKNOWNR\x10idempotencyLevel\x124\n" +
+	"\bfeatures\x18# \x01(\v2\x18.hyperpb.test.FeatureSetR\bfeatures\x12U\n" +
+	"\x14uninterpreted_option\x18\xe7\a \x03(\v2!.hyperpb.test.UninterpretedOptionR\x13uninterpretedOption\"P\n" +
 	"\x10IdempotencyLevel\x12\x17\n" +
 	"\x13IDEMPOTENCY_UNKNOWN\x10\x00\x12\x13\n" +
 	"\x0fNO_SIDE_EFFECTS\x10\x01\x12\x0e\n" +
 	"\n" +
-	"IDEMPOTENT\x10\x02*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\x96\x03\n" +
-	"\x13UninterpretedOption\x12=\n" +
-	"\x04name\x18\x02 \x03(\v2).fastpb.test.UninterpretedOption.NamePartR\x04name\x12)\n" +
+	"IDEMPOTENT\x10\x02*\t\b\xe8\a\x10\x80\x80\x80\x80\x02\"\x97\x03\n" +
+	"\x13UninterpretedOption\x12>\n" +
+	"\x04name\x18\x02 \x03(\v2*.hyperpb.test.UninterpretedOption.NamePartR\x04name\x12)\n" +
 	"\x10identifier_value\x18\x03 \x01(\tR\x0fidentifierValue\x12,\n" +
 	"\x12positive_int_value\x18\x04 \x01(\x04R\x10positiveIntValue\x12,\n" +
 	"\x12negative_int_value\x18\x05 \x01(\x03R\x10negativeIntValue\x12!\n" +
@@ -4104,17 +4104,17 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x0faggregate_value\x18\b \x01(\tR\x0eaggregateValue\x1aJ\n" +
 	"\bNamePart\x12\x1b\n" +
 	"\tname_part\x18\x01 \x02(\tR\bnamePart\x12!\n" +
-	"\fis_extension\x18\x02 \x02(\bR\visExtension\"\x82\t\n" +
+	"\fis_extension\x18\x02 \x02(\bR\visExtension\"\x89\t\n" +
 	"\n" +
-	"FeatureSet\x12L\n" +
-	"\x0efield_presence\x18\x01 \x01(\x0e2%.fastpb.test.FeatureSet.FieldPresenceR\rfieldPresence\x12=\n" +
-	"\tenum_type\x18\x02 \x01(\x0e2 .fastpb.test.FeatureSet.EnumTypeR\benumType\x12e\n" +
-	"\x17repeated_field_encoding\x18\x03 \x01(\x0e2-.fastpb.test.FeatureSet.RepeatedFieldEncodingR\x15repeatedFieldEncoding\x12O\n" +
-	"\x0futf8_validation\x18\x04 \x01(\x0e2&.fastpb.test.FeatureSet.Utf8ValidationR\x0eutf8Validation\x12R\n" +
-	"\x10message_encoding\x18\x05 \x01(\x0e2'.fastpb.test.FeatureSet.MessageEncodingR\x0fmessageEncoding\x12C\n" +
-	"\vjson_format\x18\x06 \x01(\x0e2\".fastpb.test.FeatureSet.JsonFormatR\n" +
-	"jsonFormat\x12\\\n" +
-	"\x14enforce_naming_style\x18\a \x01(\x0e2*.fastpb.test.FeatureSet.EnforceNamingStyleR\x12enforceNamingStyle\"\\\n" +
+	"FeatureSet\x12M\n" +
+	"\x0efield_presence\x18\x01 \x01(\x0e2&.hyperpb.test.FeatureSet.FieldPresenceR\rfieldPresence\x12>\n" +
+	"\tenum_type\x18\x02 \x01(\x0e2!.hyperpb.test.FeatureSet.EnumTypeR\benumType\x12f\n" +
+	"\x17repeated_field_encoding\x18\x03 \x01(\x0e2..hyperpb.test.FeatureSet.RepeatedFieldEncodingR\x15repeatedFieldEncoding\x12P\n" +
+	"\x0futf8_validation\x18\x04 \x01(\x0e2'.hyperpb.test.FeatureSet.Utf8ValidationR\x0eutf8Validation\x12S\n" +
+	"\x10message_encoding\x18\x05 \x01(\x0e2(.hyperpb.test.FeatureSet.MessageEncodingR\x0fmessageEncoding\x12D\n" +
+	"\vjson_format\x18\x06 \x01(\x0e2#.hyperpb.test.FeatureSet.JsonFormatR\n" +
+	"jsonFormat\x12]\n" +
+	"\x14enforce_naming_style\x18\a \x01(\x0e2+.hyperpb.test.FeatureSet.EnforceNamingStyleR\x12enforceNamingStyle\"\\\n" +
 	"\rFieldPresence\x12\x1a\n" +
 	"\x16FIELD_PRESENCE_UNKNOWN\x10\x00\x12\f\n" +
 	"\bEXPLICIT\x10\x01\x12\f\n" +
@@ -4147,35 +4147,35 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x12EnforceNamingStyle\x12 \n" +
 	"\x1cENFORCE_NAMING_STYLE_UNKNOWN\x10\x00\x12\r\n" +
 	"\tSTYLE2024\x10\x01\x12\x10\n" +
-	"\fSTYLE_LEGACY\x10\x02*\x06\b\xe8\a\x10\x91N\"\xc1\x03\n" +
-	"\x12FeatureSetDefaults\x12T\n" +
-	"\bdefaults\x18\x01 \x03(\v28.fastpb.test.FeatureSetDefaults.FeatureSetEditionDefaultR\bdefaults\x12=\n" +
-	"\x0fminimum_edition\x18\x04 \x01(\x0e2\x14.fastpb.test.EditionR\x0eminimumEdition\x12=\n" +
-	"\x0fmaximum_edition\x18\x05 \x01(\x0e2\x14.fastpb.test.EditionR\x0emaximumEdition\x1a\xd6\x01\n" +
-	"\x18FeatureSetEditionDefault\x12.\n" +
-	"\aedition\x18\x03 \x01(\x0e2\x14.fastpb.test.EditionR\aedition\x12J\n" +
-	"\x14overridable_features\x18\x04 \x01(\v2\x17.fastpb.test.FeatureSetR\x13overridableFeatures\x12>\n" +
-	"\x0efixed_features\x18\x05 \x01(\v2\x17.fastpb.test.FeatureSetR\rfixedFeatures\"\xb1\x02\n" +
-	"\x0eSourceCodeInfo\x12@\n" +
-	"\blocation\x18\x01 \x03(\v2$.fastpb.test.SourceCodeInfo.LocationR\blocation\x1a\xce\x01\n" +
+	"\fSTYLE_LEGACY\x10\x02*\x06\b\xe8\a\x10\x91N\"\xc7\x03\n" +
+	"\x12FeatureSetDefaults\x12U\n" +
+	"\bdefaults\x18\x01 \x03(\v29.hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefaultR\bdefaults\x12>\n" +
+	"\x0fminimum_edition\x18\x04 \x01(\x0e2\x15.hyperpb.test.EditionR\x0eminimumEdition\x12>\n" +
+	"\x0fmaximum_edition\x18\x05 \x01(\x0e2\x15.hyperpb.test.EditionR\x0emaximumEdition\x1a\xd9\x01\n" +
+	"\x18FeatureSetEditionDefault\x12/\n" +
+	"\aedition\x18\x03 \x01(\x0e2\x15.hyperpb.test.EditionR\aedition\x12K\n" +
+	"\x14overridable_features\x18\x04 \x01(\v2\x18.hyperpb.test.FeatureSetR\x13overridableFeatures\x12?\n" +
+	"\x0efixed_features\x18\x05 \x01(\v2\x18.hyperpb.test.FeatureSetR\rfixedFeatures\"\xb2\x02\n" +
+	"\x0eSourceCodeInfo\x12A\n" +
+	"\blocation\x18\x01 \x03(\v2%.hyperpb.test.SourceCodeInfo.LocationR\blocation\x1a\xce\x01\n" +
 	"\bLocation\x12\x16\n" +
 	"\x04path\x18\x01 \x03(\x05B\x02\x10\x01R\x04path\x12\x16\n" +
 	"\x04span\x18\x02 \x03(\x05B\x02\x10\x01R\x04span\x12)\n" +
 	"\x10leading_comments\x18\x03 \x01(\tR\x0fleadingComments\x12+\n" +
 	"\x11trailing_comments\x18\x04 \x01(\tR\x10trailingComments\x12:\n" +
-	"\x19leading_detached_comments\x18\x06 \x03(\tR\x17leadingDetachedComments*\f\b\x80\xec\xca\xff\x01\x10\x81\xec\xca\xff\x01\"\xc8\x02\n" +
-	"\x11GeneratedCodeInfo\x12I\n" +
+	"\x19leading_detached_comments\x18\x06 \x03(\tR\x17leadingDetachedComments*\f\b\x80\xec\xca\xff\x01\x10\x81\xec\xca\xff\x01\"\xca\x02\n" +
+	"\x11GeneratedCodeInfo\x12J\n" +
 	"\n" +
-	"annotation\x18\x01 \x03(\v2).fastpb.test.GeneratedCodeInfo.AnnotationR\n" +
-	"annotation\x1a\xe7\x01\n" +
+	"annotation\x18\x01 \x03(\v2*.hyperpb.test.GeneratedCodeInfo.AnnotationR\n" +
+	"annotation\x1a\xe8\x01\n" +
 	"\n" +
 	"Annotation\x12\x16\n" +
 	"\x04path\x18\x01 \x03(\x05B\x02\x10\x01R\x04path\x12\x1f\n" +
 	"\vsource_file\x18\x02 \x01(\tR\n" +
 	"sourceFile\x12\x14\n" +
 	"\x05begin\x18\x03 \x01(\x05R\x05begin\x12\x10\n" +
-	"\x03end\x18\x04 \x01(\x05R\x03end\x12N\n" +
-	"\bsemantic\x18\x05 \x01(\x0e22.fastpb.test.GeneratedCodeInfo.Annotation.SemanticR\bsemantic\"(\n" +
+	"\x03end\x18\x04 \x01(\x05R\x03end\x12O\n" +
+	"\bsemantic\x18\x05 \x01(\x0e23.hyperpb.test.GeneratedCodeInfo.Annotation.SemanticR\bsemantic\"(\n" +
 	"\bSemantic\x12\b\n" +
 	"\x04NONE\x10\x00\x12\a\n" +
 	"\x03SET\x10\x01\x12\t\n" +
@@ -4192,8 +4192,8 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x17EDITION_99997_TEST_ONLY\x10\x9d\x8d\x06\x12\x1d\n" +
 	"\x17EDITION_99998_TEST_ONLY\x10\x9e\x8d\x06\x12\x1d\n" +
 	"\x17EDITION_99999_TEST_ONLY\x10\x9f\x8d\x06\x12\x13\n" +
-	"\vEDITION_MAX\x10\xff\xff\xff\xff\aB\x9d\x01\n" +
-	"\x0fcom.fastpb.testB\x0fDescriptorProtoP\x01Z,github.com/bufbuild/fastpb/internal/gen/test\xa2\x02\x03FTX\xaa\x02\vFastpb.Test\xca\x02\vFastpb\\Test\xe2\x02\x17Fastpb\\Test\\GPBMetadata\xea\x02\fFastpb::Test"
+	"\vEDITION_MAX\x10\xff\xff\xff\xff\aB\xa3\x01\n" +
+	"\x10com.hyperpb.testB\x0fDescriptorProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
 
 var (
 	file_test_descriptor_proto_rawDescOnce sync.Once
@@ -4210,137 +4210,137 @@ func file_test_descriptor_proto_rawDescGZIP() []byte {
 var file_test_descriptor_proto_enumTypes = make([]protoimpl.EnumInfo, 18)
 var file_test_descriptor_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_test_descriptor_proto_goTypes = []any{
-	(Edition)(0), // 0: fastpb.test.Edition
-	(ExtensionRangeOptions_VerificationState)(0),        // 1: fastpb.test.ExtensionRangeOptions.VerificationState
-	(FieldDescriptorProto_Type)(0),                      // 2: fastpb.test.FieldDescriptorProto.Type
-	(FieldDescriptorProto_Label)(0),                     // 3: fastpb.test.FieldDescriptorProto.Label
-	(FileOptions_OptimizeMode)(0),                       // 4: fastpb.test.FileOptions.OptimizeMode
-	(FieldOptions_CType)(0),                             // 5: fastpb.test.FieldOptions.CType
-	(FieldOptions_JSType)(0),                            // 6: fastpb.test.FieldOptions.JSType
-	(FieldOptions_OptionRetention)(0),                   // 7: fastpb.test.FieldOptions.OptionRetention
-	(FieldOptions_OptionTargetType)(0),                  // 8: fastpb.test.FieldOptions.OptionTargetType
-	(MethodOptions_IdempotencyLevel)(0),                 // 9: fastpb.test.MethodOptions.IdempotencyLevel
-	(FeatureSet_FieldPresence)(0),                       // 10: fastpb.test.FeatureSet.FieldPresence
-	(FeatureSet_EnumType)(0),                            // 11: fastpb.test.FeatureSet.EnumType
-	(FeatureSet_RepeatedFieldEncoding)(0),               // 12: fastpb.test.FeatureSet.RepeatedFieldEncoding
-	(FeatureSet_Utf8Validation)(0),                      // 13: fastpb.test.FeatureSet.Utf8Validation
-	(FeatureSet_MessageEncoding)(0),                     // 14: fastpb.test.FeatureSet.MessageEncoding
-	(FeatureSet_JsonFormat)(0),                          // 15: fastpb.test.FeatureSet.JsonFormat
-	(FeatureSet_EnforceNamingStyle)(0),                  // 16: fastpb.test.FeatureSet.EnforceNamingStyle
-	(GeneratedCodeInfo_Annotation_Semantic)(0),          // 17: fastpb.test.GeneratedCodeInfo.Annotation.Semantic
-	(*FileDescriptorSet)(nil),                           // 18: fastpb.test.FileDescriptorSet
-	(*FileDescriptorProto)(nil),                         // 19: fastpb.test.FileDescriptorProto
-	(*DescriptorProto)(nil),                             // 20: fastpb.test.DescriptorProto
-	(*ExtensionRangeOptions)(nil),                       // 21: fastpb.test.ExtensionRangeOptions
-	(*FieldDescriptorProto)(nil),                        // 22: fastpb.test.FieldDescriptorProto
-	(*OneofDescriptorProto)(nil),                        // 23: fastpb.test.OneofDescriptorProto
-	(*EnumDescriptorProto)(nil),                         // 24: fastpb.test.EnumDescriptorProto
-	(*EnumValueDescriptorProto)(nil),                    // 25: fastpb.test.EnumValueDescriptorProto
-	(*ServiceDescriptorProto)(nil),                      // 26: fastpb.test.ServiceDescriptorProto
-	(*MethodDescriptorProto)(nil),                       // 27: fastpb.test.MethodDescriptorProto
-	(*FileOptions)(nil),                                 // 28: fastpb.test.FileOptions
-	(*MessageOptions)(nil),                              // 29: fastpb.test.MessageOptions
-	(*FieldOptions)(nil),                                // 30: fastpb.test.FieldOptions
-	(*OneofOptions)(nil),                                // 31: fastpb.test.OneofOptions
-	(*EnumOptions)(nil),                                 // 32: fastpb.test.EnumOptions
-	(*EnumValueOptions)(nil),                            // 33: fastpb.test.EnumValueOptions
-	(*ServiceOptions)(nil),                              // 34: fastpb.test.ServiceOptions
-	(*MethodOptions)(nil),                               // 35: fastpb.test.MethodOptions
-	(*UninterpretedOption)(nil),                         // 36: fastpb.test.UninterpretedOption
-	(*FeatureSet)(nil),                                  // 37: fastpb.test.FeatureSet
-	(*FeatureSetDefaults)(nil),                          // 38: fastpb.test.FeatureSetDefaults
-	(*SourceCodeInfo)(nil),                              // 39: fastpb.test.SourceCodeInfo
-	(*GeneratedCodeInfo)(nil),                           // 40: fastpb.test.GeneratedCodeInfo
-	(*DescriptorProto_ExtensionRange)(nil),              // 41: fastpb.test.DescriptorProto.ExtensionRange
-	(*DescriptorProto_ReservedRange)(nil),               // 42: fastpb.test.DescriptorProto.ReservedRange
-	(*ExtensionRangeOptions_Declaration)(nil),           // 43: fastpb.test.ExtensionRangeOptions.Declaration
-	(*EnumDescriptorProto_EnumReservedRange)(nil),       // 44: fastpb.test.EnumDescriptorProto.EnumReservedRange
-	(*FieldOptions_EditionDefault)(nil),                 // 45: fastpb.test.FieldOptions.EditionDefault
-	(*FieldOptions_FeatureSupport)(nil),                 // 46: fastpb.test.FieldOptions.FeatureSupport
-	(*UninterpretedOption_NamePart)(nil),                // 47: fastpb.test.UninterpretedOption.NamePart
-	(*FeatureSetDefaults_FeatureSetEditionDefault)(nil), // 48: fastpb.test.FeatureSetDefaults.FeatureSetEditionDefault
-	(*SourceCodeInfo_Location)(nil),                     // 49: fastpb.test.SourceCodeInfo.Location
-	(*GeneratedCodeInfo_Annotation)(nil),                // 50: fastpb.test.GeneratedCodeInfo.Annotation
+	(Edition)(0), // 0: hyperpb.test.Edition
+	(ExtensionRangeOptions_VerificationState)(0),        // 1: hyperpb.test.ExtensionRangeOptions.VerificationState
+	(FieldDescriptorProto_Type)(0),                      // 2: hyperpb.test.FieldDescriptorProto.Type
+	(FieldDescriptorProto_Label)(0),                     // 3: hyperpb.test.FieldDescriptorProto.Label
+	(FileOptions_OptimizeMode)(0),                       // 4: hyperpb.test.FileOptions.OptimizeMode
+	(FieldOptions_CType)(0),                             // 5: hyperpb.test.FieldOptions.CType
+	(FieldOptions_JSType)(0),                            // 6: hyperpb.test.FieldOptions.JSType
+	(FieldOptions_OptionRetention)(0),                   // 7: hyperpb.test.FieldOptions.OptionRetention
+	(FieldOptions_OptionTargetType)(0),                  // 8: hyperpb.test.FieldOptions.OptionTargetType
+	(MethodOptions_IdempotencyLevel)(0),                 // 9: hyperpb.test.MethodOptions.IdempotencyLevel
+	(FeatureSet_FieldPresence)(0),                       // 10: hyperpb.test.FeatureSet.FieldPresence
+	(FeatureSet_EnumType)(0),                            // 11: hyperpb.test.FeatureSet.EnumType
+	(FeatureSet_RepeatedFieldEncoding)(0),               // 12: hyperpb.test.FeatureSet.RepeatedFieldEncoding
+	(FeatureSet_Utf8Validation)(0),                      // 13: hyperpb.test.FeatureSet.Utf8Validation
+	(FeatureSet_MessageEncoding)(0),                     // 14: hyperpb.test.FeatureSet.MessageEncoding
+	(FeatureSet_JsonFormat)(0),                          // 15: hyperpb.test.FeatureSet.JsonFormat
+	(FeatureSet_EnforceNamingStyle)(0),                  // 16: hyperpb.test.FeatureSet.EnforceNamingStyle
+	(GeneratedCodeInfo_Annotation_Semantic)(0),          // 17: hyperpb.test.GeneratedCodeInfo.Annotation.Semantic
+	(*FileDescriptorSet)(nil),                           // 18: hyperpb.test.FileDescriptorSet
+	(*FileDescriptorProto)(nil),                         // 19: hyperpb.test.FileDescriptorProto
+	(*DescriptorProto)(nil),                             // 20: hyperpb.test.DescriptorProto
+	(*ExtensionRangeOptions)(nil),                       // 21: hyperpb.test.ExtensionRangeOptions
+	(*FieldDescriptorProto)(nil),                        // 22: hyperpb.test.FieldDescriptorProto
+	(*OneofDescriptorProto)(nil),                        // 23: hyperpb.test.OneofDescriptorProto
+	(*EnumDescriptorProto)(nil),                         // 24: hyperpb.test.EnumDescriptorProto
+	(*EnumValueDescriptorProto)(nil),                    // 25: hyperpb.test.EnumValueDescriptorProto
+	(*ServiceDescriptorProto)(nil),                      // 26: hyperpb.test.ServiceDescriptorProto
+	(*MethodDescriptorProto)(nil),                       // 27: hyperpb.test.MethodDescriptorProto
+	(*FileOptions)(nil),                                 // 28: hyperpb.test.FileOptions
+	(*MessageOptions)(nil),                              // 29: hyperpb.test.MessageOptions
+	(*FieldOptions)(nil),                                // 30: hyperpb.test.FieldOptions
+	(*OneofOptions)(nil),                                // 31: hyperpb.test.OneofOptions
+	(*EnumOptions)(nil),                                 // 32: hyperpb.test.EnumOptions
+	(*EnumValueOptions)(nil),                            // 33: hyperpb.test.EnumValueOptions
+	(*ServiceOptions)(nil),                              // 34: hyperpb.test.ServiceOptions
+	(*MethodOptions)(nil),                               // 35: hyperpb.test.MethodOptions
+	(*UninterpretedOption)(nil),                         // 36: hyperpb.test.UninterpretedOption
+	(*FeatureSet)(nil),                                  // 37: hyperpb.test.FeatureSet
+	(*FeatureSetDefaults)(nil),                          // 38: hyperpb.test.FeatureSetDefaults
+	(*SourceCodeInfo)(nil),                              // 39: hyperpb.test.SourceCodeInfo
+	(*GeneratedCodeInfo)(nil),                           // 40: hyperpb.test.GeneratedCodeInfo
+	(*DescriptorProto_ExtensionRange)(nil),              // 41: hyperpb.test.DescriptorProto.ExtensionRange
+	(*DescriptorProto_ReservedRange)(nil),               // 42: hyperpb.test.DescriptorProto.ReservedRange
+	(*ExtensionRangeOptions_Declaration)(nil),           // 43: hyperpb.test.ExtensionRangeOptions.Declaration
+	(*EnumDescriptorProto_EnumReservedRange)(nil),       // 44: hyperpb.test.EnumDescriptorProto.EnumReservedRange
+	(*FieldOptions_EditionDefault)(nil),                 // 45: hyperpb.test.FieldOptions.EditionDefault
+	(*FieldOptions_FeatureSupport)(nil),                 // 46: hyperpb.test.FieldOptions.FeatureSupport
+	(*UninterpretedOption_NamePart)(nil),                // 47: hyperpb.test.UninterpretedOption.NamePart
+	(*FeatureSetDefaults_FeatureSetEditionDefault)(nil), // 48: hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefault
+	(*SourceCodeInfo_Location)(nil),                     // 49: hyperpb.test.SourceCodeInfo.Location
+	(*GeneratedCodeInfo_Annotation)(nil),                // 50: hyperpb.test.GeneratedCodeInfo.Annotation
 }
 var file_test_descriptor_proto_depIdxs = []int32{
-	19, // 0: fastpb.test.FileDescriptorSet.file:type_name -> fastpb.test.FileDescriptorProto
-	20, // 1: fastpb.test.FileDescriptorProto.message_type:type_name -> fastpb.test.DescriptorProto
-	24, // 2: fastpb.test.FileDescriptorProto.enum_type:type_name -> fastpb.test.EnumDescriptorProto
-	26, // 3: fastpb.test.FileDescriptorProto.service:type_name -> fastpb.test.ServiceDescriptorProto
-	22, // 4: fastpb.test.FileDescriptorProto.extension:type_name -> fastpb.test.FieldDescriptorProto
-	28, // 5: fastpb.test.FileDescriptorProto.options:type_name -> fastpb.test.FileOptions
-	39, // 6: fastpb.test.FileDescriptorProto.source_code_info:type_name -> fastpb.test.SourceCodeInfo
-	0,  // 7: fastpb.test.FileDescriptorProto.edition:type_name -> fastpb.test.Edition
-	22, // 8: fastpb.test.DescriptorProto.field:type_name -> fastpb.test.FieldDescriptorProto
-	22, // 9: fastpb.test.DescriptorProto.extension:type_name -> fastpb.test.FieldDescriptorProto
-	20, // 10: fastpb.test.DescriptorProto.nested_type:type_name -> fastpb.test.DescriptorProto
-	24, // 11: fastpb.test.DescriptorProto.enum_type:type_name -> fastpb.test.EnumDescriptorProto
-	41, // 12: fastpb.test.DescriptorProto.extension_range:type_name -> fastpb.test.DescriptorProto.ExtensionRange
-	23, // 13: fastpb.test.DescriptorProto.oneof_decl:type_name -> fastpb.test.OneofDescriptorProto
-	29, // 14: fastpb.test.DescriptorProto.options:type_name -> fastpb.test.MessageOptions
-	42, // 15: fastpb.test.DescriptorProto.reserved_range:type_name -> fastpb.test.DescriptorProto.ReservedRange
-	36, // 16: fastpb.test.ExtensionRangeOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	43, // 17: fastpb.test.ExtensionRangeOptions.declaration:type_name -> fastpb.test.ExtensionRangeOptions.Declaration
-	37, // 18: fastpb.test.ExtensionRangeOptions.features:type_name -> fastpb.test.FeatureSet
-	1,  // 19: fastpb.test.ExtensionRangeOptions.verification:type_name -> fastpb.test.ExtensionRangeOptions.VerificationState
-	3,  // 20: fastpb.test.FieldDescriptorProto.label:type_name -> fastpb.test.FieldDescriptorProto.Label
-	2,  // 21: fastpb.test.FieldDescriptorProto.type:type_name -> fastpb.test.FieldDescriptorProto.Type
-	30, // 22: fastpb.test.FieldDescriptorProto.options:type_name -> fastpb.test.FieldOptions
-	31, // 23: fastpb.test.OneofDescriptorProto.options:type_name -> fastpb.test.OneofOptions
-	25, // 24: fastpb.test.EnumDescriptorProto.value:type_name -> fastpb.test.EnumValueDescriptorProto
-	32, // 25: fastpb.test.EnumDescriptorProto.options:type_name -> fastpb.test.EnumOptions
-	44, // 26: fastpb.test.EnumDescriptorProto.reserved_range:type_name -> fastpb.test.EnumDescriptorProto.EnumReservedRange
-	33, // 27: fastpb.test.EnumValueDescriptorProto.options:type_name -> fastpb.test.EnumValueOptions
-	27, // 28: fastpb.test.ServiceDescriptorProto.method:type_name -> fastpb.test.MethodDescriptorProto
-	34, // 29: fastpb.test.ServiceDescriptorProto.options:type_name -> fastpb.test.ServiceOptions
-	35, // 30: fastpb.test.MethodDescriptorProto.options:type_name -> fastpb.test.MethodOptions
-	4,  // 31: fastpb.test.FileOptions.optimize_for:type_name -> fastpb.test.FileOptions.OptimizeMode
-	37, // 32: fastpb.test.FileOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 33: fastpb.test.FileOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	37, // 34: fastpb.test.MessageOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 35: fastpb.test.MessageOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	5,  // 36: fastpb.test.FieldOptions.ctype:type_name -> fastpb.test.FieldOptions.CType
-	6,  // 37: fastpb.test.FieldOptions.jstype:type_name -> fastpb.test.FieldOptions.JSType
-	7,  // 38: fastpb.test.FieldOptions.retention:type_name -> fastpb.test.FieldOptions.OptionRetention
-	8,  // 39: fastpb.test.FieldOptions.targets:type_name -> fastpb.test.FieldOptions.OptionTargetType
-	45, // 40: fastpb.test.FieldOptions.edition_defaults:type_name -> fastpb.test.FieldOptions.EditionDefault
-	37, // 41: fastpb.test.FieldOptions.features:type_name -> fastpb.test.FeatureSet
-	46, // 42: fastpb.test.FieldOptions.feature_support:type_name -> fastpb.test.FieldOptions.FeatureSupport
-	36, // 43: fastpb.test.FieldOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	37, // 44: fastpb.test.OneofOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 45: fastpb.test.OneofOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	37, // 46: fastpb.test.EnumOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 47: fastpb.test.EnumOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	37, // 48: fastpb.test.EnumValueOptions.features:type_name -> fastpb.test.FeatureSet
-	46, // 49: fastpb.test.EnumValueOptions.feature_support:type_name -> fastpb.test.FieldOptions.FeatureSupport
-	36, // 50: fastpb.test.EnumValueOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	37, // 51: fastpb.test.ServiceOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 52: fastpb.test.ServiceOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	9,  // 53: fastpb.test.MethodOptions.idempotency_level:type_name -> fastpb.test.MethodOptions.IdempotencyLevel
-	37, // 54: fastpb.test.MethodOptions.features:type_name -> fastpb.test.FeatureSet
-	36, // 55: fastpb.test.MethodOptions.uninterpreted_option:type_name -> fastpb.test.UninterpretedOption
-	47, // 56: fastpb.test.UninterpretedOption.name:type_name -> fastpb.test.UninterpretedOption.NamePart
-	10, // 57: fastpb.test.FeatureSet.field_presence:type_name -> fastpb.test.FeatureSet.FieldPresence
-	11, // 58: fastpb.test.FeatureSet.enum_type:type_name -> fastpb.test.FeatureSet.EnumType
-	12, // 59: fastpb.test.FeatureSet.repeated_field_encoding:type_name -> fastpb.test.FeatureSet.RepeatedFieldEncoding
-	13, // 60: fastpb.test.FeatureSet.utf8_validation:type_name -> fastpb.test.FeatureSet.Utf8Validation
-	14, // 61: fastpb.test.FeatureSet.message_encoding:type_name -> fastpb.test.FeatureSet.MessageEncoding
-	15, // 62: fastpb.test.FeatureSet.json_format:type_name -> fastpb.test.FeatureSet.JsonFormat
-	16, // 63: fastpb.test.FeatureSet.enforce_naming_style:type_name -> fastpb.test.FeatureSet.EnforceNamingStyle
-	48, // 64: fastpb.test.FeatureSetDefaults.defaults:type_name -> fastpb.test.FeatureSetDefaults.FeatureSetEditionDefault
-	0,  // 65: fastpb.test.FeatureSetDefaults.minimum_edition:type_name -> fastpb.test.Edition
-	0,  // 66: fastpb.test.FeatureSetDefaults.maximum_edition:type_name -> fastpb.test.Edition
-	49, // 67: fastpb.test.SourceCodeInfo.location:type_name -> fastpb.test.SourceCodeInfo.Location
-	50, // 68: fastpb.test.GeneratedCodeInfo.annotation:type_name -> fastpb.test.GeneratedCodeInfo.Annotation
-	21, // 69: fastpb.test.DescriptorProto.ExtensionRange.options:type_name -> fastpb.test.ExtensionRangeOptions
-	0,  // 70: fastpb.test.FieldOptions.EditionDefault.edition:type_name -> fastpb.test.Edition
-	0,  // 71: fastpb.test.FieldOptions.FeatureSupport.edition_introduced:type_name -> fastpb.test.Edition
-	0,  // 72: fastpb.test.FieldOptions.FeatureSupport.edition_deprecated:type_name -> fastpb.test.Edition
-	0,  // 73: fastpb.test.FieldOptions.FeatureSupport.edition_removed:type_name -> fastpb.test.Edition
-	0,  // 74: fastpb.test.FeatureSetDefaults.FeatureSetEditionDefault.edition:type_name -> fastpb.test.Edition
-	37, // 75: fastpb.test.FeatureSetDefaults.FeatureSetEditionDefault.overridable_features:type_name -> fastpb.test.FeatureSet
-	37, // 76: fastpb.test.FeatureSetDefaults.FeatureSetEditionDefault.fixed_features:type_name -> fastpb.test.FeatureSet
-	17, // 77: fastpb.test.GeneratedCodeInfo.Annotation.semantic:type_name -> fastpb.test.GeneratedCodeInfo.Annotation.Semantic
+	19, // 0: hyperpb.test.FileDescriptorSet.file:type_name -> hyperpb.test.FileDescriptorProto
+	20, // 1: hyperpb.test.FileDescriptorProto.message_type:type_name -> hyperpb.test.DescriptorProto
+	24, // 2: hyperpb.test.FileDescriptorProto.enum_type:type_name -> hyperpb.test.EnumDescriptorProto
+	26, // 3: hyperpb.test.FileDescriptorProto.service:type_name -> hyperpb.test.ServiceDescriptorProto
+	22, // 4: hyperpb.test.FileDescriptorProto.extension:type_name -> hyperpb.test.FieldDescriptorProto
+	28, // 5: hyperpb.test.FileDescriptorProto.options:type_name -> hyperpb.test.FileOptions
+	39, // 6: hyperpb.test.FileDescriptorProto.source_code_info:type_name -> hyperpb.test.SourceCodeInfo
+	0,  // 7: hyperpb.test.FileDescriptorProto.edition:type_name -> hyperpb.test.Edition
+	22, // 8: hyperpb.test.DescriptorProto.field:type_name -> hyperpb.test.FieldDescriptorProto
+	22, // 9: hyperpb.test.DescriptorProto.extension:type_name -> hyperpb.test.FieldDescriptorProto
+	20, // 10: hyperpb.test.DescriptorProto.nested_type:type_name -> hyperpb.test.DescriptorProto
+	24, // 11: hyperpb.test.DescriptorProto.enum_type:type_name -> hyperpb.test.EnumDescriptorProto
+	41, // 12: hyperpb.test.DescriptorProto.extension_range:type_name -> hyperpb.test.DescriptorProto.ExtensionRange
+	23, // 13: hyperpb.test.DescriptorProto.oneof_decl:type_name -> hyperpb.test.OneofDescriptorProto
+	29, // 14: hyperpb.test.DescriptorProto.options:type_name -> hyperpb.test.MessageOptions
+	42, // 15: hyperpb.test.DescriptorProto.reserved_range:type_name -> hyperpb.test.DescriptorProto.ReservedRange
+	36, // 16: hyperpb.test.ExtensionRangeOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	43, // 17: hyperpb.test.ExtensionRangeOptions.declaration:type_name -> hyperpb.test.ExtensionRangeOptions.Declaration
+	37, // 18: hyperpb.test.ExtensionRangeOptions.features:type_name -> hyperpb.test.FeatureSet
+	1,  // 19: hyperpb.test.ExtensionRangeOptions.verification:type_name -> hyperpb.test.ExtensionRangeOptions.VerificationState
+	3,  // 20: hyperpb.test.FieldDescriptorProto.label:type_name -> hyperpb.test.FieldDescriptorProto.Label
+	2,  // 21: hyperpb.test.FieldDescriptorProto.type:type_name -> hyperpb.test.FieldDescriptorProto.Type
+	30, // 22: hyperpb.test.FieldDescriptorProto.options:type_name -> hyperpb.test.FieldOptions
+	31, // 23: hyperpb.test.OneofDescriptorProto.options:type_name -> hyperpb.test.OneofOptions
+	25, // 24: hyperpb.test.EnumDescriptorProto.value:type_name -> hyperpb.test.EnumValueDescriptorProto
+	32, // 25: hyperpb.test.EnumDescriptorProto.options:type_name -> hyperpb.test.EnumOptions
+	44, // 26: hyperpb.test.EnumDescriptorProto.reserved_range:type_name -> hyperpb.test.EnumDescriptorProto.EnumReservedRange
+	33, // 27: hyperpb.test.EnumValueDescriptorProto.options:type_name -> hyperpb.test.EnumValueOptions
+	27, // 28: hyperpb.test.ServiceDescriptorProto.method:type_name -> hyperpb.test.MethodDescriptorProto
+	34, // 29: hyperpb.test.ServiceDescriptorProto.options:type_name -> hyperpb.test.ServiceOptions
+	35, // 30: hyperpb.test.MethodDescriptorProto.options:type_name -> hyperpb.test.MethodOptions
+	4,  // 31: hyperpb.test.FileOptions.optimize_for:type_name -> hyperpb.test.FileOptions.OptimizeMode
+	37, // 32: hyperpb.test.FileOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 33: hyperpb.test.FileOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	37, // 34: hyperpb.test.MessageOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 35: hyperpb.test.MessageOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	5,  // 36: hyperpb.test.FieldOptions.ctype:type_name -> hyperpb.test.FieldOptions.CType
+	6,  // 37: hyperpb.test.FieldOptions.jstype:type_name -> hyperpb.test.FieldOptions.JSType
+	7,  // 38: hyperpb.test.FieldOptions.retention:type_name -> hyperpb.test.FieldOptions.OptionRetention
+	8,  // 39: hyperpb.test.FieldOptions.targets:type_name -> hyperpb.test.FieldOptions.OptionTargetType
+	45, // 40: hyperpb.test.FieldOptions.edition_defaults:type_name -> hyperpb.test.FieldOptions.EditionDefault
+	37, // 41: hyperpb.test.FieldOptions.features:type_name -> hyperpb.test.FeatureSet
+	46, // 42: hyperpb.test.FieldOptions.feature_support:type_name -> hyperpb.test.FieldOptions.FeatureSupport
+	36, // 43: hyperpb.test.FieldOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	37, // 44: hyperpb.test.OneofOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 45: hyperpb.test.OneofOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	37, // 46: hyperpb.test.EnumOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 47: hyperpb.test.EnumOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	37, // 48: hyperpb.test.EnumValueOptions.features:type_name -> hyperpb.test.FeatureSet
+	46, // 49: hyperpb.test.EnumValueOptions.feature_support:type_name -> hyperpb.test.FieldOptions.FeatureSupport
+	36, // 50: hyperpb.test.EnumValueOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	37, // 51: hyperpb.test.ServiceOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 52: hyperpb.test.ServiceOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	9,  // 53: hyperpb.test.MethodOptions.idempotency_level:type_name -> hyperpb.test.MethodOptions.IdempotencyLevel
+	37, // 54: hyperpb.test.MethodOptions.features:type_name -> hyperpb.test.FeatureSet
+	36, // 55: hyperpb.test.MethodOptions.uninterpreted_option:type_name -> hyperpb.test.UninterpretedOption
+	47, // 56: hyperpb.test.UninterpretedOption.name:type_name -> hyperpb.test.UninterpretedOption.NamePart
+	10, // 57: hyperpb.test.FeatureSet.field_presence:type_name -> hyperpb.test.FeatureSet.FieldPresence
+	11, // 58: hyperpb.test.FeatureSet.enum_type:type_name -> hyperpb.test.FeatureSet.EnumType
+	12, // 59: hyperpb.test.FeatureSet.repeated_field_encoding:type_name -> hyperpb.test.FeatureSet.RepeatedFieldEncoding
+	13, // 60: hyperpb.test.FeatureSet.utf8_validation:type_name -> hyperpb.test.FeatureSet.Utf8Validation
+	14, // 61: hyperpb.test.FeatureSet.message_encoding:type_name -> hyperpb.test.FeatureSet.MessageEncoding
+	15, // 62: hyperpb.test.FeatureSet.json_format:type_name -> hyperpb.test.FeatureSet.JsonFormat
+	16, // 63: hyperpb.test.FeatureSet.enforce_naming_style:type_name -> hyperpb.test.FeatureSet.EnforceNamingStyle
+	48, // 64: hyperpb.test.FeatureSetDefaults.defaults:type_name -> hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefault
+	0,  // 65: hyperpb.test.FeatureSetDefaults.minimum_edition:type_name -> hyperpb.test.Edition
+	0,  // 66: hyperpb.test.FeatureSetDefaults.maximum_edition:type_name -> hyperpb.test.Edition
+	49, // 67: hyperpb.test.SourceCodeInfo.location:type_name -> hyperpb.test.SourceCodeInfo.Location
+	50, // 68: hyperpb.test.GeneratedCodeInfo.annotation:type_name -> hyperpb.test.GeneratedCodeInfo.Annotation
+	21, // 69: hyperpb.test.DescriptorProto.ExtensionRange.options:type_name -> hyperpb.test.ExtensionRangeOptions
+	0,  // 70: hyperpb.test.FieldOptions.EditionDefault.edition:type_name -> hyperpb.test.Edition
+	0,  // 71: hyperpb.test.FieldOptions.FeatureSupport.edition_introduced:type_name -> hyperpb.test.Edition
+	0,  // 72: hyperpb.test.FieldOptions.FeatureSupport.edition_deprecated:type_name -> hyperpb.test.Edition
+	0,  // 73: hyperpb.test.FieldOptions.FeatureSupport.edition_removed:type_name -> hyperpb.test.Edition
+	0,  // 74: hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefault.edition:type_name -> hyperpb.test.Edition
+	37, // 75: hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefault.overridable_features:type_name -> hyperpb.test.FeatureSet
+	37, // 76: hyperpb.test.FeatureSetDefaults.FeatureSetEditionDefault.fixed_features:type_name -> hyperpb.test.FeatureSet
+	17, // 77: hyperpb.test.GeneratedCodeInfo.Annotation.semantic:type_name -> hyperpb.test.GeneratedCodeInfo.Annotation.Semantic
 	78, // [78:78] is the sub-list for method output_type
 	78, // [78:78] is the sub-list for method input_type
 	78, // [78:78] is the sub-list for extension type_name

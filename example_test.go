@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb_test
+package hyperpb_test
 
 import (
 	"fmt"
@@ -20,20 +20,20 @@ import (
 	"buf.build/go/protovalidate"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/bufbuild/fastpb"
-	"github.com/bufbuild/fastpb/internal/examples"
-	weatherv1 "github.com/bufbuild/fastpb/internal/gen/example/weather/v1"
+	"github.com/bufbuild/hyperpb"
+	"github.com/bufbuild/hyperpb/internal/examples"
+	weatherv1 "github.com/bufbuild/hyperpb/internal/gen/example/weather/v1"
 )
 
 func Example() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := fastpb.CompileFor[*weatherv1.WeatherReport]()
+	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := fastpb.New(ty)
+	msg := hyperpb.New(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}
@@ -73,12 +73,12 @@ func Example() {
 func Example_protovalidate() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := fastpb.CompileFor[*weatherv1.WeatherReport]()
+	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := fastpb.New(ty)
+	msg := hyperpb.New(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ func Example_protovalidate() {
 func Example_unmarshalFromDescriptor() {
 	// Download a descriptor off of the network, unmarshal it, and compile a
 	// type from it.
-	ty, err := fastpb.CompileFromBytes(
+	ty, err := hyperpb.CompileFromBytes(
 		examples.DownloadWeatherReportSchema(),
 		"example.weather.v1.WeatherReport", // The type we want to compile.
 	)
@@ -106,7 +106,7 @@ func Example_unmarshalFromDescriptor() {
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := fastpb.New(ty)
+	msg := hyperpb.New(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}

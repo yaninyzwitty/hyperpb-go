@@ -20,14 +20,14 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/tdp"
-	"github.com/bufbuild/fastpb/internal/tdp/compiler"
-	"github.com/bufbuild/fastpb/internal/tdp/dynamic"
-	"github.com/bufbuild/fastpb/internal/tdp/empty"
-	"github.com/bufbuild/fastpb/internal/tdp/vm"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
-	"github.com/bufbuild/fastpb/internal/zc"
+	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // Singular fields are implemented as a single field of the appropriate type.
@@ -254,8 +254,8 @@ func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoref
 }
 
 //go:nosplit
-//fastpb:stencil parseVarint32 parseVarint[uint32]
-//fastpb:stencil parseVarint64 parseVarint[uint64]
+//hyperpb:stencil parseVarint32 parseVarint[uint32]
+//hyperpb:stencil parseVarint64 parseVarint[uint64]
 func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
@@ -264,8 +264,8 @@ func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//fastpb:stencil parseZigZag32 parseZigZag[uint32]
-//fastpb:stencil parseZigZag64 parseZigZag[uint64]
+//hyperpb:stencil parseZigZag32 parseZigZag[uint32]
+//hyperpb:stencil parseZigZag64 parseZigZag[uint64]
 func parseZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2, p2.Scratch = p1.Varint(p2)
 	p2.Scratch = uint64(zigzag64[T](p2.Scratch))

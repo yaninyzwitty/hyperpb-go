@@ -35,7 +35,7 @@ GO ?= go
 GO := GOTOOLCHAIN=local $(GO)
 TAGS ?= ""
 
-ASM_FILTER ?= ^github.com/bufbuild/fastpb
+ASM_FILTER ?= ^github.com/bufbuild/hyperpb
 ASM_INFO ?= fileline
 
 BENCHMARK ?= .
@@ -79,21 +79,21 @@ profile: build ## Profile benchmarks and open them in pprof
 	$(GO) test -bench '$(BENCHMARK)' $(BENCHFLAGS) -run '^B' \
 		-tags=$(TAGS) \
 		-benchtime 3s \
-		-o fastpb.test \
-		-cpuprofile fastpb.prof \
+		-o hyperpb.test \
+		-cpuprofile hyperpb.prof \
 		$(PKG)
-	$(GO) tool pprof -http localhost:8000 fastpb.test fastpb.prof
+	$(GO) tool pprof -http localhost:8000 hyperpb.test hyperpb.prof
 
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
-	$(GO) test -tags=$(TAGS) -c -o fastpb.test $(PKG) $(TESTFLAGS)
+	$(GO) test -tags=$(TAGS) -c -o hyperpb.test $(PKG) $(TESTFLAGS)
 	$(GO) run ./internal/tools/objdump \
 		-s '$(ASM_FILTER)' \
 		-info $(ASM_INFO) \
-		-prefix 'github.com/bufbuild/fastpb' \
+		-prefix 'github.com/bufbuild/hyperpb' \
 		-nops \
-		-o fastpb.s \
-		fastpb.test
+		-o hyperpb.s \
+		hyperpb.test
 	
 .PHONY: build
 build: generate ## Build all packages

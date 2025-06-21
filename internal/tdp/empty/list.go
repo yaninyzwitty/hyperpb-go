@@ -17,7 +17,7 @@ package empty
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/fastpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/debug"
 )
 
 // List is an empty, untyped, immutable List.

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Maps
+type: hyperpb.test.Maps
 protoscope:
 - |
   0xa0: { 1: 1i64 2: 2 }

@@ -19,7 +19,7 @@ import (
 	"math/bits"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // hash is a simple hasher.

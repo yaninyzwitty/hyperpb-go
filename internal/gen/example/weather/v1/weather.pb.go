@@ -249,8 +249,8 @@ const file_example_weather_v1_weather_proto_rawDesc = "" +
 	"\x15CONDITION_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fCONDITION_SUNNY\x10\x01\x12\x13\n" +
 	"\x0fCONDITION_RAINY\x10\x02\x12\x16\n" +
-	"\x12CONDITION_OVERCAST\x10\x03B\xd6\x01\n" +
-	"\x16com.example.weather.v1B\fWeatherProtoP\x01ZDgithub.com/bufbuild/fastpb/internal/gen/example/weather/v1;weatherv1\xa2\x02\x03EWX\xaa\x02\x12Example.Weather.V1\xca\x02\x12Example\\Weather\\V1\xe2\x02\x1eExample\\Weather\\V1\\GPBMetadata\xea\x02\x14Example::Weather::V1b\x06proto3"
+	"\x12CONDITION_OVERCAST\x10\x03B\xd7\x01\n" +
+	"\x16com.example.weather.v1B\fWeatherProtoP\x01ZEgithub.com/bufbuild/hyperpb/internal/gen/example/weather/v1;weatherv1\xa2\x02\x03EWX\xaa\x02\x12Example.Weather.V1\xca\x02\x12Example\\Weather\\V1\xe2\x02\x1eExample\\Weather\\V1\\GPBMetadata\xea\x02\x14Example::Weather::V1b\x06proto3"
 
 var (
 	file_example_weather_v1_weather_proto_rawDescOnce sync.Once

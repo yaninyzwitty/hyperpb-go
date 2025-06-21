@@ -18,7 +18,7 @@ import (
 	"math"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // BoundsCheck emulates a bounds check on a slice with the given index and

@@ -17,7 +17,7 @@ package unsafe2
 import (
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // VLA is a mechanism for accessing a variable-length array that follows

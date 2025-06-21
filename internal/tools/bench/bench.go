@@ -265,7 +265,7 @@ func main() {
 		}
 	}
 
-	out, _ := os.Create("fastpb.csv")
+	out, _ := os.Create("hyperpb.csv")
 	_ = csv.NewWriter(out).WriteAll(cells)
 
 	// Lay out the header.

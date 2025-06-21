@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fastpb_test
+package hyperpb_test
 
 import (
 	"flag"
@@ -24,10 +24,10 @@ import (
 	_ "google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 
-	"github.com/bufbuild/fastpb"
-	"github.com/bufbuild/fastpb/internal/flag2"
-	_ "github.com/bufbuild/fastpb/internal/gen/test"
-	"github.com/bufbuild/fastpb/internal/testdata"
+	"github.com/bufbuild/hyperpb"
+	"github.com/bufbuild/hyperpb/internal/flag2"
+	_ "github.com/bufbuild/hyperpb/internal/gen/test"
+	"github.com/bufbuild/hyperpb/internal/testdata"
 )
 
 var verbose bool
@@ -58,11 +58,11 @@ func BenchmarkUnmarshal(b *testing.B) {
 
 		run := func(b *testing.B, specimen []byte) {
 			b.Helper()
-			b.Run("fastpb", func(b *testing.B) {
+			b.Run("hyperpb", func(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
 				for range b.N {
-					m := fastpb.New(test.Type.Fast)
+					m := hyperpb.New(test.Type.Fast)
 					_ = proto.Unmarshal(specimen, m)
 				}
 			})
@@ -70,17 +70,17 @@ func BenchmarkUnmarshal(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
 				for range b.N {
-					m := fastpb.New(test.Type.Fast)
-					_ = m.Unmarshal(specimen, fastpb.WithAllowAlias(true))
+					m := hyperpb.New(test.Type.Fast)
+					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
 				}
 			})
 			b.Run("arena", func(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
-				ctx := new(fastpb.Shared)
+				ctx := new(hyperpb.Shared)
 				for range b.N {
 					m := ctx.New(test.Type.Fast)
-					_ = m.Unmarshal(specimen, fastpb.WithAllowAlias(true))
+					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
 					ctx.Free()
 				}
 			})

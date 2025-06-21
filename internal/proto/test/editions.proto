@@ -16,7 +16,7 @@ edition = "2023";
 
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
 // buf:lint:ignore PACKAGE_DIRECTORY_MATCH
-package fastpb.test;
+package hyperpb.test;
 
 message Proto2Strings {
   string s1 = 1 [features.utf8_validation = NONE];

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Repeated
+type: hyperpb.test.Repeated
 benchmark: true
 protoscope:
 - | # go run testdata/bench/gen_repeated.go -f '3: %d' -hi 0xfff -n 2048 -zipf 

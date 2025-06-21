@@ -32,10 +32,10 @@ type errUnsupported struct{ pc uintptr }
 func (e *errUnsupported) Error() string {
 	name := runtime.FuncForPC(e.pc).Name()
 	if name == "" {
-		return "fastpb: unsupported operation"
+		return "hyperpb: unsupported operation"
 	}
 
 	slash := strings.LastIndexByte(name, '/')
 	name = name[slash+1:]
-	return fmt.Sprintf("fastpb: %s() is not supported", name)
+	return fmt.Sprintf("hyperpb: %s() is not supported", name)
 }

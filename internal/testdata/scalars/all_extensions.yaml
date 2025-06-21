@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Extensions
+type: hyperpb.test.Extensions
 textproto:
 - |
-  [fastpb.test.b1]: -1
-  [fastpb.test.b2]: 43
-  [fastpb.test.b3]: 0xfffffffe
-  [fastpb.test.b4]: 1000001
-  [fastpb.test.b5]: -3
-  [fastpb.test.b6]: 1000002
-  [fastpb.test.b7]: 10000000
-  [fastpb.test.b8]: 20000000
-  [fastpb.test.b9]: -10000000
-  [fastpb.test.b10]: 2000000110000
-  [fastpb.test.b11]: -inf
-  [fastpb.test.b12]: 3.14159265359
-  [fastpb.test.b13]: true
+  [hyperpb.test.b1]: -1
+  [hyperpb.test.b2]: 43
+  [hyperpb.test.b3]: 0xfffffffe
+  [hyperpb.test.b4]: 1000001
+  [hyperpb.test.b5]: -3
+  [hyperpb.test.b6]: 1000002
+  [hyperpb.test.b7]: 10000000
+  [hyperpb.test.b8]: 20000000
+  [hyperpb.test.b9]: -10000000
+  [hyperpb.test.b10]: 2000000110000
+  [hyperpb.test.b11]: -inf
+  [hyperpb.test.b12]: 3.14159265359
+  [hyperpb.test.b13]: true
   

@@ -1,13 +1,13 @@
 ![The Buf logo](./.github/buf-logo.svg)
 
-# fastpb
+# hyperpb
 
-`fastpb` is a highly optimized dynamic message library for Protobuf or read-only
+`hyperpb` is a highly optimized dynamic message library for Protobuf or read-only
 workloads. It is designed to be a drop-in replacement for
 [`dynamicpb`](https://pkg.go.dev/google.golang.org/protobuf/types/dynamicpb),
 `protobuf-go`'s canonical solution for working with completely dynamic messages.
 
-`fastpb`'s parser is an efficient VM for a special instruction set, a variant of
+`hyperpb`'s parser is an efficient VM for a special instruction set, a variant of
 table-driven parsing (TDP), pioneered by [the UPB project](https://github.com/protocolbuffers/protobuf/tree/main/upb).
 
 Our parser is very fast, beating `dynamicpb` by 10x, and often beating
@@ -18,9 +18,9 @@ many nested messages.
 
 ## Usage
 
-The core conceit of `fastpb` is that you must pre-compile a parser using
-`fastpb.Compile` at runtime, much like regular expressions require that you use
-`regexp.Compile` them. Doing this allows `fastpb` to run optimization passes on
+The core conceit of `hyperpb` is that you must pre-compile a parser using
+`hyperpb.Compile` at runtime, much like regular expressions require that you use
+`regexp.Compile` them. Doing this allows `hyperpb` to run optimization passes on
 your message, and delaying it to runtime allows us to continuously improve
 layout optimizations, withing making any source-breaking changes.
 
@@ -29,19 +29,19 @@ our binary, and parse some data with it.
 
 ```go
 // Compile a type for your message. Make sure to cache this!
-ty := fastpb.CompileFor[*weatherv1.WeatherReport]()
+ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
 
 data := /* ... */
 
 // Allocate a fresh message using that type.
-msg := fastpb.New(ty)
+msg := hyperpb.New(ty)
 
 // Parse the message, using proto.Unmarshal like any other message type.
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
 }
 
-// Use reflection to read some fields. fastpb currently only supports access
+// Use reflection to read some fields. hyperpb currently only supports access
 // by reflection. You can also look up fields by index using fields.Get(), which
 // is less legible but doesn't hit a hashmap.
 fields := ty.Descriptor().Fields()
@@ -69,24 +69,24 @@ for i := range stations.Len() {
 }
 ```
 
-Currently, `fastpb` only supports manipulating messages through the reflection
+Currently, `hyperpb` only supports manipulating messages through the reflection
 API; it shines best when you need write a very generic service that
 downloads types off the network and parses messages using those types, which
 forces you to use reflection.
 
 Mutation is currently not supported; any operation which would mutate an
-already-parsed message will panic. Which methods of `*fastpb.Message` panic
+already-parsed message will panic. Which methods of `*hyperpb.Message` panic
 is included in the documentation.
 
 ### Using types from a registry
 
-We can use the `fastpb.CompileFromBytes` function to parse a dynamic type and
+We can use the `hyperpb.CompileFromBytes` function to parse a dynamic type and
 use it to walk the fields of a message:
 
 ```go
-ty := fastpb.CompileFromBytes(encodedSchema, messageName) // Remember to cache this!
+ty := hyperpb.CompileFromBytes(encodedSchema, messageName) // Remember to cache this!
 
-msg := fastpb.New(ty)
+msg := hyperpb.New(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
 }
@@ -98,14 +98,14 @@ for field, value := range msg.Range {
 }
 ```
 
-Since any generic, non-mutating operation will work with `fastpb` messages,
+Since any generic, non-mutating operation will work with `hyperpb` messages,
 we can use them as an efficient transcoding medium from the wire format, for
 runtime-loaded messages.
 
 ```go
 // Unmarshal like before.
-ty := fastpb.CompileFromBytes(encodedSchema, messageName)
-msg := fastpb.New(ty)
+ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
+msg := hyperpb.New(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // ...
 }
@@ -118,8 +118,8 @@ bytes, err := protojson.Marshal(msg)
 
 ```go
 // Unmarshal like before.
-ty := fastpb.CompileFromBytes(encodedSchema, messageName)
-msg := fastpb.New(ty)
+ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
+msg := hyperpb.New(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
 }
@@ -130,17 +130,17 @@ err := protovalidate.Validate(msg)
 
 ## Advanced Usage
 
-`fastpb` is all about parsing as fast as possible, so there are a number of
+`hyperpb` is all about parsing as fast as possible, so there are a number of
 optimization knobs available. Calling `Message.Unmarshal` directly instead
 of `proto.Unmarshal` allows setting custom `UnmarshalOption`s:
 
 ```go
-ty := fastpb.CompileFromBytes(encodedSchema, messageName)
-msg := fastpb.New(ty)
+ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
+msg := hyperpb.New(ty)
 
 // Unmarshal with custom performance knobs.
 err := msg.Unmarshal(data,
-    fastpb.WithMaxDecodeMisses(16),
+    hyperpb.WithMaxDecodeMisses(16),
     // ...
 )
 ```
@@ -149,26 +149,26 @@ The compiler also takes `CompileOptions`, such as for configuring how extensions
 are resolved:
 
 ```go
-ty := fastpb.CompileFromBytes(encodedSchema, messageName,
-    fastpb.WithExtensionsFromTypes(typeRegistry),
+ty := hyperpb.CompileFromBytes(encodedSchema, messageName,
+    hyperpb.WithExtensionsFromTypes(typeRegistry),
 )
 ```
 
 ### Memory Reuse
 
-`fastpb` also has a memory-reuse mechanism that side-steps the Go garbage
-collector for improved allocation latency. `fastpb.Shared` is book-keeping
+`hyperpb` also has a memory-reuse mechanism that side-steps the Go garbage
+collector for improved allocation latency. `hyperpb.Shared` is book-keeping
 state and resources shared by all messages resulting from the same parse.
 After the message goes out of scope, these resources are ordinarily reclaimed
 by the garbage collector.
 
-However, a `fastpb.Shared` can be retained after its associated message goes
+However, a `hyperpb.Shared` can be retained after its associated message goes
 away, allowing for re-use. Consider the following example of a request handler:
 
 ```go
 type requestContext struct {
-    shared *fastpb.Shared
-    types map[string]*fastpb.Type
+    shared *hyperpb.Shared
+    types map[string]*hyperpb.Type
     // ...
 }
 
@@ -187,7 +187,7 @@ will result in memory errors that Go cannot protect you from.
 
 ## Compatibility
 
-`fastpb` is experimental software, and the API may change drastically before
+`hyperpb` is experimental software, and the API may change drastically before
 `v1`. It also does not implement all of Protobuf: currently, the following are
 not supported:
 
@@ -196,7 +196,7 @@ not supported:
 
 ## Contributing
 
-For a detailed explanation of the implementation details of `fastpb`, see
+For a detailed explanation of the implementation details of `hyperpb`, see
 the [`DESIGN.md`](DESIGN.md) file. Contributions that significantly change the
 parser will require benchmarks; you can run them with `make bench`.
 

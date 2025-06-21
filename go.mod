@@ -1,4 +1,4 @@
-module github.com/bufbuild/fastpb
+module github.com/bufbuild/hyperpb
 
 go 1.23.0
 

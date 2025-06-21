@@ -19,7 +19,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 
-	"github.com/bufbuild/fastpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp"
 )
 
 // zigzag decodes a zigzag-encoded value of any type.

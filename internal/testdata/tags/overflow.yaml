@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-type: fastpb.test.Scalars
+type: hyperpb.test.Scalars
 protoscope:
 - '-0x100000001: {""}'
 - '7: {"wrong"} -0x100000001: {""}'

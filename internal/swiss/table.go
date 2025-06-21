@@ -32,9 +32,9 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/bufbuild/fastpb/internal/debug"
-	"github.com/bufbuild/fastpb/internal/stats"
-	"github.com/bufbuild/fastpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/stats"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 //go:generate go run ../tools/stencil
@@ -555,60 +555,60 @@ func (t *Table[K, V]) Dump() string {
 	return buf.String()
 }
 
-//fastpb:stencil InitU8xU8 Table.Init[uint8, uint8] search -> searchU8xU8 searchFunc -> searchFuncU8xU8
-//fastpb:stencil InitU32xU8 Table.Init[uint32, uint8] search -> searchU32xU8 searchFunc -> searchFuncU32xU8
-//fastpb:stencil InitU64xU8 Table.Init[uint64, uint8] search -> searchU64xU8 searchFunc -> searchFuncU64xU8
-//fastpb:stencil InitU8xU32 Table.Init[uint8, uint32] search -> searchU8xU32 searchFunc -> searchFuncU8xU32
-//fastpb:stencil InitU32xU32 Table.Init[uint32, uint32] search -> searchU32xU32 searchFunc -> searchFuncU32xU32
-//fastpb:stencil InitU64xU32 Table.Init[uint64, uint32] search -> searchU64xU32 searchFunc -> searchFuncU64xU32
-//fastpb:stencil InitU8xU64 Table.Init[uint8, uint64] search -> searchU8xU64 searchFunc -> searchFuncU8xU64
-//fastpb:stencil InitU32xU64 Table.Init[uint32, uint64] search -> searchU32xU64 searchFunc -> searchFuncU32xU64
-//fastpb:stencil InitU64xU64 Table.Init[uint64, uint64] search -> searchU64xU64 searchFunc -> searchFuncU64xU64
-//fastpb:stencil InitU8xP Table.Init[uint8, unsafe.Pointer] search -> searchU8xP searchFunc -> searchFuncU8xP
-//fastpb:stencil InitU32xP Table.Init[uint32, unsafe.Pointer] search -> searchU32xP searchFunc -> searchFuncU32xP
-//fastpb:stencil InitU64xP Table.Init[uint64, unsafe.Pointer] search -> searchU64xP searchFunc -> searchFuncU64xP
+//hyperpb:stencil InitU8xU8 Table.Init[uint8, uint8] search -> searchU8xU8 searchFunc -> searchFuncU8xU8
+//hyperpb:stencil InitU32xU8 Table.Init[uint32, uint8] search -> searchU32xU8 searchFunc -> searchFuncU32xU8
+//hyperpb:stencil InitU64xU8 Table.Init[uint64, uint8] search -> searchU64xU8 searchFunc -> searchFuncU64xU8
+//hyperpb:stencil InitU8xU32 Table.Init[uint8, uint32] search -> searchU8xU32 searchFunc -> searchFuncU8xU32
+//hyperpb:stencil InitU32xU32 Table.Init[uint32, uint32] search -> searchU32xU32 searchFunc -> searchFuncU32xU32
+//hyperpb:stencil InitU64xU32 Table.Init[uint64, uint32] search -> searchU64xU32 searchFunc -> searchFuncU64xU32
+//hyperpb:stencil InitU8xU64 Table.Init[uint8, uint64] search -> searchU8xU64 searchFunc -> searchFuncU8xU64
+//hyperpb:stencil InitU32xU64 Table.Init[uint32, uint64] search -> searchU32xU64 searchFunc -> searchFuncU32xU64
+//hyperpb:stencil InitU64xU64 Table.Init[uint64, uint64] search -> searchU64xU64 searchFunc -> searchFuncU64xU64
+//hyperpb:stencil InitU8xP Table.Init[uint8, unsafe.Pointer] search -> searchU8xP searchFunc -> searchFuncU8xP
+//hyperpb:stencil InitU32xP Table.Init[uint32, unsafe.Pointer] search -> searchU32xP searchFunc -> searchFuncU32xP
+//hyperpb:stencil InitU64xP Table.Init[uint64, unsafe.Pointer] search -> searchU64xP searchFunc -> searchFuncU64xP
 
-//fastpb:stencil InsertU8xU8 Table.Insert[uint8, uint8] search -> searchU8xU8 searchFunc -> searchFuncU8xU8
-//fastpb:stencil InsertU32xU8 Table.Insert[uint32, uint8] search -> searchU32xU8 searchFunc -> searchFuncU32xU8
-//fastpb:stencil InsertU64xU8 Table.Insert[uint64, uint8] search -> searchU64xU8 searchFunc -> searchFuncU64xU8
-//fastpb:stencil InsertU8xU32 Table.Insert[uint8, uint32] search -> searchU8xU32 searchFunc -> searchFuncU8xU32
-//fastpb:stencil InsertU32xU32 Table.Insert[uint32, uint32] search -> searchU32xU32 searchFunc -> searchFuncU32xU32
-//fastpb:stencil InsertU64xU32 Table.Insert[uint64, uint32] search -> searchU64xU32 searchFunc -> searchFuncU64xU32
-//fastpb:stencil InsertU8xU64 Table.Insert[uint8, uint64] search -> searchU8xU64 searchFunc -> searchFuncU8xU64
-//fastpb:stencil InsertU32xU64 Table.Insert[uint32, uint64] search -> searchU32xU64 searchFunc -> searchFuncU32xU64
-//fastpb:stencil InsertU64xU64 Table.Insert[uint64, uint64] search -> searchU64xU64 searchFunc -> searchFuncU64xU64
-//fastpb:stencil InsertU8xP Table.Insert[uint8, unsafe.Pointer] search -> searchU8xP searchFunc -> searchFuncU8xP
-//fastpb:stencil InsertU32xP Table.Insert[uint32, unsafe.Pointer] search -> searchU32xP searchFunc -> searchFuncU32xP
-//fastpb:stencil InsertU64xP Table.Insert[uint64, unsafe.Pointer] search -> searchU64xP searchFunc -> searchFuncU64xP
+//hyperpb:stencil InsertU8xU8 Table.Insert[uint8, uint8] search -> searchU8xU8 searchFunc -> searchFuncU8xU8
+//hyperpb:stencil InsertU32xU8 Table.Insert[uint32, uint8] search -> searchU32xU8 searchFunc -> searchFuncU32xU8
+//hyperpb:stencil InsertU64xU8 Table.Insert[uint64, uint8] search -> searchU64xU8 searchFunc -> searchFuncU64xU8
+//hyperpb:stencil InsertU8xU32 Table.Insert[uint8, uint32] search -> searchU8xU32 searchFunc -> searchFuncU8xU32
+//hyperpb:stencil InsertU32xU32 Table.Insert[uint32, uint32] search -> searchU32xU32 searchFunc -> searchFuncU32xU32
+//hyperpb:stencil InsertU64xU32 Table.Insert[uint64, uint32] search -> searchU64xU32 searchFunc -> searchFuncU64xU32
+//hyperpb:stencil InsertU8xU64 Table.Insert[uint8, uint64] search -> searchU8xU64 searchFunc -> searchFuncU8xU64
+//hyperpb:stencil InsertU32xU64 Table.Insert[uint32, uint64] search -> searchU32xU64 searchFunc -> searchFuncU32xU64
+//hyperpb:stencil InsertU64xU64 Table.Insert[uint64, uint64] search -> searchU64xU64 searchFunc -> searchFuncU64xU64
+//hyperpb:stencil InsertU8xP Table.Insert[uint8, unsafe.Pointer] search -> searchU8xP searchFunc -> searchFuncU8xP
+//hyperpb:stencil InsertU32xP Table.Insert[uint32, unsafe.Pointer] search -> searchU32xP searchFunc -> searchFuncU32xP
+//hyperpb:stencil InsertU64xP Table.Insert[uint64, unsafe.Pointer] search -> searchU64xP searchFunc -> searchFuncU64xP
 
-//fastpb:stencil searchU8xU8 Table.search[uint8, uint8]
-//fastpb:stencil searchU32xU8 Table.search[uint32, uint8]
-//fastpb:stencil searchU64xU8 Table.search[uint64, uint8]
-//fastpb:stencil searchU8xU32 Table.search[uint8, uint32]
-//fastpb:stencil searchU32xU32 Table.search[uint32, uint32]
-//fastpb:stencil searchU64xU32 Table.search[uint64, uint32]
-//fastpb:stencil searchU8xU64 Table.search[uint8, uint64]
-//fastpb:stencil searchU32xU64 Table.search[uint32, uint64]
-//fastpb:stencil searchU64xU64 Table.search[uint64, uint64]
-//fastpb:stencil searchU8xP Table.search[uint8, unsafe.Pointer]
-//fastpb:stencil searchU32xP Table.search[uint32, unsafe.Pointer]
-//fastpb:stencil searchU64xP Table.search[uint64, unsafe.Pointer]
+//hyperpb:stencil searchU8xU8 Table.search[uint8, uint8]
+//hyperpb:stencil searchU32xU8 Table.search[uint32, uint8]
+//hyperpb:stencil searchU64xU8 Table.search[uint64, uint8]
+//hyperpb:stencil searchU8xU32 Table.search[uint8, uint32]
+//hyperpb:stencil searchU32xU32 Table.search[uint32, uint32]
+//hyperpb:stencil searchU64xU32 Table.search[uint64, uint32]
+//hyperpb:stencil searchU8xU64 Table.search[uint8, uint64]
+//hyperpb:stencil searchU32xU64 Table.search[uint32, uint64]
+//hyperpb:stencil searchU64xU64 Table.search[uint64, uint64]
+//hyperpb:stencil searchU8xP Table.search[uint8, unsafe.Pointer]
+//hyperpb:stencil searchU32xP Table.search[uint32, unsafe.Pointer]
+//hyperpb:stencil searchU64xP Table.search[uint64, unsafe.Pointer]
 
-//fastpb:stencil searchFuncU8xU8 Table.searchFunc[uint8, uint8]
-//fastpb:stencil searchFuncU32xU8 Table.searchFunc[uint32, uint8]
-//fastpb:stencil searchFuncU64xU8 Table.searchFunc[uint64, uint8]
-//fastpb:stencil searchFuncU8xU32 Table.searchFunc[uint8, uint32]
-//fastpb:stencil searchFuncU32xU32 Table.searchFunc[uint32, uint32]
-//fastpb:stencil searchFuncU64xU32 Table.searchFunc[uint64, uint32]
-//fastpb:stencil searchFuncU8xU64 Table.searchFunc[uint8, uint64]
-//fastpb:stencil searchFuncU32xU64 Table.searchFunc[uint32, uint64]
-//fastpb:stencil searchFuncU64xU64 Table.searchFunc[uint64, uint64]
-//fastpb:stencil searchFuncU8xP Table.searchFunc[uint8, unsafe.Pointer]
-//fastpb:stencil searchFuncU32xP Table.searchFunc[uint32, unsafe.Pointer]
-//fastpb:stencil searchFuncU64xP Table.searchFunc[uint64, unsafe.Pointer]
+//hyperpb:stencil searchFuncU8xU8 Table.searchFunc[uint8, uint8]
+//hyperpb:stencil searchFuncU32xU8 Table.searchFunc[uint32, uint8]
+//hyperpb:stencil searchFuncU64xU8 Table.searchFunc[uint64, uint8]
+//hyperpb:stencil searchFuncU8xU32 Table.searchFunc[uint8, uint32]
+//hyperpb:stencil searchFuncU32xU32 Table.searchFunc[uint32, uint32]
+//hyperpb:stencil searchFuncU64xU32 Table.searchFunc[uint64, uint32]
+//hyperpb:stencil searchFuncU8xU64 Table.searchFunc[uint8, uint64]
+//hyperpb:stencil searchFuncU32xU64 Table.searchFunc[uint32, uint64]
+//hyperpb:stencil searchFuncU64xU64 Table.searchFunc[uint64, uint64]
+//hyperpb:stencil searchFuncU8xP Table.searchFunc[uint8, unsafe.Pointer]
+//hyperpb:stencil searchFuncU32xP Table.searchFunc[uint32, unsafe.Pointer]
+//hyperpb:stencil searchFuncU64xP Table.searchFunc[uint64, unsafe.Pointer]
 
-//fastpb:stencil LookupI32xU32 Table.Lookup[int32, uint32] search -> searchI32xU32
-//fastpb:stencil LookupU32xU32 Table.Lookup[uint32, uint32] search -> searchU32xU32
-//fastpb:stencil LookupFuncU32xU32 Table.LookupFunc[uint32, uint32] searchFunc -> searchFuncU32xU32
-//fastpb:stencil LookupU64xU32 Table.Lookup[uint64, uint32] search -> searchU64xU32
-//fastpb:stencil searchI32xU32 Table.search[int32, uint32]
+//hyperpb:stencil LookupI32xU32 Table.Lookup[int32, uint32] search -> searchI32xU32
+//hyperpb:stencil LookupU32xU32 Table.Lookup[uint32, uint32] search -> searchU32xU32
+//hyperpb:stencil LookupFuncU32xU32 Table.LookupFunc[uint32, uint32] searchFunc -> searchFuncU32xU32
+//hyperpb:stencil LookupU64xU32 Table.Lookup[uint64, uint32] search -> searchU64xU32
+//hyperpb:stencil searchI32xU32 Table.search[int32, uint32]

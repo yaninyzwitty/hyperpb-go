@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package tdp contains the "object file format" used by fastpb's parser.
+// Package tdp contains the "object file format" used by hyperpb's parser.
 // "TDP" stands for "table-driven parser".
 //
 // Subpackages of this package contain other components, like the parser
