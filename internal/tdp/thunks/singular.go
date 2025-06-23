@@ -141,15 +141,16 @@ var singularFields = map[protoreflect.Kind]*compiler.Archetype{
 	},
 
 	// Message types.
+	// A singular message is laid out as a single *message pointer.
 	protoreflect.MessageKind: {
-		// A singular message is laid out as a single *message pointer.
-		Layout: layout.Of[*dynamic.Message](),
-		Getter: getMessage,
-		// This message parser is eager. TODO: add a lazy message archetype.
+		Layout:  layout.Of[*dynamic.Message](),
+		Getter:  getMessage,
 		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Thunk: parseMessage}},
 	},
 	protoreflect.GroupKind: {
-		// Not implemented.
+		Layout:  layout.Of[*dynamic.Message](),
+		Getter:  getMessage,
+		Parsers: []compiler.Parser{{Kind: protowire.StartGroupType, Thunk: parseGroup}},
 	},
 }
 
@@ -257,7 +258,7 @@ func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoref
 //hyperpb:stencil parseVarint32 parseVarint[uint32]
 //hyperpb:stencil parseVarint64 parseVarint[uint64]
 func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
 
 	return p1, p2
@@ -267,8 +268,8 @@ func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //hyperpb:stencil parseZigZag32 parseZigZag[uint32]
 //hyperpb:stencil parseZigZag64 parseZigZag[uint64]
 func parseZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[T](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
 
 	return p1, p2
@@ -277,14 +278,14 @@ func parseZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint32
 	p1, p2, n = p1.Fixed32(p2)
-	p2.Scratch = uint64(n)
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 
 	return p1, p2
 }
 
 func parseFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Fixed64(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Fixed64(p2))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -293,7 +294,7 @@ func parseFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.UTF8(p2)
-	p2.Scratch = uint64(r)
+	p1, p2 = p1.SetScratch(p2, uint64(r))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -302,7 +303,7 @@ func parseString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.Bytes(p2)
-	p2.Scratch = uint64(r)
+	p1, p2 = p1.SetScratch(p2, uint64(r))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -319,7 +320,7 @@ func parseBool(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
-	p2.Scratch = uint64(n)
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	var mp **dynamic.Message
 	p1, p2, mp = vm.GetMutableField[*dynamic.Message](p1, p2)
@@ -329,5 +330,17 @@ func parseMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		unsafe2.StoreNoWB(mp, m)
 	}
 
-	return p1.PushMessage(p2, int(p2.Scratch), m)
+	return p1.PushMessage(p2, m)
+}
+
+func parseGroup(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	var mp **dynamic.Message
+	p1, p2, mp = vm.GetMutableField[*dynamic.Message](p1, p2)
+	m := *mp
+	if m == nil {
+		p1, p2, m = vm.AllocMessage(p1, p2)
+		unsafe2.StoreNoWB(mp, m)
+	}
+
+	return p1.PushGroup(p2, m)
 }

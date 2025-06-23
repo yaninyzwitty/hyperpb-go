@@ -187,7 +187,7 @@ func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 //hyperpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
 //hyperpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
 func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -196,8 +196,8 @@ func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //hyperpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
 //hyperpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
 func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[T](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -206,14 +206,14 @@ func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOptionalFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint32
 	p1, p2, n = p1.Fixed32(p2)
-	p2.Scratch = uint64(n)
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 	return vm.SetBit(p1, p2)
 }
 
 //go:nosplit
 func parseOptionalFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2, p2.Scratch = p1.Fixed64(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Fixed64(p2))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -222,7 +222,7 @@ func parseOptionalFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOptionalString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.UTF8(p2)
-	p2.Scratch = uint64(r)
+	p1, p2 = p1.SetScratch(p2, uint64(r))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -231,7 +231,7 @@ func parseOptionalString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOptionalBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.Bytes(p2)
-	p2.Scratch = uint64(r)
+	p1, p2 = p1.SetScratch(p2, uint64(r))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	return vm.SetBit(p1, p2)
 }

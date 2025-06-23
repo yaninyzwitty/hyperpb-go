@@ -123,7 +123,8 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 		PtrAddr: unsafe2.AddrOf(m.Shared.Src),
 	}
 	p2 := P2{
-		p3Addr: unsafe2.AddrOf(p3),
+		p3Addr:  unsafe2.AddrOf(p3),
+		scratch: uint64(m.Shared.Len),
 	}
 
 	if debug.Enabled {
@@ -131,8 +132,8 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 			m.Shared.Src, m.Shared.Len, data, m.Type(), m.Type().Descriptor.FullName())
 	}
 
-	p1, p2 = p1.PushMessage(p2, m.Shared.Len, m)
-	p2.Scratch = 0
+	p1, p2 = p1.PushMessage(p2, m)
+	p1, p2 = p1.SetScratch(p2, 0)
 	loop(p1, p2)
 	return nil
 }
@@ -144,6 +145,10 @@ func loop(p1 P1, p2 P2) {
 
 checkDone:
 	if p1.Len() == 0 {
+		if p1.endGroup != notAGroup {
+			// If we run out of buffer while we're still
+			p1.Fail(p2, ErrorEndGroup)
+		}
 		goto pop
 	}
 
@@ -182,16 +187,14 @@ number:
 		// reasons.
 
 		// Fast path: if the low sign bit is cleared, this is a one-byte tag.
-		p2.Scratch = uint64(*p1.Ptr())
-		if p2.Scratch&0x80 == 0 {
+		p1, p2 = p1.SetScratch(p2, uint64(*p1.Ptr()))
+		if p2.Scratch()&0x80 == 0 {
 			p1 = p1.Advance(1)
 
 			t := p2.Type()
 			lut := unsafe2.ByteAdd(unsafe2.Cast[byte](t), unsafe.Offsetof(t.TagLUT))
-			offset := unsafe2.Load(lut, p2.Scratch)
-			if debug.Enabled {
-				p1.Log(p2, "small tag", "%v -> %#x, %x", tdp.Tag(p2.Scratch), offset, t.TagLUT)
-			}
+			offset := unsafe2.Load(lut, p2.Scratch())
+			p1.Log(p2, "small tag", "%v -> %#x", tdp.Tag(p2.Scratch()), offset)
 
 			if offset != 0xff {
 				p2.fieldAddr = unsafe2.AddrOf(t.Fields().Get(int(offset)))
@@ -201,23 +204,23 @@ number:
 		}
 
 		// Load up to eight bytes for the varint (at most 5 will be used).
-		p2.Scratch = unsafe2.ByteLoad[uint64](p1.Ptr(), 0)
-		p1.Log(p2, "raw number", "%#x", p2.Scratch)
+		p1, p2 = p1.SetScratch(p2, unsafe2.ByteLoad[uint64](p1.Ptr(), 0))
+		p1.Log(p2, "raw number", "%#x", p2.Scratch())
 
 		// Flip all of the sign bits. This essentially clears the sign bits
 		// of all of the varint bytes except the highest one's.
-		p2.Scratch ^= tdp.SignBits
+		p1, p2 = p1.SetScratch(p2, p2.Scratch()^tdp.SignBits)
 
 		// Determine the number of cleared sign bits. This will tell us how
 		// many bits to mask off as "irrelevant".
 		//
 		// In a varint (big-endian order) like 0a8b8c8d, this will be looking
 		// at ctz(80000000) = 31. Thus we need to mask off 64 - 31 = 33 bits.
-		tagBits := uint(bits.TrailingZeros64(p2.Scratch & tdp.SignBits))
+		tagBits := uint(bits.TrailingZeros64(p2.Scratch() & tdp.SignBits))
 
 		// The &63 is to ensure that Go does not generate a cmov to implement
 		// the x<<64 == 0 case.
-		masked = tdp.Tag(p2.Scratch &^ (^uint64(0) << (tagBits & 63)))
+		masked = tdp.Tag(p2.Scratch() &^ (^uint64(0) << (tagBits & 63)))
 
 		// No need to strip the sign bits, the ^= above already did that.
 
@@ -230,7 +233,7 @@ number:
 		}
 
 		if tagBits < 64 {
-			p2.Scratch = uint64(masked)
+			p1, p2 = p1.SetScratch(p2, uint64(masked))
 			goto field
 		}
 
@@ -239,8 +242,8 @@ number:
 
 field:
 	{
-		tries := p2.P3().MaxMisses
-		tag := tdp.Tag(p2.Scratch)
+		tries := p2.p3().MaxMisses
+		tag := tdp.Tag(p2.Scratch())
 
 		for {
 			p1.Log(p2, "try", "%v, %v, %v", tag, tries, p2.Field())
@@ -275,21 +278,30 @@ parseField:
 
 		thunk := (*unsafe2.PC[Thunk])(&p2.Field().Parse).Get()
 		p1.Log(p2, "call", "%v, %#x", debug.Func(thunk), p2.fieldAddr)
+
+		// NOTE: Thunks are allowed to rely on p2.Scratch() still containing
+		// the full field tag!
 		p1, p2 = thunk(p1, p2)
+
 		p1.Log(p2, "ret", "%v, %#x", debug.Func(thunk), p2.fieldAddr)
 
 		p2.fieldAddr = p2.Field().NextOk
 
-		p2.Scratch = 0 // Make sure no one relies on this being preserved.
+		p1, p2 = p1.SetScratch(p2, 0) // Make sure no one relies on this being preserved.
 		goto checkDone
 	}
 
 missedField:
 	{
-		tag := tdp.Tag(p2.Scratch)
-		p2.Scratch = 0 // Make sure no one relies on this being preserved.
+		tag := tdp.Tag(p2.Scratch())
+		p1, p2 = p1.SetScratch(p2, 0) // Make sure no one relies on this being preserved.
 
+		if tag == p1.endGroup {
+			p1.Log(p2, "end group", "%v", tag)
+			goto pop
+		}
 		p1.Log(p2, "miss", "%v", tag)
+
 		// Check for tag overflow.
 		if tag.Overflows() {
 			p1.Fail(p2, ErrorOverflow)
@@ -335,15 +347,26 @@ missedField:
 				goto pop
 			}
 
-			p2.Scratch = uint64(p1.PtrAddr)
+			p1, p2 = p1.SetScratch(p2, uint64(p1.PtrAddr))
 			p1, p2, tag2 = p1.Varint(p2)
 			if tag2 > math.MaxInt32<<3 {
 				p1.Fail(p2, ErrorOverflow)
 			}
 
+			if protowire.Type(tag2&0b111) == protowire.EndGroupType {
+				// This may be an unfortunately-placed end tag. There isn't a
+				// great way to check if this is the end tag for the group
+				// we're in at this position, so we just send this to the main
+				// parsing loop.
+				p2.fieldAddr = p2.Type().Entrypoint.NextOk
+				p1.PtrAddr = unsafe2.Addr[byte](p2.Scratch())
+				p1.Log(p2, "goto end group", "%d", tag2)
+				goto number
+			}
+
 			p1, p2, tag2 = p1.byTag(p2, tag2)
 			if p2.Field() != nil {
-				p1.PtrAddr = unsafe2.Addr[byte](p2.Scratch)
+				p1.PtrAddr = unsafe2.Addr[byte](p2.Scratch())
 				p1.Log(p2, "goto number", "%d", tag2)
 				goto number
 			}
@@ -352,26 +375,12 @@ missedField:
 
 pop:
 	{
-		if debug.Enabled {
-			p1.Log(
-				p2, "finish", "%v, ty: %p:%s %v",
-				p2.messageAddr,
-				p2.Message().Type(),
-				p2.Message().Type().Descriptor.FullName(),
-				p2.Message().Type(),
-			)
-		}
-
 		var done bool
 		p1, p2, done = p1.pop(p2)
 		if done {
 			return
 		}
-
-		// Only need to pop once: message() makes sure to avoid creating multiple
-		// frames with the same end pointer.
-
-		goto number
+		goto checkDone
 	}
 
 truncated:
@@ -384,8 +393,8 @@ truncated:
 // branch scheduling in [loop].
 //
 //go:noinline
-func handleUnknown(p1 P1, p2 P2, tag2 uint64) (P1, P2) {
-	if tag2&^0xffffffff != 0 {
+func handleUnknown(p1 P1, p2 P2, tag uint64) (P1, P2) {
+	if tag&^0xffffffff != 0 {
 		p1.Fail(p2, ErrorOverflow)
 	}
 
@@ -398,23 +407,15 @@ func handleUnknown(p1 P1, p2 P2, tag2 uint64) (P1, P2) {
 	for *start.AssertValid()&0x7f == 0 {
 		start--
 	}
-	start = start.Add(1 - protowire.SizeVarint(tag2))
+	start = start.Add(1 - protowire.SizeVarint(tag))
 
-	num := protowire.Number(tag2 >> 3)
-	ty := protowire.Type(tag2 & 0b111)
-	if num == 0 {
-		p1.Fail(p2, ErrorFieldNumber)
-	}
+	p1, p2 = p1.SetScratch(p2, tag)
+	p1, p2 = skipRecord(p1, p2, p2.p3().MaxDepth)
+	n := int(p1.PtrAddr - start)
+	p1.Log(p2, "unknown", "%d bytes", n)
 
-	m := protowire.ConsumeFieldValue(num, ty, p1.Buf())
-	p1.Log(p2, "unknown", "%d, %d, %d bytes", num, ty, m)
-	if m < 0 {
-		p1.Fail(p2, ErrorCode(-m))
-	}
-	p1 = p1.Advance(m)
-
-	if !p2.P3().DiscardUnknown && !p2.Type().DiscardUnknown {
-		r := zc.New(p1.Src(), start.AssertValid(), int(p1.PtrAddr-start))
+	if !p2.p3().DiscardUnknown && !p2.Type().DiscardUnknown {
+		r := zc.New(p1.Src(), start.AssertValid(), n)
 		cold := p2.Message().MutableCold()
 		if cold.Unknown.Len() > 0 {
 			last := unsafe2.Add(cold.Unknown.Ptr(), cold.Unknown.Len()-1)
@@ -424,6 +425,53 @@ func handleUnknown(p1 P1, p2 P2, tag2 uint64) (P1, P2) {
 			}
 		}
 		cold.Unknown = cold.Unknown.AppendOne(p1.Arena(), r)
+	}
+
+	return p1, p2
+}
+
+func skipRecord(p1 P1, p2 P2, depth int) (P1, P2) {
+	tag := p2.Scratch()
+	num := protowire.Number(tag >> 3)
+	ty := protowire.Type(tag & 0b111)
+	p1.Log(p2, "skipping", "%d, %d", num, ty)
+
+	if num == 0 {
+		p1.Fail(p2, ErrorFieldNumber)
+	}
+
+	switch ty {
+	case protowire.VarintType:
+		p1, p2, _ = p1.Varint(p2)
+	case protowire.BytesType:
+		p1, p2, _ = p1.Bytes(p2)
+	case protowire.Fixed32Type:
+		p1, p2, _ = p1.Fixed32(p2)
+	case protowire.Fixed64Type:
+		p1, p2, _ = p1.Fixed64(p2)
+
+	case protowire.StartGroupType:
+		if depth < 0 {
+			p1.Fail(p2, ErrorRecursionDepth)
+		}
+
+		end := protowire.EncodeTag(num, protowire.EndGroupType)
+		for {
+			var raw uint64
+			p1, p2, raw = p1.Varint(p2)
+
+			if raw == end {
+				break
+			}
+
+			p1, p2 = p1.SetScratch(p2, raw)
+			p1, p2 = skipRecord(p1, p2, depth-1)
+		}
+
+	case protowire.EndGroupType:
+		p1.Fail(p2, ErrorEndGroup)
+	default:
+		p1.Fail(p2, ErrorReserved)
 	}
 
 	return p1, p2

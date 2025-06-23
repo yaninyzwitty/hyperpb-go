@@ -754,7 +754,7 @@ func parseMapKxV[
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki KI
@@ -836,7 +836,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -855,7 +855,7 @@ func parseMapKxM[KI mapItem[K], K swiss.Key](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki KI
@@ -945,16 +945,17 @@ insert:
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
 	// Unspill the old end pointer.
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	// Schedule a message parse.
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 
 // emptyMap is a map with no elements.

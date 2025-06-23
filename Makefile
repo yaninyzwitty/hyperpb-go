@@ -155,7 +155,7 @@ checkgenerate:
 internal/gen/test/*.pb.go: $(BIN)/buf internal/proto/test/*.proto
 	$(BIN)/buf generate --clean
 	$(BIN)/buf generate --template buf.gen.vt.yaml \
-		--exclude-path internal/proto/test/editions.proto # Work around a bug.
+		--exclude-path internal/proto/test/proto2.proto,internal/proto/test/editions.proto # Work around a bug.
 
 .PHONY: $(BIN)/test2
 $(BIN)/test2: generate

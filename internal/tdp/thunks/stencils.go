@@ -36,7 +36,7 @@ func parseMapV32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -114,7 +114,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -123,7 +123,7 @@ func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -201,7 +201,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -210,7 +210,7 @@ func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -288,7 +288,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -297,7 +297,7 @@ func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -375,7 +375,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -384,7 +384,7 @@ func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -462,7 +462,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -471,7 +471,7 @@ func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -549,7 +549,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -558,7 +558,7 @@ func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -636,7 +636,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -645,7 +645,7 @@ func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -723,7 +723,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -732,7 +732,7 @@ func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -810,7 +810,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -819,7 +819,7 @@ func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -897,7 +897,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -906,7 +906,7 @@ func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -984,7 +984,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -993,7 +993,7 @@ func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1071,7 +1071,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1080,7 +1080,7 @@ func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1158,7 +1158,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1167,7 +1167,7 @@ func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1245,7 +1245,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1254,7 +1254,7 @@ func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1332,7 +1332,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1341,7 +1341,7 @@ func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1419,7 +1419,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1428,7 +1428,7 @@ func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1506,7 +1506,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1515,7 +1515,7 @@ func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -1593,7 +1593,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1602,7 +1602,7 @@ func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -1680,7 +1680,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1689,7 +1689,7 @@ func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -1767,7 +1767,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1776,7 +1776,7 @@ func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -1854,7 +1854,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1863,7 +1863,7 @@ func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -1941,7 +1941,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1950,7 +1950,7 @@ func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -2028,7 +2028,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2037,7 +2037,7 @@ func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -2115,7 +2115,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2124,7 +2124,7 @@ func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -2202,7 +2202,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2211,7 +2211,7 @@ func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -2289,7 +2289,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2298,7 +2298,7 @@ func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -2376,7 +2376,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2385,7 +2385,7 @@ func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2463,7 +2463,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2472,7 +2472,7 @@ func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2550,7 +2550,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2559,7 +2559,7 @@ func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2637,7 +2637,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2646,7 +2646,7 @@ func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2724,7 +2724,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2733,7 +2733,7 @@ func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2811,7 +2811,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2820,7 +2820,7 @@ func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2898,7 +2898,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2907,7 +2907,7 @@ func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -2985,7 +2985,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2994,7 +2994,7 @@ func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -3072,7 +3072,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3081,7 +3081,7 @@ func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -3159,7 +3159,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3168,7 +3168,7 @@ func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3246,7 +3246,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3255,7 +3255,7 @@ func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3333,7 +3333,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3342,7 +3342,7 @@ func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3420,7 +3420,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3429,7 +3429,7 @@ func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3507,7 +3507,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3516,7 +3516,7 @@ func parseMapF32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3594,7 +3594,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3603,7 +3603,7 @@ func parseMapF32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3681,7 +3681,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3690,7 +3690,7 @@ func parseMapF32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3768,7 +3768,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3777,7 +3777,7 @@ func parseMapF32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3855,7 +3855,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3864,7 +3864,7 @@ func parseMapF32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -3942,7 +3942,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3951,7 +3951,7 @@ func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4029,7 +4029,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4038,7 +4038,7 @@ func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4116,7 +4116,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4125,7 +4125,7 @@ func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4203,7 +4203,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4212,7 +4212,7 @@ func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4290,7 +4290,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4299,7 +4299,7 @@ func parseMapF64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4377,7 +4377,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4386,7 +4386,7 @@ func parseMapF64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4464,7 +4464,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4473,7 +4473,7 @@ func parseMapF64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4551,7 +4551,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4560,7 +4560,7 @@ func parseMapF64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4638,7 +4638,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4647,7 +4647,7 @@ func parseMapF64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -4725,7 +4725,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4734,7 +4734,7 @@ func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -4812,7 +4812,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4821,7 +4821,7 @@ func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -4899,7 +4899,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4908,7 +4908,7 @@ func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -4986,7 +4986,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4995,7 +4995,7 @@ func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5073,7 +5073,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5082,7 +5082,7 @@ func parseMapSxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5160,7 +5160,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5169,7 +5169,7 @@ func parseMapSxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5247,7 +5247,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5256,7 +5256,7 @@ func parseMapSx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5334,7 +5334,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5343,7 +5343,7 @@ func parseMapSxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5421,7 +5421,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5430,7 +5430,7 @@ func parseMapSxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -5508,7 +5508,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5517,7 +5517,7 @@ func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -5595,7 +5595,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5604,7 +5604,7 @@ func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -5682,7 +5682,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5691,7 +5691,7 @@ func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -5769,7 +5769,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5778,7 +5778,7 @@ func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -5856,7 +5856,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5865,7 +5865,7 @@ func parseMapBxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -5943,7 +5943,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5952,7 +5952,7 @@ func parseMapBxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -6030,7 +6030,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6039,7 +6039,7 @@ func parseMapBx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -6117,7 +6117,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6126,7 +6126,7 @@ func parseMapBxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -6204,7 +6204,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6213,7 +6213,7 @@ func parseMapBxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -6291,7 +6291,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6300,7 +6300,7 @@ func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6378,7 +6378,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6387,7 +6387,7 @@ func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6465,7 +6465,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6474,7 +6474,7 @@ func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6552,7 +6552,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6561,7 +6561,7 @@ func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6639,7 +6639,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6648,7 +6648,7 @@ func parseMap2xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6726,7 +6726,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6735,7 +6735,7 @@ func parseMap2xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6813,7 +6813,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6822,7 +6822,7 @@ func parseMap2x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6900,7 +6900,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6909,7 +6909,7 @@ func parseMap2xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -6987,7 +6987,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6996,7 +6996,7 @@ func parseMap2xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -7074,7 +7074,7 @@ insert:
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -7083,7 +7083,7 @@ func parseMapV32xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint32]
@@ -7164,22 +7164,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapV64xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[varintItem[uint64], uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki varintItem[uint64]
@@ -7260,22 +7261,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapZ32xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[zigzagItem[uint32], uint32]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint32]
@@ -7356,22 +7358,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapZ64xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[zigzagItem[uint64], uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki zigzagItem[uint64]
@@ -7452,22 +7455,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapF32xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[fixed32Item, uint32]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
@@ -7548,22 +7552,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapF64xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[fixed64Item, uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
@@ -7644,22 +7649,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapSxM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[stringItem, uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
@@ -7740,22 +7746,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMapBxM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[bytesItem, uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
@@ -7836,22 +7843,23 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 func parseMap2xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseMapKxM[boolItem, uint8]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
@@ -7932,21 +7940,22 @@ insert:
 	p1, p2, v = vm.AllocMessage(p1, p2)
 	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
 		p1.Log(p2, "fast map entry", "%d", n)
-		return p1.PushMessage(p2, n, v)
+		return p1.PushMessage(p2, v)
 	}
 
 	p1.Log(p2, "slow map entry", "%d", n)
-	return p1.PushMapEntry(p2, n, v)
+	return p1.PushMapEntry(p2, v)
 }
 
 //go:nosplit
 func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofVarint[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
@@ -7956,7 +7965,7 @@ func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOneofVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofVarint[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
@@ -7966,8 +7975,8 @@ func parseOneofVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOneofZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofZigZag[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint32](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
@@ -7977,8 +7986,8 @@ func parseOneofZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofZigZag[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint64](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
@@ -7988,7 +7997,7 @@ func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalVarint[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -7996,7 +8005,7 @@ func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOptionalVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalVarint[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -8004,8 +8013,8 @@ func parseOptionalVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOptionalZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalZigZag[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint32](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -8013,8 +8022,8 @@ func parseOptionalZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseOptionalZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalZigZag[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint64](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 	return vm.SetBit(p1, p2)
 }
@@ -8145,7 +8154,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		return p1, p2
 	}
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
@@ -8168,7 +8177,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8249,7 +8258,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8262,7 +8271,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		return p1, p2
 	}
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
@@ -8285,7 +8294,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8366,7 +8375,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8379,7 +8388,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		return p1, p2
 	}
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
@@ -8402,7 +8411,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8483,7 +8492,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8632,7 +8641,7 @@ exit:
 //go:nosplit
 func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 
 	return p1, p2
@@ -8641,7 +8650,7 @@ func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 
 	return p1, p2
@@ -8650,8 +8659,8 @@ func parseVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint32]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint32](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
 
 	return p1, p2
@@ -8660,8 +8669,8 @@ func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func parseZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint64]
-	p1, p2, p2.Scratch = p1.Varint(p2)
-	p2.Scratch = uint64(zigzag64[uint64](p2.Scratch))
+	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
 	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
 
 	return p1, p2

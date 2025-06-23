@@ -38,6 +38,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
+const notAGroup = ^tdp.Tag(0)
+
 var (
 	stackPool = sync2.Pool[[]frame]{}
 	p3Pool    = sync2.Pool[p3]{
@@ -83,7 +85,7 @@ type P1 struct {
 	EndAddr unsafe2.Addr[byte] // One past the end of the stream.
 
 	shared   unsafe2.Addr[dynamic.Shared]
-	endGroup uint64 // End-of-group tag.
+	endGroup tdp.Tag // End-of-group tag.
 }
 
 // P2 is the other half of the state for the TDP parser. See [P1].
@@ -92,10 +94,10 @@ type P2 struct {
 	fieldAddr   unsafe2.Addr[tdp.FieldParser]
 	p3Addr      unsafe2.Addr[p3]
 
-	// A Scratch register that is preserved across *most* calls. Thunks
-	// do not preserve the Scratch register, and some functions in this file
+	// A scratch register that is preserved across *most* calls. Thunks
+	// do not preserve the scratch register, and some functions in this file
 	// do not either.
-	Scratch uint64
+	scratch uint64
 }
 
 // p3 is parser state that is passed behind a pointer.
@@ -115,7 +117,7 @@ type p3 struct {
 // frame is a recursion frame for the parser.
 type frame struct {
 	end     unsafe2.Addr[byte]
-	g       uint64
+	g       tdp.Tag
 	message unsafe2.Addr[dynamic.Message]
 	ty      unsafe2.Addr[tdp.TypeParser]
 	field   unsafe2.Addr[tdp.FieldParser]
@@ -156,15 +158,25 @@ func (p2 P2) Message() *dynamic.Message {
 }
 
 func (p2 P2) Type() *tdp.TypeParser {
-	return p2.P3().t_.AssertValid()
+	return p2.p3().t_.AssertValid()
 }
 
 func (p2 P2) Field() *tdp.FieldParser {
 	return p2.fieldAddr.AssertValid()
 }
 
-func (p2 P2) P3() *p3 {
+func (p2 P2) p3() *p3 { //nolint:funcorder
 	return p2.p3Addr.AssertValid()
+}
+
+func (p2 P2) Scratch() uint64 {
+	return p2.scratch
+}
+
+func (p1 P1) SetScratch(p2 P2, v uint64) (P1, P2) {
+	p1.Log(p2, "scratch", "%d:%#x", v, v)
+	p2.scratch = v
+	return p1, p2
 }
 
 func (p1 P1) Len() int {
@@ -173,7 +185,7 @@ func (p1 P1) Len() int {
 
 // Fail causes a parse failure by panicking with the given error code.
 func (p1 P1) Fail(p2 P2, err ErrorCode) {
-	p2.P3().err = ParseError{
+	p2.p3().err = ParseError{
 		code:   err,
 		offset: p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())),
 	}
@@ -191,15 +203,15 @@ func (p1 P1) Log(p2 P2, op, format string, args ...any) {
 
 	start := p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src()))
 	end := p1.EndAddr.Sub(unsafe2.AddrOf(p1.Src()))
-	height := p2.P3().stack.bottom.Sub(p2.P3().stack.ptr)
+	height := p2.p3().stack.bottom.Sub(p2.p3().stack.ptr)
 	var b byte
 	if p1.PtrAddr < p1.EndAddr {
 		b = *p1.Ptr()
 	}
 	debug.Log(
 		[]any{
-			"%p:%p:%d [%d:%d] = 0x%02x",
-			p1.Shared(), p2.Message(), height, start, end, b,
+			"%p:%p:%d %v [%d:%d] = 0x%02x",
+			p1.Shared(), p2.Message(), height, p1.endGroup, start, end, b,
 		},
 		op, format, args...,
 	)
@@ -270,6 +282,10 @@ func (p1 P1) Fixed64(p2 P2) (P1, P2, uint64) {
 //
 //go:nosplit
 func (p1 P1) LengthPrefix(p2 P2) (P1, P2, int) {
+	if p1.Len() == 0 {
+		p1.Fail(p2, ErrorTruncated)
+	}
+
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
 
@@ -301,27 +317,43 @@ func (p1 P1) UTF8(p2 P2) (P1, P2, zc.Range) {
 	return verifyUTF8(p1.LengthPrefix(p2))
 }
 
-// PushMessage pushes a new PushMessage to be parsed onto the parser stack.
+// ParseMapEntry is a shim over [PushMessage] used for map entries.
 //
 //go:nosplit
-func (p1 P1) PushMessage(p2 P2, len int, m *dynamic.Message) (P1, P2) {
+func (p1 P1) ParseMapEntry(p2 P2) (P1, P2) {
+	var n int
+	p1, p2, n = p1.LengthPrefix(p2)
+	p1, p2 = p1.SetScratch(p2, uint64(n))
+
+	// This should *not* call PushMapEntry; this goes inside of the message that
+	// gets pushed by PushMapEntry itself.
+	return p1.PushMessage(p2, p2.Message())
+}
+
+// PushMessage pushes a new message to be parsed onto the parser stack.
+//
+// The length of the message should be in p2.Scratch.
+//
+//go:nosplit
+func (p1 P1) PushMessage(p2 P2, m *dynamic.Message) (P1, P2) {
+	len := int(p2.Scratch())
 	if len == 0 {
 		return p1, p2
 	}
 
-	// Preserve this register across the call to push.
-	p2.Scratch = uint64(unsafe2.AddrOf(m))
+	p1.Log(p2, "n", "%d", len)
 
-	if p1.PtrAddr.Add(len) != p1.EndAddr {
+	if p1.endGroup != notAGroup || p1.PtrAddr.Add(len) != p1.EndAddr {
 		// We don't need to push a new frame if the new message would cause
 		// the current frame to be empty once it gets popped.
 		p1, p2 = p1.push(p2, p1.PtrAddr.Add(len))
 	}
 
-	p1.endGroup = ^uint64(0)
-	p2.messageAddr = unsafe2.Addr[dynamic.Message](p2.Scratch)
+	p1.endGroup = notAGroup
+	p2.messageAddr = unsafe2.AddrOf(m)
+
 	t := p2.Message().Type().Parser
-	p2.P3().t_ = unsafe2.AddrOf(t)
+	p2.p3().t_ = unsafe2.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
@@ -331,42 +363,58 @@ func (p1 P1) PushMessage(p2 P2, len int, m *dynamic.Message) (P1, P2) {
 	return p1, p2
 }
 
-// ParseMapEntry is a shim over [PushMessage] used for map entries.
-//
-//go:nosplit
-func (p1 P1) ParseMapEntry(p2 P2) (P1, P2) {
-	var n int
-	p1, p2, n = p1.LengthPrefix(p2)
-	// This should *not* call PushMapEntry; this goes inside of the message that
-	// gets pushed by PushMapEntry itself.
-	return p1.PushMessage(p2, n, p2.Message())
-}
-
 // PushMapEntry pushes a new map entry to be parsed onto the parser stack.
 //
 //go:nosplit
-func (p1 P1) PushMapEntry(p2 P2, len int, m *dynamic.Message) (P1, P2) {
+func (p1 P1) PushMapEntry(p2 P2, m *dynamic.Message) (P1, P2) {
+	len := int(p2.Scratch())
 	if len == 0 {
 		return p1, p2
 	}
 
-	// Preserve this register across the call to push.
-	p2.Scratch = uint64(unsafe2.AddrOf(m))
-
-	if p1.PtrAddr.Add(len) != p1.EndAddr {
+	if p1.endGroup != notAGroup || p1.PtrAddr.Add(len) != p1.EndAddr {
 		// We don't need to push a new frame if the new message would cause
 		// the current frame to be empty once it gets popped.
 		p1, p2 = p1.push(p2, p1.PtrAddr.Add(len))
 	}
 
-	p1.endGroup = ^uint64(0)
-	p2.messageAddr = unsafe2.Addr[dynamic.Message](p2.Scratch)
-	p2.P3().t_ = unsafe2.AddrOf(p2.Message().Type().Parser.MapEntry)
+	p1.endGroup = notAGroup
+	p2.messageAddr = unsafe2.AddrOf(m)
+
+	t := p2.Message().Type().Parser.MapEntry
+	p2.p3().t_ = unsafe2.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.fieldAddr = unsafe2.AddrOf(&p2.P3().t_.AssertValid().Entrypoint)
+	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
+
+	return p1, p2
+}
+
+// PushGroup pushes a new group to be parsed onto the parser stack.
+//
+//go:nosplit
+func (p1 P1) PushGroup(p2 P2, m *dynamic.Message) (P1, P2) {
+	start := tdp.Tag(p2.Scratch())
+
+	// Indeed, we can just +1, because we need to replace the low three
+	// 0b011 bits with 0b100. Much simpler than clearing and overwriting those
+	// bits!
+	end := start + 1
+
+	p1, p2 = p1.push(p2, p1.EndAddr)
+
+	p1.endGroup = end
+	p2.messageAddr = unsafe2.AddrOf(m)
+
+	t := p2.Message().Type().Parser
+	p2.p3().t_ = unsafe2.AddrOf(t)
+	if debug.Enabled {
+		p1, p2 = logMessage(p1, p2)
+	}
+
+	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
 
 	return p1, p2
 }
@@ -380,7 +428,6 @@ func logMessage(p1 P1, p2 P2) (P1, P2) {
 		p2.messageAddr,
 		p2.Message().Type(),
 	)
-	p1.Log(p2, "tags", "%v%v\n", p2.Type().Tags.Dump(), p2.Type().Tags)
 	return p1, p2
 }
 
@@ -397,20 +444,20 @@ func (p1 P1) push(p2 P2, end unsafe2.Addr[byte]) (P1, P2) {
 		p1, p2 = logPush(p1, p2)
 	}
 
-	if p2.P3().stack.ptr == p2.P3().stack.top {
+	if p2.p3().stack.ptr == p2.p3().stack.top {
 		p1.Fail(p2, ErrorRecursionDepth)
 	}
 
-	p2.P3().stack.ptr = p2.P3().stack.ptr.Add(-1)
+	p2.p3().stack.ptr = p2.p3().stack.ptr.Add(-1)
 
 	// Note: a single frame is just too large to hit Go's SROA pass (same bug
 	// that results in p1/p2 being two structs). Thus, we write each field
 	// separately to avoid wasteful stack traffic.
-	frame := p2.P3().stack.ptr.AssertValid()
+	frame := p2.p3().stack.ptr.AssertValid()
 	frame.end = p1.EndAddr
 	frame.g = p1.endGroup
 	frame.message = p2.messageAddr
-	frame.ty = p2.P3().t_
+	frame.ty = p2.p3().t_
 	frame.field = p2.fieldAddr
 
 	p1.EndAddr = end
@@ -421,7 +468,7 @@ func (p1 P1) push(p2 P2, end unsafe2.Addr[byte]) (P1, P2) {
 //
 //go:noinline
 func logPush(p1 P1, p2 P2) (P1, P2) {
-	p1.Log(p2, "push", "%v/%v/%v", p2.P3().stack.top, p2.P3().stack.ptr, p2.P3().stack.bottom)
+	p1.Log(p2, "push", "%v/%v/%v", p2.p3().stack.top, p2.p3().stack.ptr, p2.p3().stack.bottom)
 	return p1, p2
 }
 
@@ -432,20 +479,28 @@ func logPush(p1 P1, p2 P2) (P1, P2) {
 //go:nosplit
 func (p1 P1) pop(p2 P2) (P1, P2, bool) {
 	if debug.Enabled {
-		s := &p2.P3().stack
+		p1.Log(
+			p2, "finish", "%v, ty: %p:%s %v",
+			p2.messageAddr,
+			p2.Message().Type(),
+			p2.Message().Type().Descriptor.FullName(),
+			p2.Message().Type(),
+		)
+
+		s := &p2.p3().stack
 		p1.Log(p2, "pop", "%v/%v/%v\n%s", s.top, s.ptr, s.bottom,
 			p2.Message().Dump())
 	}
 
-	last := p2.P3().stack.ptr.AssertValid()
+	last := p2.p3().stack.ptr.AssertValid()
 	p1.EndAddr = last.end
 	p1.endGroup = last.g
 	p2.messageAddr = last.message
-	p2.P3().t_ = last.ty
+	p2.p3().t_ = last.ty
 	p2.fieldAddr = last.field
-	p2.P3().stack.ptr = p2.P3().stack.ptr.Add(1)
+	p2.p3().stack.ptr = p2.p3().stack.ptr.Add(1)
 
-	return p1, p2, p2.P3().stack.ptr == p2.P3().stack.bottom
+	return p1, p2, p2.p3().stack.ptr == p2.p3().stack.bottom
 }
 
 func (p1 P1) byTag(p2 P2, tag2 uint64) (P1, P2, uint64) {

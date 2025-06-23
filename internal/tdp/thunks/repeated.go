@@ -191,7 +191,11 @@ var repeatedFields = map[protoreflect.Kind]*compiler.Archetype{
 		Getter:  getRepeatedMessage,
 		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parseRepeatedMessage}},
 	},
-	protoreflect.GroupKind: {},
+	protoreflect.GroupKind: {
+		Layout:  layout.Of[repeatedMessage](),
+		Getter:  getRepeatedMessage,
+		Parsers: []compiler.Parser{{Kind: protowire.StartGroupType, Retry: true, Thunk: parseRepeatedGroup}},
+	},
 }
 
 type repeatedScalarElement interface {
@@ -397,7 +401,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		return p1, p2
 	}
 
-	p2.Scratch = uint64(p1.EndAddr)
+	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	// Count the number of varints in this packed field. We do this by counting
@@ -420,7 +424,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -507,7 +511,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch)
+	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 

@@ -188,10 +188,8 @@ will result in memory errors that Go cannot protect you from.
 ## Compatibility
 
 `hyperpb` is experimental software, and the API may change drastically before
-`v1`. It also does not implement all of Protobuf: currently, the following are
-not supported:
-
-- `group`-typed fields (currently parsed as unknown fields).
+`v1`. It currently implements all Protobuf language constructs. It does not
+implement mutation of parsed messages, however.
 
 ## Contributing
 

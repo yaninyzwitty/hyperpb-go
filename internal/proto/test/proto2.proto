@@ -57,3 +57,20 @@ message DependsOnRequired {
   repeated Required b = 2;
   map<int32, Required> c = 3;
 }
+
+message Groups {
+  optional group Singular = 1 {
+    optional int32 a = 1;
+    optional int32 b = 2;
+
+    optional Groups g = 3;
+
+    optional group Nested = 4 {
+      optional int32 a = 1;
+    }
+  }
+  repeated group Repeated = 2 {
+    optional int32 a = 1;
+    optional int32 b = 2;
+  }
+}

@@ -18,6 +18,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/arena/slice"
+	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
@@ -80,7 +81,31 @@ func (r *repeatedMessage) Get(n int) protoreflect.Value {
 func parseRepeatedMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
+	p1, p2 = p1.SetScratch(p2, uint64(n))
+	p1, p2, m := allocRepeatedMessage(p1, p2)
+	return p1.PushMessage(p2, m)
+}
 
+//go:nosplit
+func parseRepeatedGroup(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	p1, p2, m := allocRepeatedMessage(p1, p2)
+	return p1.PushGroup(p2, m)
+}
+
+func allocRepeatedMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) {
+	if debug.Enabled {
+		return allocRepeatedMessageSplit(p1, p2)
+	}
+	return allocRepeatedMessage2(p1, p2)
+}
+
+//go:noinline
+func allocRepeatedMessageSplit(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) {
+	return allocRepeatedMessage2(p1, p2)
+}
+
+//go:nosplit
+func allocRepeatedMessage2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) {
 	var r *repeatedMessage
 	p1, p2, r = vm.GetMutableField[repeatedMessage](p1, p2)
 	p1.Log(p2, "repeated message", "%v", r.raw)
@@ -111,8 +136,7 @@ func parseRepeatedMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		r.raw = s.Addr().Untyped()
 
 		p1.Log(p2, "inline repeated message", "%v, %p/%d", s.Addr(), p, stride)
-		p1, p2, m = vm.AllocInPlace(p1, p2, p)
-		goto exit
+		return vm.AllocInPlace(p1, p2, p)
 	}
 
 pointers:
@@ -124,7 +148,7 @@ pointers:
 		if s.Len() == s.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
 			p1.Log(p2, "outline repeated message", "%v, %p", *r, m)
-			goto exit
+			return p1, p2, m
 		}
 
 		s = s.SetLen(s.Len() + 1)
@@ -133,8 +157,7 @@ pointers:
 		*r = s.Addr()
 	}
 
-exit:
-	return p1.PushMessage(p2, n, m)
+	return p1, p2, m
 }
 
 //go:noinline

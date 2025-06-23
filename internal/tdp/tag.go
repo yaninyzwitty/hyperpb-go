@@ -66,6 +66,11 @@ func (t Tag) Decode() uint64 {
 
 // Format implements [fmt.Formatter].
 func (t Tag) Format(s fmt.State, verb rune) {
+	if ^t == 0 {
+		fmt.Fprint(s, "</>")
+		return
+	}
+
 	v := t.Decode()
 	n, ty := protowire.DecodeTag(v)
 	debug.Fprintf("%#x:%d:%d", uint64(t), n, ty).Format(s, verb)

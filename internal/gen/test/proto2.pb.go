@@ -197,6 +197,58 @@ func (x *DependsOnRequired) GetC() map[int32]*Required {
 	return nil
 }
 
+type Groups struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Singular      *Groups_Singular       `protobuf:"group,1,opt,name=Singular,json=singular" json:"singular,omitempty"`
+	Repeated      []*Groups_Repeated     `protobuf:"group,2,rep,name=Repeated,json=repeated" json:"repeated,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Groups) Reset() {
+	*x = Groups{}
+	mi := &file_test_proto2_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Groups) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Groups) ProtoMessage() {}
+
+func (x *Groups) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Groups.ProtoReflect.Descriptor instead.
+func (*Groups) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Groups) GetSingular() *Groups_Singular {
+	if x != nil {
+		return x.Singular
+	}
+	return nil
+}
+
+func (x *Groups) GetRepeated() []*Groups_Repeated {
+	if x != nil {
+		return x.Repeated
+	}
+	return nil
+}
+
 type Required_Empty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -205,7 +257,7 @@ type Required_Empty struct {
 
 func (x *Required_Empty) Reset() {
 	*x = Required_Empty{}
-	mi := &file_test_proto2_proto_msgTypes[3]
+	mi := &file_test_proto2_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -217,7 +269,7 @@ func (x *Required_Empty) String() string {
 func (*Required_Empty) ProtoMessage() {}
 
 func (x *Required_Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_test_proto2_proto_msgTypes[3]
+	mi := &file_test_proto2_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -231,6 +283,170 @@ func (x *Required_Empty) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Required_Empty.ProtoReflect.Descriptor instead.
 func (*Required_Empty) Descriptor() ([]byte, []int) {
 	return file_test_proto2_proto_rawDescGZIP(), []int{1, 0}
+}
+
+type Groups_Singular struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	A             *int32                  `protobuf:"varint,1,opt,name=a" json:"a,omitempty"`
+	B             *int32                  `protobuf:"varint,2,opt,name=b" json:"b,omitempty"`
+	G             *Groups                 `protobuf:"bytes,3,opt,name=g" json:"g,omitempty"`
+	Nested        *Groups_Singular_Nested `protobuf:"group,4,opt,name=Nested,json=nested" json:"nested,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Groups_Singular) Reset() {
+	*x = Groups_Singular{}
+	mi := &file_test_proto2_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Groups_Singular) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Groups_Singular) ProtoMessage() {}
+
+func (x *Groups_Singular) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Groups_Singular.ProtoReflect.Descriptor instead.
+func (*Groups_Singular) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *Groups_Singular) GetA() int32 {
+	if x != nil && x.A != nil {
+		return *x.A
+	}
+	return 0
+}
+
+func (x *Groups_Singular) GetB() int32 {
+	if x != nil && x.B != nil {
+		return *x.B
+	}
+	return 0
+}
+
+func (x *Groups_Singular) GetG() *Groups {
+	if x != nil {
+		return x.G
+	}
+	return nil
+}
+
+func (x *Groups_Singular) GetNested() *Groups_Singular_Nested {
+	if x != nil {
+		return x.Nested
+	}
+	return nil
+}
+
+type Groups_Repeated struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	A             *int32                 `protobuf:"varint,1,opt,name=a" json:"a,omitempty"`
+	B             *int32                 `protobuf:"varint,2,opt,name=b" json:"b,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Groups_Repeated) Reset() {
+	*x = Groups_Repeated{}
+	mi := &file_test_proto2_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Groups_Repeated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Groups_Repeated) ProtoMessage() {}
+
+func (x *Groups_Repeated) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Groups_Repeated.ProtoReflect.Descriptor instead.
+func (*Groups_Repeated) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *Groups_Repeated) GetA() int32 {
+	if x != nil && x.A != nil {
+		return *x.A
+	}
+	return 0
+}
+
+func (x *Groups_Repeated) GetB() int32 {
+	if x != nil && x.B != nil {
+		return *x.B
+	}
+	return 0
+}
+
+type Groups_Singular_Nested struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	A             *int32                 `protobuf:"varint,1,opt,name=a" json:"a,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Groups_Singular_Nested) Reset() {
+	*x = Groups_Singular_Nested{}
+	mi := &file_test_proto2_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Groups_Singular_Nested) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Groups_Singular_Nested) ProtoMessage() {}
+
+func (x *Groups_Singular_Nested) ProtoReflect() protoreflect.Message {
+	mi := &file_test_proto2_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Groups_Singular_Nested.ProtoReflect.Descriptor instead.
+func (*Groups_Singular_Nested) Descriptor() ([]byte, []int) {
+	return file_test_proto2_proto_rawDescGZIP(), []int{3, 0, 0}
+}
+
+func (x *Groups_Singular_Nested) GetA() int32 {
+	if x != nil && x.A != nil {
+		return *x.A
+	}
+	return 0
 }
 
 var file_test_proto2_proto_extTypes = []protoimpl.ExtensionInfo{
@@ -418,7 +634,23 @@ const file_test_proto2_proto_rawDesc = "" +
 	"\x01c\x18\x03 \x03(\v2&.hyperpb.test.DependsOnRequired.CEntryR\x01c\x1aL\n" +
 	"\x06CEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.hyperpb.test.RequiredR\x05value:\x028\x01:(\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.hyperpb.test.RequiredR\x05value:\x028\x01\"\xc9\x02\n" +
+	"\x06Groups\x129\n" +
+	"\bsingular\x18\x01 \x01(\n" +
+	"2\x1d.hyperpb.test.Groups.SingularR\bsingular\x129\n" +
+	"\brepeated\x18\x02 \x03(\n" +
+	"2\x1d.hyperpb.test.Groups.RepeatedR\brepeated\x1a\xa0\x01\n" +
+	"\bSingular\x12\f\n" +
+	"\x01a\x18\x01 \x01(\x05R\x01a\x12\f\n" +
+	"\x01b\x18\x02 \x01(\x05R\x01b\x12\"\n" +
+	"\x01g\x18\x03 \x01(\v2\x14.hyperpb.test.GroupsR\x01g\x12<\n" +
+	"\x06nested\x18\x04 \x01(\n" +
+	"2$.hyperpb.test.Groups.Singular.NestedR\x06nested\x1a\x16\n" +
+	"\x06Nested\x12\f\n" +
+	"\x01a\x18\x01 \x01(\x05R\x01a\x1a&\n" +
+	"\bRepeated\x12\f\n" +
+	"\x01a\x18\x01 \x01(\x05R\x01a\x12\f\n" +
+	"\x01b\x18\x02 \x01(\x05R\x01b:(\n" +
 	"\x02b1\x12\x18.hyperpb.test.Extensions\x18\x15 \x01(\x05R\x02b1:(\n" +
 	"\x02b2\x12\x18.hyperpb.test.Extensions\x18\x16 \x01(\x03R\x02b2:(\n" +
 	"\x02b3\x12\x18.hyperpb.test.Extensions\x18\x17 \x01(\rR\x02b3:(\n" +
@@ -449,43 +681,51 @@ func file_test_proto2_proto_rawDescGZIP() []byte {
 	return file_test_proto2_proto_rawDescData
 }
 
-var file_test_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_test_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_test_proto2_proto_goTypes = []any{
-	(*Extensions)(nil),        // 0: hyperpb.test.Extensions
-	(*Required)(nil),          // 1: hyperpb.test.Required
-	(*DependsOnRequired)(nil), // 2: hyperpb.test.DependsOnRequired
-	(*Required_Empty)(nil),    // 3: hyperpb.test.Required.Empty
-	nil,                       // 4: hyperpb.test.DependsOnRequired.CEntry
+	(*Extensions)(nil),             // 0: hyperpb.test.Extensions
+	(*Required)(nil),               // 1: hyperpb.test.Required
+	(*DependsOnRequired)(nil),      // 2: hyperpb.test.DependsOnRequired
+	(*Groups)(nil),                 // 3: hyperpb.test.Groups
+	(*Required_Empty)(nil),         // 4: hyperpb.test.Required.Empty
+	nil,                            // 5: hyperpb.test.DependsOnRequired.CEntry
+	(*Groups_Singular)(nil),        // 6: hyperpb.test.Groups.Singular
+	(*Groups_Repeated)(nil),        // 7: hyperpb.test.Groups.Repeated
+	(*Groups_Singular_Nested)(nil), // 8: hyperpb.test.Groups.Singular.Nested
 }
 var file_test_proto2_proto_depIdxs = []int32{
 	1,  // 0: hyperpb.test.Required.y:type_name -> hyperpb.test.Required
-	3,  // 1: hyperpb.test.Required.z:type_name -> hyperpb.test.Required.Empty
+	4,  // 1: hyperpb.test.Required.z:type_name -> hyperpb.test.Required.Empty
 	1,  // 2: hyperpb.test.DependsOnRequired.a:type_name -> hyperpb.test.Required
 	1,  // 3: hyperpb.test.DependsOnRequired.b:type_name -> hyperpb.test.Required
-	4,  // 4: hyperpb.test.DependsOnRequired.c:type_name -> hyperpb.test.DependsOnRequired.CEntry
-	1,  // 5: hyperpb.test.DependsOnRequired.CEntry.value:type_name -> hyperpb.test.Required
-	0,  // 6: hyperpb.test.b1:extendee -> hyperpb.test.Extensions
-	0,  // 7: hyperpb.test.b2:extendee -> hyperpb.test.Extensions
-	0,  // 8: hyperpb.test.b3:extendee -> hyperpb.test.Extensions
-	0,  // 9: hyperpb.test.b4:extendee -> hyperpb.test.Extensions
-	0,  // 10: hyperpb.test.b5:extendee -> hyperpb.test.Extensions
-	0,  // 11: hyperpb.test.b6:extendee -> hyperpb.test.Extensions
-	0,  // 12: hyperpb.test.b7:extendee -> hyperpb.test.Extensions
-	0,  // 13: hyperpb.test.b8:extendee -> hyperpb.test.Extensions
-	0,  // 14: hyperpb.test.b9:extendee -> hyperpb.test.Extensions
-	0,  // 15: hyperpb.test.b10:extendee -> hyperpb.test.Extensions
-	0,  // 16: hyperpb.test.b11:extendee -> hyperpb.test.Extensions
-	0,  // 17: hyperpb.test.b12:extendee -> hyperpb.test.Extensions
-	0,  // 18: hyperpb.test.b13:extendee -> hyperpb.test.Extensions
-	0,  // 19: hyperpb.test.b14:extendee -> hyperpb.test.Extensions
-	0,  // 20: hyperpb.test.b15:extendee -> hyperpb.test.Extensions
-	0,  // 21: hyperpb.test.z:extendee -> hyperpb.test.Extensions
-	0,  // 22: hyperpb.test.z:type_name -> hyperpb.test.Extensions
-	23, // [23:23] is the sub-list for method output_type
-	23, // [23:23] is the sub-list for method input_type
-	22, // [22:23] is the sub-list for extension type_name
-	6,  // [6:22] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	5,  // 4: hyperpb.test.DependsOnRequired.c:type_name -> hyperpb.test.DependsOnRequired.CEntry
+	6,  // 5: hyperpb.test.Groups.singular:type_name -> hyperpb.test.Groups.Singular
+	7,  // 6: hyperpb.test.Groups.repeated:type_name -> hyperpb.test.Groups.Repeated
+	1,  // 7: hyperpb.test.DependsOnRequired.CEntry.value:type_name -> hyperpb.test.Required
+	3,  // 8: hyperpb.test.Groups.Singular.g:type_name -> hyperpb.test.Groups
+	8,  // 9: hyperpb.test.Groups.Singular.nested:type_name -> hyperpb.test.Groups.Singular.Nested
+	0,  // 10: hyperpb.test.b1:extendee -> hyperpb.test.Extensions
+	0,  // 11: hyperpb.test.b2:extendee -> hyperpb.test.Extensions
+	0,  // 12: hyperpb.test.b3:extendee -> hyperpb.test.Extensions
+	0,  // 13: hyperpb.test.b4:extendee -> hyperpb.test.Extensions
+	0,  // 14: hyperpb.test.b5:extendee -> hyperpb.test.Extensions
+	0,  // 15: hyperpb.test.b6:extendee -> hyperpb.test.Extensions
+	0,  // 16: hyperpb.test.b7:extendee -> hyperpb.test.Extensions
+	0,  // 17: hyperpb.test.b8:extendee -> hyperpb.test.Extensions
+	0,  // 18: hyperpb.test.b9:extendee -> hyperpb.test.Extensions
+	0,  // 19: hyperpb.test.b10:extendee -> hyperpb.test.Extensions
+	0,  // 20: hyperpb.test.b11:extendee -> hyperpb.test.Extensions
+	0,  // 21: hyperpb.test.b12:extendee -> hyperpb.test.Extensions
+	0,  // 22: hyperpb.test.b13:extendee -> hyperpb.test.Extensions
+	0,  // 23: hyperpb.test.b14:extendee -> hyperpb.test.Extensions
+	0,  // 24: hyperpb.test.b15:extendee -> hyperpb.test.Extensions
+	0,  // 25: hyperpb.test.z:extendee -> hyperpb.test.Extensions
+	0,  // 26: hyperpb.test.z:type_name -> hyperpb.test.Extensions
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	26, // [26:27] is the sub-list for extension type_name
+	10, // [10:26] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_test_proto2_proto_init() }
@@ -499,7 +739,7 @@ func file_test_proto2_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_proto2_proto_rawDesc), len(file_test_proto2_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   9,
 			NumExtensions: 16,
 			NumServices:   0,
 		},

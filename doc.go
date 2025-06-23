@@ -119,10 +119,8 @@
 // # Compatibility
 //
 // hyperpb is experimental software, and the API may change drastically before
-// v1. It also does not implement all of Protobuf: currently, the following are
-// not supported:
-//
-//   - Group-typed fields (currently parsed as unknown fields).
+// v1. It currently implements all Protobuf language constructs. It does not
+// implement mutation of parsed messages, however.
 //
 // [the UPB project]: https://github.com/protocolbuffers/protobuf/tree/main/upb
 package hyperpb
