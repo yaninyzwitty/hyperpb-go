@@ -20,7 +20,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -30,6 +29,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/bufbuild/hyperpb/internal/errors2"
 )
 
 var (
@@ -317,8 +318,7 @@ func run(binary string) error {
 func main() {
 	flag.Parse()
 	if err := run(flag.Arg(0)); err != nil {
-		var exit *exec.ExitError
-		if errors.As(err, &exit) {
+		if exit, ok := errors2.As[*exec.ExitError](err); ok {
 			os.Exit(exit.ExitCode())
 		}
 

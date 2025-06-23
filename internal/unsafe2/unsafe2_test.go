@@ -15,7 +15,6 @@
 package unsafe2_test
 
 import (
-	"fmt"
 	"testing"
 	"unsafe"
 
@@ -73,6 +72,6 @@ func TestPC(t *testing.T) {
 	f := func() int { return 42 }
 	pc := unsafe2.NewPC(f)
 
-	fmt.Printf("%#x\n", pc)
+	t.Logf("%#x\n", pc)
 	assert.Equal(t, 42, pc.Get()())
 }

@@ -22,6 +22,7 @@ MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --no-print-directory
 
 BIN := .tmp/bin
+TESTS := .tmp/tests
 export PATH := $(abspath $(BIN)):$(PATH)
 export GOBIN := $(abspath $(BIN))
 
@@ -31,9 +32,28 @@ LICENSE_IGNORE := testdata/
 BUF_VERSION := v1.50.0
 LINT_VERSION := v2.1.6 # Keep in sync w/ .github/workflows/ci.yaml.
 
+GOOS_HOST := $(shell go env GOOS)
+GOARCH_HOST := $(shell go env GOARCH)
+
+GOOS ?=
+GOARCH ?=
+GOAMD64 ?=
+GOARM64 ?=
+
+HOST_ENV ?= GOTOOLCHAIN=local
+EXEC_ENV ?= GOOS=$(GOOS) GOARCH=$(GOARCH) GOAMD64=$(GOAMD64) GOARM64=$(GOARM64) GOTOOLCHAIN=local 
+
+# Go will carelessly pick these up on host-side builds if we don't unexport them. 
+unexport GOOS
+unexport GOARCH
+
 GO ?= go
-GO := GOTOOLCHAIN=local $(GO)
+GO_HOST := $(HOST_TARGET) $(GO)
+GO := $(EXEC_ENV) $(GO)
+TEST := $(EXEC_ENV) $(BIN)/test2 -o $(TESTS)
+
 TAGS ?= ""
+REMOTE ?= ""
 
 ASM_FILTER ?= ^github.com/bufbuild/hyperpb
 ASM_INFO ?= fileline
@@ -46,7 +66,7 @@ else
 endif
 PKG ?= .
 TESTFLAGS ?=
-BENCHFLAGS ?= -benchmem
+BENCHFLAGS ?= -test.benchmem
 
 .PHONY: help
 help: ## Describe useful make targets
@@ -65,29 +85,27 @@ clean: ## Delete intermediate build artifacts
 	git clean -Xdf
 
 .PHONY: test
-test: build ## Run unit tests
-	$(GO) test -tags=$(TAGS) $(PKGS) $(TESTFLAGS)
+test: build $(BIN)/test2 ## Run unit tests
+	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKGS) -- \
+		$(TESTFLAGS)
 
 .PHONY: bench
-bench: build ## Run benchmarks
-	$(GO) run ./internal/tools/bench -bench '$(BENCHMARK)' $(BENCHFLAGS) \
-		-tags=$(TAGS) \
-		$(PKGS)
+bench: build $(BIN)/test2 ## Run benchmarks
+	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKGS) \
+		-csv hyperpb.csv -table - -- \
+		-test.bench '$(BENCHMARK)' $(BENCHFLAGS)
 
 .PHONY: profile
-profile: build ## Profile benchmarks and open them in pprof
-	$(GO) test -bench '$(BENCHMARK)' $(BENCHFLAGS) -run '^B' \
-		-tags=$(TAGS) \
-		-benchtime 3s \
-		-o hyperpb.test \
-		-cpuprofile hyperpb.prof \
-		$(PKG)
-	$(GO) tool pprof -http localhost:8000 hyperpb.test hyperpb.prof
+profile: build $(BIN)/test2 ## Profile benchmarks and open them in pprof
+	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKG) -profile -- \
+		-test.run '^B' -test.bench '$(BENCHMARK)' \
+		-test.benchtime 3s $(BENCHFLAGS)
+	@$(GO_HOST) tool pprof -http localhost:8000 $(TESTS)/*.test $(TESTS)/*.prof
 
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
 	$(GO) test -tags=$(TAGS) -c -o hyperpb.test $(PKG) $(TESTFLAGS)
-	$(GO) run ./internal/tools/objdump \
+	$(GO_HOST) run ./internal/tools/objdump \
 		-s '$(ASM_FILTER)' \
 		-info $(ASM_INFO) \
 		-prefix 'github.com/bufbuild/hyperpb' \
@@ -101,7 +119,7 @@ build: generate ## Build all packages
 
 .PHONY: lint
 lint: $(BIN)/golangci-lint ## Lint
-	$(GO) vet -unsafeptr=false ./...
+	$(GO_HOST) vet -unsafeptr=false ./...
 	$(BIN)/golangci-lint -v run \
 		--timeout 3m0s \
 		--modules-download-mode=readonly
@@ -115,7 +133,7 @@ lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 
 .PHONY: generate
 generate: internal/gen/test/*.pb.go $(BIN)/license-header ## Regenerate code and licenses
-	$(GO) generate ./...
+	$(GO_HOST) generate ./...
 	$(BIN)/license-header \
 		--license-type apache \
 		--copyright-holder "Buf Technologies, Inc." \
@@ -138,14 +156,19 @@ internal/gen/test/*.pb.go: $(BIN)/buf internal/proto/test/*.proto
 	$(BIN)/buf generate --template buf.gen.vt.yaml \
 		--exclude-path internal/proto/test/editions.proto # Work around a bug.
 
+.PHONY: $(BIN)/test2
+$(BIN)/test2: generate
+	@mkdir -p $(@D)
+	$(GO_HOST) build -o $(BIN)/test2 ./internal/tools/test2
+
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)
-	$(GO) install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
+	$(GO_HOST) install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
 
 $(BIN)/license-header: Makefile
 	@mkdir -p $(@D)
-	$(GO) install github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@$(BUF_VERSION)
+	$(GO_HOST) install github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@$(BUF_VERSION)
 
 $(BIN)/golangci-lint: Makefile
 	@mkdir -p $(@D)
-	$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(LINT_VERSION)
+	$(GO_HOST) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(LINT_VERSION)

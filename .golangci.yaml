@@ -90,6 +90,7 @@ linters:
       # There are, in fact, uses for weak random number generators.
       - { path: '.*', text: 'G404: Use of weak random number generator.*' }
       - { path: '.*', text: 'G306: Expect WriteFile permissions to be 0600 or less.*' }
+      - { path: '.*', text: 'G204: Subprocess launched with a potential tainted input or cmd arguments' }
       # We call this parameter `t`.
       - { path: '.*', text: 'parameter testing.TB should have name tb' }
 
