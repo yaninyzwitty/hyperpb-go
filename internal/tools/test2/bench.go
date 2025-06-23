@@ -52,7 +52,6 @@ type (
 	}
 
 	bench struct {
-		path          string // The name Go gives this benchmark.
 		name, subtest string
 		fields        []string
 		metrics       []metric // Indexed by column order.
@@ -83,35 +82,35 @@ func parseBenchmarkOutput(stdout string) *benchReport {
 		// Split each benchmark into fields. Each field is separated by tabs.
 		fields := strings.Split(line, "\t")
 
-		path := fields[0]
+		name := fields[0]
 		// Trim off a trailing -n, since it's not especially
 		// interesting.
-		path = path[:strings.LastIndex(path, "-")]
-		path = strings.TrimPrefix(path, "Benchmark")
+		name = name[:strings.LastIndex(name, "-")]
+		name = strings.TrimPrefix(name, "Benchmark")
 
 		// Delete all occurrences of .yaml.
-		path = strings.ReplaceAll(path, ".yaml", "")
+		name = strings.ReplaceAll(name, ".yaml", "")
 
 		b := bench{
-			path:   path,
+			name:   name,
 			fields: fields[2:], // Skip the trial count at index 1.
 		}
 
-		slash := strings.LastIndex(b.path, "/")
+		slash := strings.LastIndex(b.name, "/")
 		if slash != -1 {
-			b.subtest = b.path[slash+1:]
-			b.path = b.path[:slash]
+			b.subtest = b.name[slash+1:]
+			b.name = b.name[:slash]
 
 			if len(r.benches) > 0 {
 				subtests[b.subtest] = len(r.benches[len(r.benches)-1])
 			}
 
-			if prev == b.path {
+			if prev == b.name {
 				s := &r.benches[len(r.benches)-1]
 				*s = append(*s, b)
 				continue
 			} else {
-				prev = b.path
+				prev = b.name
 			}
 		}
 		r.benches = append(r.benches, []bench{b})
@@ -135,35 +134,9 @@ func parseBenchmarkOutput(stdout string) *benchReport {
 	values := map[key]metric{}
 	columns := map[string]column{}
 	var k int
-	for i, bs := range r.benches {
+	for _, bs := range r.benches {
 		for j := range bs {
 			b := &bs[j]
-
-			if j == 0 {
-				// Generate the name of the benchmark.
-				name := b.path
-
-				if i > 0 {
-					// Replace the common prefix of this and the previous
-					// benchmark with dashes.
-					prev := r.benches[i-1][0].name
-					k := common(prev, name)
-					k = strings.LastIndexByte(name[:k], '/')
-
-					if k > 0 {
-						bytes := []byte(name)
-						for i, b := range bytes[1:k] {
-							if b != '/' {
-								bytes[i+1] = '\''
-							}
-						}
-						name = string(bytes)
-					}
-				}
-				b.name = name
-			} else {
-				b.name = bs[j-1].name
-			}
 
 			// Now, convert the fields into metric cells.
 			for j := range b.fields {
@@ -281,7 +254,7 @@ func (r *benchReport) toCSV(w io.Writer) error {
 		row := make([]string, len(header))
 		cells = append(cells, row)
 		for _, b := range bs {
-			row[0] = b.path
+			row[0] = b.name
 			j := subtests[b.subtest]
 			for i, m := range b.metrics {
 				row[indices[[2]int{i, j}]] = strconv.FormatFloat(m.value, 'f', -1, 64)
@@ -292,7 +265,7 @@ func (r *benchReport) toCSV(w io.Writer) error {
 	return csv.NewWriter(w).WriteAll(cells)
 }
 
-func (r *benchReport) toTable(w io.Writer) error {
+func (r *benchReport) toMarkdown(w io.Writer) error {
 	// Lay out the header.
 	table := [][]string{make([]string, len(r.columns)+2)}
 
@@ -336,20 +309,50 @@ func (r *benchReport) toTable(w io.Writer) error {
 	}
 
 	// Print the table.
-	for _, fields := range table {
+	for i, fields := range table {
+		var err error
+		if i > 0 && fields[0] != "" {
+			for i := range fields {
+				if i > 0 {
+					if _, err = fmt.Fprint(w, " "); err != nil {
+						return err
+					}
+				}
+
+				if i < 2 {
+					_, err = fmt.Fprintf(w, "| :%s", strings.Repeat("-", widths[i]-1))
+				} else {
+					_, err = fmt.Fprintf(w, "| %s:", strings.Repeat("-", widths[i]-1))
+				}
+				if err != nil {
+					return err
+				}
+			}
+
+			if _, err = fmt.Fprint(w, " |\n"); err != nil {
+				return err
+			}
+		}
+
 		for i, field := range fields {
-			var err error
-			if i == 0 {
-				_, err = fmt.Fprintf(w, "%s%*s",
+			if i > 0 {
+				if _, err = fmt.Fprint(w, " "); err != nil {
+					return err
+				}
+			}
+
+			if i < 2 {
+				_, err = fmt.Fprintf(w, "| %s%*s",
 					field, widths[i]-utf8.RuneCountInString(field), "")
 			} else {
-				_, err = fmt.Fprintf(w, " | %+*s", widths[i], field)
+				_, err = fmt.Fprintf(w, "| %+*s", widths[i], field)
 			}
 			if err != nil {
 				return err
 			}
 		}
-		if _, err := fmt.Fprintln(w); err != nil {
+
+		if _, err := fmt.Fprintln(w, " |"); err != nil {
 			return err
 		}
 	}
@@ -367,12 +370,4 @@ func map2slice[K cmp.Ordered, V any](s []V, m map[K]V, sort func(V, V) int) []V 
 
 	slices.SortStableFunc(s[n:], sort)
 	return s
-}
-
-// common returns the common prefix length of a and b.
-func common(a, b string) int {
-	var i int
-	for ; i < min(len(a), len(b)) && a[i] == b[i]; i++ {
-	}
-	return i
 }

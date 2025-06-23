@@ -102,7 +102,7 @@ func run() error {
 		}
 		defer close()
 
-		if err := benchmarks.toTable(f); err != nil {
+		if err := benchmarks.toMarkdown(f); err != nil {
 			return err
 		}
 	}
