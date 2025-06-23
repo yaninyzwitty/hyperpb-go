@@ -29,6 +29,7 @@ export GOBIN := $(abspath $(BIN))
 COPYRIGHT_YEARS := 2025
 LICENSE_IGNORE := testdata/
 
+GO_VERSION := go1.24.4
 BUF_VERSION := v1.50.0
 LINT_VERSION := v2.1.6 # Keep in sync w/ .github/workflows/ci.yaml.
 
@@ -142,7 +143,7 @@ generate: internal/gen/test/*.pb.go $(BIN)/license-header ## Regenerate code and
 
 .PHONY: upgrade
 upgrade: ## Upgrade dependencies
-	go mod edit -toolchain=$(GO_MOD_GOTOOLCHAIN)
+	go mod edit -toolchain=$(GO_VERSION)
 	go get -u -t ./...
 	go mod tidy -v
 
