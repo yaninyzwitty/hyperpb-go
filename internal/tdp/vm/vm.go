@@ -314,6 +314,10 @@ func (p1 P1) Bytes(p2 P2) (P1, P2, zc.Range) {
 
 // UTF8 parses a length-delimited byte buffer, and validates it for UTF8.
 func (p1 P1) UTF8(p2 P2) (P1, P2, zc.Range) {
+	if p2.p3().AllowInvalidUTF8 {
+		return p1.Bytes(p2)
+	}
+
 	return verifyUTF8(p1.LengthPrefix(p2))
 }
 

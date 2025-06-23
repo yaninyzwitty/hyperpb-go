@@ -102,6 +102,12 @@ func WithDiscardUnknown(discard bool) UnmarshalOption {
 	return func(opts *vm.Options) { opts.DiscardUnknown = discard }
 }
 
+// WithAllowInvalidUTF8 sets whether UTF-8 is validated when parsing string
+// fields originating from non-proto2 files.
+func WithAllowInvalidUTF8(allow bool) UnmarshalOption {
+	return func(opts *vm.Options) { opts.AllowInvalidUTF8 = allow }
+}
+
 // WithAllowAlias sets whether aliasing the input buffer is allowed. This avoids
 // an expensive copy at the start of parsing.
 //

@@ -44,6 +44,9 @@ type Options struct {
 	// If set, unknown fields are discarded.
 	DiscardUnknown bool
 
+	// If set, all string fields behave as if they are defined in proto2.
+	AllowInvalidUTF8 bool
+
 	// If set, the input data will not be copied before the parse begins.
 	AllowAlias bool
 
