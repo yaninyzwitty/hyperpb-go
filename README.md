@@ -191,7 +191,6 @@ will result in memory errors that Go cannot protect you from.
 `v1`. It also does not implement all of Protobuf: currently, the following are
 not supported:
 
-- `required` fields (treated as `optional`).
 - `group`-typed fields (currently parsed as unknown fields).
 
 ## Contributing
