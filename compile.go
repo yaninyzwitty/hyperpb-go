@@ -23,6 +23,7 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
 )
 
@@ -48,6 +49,13 @@ func WithExtensionsFromTypes(types *protoregistry.Types) CompileOption {
 // about a message type.
 func WithExtensionsFromFiles(files *protoregistry.Files) CompileOption {
 	return func(c *compiler.Options) { c.Extensions = compiler.ExtensionsFromFile(files) }
+}
+
+// WithPGO provides a profile for profile-guided optimization.
+//
+// Typically, you'll prefer to use [Type.Recompile].
+func WithPGO(profile *Profile) CompileOption {
+	return func(c *compiler.Options) { c.Profile = &profile.impl }
 }
 
 // CompileFor is a helper for calling [Compile] using the descriptor of an
@@ -105,13 +113,16 @@ func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type 
 		}
 	}
 
-	return newType(compiler.Compile(md, opts))
+	ty := compiler.Compile(md, opts)
+	ty.Library.Metadata = options
+
+	return newType(ty)
 }
 
 // backend implements the compiler backend interface.
 type backend struct{}
 
-func (*backend) SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile) *compiler.Archetype {
+func (*backend) SelectArchetype(fd protoreflect.FieldDescriptor, prof profile.Field) *compiler.Archetype {
 	return thunks.SelectArchetype(fd, prof)
 }
 

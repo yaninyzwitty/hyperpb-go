@@ -27,6 +27,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
@@ -109,6 +110,25 @@ func WithAllowAlias(allow bool) UnmarshalOption {
 	return func(opts *vm.Options) { opts.AllowAlias = allow }
 }
 
+// WithRecordProfile sets a profiler for an unmarshaling operation. Rate is a
+// value from 0 to 1 that specifies the sampling rate. profile may be nil, in
+// which case nothing will be recorded.
+//
+// Profiling should be done with many, many message types, all with the same
+// rate. This will allow the profiler to collect statistically relevant data,
+// which can be used to recompile this type to be more efficient using
+// [Type.Recompile].
+func WithRecordProfile(profile *Profile, rate float64) UnmarshalOption {
+	return func(opts *vm.Options) {
+		if profile == nil {
+			opts.Recorder = nil
+		} else {
+			opts.Recorder = &profile.impl
+		}
+		opts.ProfileRate = rate
+	}
+}
+
 // Shared returns state shared by this message and its submessages.
 func (m *Message) Shared() *Shared {
 	return newShared(m.impl.Shared)
@@ -156,44 +176,7 @@ func (m *Message) Interface() protoreflect.ProtoMessage {
 //
 // Range implements [protoreflect.Message].
 func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if !m.IsValid() {
-		return
-	}
-
-	ty := m.impl.Type()
-	f := ty.ByIndex(0)
-	i := 0
-	for f.IsValid() {
-		fd := ty.FieldDescriptors[i]
-		v := f.Get(unsafe.Pointer(m))
-		switch {
-		case !v.IsValid():
-			goto skip
-
-		case fd.IsList():
-			if v.List().Len() == 0 {
-				goto skip
-			}
-
-		case fd.IsMap():
-			if v.Map().Len() == 0 {
-				goto skip
-			}
-
-		case fd.Message() != nil:
-			if _, empty := v.Interface().(empty.Message); empty {
-				goto skip
-			}
-		}
-
-		if !yield(ty.FieldDescriptors[i], v) {
-			return
-		}
-
-	skip:
-		f = unsafe2.Add(f, 1)
-		i++
-	}
+	m.impl.Range(yield)
 }
 
 // Has reports whether a field is populated.
@@ -210,33 +193,7 @@ func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 //
 // Has implements [protoreflect.Message].
 func (m *Message) Has(fd protoreflect.FieldDescriptor) bool {
-	if !m.IsValid() {
-		return false
-	}
-
-	f := m.impl.Type().ByDescriptor(fd)
-	if !f.IsValid() {
-		return false
-	}
-
-	v := f.Get(unsafe.Pointer(m))
-	switch {
-	case !v.IsValid():
-		return false
-
-	case fd.IsList():
-		return v.List().Len() > 0
-
-	case fd.IsMap():
-		return v.Map().Len() > 0
-
-	case fd.Message() != nil:
-		_, empty := v.Interface().(empty.Message)
-		return !empty
-
-	default:
-		return true
-	}
+	return m.impl.Has(fd)
 }
 
 // Clear panics, unless this message has not been unmarshaled yet.
@@ -324,22 +281,7 @@ func (m *Message) Initialized() error {
 //
 // Get implements [protoreflect.Message].
 func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	if !m.IsValid() {
-		// We need to panic here because there's no "reasonable" way to return
-		// a default for message-typed fields here.
-		panic("called Get on nil hyperpb.Message")
-	}
-
-	f := m.impl.Type().ByDescriptor(fd)
-	if !f.IsValid() {
-		return protoreflect.ValueOf(nil)
-	}
-
-	if v := f.Get(unsafe.Pointer(m)); v.IsValid() {
-		// NOTE: non-scalar (message/repeated) fields always return a valid value.
-		return v
-	}
-	return fd.Default()
+	return m.impl.Get(fd)
 }
 
 // Set panics.
@@ -451,6 +393,7 @@ func init() {
 	thunks.WrapMessage = func(m *dynamic.Message) protoreflect.Message {
 		return newMessage(m)
 	}
+	profile.ActualMessageType = unsafe2.AnyType((*Message)(nil))
 }
 
 // unmarshalShim implements [protoiface.Methods].Unmarshal.

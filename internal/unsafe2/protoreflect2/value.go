@@ -18,9 +18,11 @@ package protoreflect2
 
 import (
 	"fmt"
+	"unsafe"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
@@ -61,6 +63,38 @@ func GetMessage[T protoreflect.Message](v protoreflect.Value) T {
 		panic(typeMismatch(protoreflect.ValueOf(x), v))
 	}
 	return x
+}
+
+// List returns the value of v as a list, or an empty immutable list if it isn't
+// one.
+func List(v protoreflect.Value) protoreflect.List {
+	r := unwrapValue(v)
+	x, ok := unsafe2.MakeAny(r.typ, r.data).(protoreflect.List)
+	if !ok {
+		x = empty.List{}
+	}
+	return x
+}
+
+// Map returns the value of v as a map, or an empty immutable map if it isn't
+// one.
+func Map(v protoreflect.Value) protoreflect.Map {
+	r := unwrapValue(v)
+	x, ok := unsafe2.MakeAny(r.typ, r.data).(protoreflect.Map)
+	if !ok {
+		x = empty.Map{}
+	}
+	return x
+}
+
+// UnsafeUnwrap unwraps a [protoreflect.Value] into a raw pointer, checking
+// that it has a particular type.
+func UnsafeUnwrap(v protoreflect.Value, ty uintptr) unsafe.Pointer {
+	r := unwrapValue(v)
+	if r.typ != ty {
+		return nil
+	}
+	return unsafe.Pointer(r.data)
 }
 
 // rawValue matches the layout of protoreflect.Value exactly.

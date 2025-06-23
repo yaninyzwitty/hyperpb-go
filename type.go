@@ -16,11 +16,13 @@ package hyperpb
 
 import (
 	"fmt"
+	"slices"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
@@ -29,6 +31,15 @@ import (
 // *Type implements [protoreflect.MessageType].
 type Type struct {
 	impl tdp.Type
+}
+
+// Profile can be used to profile messages associated with the same
+// collection of types. It can later be used to re-compile the original types
+// to be more efficient.
+//
+// See [Type.NewProfile].
+type Profile struct {
+	impl profile.Recorder
 }
 
 // Descriptor returns the message descriptor.
@@ -64,6 +75,25 @@ func (t *Type) Format(f fmt.State, verb rune) {
 	} else {
 		fmt.Fprint(f, t.Descriptor().FullName())
 	}
+}
+
+// NewProfile creates a new profiler for this type, which can be used to
+// profile messages of this type when unmarshaling.
+//
+// The returned profiler cannot be used with messages of other types.
+func (t *Type) NewProfile() *Profile {
+	return unsafe2.Cast[Profile](profile.NewRecorder(t.impl.Library))
+}
+
+// Recompile recompiles this type with a recorded profile.
+//
+// Note that this profile cannot be used with the new type; you must create a
+// fresh profile using [Type.NewProfile] and begin recording anew.
+func (t *Type) Recompile(profile *Profile) *Type {
+	options := slices.Clone(t.impl.Library.Metadata.([]CompileOption)) //nolint:errcheck
+	options = append(options, WithPGO(profile))
+
+	return Compile(t.Descriptor(), options...)
 }
 
 // newType wraps an internal Type pointer.

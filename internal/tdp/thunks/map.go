@@ -819,10 +819,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[K, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[K, V](cap)
 		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		m.Init(1, nil, extract)
+		m.Init(cap, nil, extract)
 	}
 
 	vp := m.Insert(k, extract)
@@ -922,10 +923,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[K, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[K, V](cap)
 		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		m.Init(1, nil, extract)
+		m.Init(cap, nil, extract)
 	}
 
 	vp := m.Insert(k, extract)

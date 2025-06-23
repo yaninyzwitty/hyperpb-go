@@ -116,6 +116,36 @@
 // Beware that msg must not outlive the call to [Shared.Free]; failure to do so
 // will result in memory errors that Go cannot protect you from.
 //
+// # Profile-Guided Optimization (PGO)
+//
+// `hyperpb` supports online PGO for squeezing extra performance out of the parser
+// by optimizing the parser with knowledge of what the average message actually
+// looks like. For example, using PGO, the parser can predict the expected size of
+// repeated fields and allocate more intelligently.
+//
+// For example, suppose you have a corpus of messages for a particular type. You
+// can build an optimized type, using that corpus as the profile, using
+// `Type.Recompile`:
+//
+//	func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.Type {
+//		// Compile the type without any profiling information.
+//		ty := hyperpb.Compile(md)
+//
+//		// Construct a new profile recorder.
+//		profile := ty.NewProfile()
+//
+//		// Parse all of the specimens in the corpus, making sure to record a profile
+//		// for all of them.
+//		s := new(hyperpb.Shared)
+//		for _, specimen := range corpus {
+//			s.New(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+//			s.Free()
+//		}
+//
+//		// Recompile with the profile.
+//		return ty.Recompile(profile)
+//	}
+//
 // # Compatibility
 //
 // hyperpb is experimental software, and the API may change drastically before

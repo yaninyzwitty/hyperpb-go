@@ -609,6 +609,12 @@ func parseRepeatedBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	var r *repeatedBytes
 	p1, p2, r = vm.GetMutableField[repeatedBytes](p1, p2)
+	if r.raw.Ptr == 0 {
+		if preload := p2.Field().Preload; preload > 0 {
+			r.raw = slice.Make[zc.Range](p1.Arena(), int(preload)).Addr()
+		}
+	}
+
 	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
 	unsafe2.StoreNoWB(&r.src, p1.Src())
 
@@ -622,6 +628,12 @@ func parseRepeatedUTF8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	var r *repeatedString
 	p1, p2, r = vm.GetMutableField[repeatedString](p1, p2)
+	if r.raw.Ptr == 0 {
+		if preload := p2.Field().Preload; preload > 0 {
+			r.raw = slice.Make[zc.Range](p1.Arena(), int(preload)).Addr()
+		}
+	}
+
 	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
 	unsafe2.StoreNoWB(&r.src, p1.Src())
 

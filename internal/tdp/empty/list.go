@@ -20,8 +20,10 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 )
 
-// List is an empty, untyped, immutable List.
+// List is an empty, untyped, immutable [protoreflect.List].
 type List struct{}
+
+var _ protoreflect.List = List{}
 
 func (List) IsValid() bool { return false }
 func (List) Len() int      { return 0 }

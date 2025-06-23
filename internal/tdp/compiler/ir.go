@@ -27,6 +27,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/stats"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
@@ -50,7 +51,7 @@ type ir struct {
 
 type tField struct {
 	d      protoreflect.FieldDescriptor
-	prof   FieldProfile
+	prof   profile.Field
 	arch   *Archetype
 	offset tdp.Offset
 }

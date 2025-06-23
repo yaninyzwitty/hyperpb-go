@@ -97,10 +97,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -184,10 +185,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -271,10 +273,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -358,10 +361,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -445,10 +449,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -532,10 +537,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -619,10 +625,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU8(m, 1, nil, extract)
+		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -706,10 +713,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -793,10 +801,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -880,10 +889,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -967,10 +977,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1054,10 +1065,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -1141,10 +1153,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1228,10 +1241,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -1315,10 +1329,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1402,10 +1417,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU8(m, 1, nil, extract)
+		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -1489,10 +1505,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1576,10 +1593,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1663,10 +1681,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -1750,10 +1769,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -1837,10 +1857,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -1924,10 +1945,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2011,10 +2033,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -2098,10 +2121,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2185,10 +2209,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU8(m, 1, nil, extract)
+		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -2272,10 +2297,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2359,10 +2385,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2446,10 +2473,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2533,10 +2561,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2620,10 +2649,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2707,10 +2737,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2794,10 +2825,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2881,10 +2913,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2968,10 +3001,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU8(m, 1, nil, extract)
+		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -3055,10 +3089,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -3142,10 +3177,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -3229,10 +3265,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3316,10 +3353,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3403,10 +3441,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3490,10 +3529,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3577,10 +3617,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU32(m, 1, nil, extract)
+		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3664,10 +3705,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3751,10 +3793,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU8(m, 1, nil, extract)
+		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -3838,10 +3881,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3925,10 +3969,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xU64(m, 1, nil, extract)
+		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -4012,10 +4057,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4099,10 +4145,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4186,10 +4233,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4273,10 +4321,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4360,10 +4409,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4447,10 +4497,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4534,10 +4585,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU8(m, 1, nil, extract)
+		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -4621,10 +4673,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4708,10 +4761,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4795,10 +4849,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4882,10 +4937,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4969,10 +5025,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5056,10 +5113,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5143,10 +5201,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5230,10 +5289,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5317,10 +5377,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU8(m, 1, nil, extract)
+		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -5404,10 +5465,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5491,10 +5553,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5578,10 +5641,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5665,10 +5729,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5752,10 +5817,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5839,10 +5905,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5926,10 +5993,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU32(m, 1, nil, extract)
+		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -6013,10 +6081,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6100,10 +6169,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU8(m, 1, nil, extract)
+		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -6187,10 +6257,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6274,10 +6345,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xU64(m, 1, nil, extract)
+		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6361,10 +6433,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU32(m, 1, nil, extract)
+		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6448,10 +6521,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU64(m, 1, nil, extract)
+		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6535,10 +6609,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU32(m, 1, nil, extract)
+		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6622,10 +6697,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU64(m, 1, nil, extract)
+		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6709,10 +6785,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint32](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint32](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU32(m, 1, nil, extract)
+		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6796,10 +6873,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU64(m, 1, nil, extract)
+		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6883,10 +6961,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint8](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint8](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU8(m, 1, nil, extract)
+		swiss.InitU8xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU8(m, k, extract)
@@ -6970,10 +7049,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU64(m, 1, nil, extract)
+		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -7057,10 +7137,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, uint64](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, uint64](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xU64(m, 1, nil, extract)
+		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -7144,10 +7225,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xP(m, 1, nil, extract)
+		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7241,10 +7323,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xP(m, 1, nil, extract)
+		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7338,10 +7421,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xP(m, 1, nil, extract)
+		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7435,10 +7519,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xP(m, 1, nil, extract)
+		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7532,10 +7617,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint32, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint32, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU32xP(m, 1, nil, extract)
+		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7629,10 +7715,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xP(m, 1, nil, extract)
+		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7726,10 +7813,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xP(m, 1, nil, extract)
+		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7823,10 +7911,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint64, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint64, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU64xP(m, 1, nil, extract)
+		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7920,10 +8009,11 @@ insert:
 
 	m := *mp
 	if m == nil {
-		size, _ := swiss.Layout[uint8, V](1)
+		cap := int(max(1, p2.Field().Preload))
+		size, _ := swiss.Layout[uint8, V](cap)
 		m = unsafe2.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
 		unsafe2.StoreNoWB(mp, m)
-		swiss.InitU8xP(m, 1, nil, extract)
+		swiss.InitU8xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xP(m, k, extract)

@@ -19,10 +19,14 @@ import (
 	"fmt"
 	"math/bits"
 	"strings"
+	"unsafe"
+
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/arena/slice"
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
@@ -59,6 +63,99 @@ type Message struct {
 	//
 	// The field data follows that, and offsets into the field data are already
 	// baked to include both the message header and the bitset words.
+}
+
+// Range iterates over every populated field.
+func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if m == nil {
+		return
+	}
+
+	ty := m.Type()
+	f := ty.ByIndex(0)
+	i := 0
+	for f.IsValid() {
+		fd := ty.FieldDescriptors[i]
+		v := f.Get(unsafe.Pointer(m))
+		switch {
+		case !v.IsValid():
+			goto skip
+
+		case fd.IsList():
+			if v.List().Len() == 0 {
+				goto skip
+			}
+
+		case fd.IsMap():
+			if v.Map().Len() == 0 {
+				goto skip
+			}
+
+		case fd.Message() != nil:
+			if _, empty := v.Interface().(empty.Message); empty {
+				goto skip
+			}
+		}
+
+		if !yield(ty.FieldDescriptors[i], v) {
+			return
+		}
+
+	skip:
+		f = unsafe2.Add(f, 1)
+		i++
+	}
+}
+
+// Has reports whether a field is populated.
+func (m *Message) Has(fd protoreflect.FieldDescriptor) bool {
+	if m == nil {
+		return false
+	}
+
+	f := m.Type().ByDescriptor(fd)
+	if !f.IsValid() {
+		return false
+	}
+
+	v := f.Get(unsafe.Pointer(m))
+	switch {
+	case !v.IsValid():
+		return false
+
+	case fd.IsList():
+		return v.List().Len() > 0
+
+	case fd.IsMap():
+		return v.Map().Len() > 0
+
+	case fd.Message() != nil:
+		_, empty := v.Interface().(empty.Message)
+		return !empty
+
+	default:
+		return true
+	}
+}
+
+// Get retrieves the value for a field.
+func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	if m == nil {
+		// We need to panic here because there's no "reasonable" way to return
+		// a default for message-typed fields here.
+		panic("called Get on nil hyperpb.Message")
+	}
+
+	f := m.Type().ByDescriptor(fd)
+	if !f.IsValid() {
+		return protoreflect.ValueOf(nil)
+	}
+
+	if v := f.Get(unsafe.Pointer(m)); v.IsValid() {
+		// NOTE: non-scalar (message/repeated) fields always return a valid value.
+		return v
+	}
+	return fd.Default()
 }
 
 // GetField returns the field data for a given message.

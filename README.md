@@ -174,7 +174,7 @@ type requestContext struct {
 
 func (c *requestContext) Handle(req Request) {
     // ...
-    ty := types[req.Type]
+    ty := c.types[req.Type]
     msg := c.shared.New(ty)
     defer c.shared.Free()
 
@@ -184,6 +184,92 @@ func (c *requestContext) Handle(req Request) {
 
 Beware that `msg` must not outlive the call to `Shared.Free`; failure to do so
 will result in memory errors that Go cannot protect you from.
+
+### Profile-Guided Optimization (PGO)
+
+`hyperpb` supports online PGO for squeezing extra performance out of the parser
+by optimizing the parser with knowledge of what the average message actually
+looks like. For example, using PGO, the parser can predict the expected size of
+repeated fields and allocate more intelligently.
+
+For example, suppose you have a corpus of messages for a particular type. You
+can build an optimized type, using that corpus as the profile, using
+`Type.Recompile`:
+
+```go
+func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.Type {
+    // Compile the type without any profiling information.
+    ty := hyperpb.Compile(md)
+
+    // Construct a new profile recorder.
+    profile := ty.NewProfile()
+
+    // Parse all of the specimens in the corpus, making sure to record a profile
+    // for all of them.
+    s := new(hyperpb.Shared)
+    for _, specimen := range corpus {
+        s.New(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+        s.Free()
+    }
+
+    // Recompile with the profile.
+    return ty.Recompile(profile)
+}
+```
+
+Using a custom sampling rate in `hyperpb.RecordProfile`, it's possible to
+sample data on-line as part of a request flow, and recompile dynamically:
+
+```go
+type requestContext struct {
+    shared *hyperpb.Shared
+    types map[string]*hyperpb.Type
+    // ...
+}
+
+type typeInfo struct {
+    ty atomic.Pointer[hyperpb.Type]
+    prof atomic.Pointer[hyperpb.Profile]
+    seen atomic.Int64
+}
+
+func (c *requestContext) Handle(req Request) {
+    // Look up the type in the context's type map.
+    tyInfo := c.types[req.Type]
+    tyInfo.Lock()
+    
+    // Parse the type as usual.
+    msg := c.shared.New(tyInfo.ty.Load())
+    defer c.shared.Free()
+    err := msg.Unmarshal(
+        // Only profile 1% of messages.
+        hyperpb.RecordProfile(tyInfo.prof.Load(), 0.01),
+    )
+    if err != nil {
+        // ...
+    }
+    tyInfo.seen.Add(1)
+
+    // Every 100,000 messages, spawn a goroutine to asynchronously recompile
+    // the type.
+    if tyInfo.seen.Load() % 100000 == 0 {
+        go func() {
+            prof := tyInfo.prof.Load()
+            if !tyInfo.CompareAndSwap(prof, nil) {
+                // Avoid a race condition.
+                return
+            }
+
+            // Recompile the type. This is gonna be really slow, because
+            // the compiler is slow, which is why we're doing it asynchronously.
+            tyInfo.ty.Store(tyInfo.ty.Load().Recompile(tyInfo.prof))
+            tyInfo.prof.Store(tyInfo.NewProfile())
+        }
+    }
+    
+    // Do something with msg.
+}
+```
 
 ## Compatibility
 

@@ -20,6 +20,7 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 )
 
 //go:generate go run ../../tools/stencil
@@ -33,7 +34,7 @@ const (
 var WrapMessage func(*dynamic.Message) protoreflect.Message
 
 // SelectArchetype selects an archetype from among those in this package.
-func SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile) *compiler.Archetype {
+func SelectArchetype(fd protoreflect.FieldDescriptor, prof profile.Field) *compiler.Archetype {
 	var a *compiler.Archetype
 	od := fd.ContainingOneof()
 	switch {
@@ -58,7 +59,7 @@ func SelectArchetype(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile
 // fieldKind extracts the field kind from a descriptor.
 //
 // This returns negative values for "custom" kinds.
-func fieldKind(fd protoreflect.FieldDescriptor, prof compiler.FieldProfile) protoreflect.Kind {
+func fieldKind(fd protoreflect.FieldDescriptor, prof profile.Field) protoreflect.Kind {
 	switch k := fd.Kind(); k {
 	case protoreflect.StringKind:
 		fd2, ok := fd.(interface{ EnforceUTF8() bool })

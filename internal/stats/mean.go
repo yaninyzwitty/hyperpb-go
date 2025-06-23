@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package stats provides instrumentation counter primitives.
 package stats
 
 import (
@@ -21,9 +20,8 @@ import (
 
 // Mean tracks an average statistic.
 //
-// The zero value is ready to use. Concurrent writes are safe, but calling
-// [Mean.Get] concurrently with other operations may result in torn reads (and
-// thus inaccuracy).
+// The zero value is ready to use. [Mean.Record] may be called concurrently,
+// but not with [Mean.Get].
 type Mean struct {
 	total, samples sync2.AtomicFloat64
 }

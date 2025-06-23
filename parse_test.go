@@ -84,6 +84,30 @@ func BenchmarkUnmarshal(b *testing.B) {
 					ctx.Free()
 				}
 			})
+			b.Run("pgo", func(b *testing.B) {
+				b.ReportAllocs()
+				b.SetBytes(int64(len(specimen)))
+				ctx := new(hyperpb.Shared)
+
+				// Warmup.
+				profile := test.Type.Fast.NewProfile()
+				for range 16 {
+					m := ctx.New(test.Type.Fast)
+					_ = m.Unmarshal(specimen,
+						hyperpb.WithAllowAlias(true),
+						hyperpb.WithRecordProfile(profile, 1.0),
+					)
+					ctx.Free()
+				}
+				ty := test.Type.Fast.Recompile(profile)
+
+				b.ResetTimer()
+				for range b.N {
+					m := ctx.New(ty)
+					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
+					ctx.Free()
+				}
+			})
 			b.Run("gencode", func(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))

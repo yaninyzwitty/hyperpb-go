@@ -164,13 +164,11 @@ pointers:
 func newInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P2, *repeatedMessage) {
 	// First element of this field. Allocate a byte array large enough to
 	// hold one element.
-	//
-	// TODO: Add a profiling knob for setting the default number of
-	// elements.
 	ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 	stride := ty.Size
 
-	s := slice.Make[byte](p1.Arena(), int(stride))
+	preload := max(1, p2.Field().Preload)
+	s := slice.Make[byte](p1.Arena(), int(stride)*int(preload))
 	s = s.SetLen(0)
 
 	r.raw = s.Addr().Untyped()

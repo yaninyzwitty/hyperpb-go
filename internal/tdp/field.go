@@ -86,6 +86,9 @@ type FieldParser struct {
 	// from [getter].
 	Offset Offset
 
+	// For non-singular fields, the default size to preallocate for this field.
+	Preload uint32
+
 	// The parser to jump to after this one, depending on whether the parse
 	// succeeds or fails.
 	NextOk, NextErr unsafe2.Addr[FieldParser]

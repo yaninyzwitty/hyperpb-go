@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math"
 	"math/bits"
+	"math/rand/v2"
 	"runtime"
 	"strings"
 	"unsafe"
@@ -27,6 +28,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
@@ -44,6 +46,10 @@ type Options struct {
 
 	// If set, the input data will not be copied before the parse begins.
 	AllowAlias bool
+
+	// Profiler fields.
+	Recorder    *profile.Recorder
+	ProfileRate float64
 }
 
 // NewOptions returns the default settings for [Options].
@@ -135,6 +141,12 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	p1, p2 = p1.PushMessage(p2, m)
 	p1, p2 = p1.SetScratch(p2, 0)
 	loop(p1, p2)
+
+	if rand.Float64() < options.ProfileRate && options.Recorder != nil {
+		p1.Log(p2, "profiling...", "%p", m)
+		options.Recorder.Record(m)
+	}
+
 	return nil
 }
 

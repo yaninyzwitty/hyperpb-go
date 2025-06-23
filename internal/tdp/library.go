@@ -27,6 +27,9 @@ type Library struct {
 	Base  *Type
 	Types map[protoreflect.MessageDescriptor]*Type
 	Bytes int
+
+	// Used to store compilation metadata. Actually a []hyperpb.CompileOptions.
+	Metadata any
 }
 
 // Type returns the [Type] for the given descriptor in this library.

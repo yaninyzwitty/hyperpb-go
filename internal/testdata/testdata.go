@@ -17,6 +17,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/prototest"
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/protocolbuffers/protoscope"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -67,15 +68,16 @@ type Profile []struct {
 	Pattern *regexp.Regexp `yaml:"pattern"`
 	Profile struct {
 		DecodeProbability float64 `yaml:"parse"`
+		ExpectedCount     int     `yaml:"expected_count"`
 		AssumeUTF8        bool    `yaml:"assume_utf8"`
 	} `yaml:"-,inline"`
 }
 
-// Field implements [compiler.Profile].
-func (p Profile) Field(site compiler.FieldSite) compiler.FieldProfile {
+// ForField implements [compiler.Profile].
+func (p Profile) ForField(site profile.Site) profile.Field {
 	for _, rule := range p {
 		if rule.Pattern.MatchString(string(site.Field.FullName())) {
-			return compiler.FieldProfile(rule.Profile)
+			return profile.Field(rule.Profile)
 		}
 	}
 	return site.DefaultProfile()

@@ -2594,6 +2594,216 @@ func (x *MessageMaps) GetMc() map[string]*MessageMaps {
 	return nil
 }
 
+// A message with a repeated message field that has many, many fields, but
+// only one of which winds up being set.
+type Pathological struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	X             []*Pathological_Inner  `protobuf:"bytes,1,rep,name=x,proto3" json:"x,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Pathological) Reset() {
+	*x = Pathological{}
+	mi := &file_test_test_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Pathological) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Pathological) ProtoMessage() {}
+
+func (x *Pathological) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Pathological.ProtoReflect.Descriptor instead.
+func (*Pathological) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Pathological) GetX() []*Pathological_Inner {
+	if x != nil {
+		return x.X
+	}
+	return nil
+}
+
+type Pathological_Inner struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	X1            int32                  `protobuf:"varint,1,opt,name=x1,proto3" json:"x1,omitempty"`
+	X2            int32                  `protobuf:"varint,2,opt,name=x2,proto3" json:"x2,omitempty"`
+	X3            int32                  `protobuf:"varint,3,opt,name=x3,proto3" json:"x3,omitempty"`
+	X4            int32                  `protobuf:"varint,4,opt,name=x4,proto3" json:"x4,omitempty"`
+	X5            int32                  `protobuf:"varint,5,opt,name=x5,proto3" json:"x5,omitempty"`
+	X6            int32                  `protobuf:"varint,6,opt,name=x6,proto3" json:"x6,omitempty"`
+	X7            int32                  `protobuf:"varint,7,opt,name=x7,proto3" json:"x7,omitempty"`
+	X8            int32                  `protobuf:"varint,8,opt,name=x8,proto3" json:"x8,omitempty"`
+	X9            int32                  `protobuf:"varint,9,opt,name=x9,proto3" json:"x9,omitempty"`
+	Xa            int32                  `protobuf:"varint,10,opt,name=xa,proto3" json:"xa,omitempty"`
+	Xb            int32                  `protobuf:"varint,11,opt,name=xb,proto3" json:"xb,omitempty"`
+	Xc            int32                  `protobuf:"varint,12,opt,name=xc,proto3" json:"xc,omitempty"`
+	Xd            int32                  `protobuf:"varint,13,opt,name=xd,proto3" json:"xd,omitempty"`
+	Xe            int32                  `protobuf:"varint,14,opt,name=xe,proto3" json:"xe,omitempty"`
+	Xf            int32                  `protobuf:"varint,15,opt,name=xf,proto3" json:"xf,omitempty"`
+	Actual        string                 `protobuf:"bytes,100,opt,name=actual,proto3" json:"actual,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Pathological_Inner) Reset() {
+	*x = Pathological_Inner{}
+	mi := &file_test_test_proto_msgTypes[211]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Pathological_Inner) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Pathological_Inner) ProtoMessage() {}
+
+func (x *Pathological_Inner) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[211]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Pathological_Inner.ProtoReflect.Descriptor instead.
+func (*Pathological_Inner) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{7, 0}
+}
+
+func (x *Pathological_Inner) GetX1() int32 {
+	if x != nil {
+		return x.X1
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX2() int32 {
+	if x != nil {
+		return x.X2
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX3() int32 {
+	if x != nil {
+		return x.X3
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX4() int32 {
+	if x != nil {
+		return x.X4
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX5() int32 {
+	if x != nil {
+		return x.X5
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX6() int32 {
+	if x != nil {
+		return x.X6
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX7() int32 {
+	if x != nil {
+		return x.X7
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX8() int32 {
+	if x != nil {
+		return x.X8
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetX9() int32 {
+	if x != nil {
+		return x.X9
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXa() int32 {
+	if x != nil {
+		return x.Xa
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXb() int32 {
+	if x != nil {
+		return x.Xb
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXc() int32 {
+	if x != nil {
+		return x.Xc
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXd() int32 {
+	if x != nil {
+		return x.Xd
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXe() int32 {
+	if x != nil {
+		return x.Xe
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetXf() int32 {
+	if x != nil {
+		return x.Xf
+	}
+	return 0
+}
+
+func (x *Pathological_Inner) GetActual() string {
+	if x != nil {
+		return x.Actual
+	}
+	return ""
+}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
@@ -3500,7 +3710,27 @@ const file_test_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\x1aP\n" +
 	"\aMcEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
-	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01*@\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.hyperpb.test.MessageMapsR\x05value:\x028\x01\"\xd0\x02\n" +
+	"\fPathological\x12.\n" +
+	"\x01x\x18\x01 \x03(\v2 .hyperpb.test.Pathological.InnerR\x01x\x1a\x8f\x02\n" +
+	"\x05Inner\x12\x0e\n" +
+	"\x02x1\x18\x01 \x01(\x05R\x02x1\x12\x0e\n" +
+	"\x02x2\x18\x02 \x01(\x05R\x02x2\x12\x0e\n" +
+	"\x02x3\x18\x03 \x01(\x05R\x02x3\x12\x0e\n" +
+	"\x02x4\x18\x04 \x01(\x05R\x02x4\x12\x0e\n" +
+	"\x02x5\x18\x05 \x01(\x05R\x02x5\x12\x0e\n" +
+	"\x02x6\x18\x06 \x01(\x05R\x02x6\x12\x0e\n" +
+	"\x02x7\x18\a \x01(\x05R\x02x7\x12\x0e\n" +
+	"\x02x8\x18\b \x01(\x05R\x02x8\x12\x0e\n" +
+	"\x02x9\x18\t \x01(\x05R\x02x9\x12\x0e\n" +
+	"\x02xa\x18\n" +
+	" \x01(\x05R\x02xa\x12\x0e\n" +
+	"\x02xb\x18\v \x01(\x05R\x02xb\x12\x0e\n" +
+	"\x02xc\x18\f \x01(\x05R\x02xc\x12\x0e\n" +
+	"\x02xd\x18\r \x01(\x05R\x02xd\x12\x0e\n" +
+	"\x02xe\x18\x0e \x01(\x05R\x02xe\x12\x0e\n" +
+	"\x02xf\x18\x0f \x01(\x05R\x02xf\x12\x16\n" +
+	"\x06actual\x18d \x01(\tR\x06actual*@\n" +
 	"\x04Enum\x12\x14\n" +
 	"\x10ENUM_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3524,456 +3754,459 @@ func file_test_test_proto_rawDescGZIP() []byte {
 }
 
 var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 210)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 212)
 var file_test_test_proto_goTypes = []any{
-	(Enum)(0),           // 0: hyperpb.test.Enum
-	(*Scalars)(nil),     // 1: hyperpb.test.Scalars
-	(*Numbers)(nil),     // 2: hyperpb.test.Numbers
-	(*Repeated)(nil),    // 3: hyperpb.test.Repeated
-	(*Graph)(nil),       // 4: hyperpb.test.Graph
-	(*Oneof)(nil),       // 5: hyperpb.test.Oneof
-	(*Maps)(nil),        // 6: hyperpb.test.Maps
-	(*MessageMaps)(nil), // 7: hyperpb.test.MessageMaps
-	nil,                 // 8: hyperpb.test.Maps.M10Entry
-	nil,                 // 9: hyperpb.test.Maps.M11Entry
-	nil,                 // 10: hyperpb.test.Maps.M12Entry
-	nil,                 // 11: hyperpb.test.Maps.M13Entry
-	nil,                 // 12: hyperpb.test.Maps.M14Entry
-	nil,                 // 13: hyperpb.test.Maps.M15Entry
-	nil,                 // 14: hyperpb.test.Maps.M16Entry
-	nil,                 // 15: hyperpb.test.Maps.M17Entry
-	nil,                 // 16: hyperpb.test.Maps.M18Entry
-	nil,                 // 17: hyperpb.test.Maps.M19Entry
-	nil,                 // 18: hyperpb.test.Maps.M1aEntry
-	nil,                 // 19: hyperpb.test.Maps.M1bEntry
-	nil,                 // 20: hyperpb.test.Maps.M1cEntry
-	nil,                 // 21: hyperpb.test.Maps.M1dEntry
-	nil,                 // 22: hyperpb.test.Maps.M1eEntry
-	nil,                 // 23: hyperpb.test.Maps.M1fEntry
-	nil,                 // 24: hyperpb.test.Maps.M20Entry
-	nil,                 // 25: hyperpb.test.Maps.M21Entry
-	nil,                 // 26: hyperpb.test.Maps.M22Entry
-	nil,                 // 27: hyperpb.test.Maps.M23Entry
-	nil,                 // 28: hyperpb.test.Maps.M24Entry
-	nil,                 // 29: hyperpb.test.Maps.M25Entry
-	nil,                 // 30: hyperpb.test.Maps.M26Entry
-	nil,                 // 31: hyperpb.test.Maps.M27Entry
-	nil,                 // 32: hyperpb.test.Maps.M28Entry
-	nil,                 // 33: hyperpb.test.Maps.M29Entry
-	nil,                 // 34: hyperpb.test.Maps.M2aEntry
-	nil,                 // 35: hyperpb.test.Maps.M2bEntry
-	nil,                 // 36: hyperpb.test.Maps.M2cEntry
-	nil,                 // 37: hyperpb.test.Maps.M2dEntry
-	nil,                 // 38: hyperpb.test.Maps.M2eEntry
-	nil,                 // 39: hyperpb.test.Maps.M2fEntry
-	nil,                 // 40: hyperpb.test.Maps.M30Entry
-	nil,                 // 41: hyperpb.test.Maps.M31Entry
-	nil,                 // 42: hyperpb.test.Maps.M32Entry
-	nil,                 // 43: hyperpb.test.Maps.M33Entry
-	nil,                 // 44: hyperpb.test.Maps.M34Entry
-	nil,                 // 45: hyperpb.test.Maps.M35Entry
-	nil,                 // 46: hyperpb.test.Maps.M36Entry
-	nil,                 // 47: hyperpb.test.Maps.M37Entry
-	nil,                 // 48: hyperpb.test.Maps.M38Entry
-	nil,                 // 49: hyperpb.test.Maps.M39Entry
-	nil,                 // 50: hyperpb.test.Maps.M3aEntry
-	nil,                 // 51: hyperpb.test.Maps.M3bEntry
-	nil,                 // 52: hyperpb.test.Maps.M3cEntry
-	nil,                 // 53: hyperpb.test.Maps.M3dEntry
-	nil,                 // 54: hyperpb.test.Maps.M3eEntry
-	nil,                 // 55: hyperpb.test.Maps.M3fEntry
-	nil,                 // 56: hyperpb.test.Maps.M40Entry
-	nil,                 // 57: hyperpb.test.Maps.M41Entry
-	nil,                 // 58: hyperpb.test.Maps.M42Entry
-	nil,                 // 59: hyperpb.test.Maps.M43Entry
-	nil,                 // 60: hyperpb.test.Maps.M44Entry
-	nil,                 // 61: hyperpb.test.Maps.M45Entry
-	nil,                 // 62: hyperpb.test.Maps.M46Entry
-	nil,                 // 63: hyperpb.test.Maps.M47Entry
-	nil,                 // 64: hyperpb.test.Maps.M48Entry
-	nil,                 // 65: hyperpb.test.Maps.M49Entry
-	nil,                 // 66: hyperpb.test.Maps.M4aEntry
-	nil,                 // 67: hyperpb.test.Maps.M4bEntry
-	nil,                 // 68: hyperpb.test.Maps.M4cEntry
-	nil,                 // 69: hyperpb.test.Maps.M4dEntry
-	nil,                 // 70: hyperpb.test.Maps.M4eEntry
-	nil,                 // 71: hyperpb.test.Maps.M4fEntry
-	nil,                 // 72: hyperpb.test.Maps.M50Entry
-	nil,                 // 73: hyperpb.test.Maps.M51Entry
-	nil,                 // 74: hyperpb.test.Maps.M52Entry
-	nil,                 // 75: hyperpb.test.Maps.M53Entry
-	nil,                 // 76: hyperpb.test.Maps.M54Entry
-	nil,                 // 77: hyperpb.test.Maps.M55Entry
-	nil,                 // 78: hyperpb.test.Maps.M56Entry
-	nil,                 // 79: hyperpb.test.Maps.M57Entry
-	nil,                 // 80: hyperpb.test.Maps.M58Entry
-	nil,                 // 81: hyperpb.test.Maps.M59Entry
-	nil,                 // 82: hyperpb.test.Maps.M5aEntry
-	nil,                 // 83: hyperpb.test.Maps.M5bEntry
-	nil,                 // 84: hyperpb.test.Maps.M5cEntry
-	nil,                 // 85: hyperpb.test.Maps.M5dEntry
-	nil,                 // 86: hyperpb.test.Maps.M5eEntry
-	nil,                 // 87: hyperpb.test.Maps.M5fEntry
-	nil,                 // 88: hyperpb.test.Maps.M60Entry
-	nil,                 // 89: hyperpb.test.Maps.M61Entry
-	nil,                 // 90: hyperpb.test.Maps.M62Entry
-	nil,                 // 91: hyperpb.test.Maps.M63Entry
-	nil,                 // 92: hyperpb.test.Maps.M64Entry
-	nil,                 // 93: hyperpb.test.Maps.M65Entry
-	nil,                 // 94: hyperpb.test.Maps.M66Entry
-	nil,                 // 95: hyperpb.test.Maps.M67Entry
-	nil,                 // 96: hyperpb.test.Maps.M68Entry
-	nil,                 // 97: hyperpb.test.Maps.M69Entry
-	nil,                 // 98: hyperpb.test.Maps.M6aEntry
-	nil,                 // 99: hyperpb.test.Maps.M6bEntry
-	nil,                 // 100: hyperpb.test.Maps.M6cEntry
-	nil,                 // 101: hyperpb.test.Maps.M6dEntry
-	nil,                 // 102: hyperpb.test.Maps.M6eEntry
-	nil,                 // 103: hyperpb.test.Maps.M6fEntry
-	nil,                 // 104: hyperpb.test.Maps.M70Entry
-	nil,                 // 105: hyperpb.test.Maps.M71Entry
-	nil,                 // 106: hyperpb.test.Maps.M72Entry
-	nil,                 // 107: hyperpb.test.Maps.M73Entry
-	nil,                 // 108: hyperpb.test.Maps.M74Entry
-	nil,                 // 109: hyperpb.test.Maps.M75Entry
-	nil,                 // 110: hyperpb.test.Maps.M76Entry
-	nil,                 // 111: hyperpb.test.Maps.M77Entry
-	nil,                 // 112: hyperpb.test.Maps.M78Entry
-	nil,                 // 113: hyperpb.test.Maps.M79Entry
-	nil,                 // 114: hyperpb.test.Maps.M7aEntry
-	nil,                 // 115: hyperpb.test.Maps.M7bEntry
-	nil,                 // 116: hyperpb.test.Maps.M7cEntry
-	nil,                 // 117: hyperpb.test.Maps.M7dEntry
-	nil,                 // 118: hyperpb.test.Maps.M7eEntry
-	nil,                 // 119: hyperpb.test.Maps.M7fEntry
-	nil,                 // 120: hyperpb.test.Maps.M80Entry
-	nil,                 // 121: hyperpb.test.Maps.M81Entry
-	nil,                 // 122: hyperpb.test.Maps.M82Entry
-	nil,                 // 123: hyperpb.test.Maps.M83Entry
-	nil,                 // 124: hyperpb.test.Maps.M84Entry
-	nil,                 // 125: hyperpb.test.Maps.M85Entry
-	nil,                 // 126: hyperpb.test.Maps.M86Entry
-	nil,                 // 127: hyperpb.test.Maps.M87Entry
-	nil,                 // 128: hyperpb.test.Maps.M88Entry
-	nil,                 // 129: hyperpb.test.Maps.M89Entry
-	nil,                 // 130: hyperpb.test.Maps.M8aEntry
-	nil,                 // 131: hyperpb.test.Maps.M8bEntry
-	nil,                 // 132: hyperpb.test.Maps.M8cEntry
-	nil,                 // 133: hyperpb.test.Maps.M8dEntry
-	nil,                 // 134: hyperpb.test.Maps.M8eEntry
-	nil,                 // 135: hyperpb.test.Maps.M8fEntry
-	nil,                 // 136: hyperpb.test.Maps.M90Entry
-	nil,                 // 137: hyperpb.test.Maps.M91Entry
-	nil,                 // 138: hyperpb.test.Maps.M92Entry
-	nil,                 // 139: hyperpb.test.Maps.M93Entry
-	nil,                 // 140: hyperpb.test.Maps.M94Entry
-	nil,                 // 141: hyperpb.test.Maps.M95Entry
-	nil,                 // 142: hyperpb.test.Maps.M96Entry
-	nil,                 // 143: hyperpb.test.Maps.M97Entry
-	nil,                 // 144: hyperpb.test.Maps.M98Entry
-	nil,                 // 145: hyperpb.test.Maps.M99Entry
-	nil,                 // 146: hyperpb.test.Maps.M9aEntry
-	nil,                 // 147: hyperpb.test.Maps.M9bEntry
-	nil,                 // 148: hyperpb.test.Maps.M9cEntry
-	nil,                 // 149: hyperpb.test.Maps.M9dEntry
-	nil,                 // 150: hyperpb.test.Maps.M9eEntry
-	nil,                 // 151: hyperpb.test.Maps.M9fEntry
-	nil,                 // 152: hyperpb.test.Maps.Ma0Entry
-	nil,                 // 153: hyperpb.test.Maps.Ma1Entry
-	nil,                 // 154: hyperpb.test.Maps.Ma2Entry
-	nil,                 // 155: hyperpb.test.Maps.Ma3Entry
-	nil,                 // 156: hyperpb.test.Maps.Ma4Entry
-	nil,                 // 157: hyperpb.test.Maps.Ma5Entry
-	nil,                 // 158: hyperpb.test.Maps.Ma6Entry
-	nil,                 // 159: hyperpb.test.Maps.Ma7Entry
-	nil,                 // 160: hyperpb.test.Maps.Ma8Entry
-	nil,                 // 161: hyperpb.test.Maps.Ma9Entry
-	nil,                 // 162: hyperpb.test.Maps.MaaEntry
-	nil,                 // 163: hyperpb.test.Maps.MabEntry
-	nil,                 // 164: hyperpb.test.Maps.MacEntry
-	nil,                 // 165: hyperpb.test.Maps.MadEntry
-	nil,                 // 166: hyperpb.test.Maps.MaeEntry
-	nil,                 // 167: hyperpb.test.Maps.MafEntry
-	nil,                 // 168: hyperpb.test.Maps.Mb0Entry
-	nil,                 // 169: hyperpb.test.Maps.Mb1Entry
-	nil,                 // 170: hyperpb.test.Maps.Mb2Entry
-	nil,                 // 171: hyperpb.test.Maps.Mb3Entry
-	nil,                 // 172: hyperpb.test.Maps.Mb4Entry
-	nil,                 // 173: hyperpb.test.Maps.Mb5Entry
-	nil,                 // 174: hyperpb.test.Maps.Mb6Entry
-	nil,                 // 175: hyperpb.test.Maps.Mb7Entry
-	nil,                 // 176: hyperpb.test.Maps.Mb8Entry
-	nil,                 // 177: hyperpb.test.Maps.Mb9Entry
-	nil,                 // 178: hyperpb.test.Maps.MbaEntry
-	nil,                 // 179: hyperpb.test.Maps.MbbEntry
-	nil,                 // 180: hyperpb.test.Maps.MbcEntry
-	nil,                 // 181: hyperpb.test.Maps.MbdEntry
-	nil,                 // 182: hyperpb.test.Maps.MbeEntry
-	nil,                 // 183: hyperpb.test.Maps.MbfEntry
-	nil,                 // 184: hyperpb.test.Maps.Mc0Entry
-	nil,                 // 185: hyperpb.test.Maps.Mc1Entry
-	nil,                 // 186: hyperpb.test.Maps.Mc2Entry
-	nil,                 // 187: hyperpb.test.Maps.Mc3Entry
-	nil,                 // 188: hyperpb.test.Maps.Mc4Entry
-	nil,                 // 189: hyperpb.test.Maps.Mc5Entry
-	nil,                 // 190: hyperpb.test.Maps.Mc6Entry
-	nil,                 // 191: hyperpb.test.Maps.Mc7Entry
-	nil,                 // 192: hyperpb.test.Maps.Mc8Entry
-	nil,                 // 193: hyperpb.test.Maps.Mc9Entry
-	nil,                 // 194: hyperpb.test.Maps.McaEntry
-	nil,                 // 195: hyperpb.test.Maps.McbEntry
-	nil,                 // 196: hyperpb.test.Maps.MccEntry
-	nil,                 // 197: hyperpb.test.Maps.McdEntry
-	nil,                 // 198: hyperpb.test.Maps.MceEntry
-	nil,                 // 199: hyperpb.test.Maps.McfEntry
-	nil,                 // 200: hyperpb.test.MessageMaps.M1Entry
-	nil,                 // 201: hyperpb.test.MessageMaps.M2Entry
-	nil,                 // 202: hyperpb.test.MessageMaps.M3Entry
-	nil,                 // 203: hyperpb.test.MessageMaps.M4Entry
-	nil,                 // 204: hyperpb.test.MessageMaps.M5Entry
-	nil,                 // 205: hyperpb.test.MessageMaps.M6Entry
-	nil,                 // 206: hyperpb.test.MessageMaps.M7Entry
-	nil,                 // 207: hyperpb.test.MessageMaps.M8Entry
-	nil,                 // 208: hyperpb.test.MessageMaps.M9Entry
-	nil,                 // 209: hyperpb.test.MessageMaps.MaEntry
-	nil,                 // 210: hyperpb.test.MessageMaps.McEntry
+	(Enum)(0),                  // 0: hyperpb.test.Enum
+	(*Scalars)(nil),            // 1: hyperpb.test.Scalars
+	(*Numbers)(nil),            // 2: hyperpb.test.Numbers
+	(*Repeated)(nil),           // 3: hyperpb.test.Repeated
+	(*Graph)(nil),              // 4: hyperpb.test.Graph
+	(*Oneof)(nil),              // 5: hyperpb.test.Oneof
+	(*Maps)(nil),               // 6: hyperpb.test.Maps
+	(*MessageMaps)(nil),        // 7: hyperpb.test.MessageMaps
+	(*Pathological)(nil),       // 8: hyperpb.test.Pathological
+	nil,                        // 9: hyperpb.test.Maps.M10Entry
+	nil,                        // 10: hyperpb.test.Maps.M11Entry
+	nil,                        // 11: hyperpb.test.Maps.M12Entry
+	nil,                        // 12: hyperpb.test.Maps.M13Entry
+	nil,                        // 13: hyperpb.test.Maps.M14Entry
+	nil,                        // 14: hyperpb.test.Maps.M15Entry
+	nil,                        // 15: hyperpb.test.Maps.M16Entry
+	nil,                        // 16: hyperpb.test.Maps.M17Entry
+	nil,                        // 17: hyperpb.test.Maps.M18Entry
+	nil,                        // 18: hyperpb.test.Maps.M19Entry
+	nil,                        // 19: hyperpb.test.Maps.M1aEntry
+	nil,                        // 20: hyperpb.test.Maps.M1bEntry
+	nil,                        // 21: hyperpb.test.Maps.M1cEntry
+	nil,                        // 22: hyperpb.test.Maps.M1dEntry
+	nil,                        // 23: hyperpb.test.Maps.M1eEntry
+	nil,                        // 24: hyperpb.test.Maps.M1fEntry
+	nil,                        // 25: hyperpb.test.Maps.M20Entry
+	nil,                        // 26: hyperpb.test.Maps.M21Entry
+	nil,                        // 27: hyperpb.test.Maps.M22Entry
+	nil,                        // 28: hyperpb.test.Maps.M23Entry
+	nil,                        // 29: hyperpb.test.Maps.M24Entry
+	nil,                        // 30: hyperpb.test.Maps.M25Entry
+	nil,                        // 31: hyperpb.test.Maps.M26Entry
+	nil,                        // 32: hyperpb.test.Maps.M27Entry
+	nil,                        // 33: hyperpb.test.Maps.M28Entry
+	nil,                        // 34: hyperpb.test.Maps.M29Entry
+	nil,                        // 35: hyperpb.test.Maps.M2aEntry
+	nil,                        // 36: hyperpb.test.Maps.M2bEntry
+	nil,                        // 37: hyperpb.test.Maps.M2cEntry
+	nil,                        // 38: hyperpb.test.Maps.M2dEntry
+	nil,                        // 39: hyperpb.test.Maps.M2eEntry
+	nil,                        // 40: hyperpb.test.Maps.M2fEntry
+	nil,                        // 41: hyperpb.test.Maps.M30Entry
+	nil,                        // 42: hyperpb.test.Maps.M31Entry
+	nil,                        // 43: hyperpb.test.Maps.M32Entry
+	nil,                        // 44: hyperpb.test.Maps.M33Entry
+	nil,                        // 45: hyperpb.test.Maps.M34Entry
+	nil,                        // 46: hyperpb.test.Maps.M35Entry
+	nil,                        // 47: hyperpb.test.Maps.M36Entry
+	nil,                        // 48: hyperpb.test.Maps.M37Entry
+	nil,                        // 49: hyperpb.test.Maps.M38Entry
+	nil,                        // 50: hyperpb.test.Maps.M39Entry
+	nil,                        // 51: hyperpb.test.Maps.M3aEntry
+	nil,                        // 52: hyperpb.test.Maps.M3bEntry
+	nil,                        // 53: hyperpb.test.Maps.M3cEntry
+	nil,                        // 54: hyperpb.test.Maps.M3dEntry
+	nil,                        // 55: hyperpb.test.Maps.M3eEntry
+	nil,                        // 56: hyperpb.test.Maps.M3fEntry
+	nil,                        // 57: hyperpb.test.Maps.M40Entry
+	nil,                        // 58: hyperpb.test.Maps.M41Entry
+	nil,                        // 59: hyperpb.test.Maps.M42Entry
+	nil,                        // 60: hyperpb.test.Maps.M43Entry
+	nil,                        // 61: hyperpb.test.Maps.M44Entry
+	nil,                        // 62: hyperpb.test.Maps.M45Entry
+	nil,                        // 63: hyperpb.test.Maps.M46Entry
+	nil,                        // 64: hyperpb.test.Maps.M47Entry
+	nil,                        // 65: hyperpb.test.Maps.M48Entry
+	nil,                        // 66: hyperpb.test.Maps.M49Entry
+	nil,                        // 67: hyperpb.test.Maps.M4aEntry
+	nil,                        // 68: hyperpb.test.Maps.M4bEntry
+	nil,                        // 69: hyperpb.test.Maps.M4cEntry
+	nil,                        // 70: hyperpb.test.Maps.M4dEntry
+	nil,                        // 71: hyperpb.test.Maps.M4eEntry
+	nil,                        // 72: hyperpb.test.Maps.M4fEntry
+	nil,                        // 73: hyperpb.test.Maps.M50Entry
+	nil,                        // 74: hyperpb.test.Maps.M51Entry
+	nil,                        // 75: hyperpb.test.Maps.M52Entry
+	nil,                        // 76: hyperpb.test.Maps.M53Entry
+	nil,                        // 77: hyperpb.test.Maps.M54Entry
+	nil,                        // 78: hyperpb.test.Maps.M55Entry
+	nil,                        // 79: hyperpb.test.Maps.M56Entry
+	nil,                        // 80: hyperpb.test.Maps.M57Entry
+	nil,                        // 81: hyperpb.test.Maps.M58Entry
+	nil,                        // 82: hyperpb.test.Maps.M59Entry
+	nil,                        // 83: hyperpb.test.Maps.M5aEntry
+	nil,                        // 84: hyperpb.test.Maps.M5bEntry
+	nil,                        // 85: hyperpb.test.Maps.M5cEntry
+	nil,                        // 86: hyperpb.test.Maps.M5dEntry
+	nil,                        // 87: hyperpb.test.Maps.M5eEntry
+	nil,                        // 88: hyperpb.test.Maps.M5fEntry
+	nil,                        // 89: hyperpb.test.Maps.M60Entry
+	nil,                        // 90: hyperpb.test.Maps.M61Entry
+	nil,                        // 91: hyperpb.test.Maps.M62Entry
+	nil,                        // 92: hyperpb.test.Maps.M63Entry
+	nil,                        // 93: hyperpb.test.Maps.M64Entry
+	nil,                        // 94: hyperpb.test.Maps.M65Entry
+	nil,                        // 95: hyperpb.test.Maps.M66Entry
+	nil,                        // 96: hyperpb.test.Maps.M67Entry
+	nil,                        // 97: hyperpb.test.Maps.M68Entry
+	nil,                        // 98: hyperpb.test.Maps.M69Entry
+	nil,                        // 99: hyperpb.test.Maps.M6aEntry
+	nil,                        // 100: hyperpb.test.Maps.M6bEntry
+	nil,                        // 101: hyperpb.test.Maps.M6cEntry
+	nil,                        // 102: hyperpb.test.Maps.M6dEntry
+	nil,                        // 103: hyperpb.test.Maps.M6eEntry
+	nil,                        // 104: hyperpb.test.Maps.M6fEntry
+	nil,                        // 105: hyperpb.test.Maps.M70Entry
+	nil,                        // 106: hyperpb.test.Maps.M71Entry
+	nil,                        // 107: hyperpb.test.Maps.M72Entry
+	nil,                        // 108: hyperpb.test.Maps.M73Entry
+	nil,                        // 109: hyperpb.test.Maps.M74Entry
+	nil,                        // 110: hyperpb.test.Maps.M75Entry
+	nil,                        // 111: hyperpb.test.Maps.M76Entry
+	nil,                        // 112: hyperpb.test.Maps.M77Entry
+	nil,                        // 113: hyperpb.test.Maps.M78Entry
+	nil,                        // 114: hyperpb.test.Maps.M79Entry
+	nil,                        // 115: hyperpb.test.Maps.M7aEntry
+	nil,                        // 116: hyperpb.test.Maps.M7bEntry
+	nil,                        // 117: hyperpb.test.Maps.M7cEntry
+	nil,                        // 118: hyperpb.test.Maps.M7dEntry
+	nil,                        // 119: hyperpb.test.Maps.M7eEntry
+	nil,                        // 120: hyperpb.test.Maps.M7fEntry
+	nil,                        // 121: hyperpb.test.Maps.M80Entry
+	nil,                        // 122: hyperpb.test.Maps.M81Entry
+	nil,                        // 123: hyperpb.test.Maps.M82Entry
+	nil,                        // 124: hyperpb.test.Maps.M83Entry
+	nil,                        // 125: hyperpb.test.Maps.M84Entry
+	nil,                        // 126: hyperpb.test.Maps.M85Entry
+	nil,                        // 127: hyperpb.test.Maps.M86Entry
+	nil,                        // 128: hyperpb.test.Maps.M87Entry
+	nil,                        // 129: hyperpb.test.Maps.M88Entry
+	nil,                        // 130: hyperpb.test.Maps.M89Entry
+	nil,                        // 131: hyperpb.test.Maps.M8aEntry
+	nil,                        // 132: hyperpb.test.Maps.M8bEntry
+	nil,                        // 133: hyperpb.test.Maps.M8cEntry
+	nil,                        // 134: hyperpb.test.Maps.M8dEntry
+	nil,                        // 135: hyperpb.test.Maps.M8eEntry
+	nil,                        // 136: hyperpb.test.Maps.M8fEntry
+	nil,                        // 137: hyperpb.test.Maps.M90Entry
+	nil,                        // 138: hyperpb.test.Maps.M91Entry
+	nil,                        // 139: hyperpb.test.Maps.M92Entry
+	nil,                        // 140: hyperpb.test.Maps.M93Entry
+	nil,                        // 141: hyperpb.test.Maps.M94Entry
+	nil,                        // 142: hyperpb.test.Maps.M95Entry
+	nil,                        // 143: hyperpb.test.Maps.M96Entry
+	nil,                        // 144: hyperpb.test.Maps.M97Entry
+	nil,                        // 145: hyperpb.test.Maps.M98Entry
+	nil,                        // 146: hyperpb.test.Maps.M99Entry
+	nil,                        // 147: hyperpb.test.Maps.M9aEntry
+	nil,                        // 148: hyperpb.test.Maps.M9bEntry
+	nil,                        // 149: hyperpb.test.Maps.M9cEntry
+	nil,                        // 150: hyperpb.test.Maps.M9dEntry
+	nil,                        // 151: hyperpb.test.Maps.M9eEntry
+	nil,                        // 152: hyperpb.test.Maps.M9fEntry
+	nil,                        // 153: hyperpb.test.Maps.Ma0Entry
+	nil,                        // 154: hyperpb.test.Maps.Ma1Entry
+	nil,                        // 155: hyperpb.test.Maps.Ma2Entry
+	nil,                        // 156: hyperpb.test.Maps.Ma3Entry
+	nil,                        // 157: hyperpb.test.Maps.Ma4Entry
+	nil,                        // 158: hyperpb.test.Maps.Ma5Entry
+	nil,                        // 159: hyperpb.test.Maps.Ma6Entry
+	nil,                        // 160: hyperpb.test.Maps.Ma7Entry
+	nil,                        // 161: hyperpb.test.Maps.Ma8Entry
+	nil,                        // 162: hyperpb.test.Maps.Ma9Entry
+	nil,                        // 163: hyperpb.test.Maps.MaaEntry
+	nil,                        // 164: hyperpb.test.Maps.MabEntry
+	nil,                        // 165: hyperpb.test.Maps.MacEntry
+	nil,                        // 166: hyperpb.test.Maps.MadEntry
+	nil,                        // 167: hyperpb.test.Maps.MaeEntry
+	nil,                        // 168: hyperpb.test.Maps.MafEntry
+	nil,                        // 169: hyperpb.test.Maps.Mb0Entry
+	nil,                        // 170: hyperpb.test.Maps.Mb1Entry
+	nil,                        // 171: hyperpb.test.Maps.Mb2Entry
+	nil,                        // 172: hyperpb.test.Maps.Mb3Entry
+	nil,                        // 173: hyperpb.test.Maps.Mb4Entry
+	nil,                        // 174: hyperpb.test.Maps.Mb5Entry
+	nil,                        // 175: hyperpb.test.Maps.Mb6Entry
+	nil,                        // 176: hyperpb.test.Maps.Mb7Entry
+	nil,                        // 177: hyperpb.test.Maps.Mb8Entry
+	nil,                        // 178: hyperpb.test.Maps.Mb9Entry
+	nil,                        // 179: hyperpb.test.Maps.MbaEntry
+	nil,                        // 180: hyperpb.test.Maps.MbbEntry
+	nil,                        // 181: hyperpb.test.Maps.MbcEntry
+	nil,                        // 182: hyperpb.test.Maps.MbdEntry
+	nil,                        // 183: hyperpb.test.Maps.MbeEntry
+	nil,                        // 184: hyperpb.test.Maps.MbfEntry
+	nil,                        // 185: hyperpb.test.Maps.Mc0Entry
+	nil,                        // 186: hyperpb.test.Maps.Mc1Entry
+	nil,                        // 187: hyperpb.test.Maps.Mc2Entry
+	nil,                        // 188: hyperpb.test.Maps.Mc3Entry
+	nil,                        // 189: hyperpb.test.Maps.Mc4Entry
+	nil,                        // 190: hyperpb.test.Maps.Mc5Entry
+	nil,                        // 191: hyperpb.test.Maps.Mc6Entry
+	nil,                        // 192: hyperpb.test.Maps.Mc7Entry
+	nil,                        // 193: hyperpb.test.Maps.Mc8Entry
+	nil,                        // 194: hyperpb.test.Maps.Mc9Entry
+	nil,                        // 195: hyperpb.test.Maps.McaEntry
+	nil,                        // 196: hyperpb.test.Maps.McbEntry
+	nil,                        // 197: hyperpb.test.Maps.MccEntry
+	nil,                        // 198: hyperpb.test.Maps.McdEntry
+	nil,                        // 199: hyperpb.test.Maps.MceEntry
+	nil,                        // 200: hyperpb.test.Maps.McfEntry
+	nil,                        // 201: hyperpb.test.MessageMaps.M1Entry
+	nil,                        // 202: hyperpb.test.MessageMaps.M2Entry
+	nil,                        // 203: hyperpb.test.MessageMaps.M3Entry
+	nil,                        // 204: hyperpb.test.MessageMaps.M4Entry
+	nil,                        // 205: hyperpb.test.MessageMaps.M5Entry
+	nil,                        // 206: hyperpb.test.MessageMaps.M6Entry
+	nil,                        // 207: hyperpb.test.MessageMaps.M7Entry
+	nil,                        // 208: hyperpb.test.MessageMaps.M8Entry
+	nil,                        // 209: hyperpb.test.MessageMaps.M9Entry
+	nil,                        // 210: hyperpb.test.MessageMaps.MaEntry
+	nil,                        // 211: hyperpb.test.MessageMaps.McEntry
+	(*Pathological_Inner)(nil), // 212: hyperpb.test.Pathological.Inner
 }
 var file_test_test_proto_depIdxs = []int32{
 	4,   // 0: hyperpb.test.Graph.s:type_name -> hyperpb.test.Graph
 	4,   // 1: hyperpb.test.Graph.r:type_name -> hyperpb.test.Graph
 	5,   // 2: hyperpb.test.Oneof.m10:type_name -> hyperpb.test.Oneof
-	8,   // 3: hyperpb.test.Maps.m10:type_name -> hyperpb.test.Maps.M10Entry
-	9,   // 4: hyperpb.test.Maps.m11:type_name -> hyperpb.test.Maps.M11Entry
-	10,  // 5: hyperpb.test.Maps.m12:type_name -> hyperpb.test.Maps.M12Entry
-	11,  // 6: hyperpb.test.Maps.m13:type_name -> hyperpb.test.Maps.M13Entry
-	12,  // 7: hyperpb.test.Maps.m14:type_name -> hyperpb.test.Maps.M14Entry
-	13,  // 8: hyperpb.test.Maps.m15:type_name -> hyperpb.test.Maps.M15Entry
-	14,  // 9: hyperpb.test.Maps.m16:type_name -> hyperpb.test.Maps.M16Entry
-	15,  // 10: hyperpb.test.Maps.m17:type_name -> hyperpb.test.Maps.M17Entry
-	16,  // 11: hyperpb.test.Maps.m18:type_name -> hyperpb.test.Maps.M18Entry
-	17,  // 12: hyperpb.test.Maps.m19:type_name -> hyperpb.test.Maps.M19Entry
-	18,  // 13: hyperpb.test.Maps.m1a:type_name -> hyperpb.test.Maps.M1aEntry
-	19,  // 14: hyperpb.test.Maps.m1b:type_name -> hyperpb.test.Maps.M1bEntry
-	20,  // 15: hyperpb.test.Maps.m1c:type_name -> hyperpb.test.Maps.M1cEntry
-	21,  // 16: hyperpb.test.Maps.m1d:type_name -> hyperpb.test.Maps.M1dEntry
-	22,  // 17: hyperpb.test.Maps.m1e:type_name -> hyperpb.test.Maps.M1eEntry
-	23,  // 18: hyperpb.test.Maps.m1f:type_name -> hyperpb.test.Maps.M1fEntry
-	24,  // 19: hyperpb.test.Maps.m20:type_name -> hyperpb.test.Maps.M20Entry
-	25,  // 20: hyperpb.test.Maps.m21:type_name -> hyperpb.test.Maps.M21Entry
-	26,  // 21: hyperpb.test.Maps.m22:type_name -> hyperpb.test.Maps.M22Entry
-	27,  // 22: hyperpb.test.Maps.m23:type_name -> hyperpb.test.Maps.M23Entry
-	28,  // 23: hyperpb.test.Maps.m24:type_name -> hyperpb.test.Maps.M24Entry
-	29,  // 24: hyperpb.test.Maps.m25:type_name -> hyperpb.test.Maps.M25Entry
-	30,  // 25: hyperpb.test.Maps.m26:type_name -> hyperpb.test.Maps.M26Entry
-	31,  // 26: hyperpb.test.Maps.m27:type_name -> hyperpb.test.Maps.M27Entry
-	32,  // 27: hyperpb.test.Maps.m28:type_name -> hyperpb.test.Maps.M28Entry
-	33,  // 28: hyperpb.test.Maps.m29:type_name -> hyperpb.test.Maps.M29Entry
-	34,  // 29: hyperpb.test.Maps.m2a:type_name -> hyperpb.test.Maps.M2aEntry
-	35,  // 30: hyperpb.test.Maps.m2b:type_name -> hyperpb.test.Maps.M2bEntry
-	36,  // 31: hyperpb.test.Maps.m2c:type_name -> hyperpb.test.Maps.M2cEntry
-	37,  // 32: hyperpb.test.Maps.m2d:type_name -> hyperpb.test.Maps.M2dEntry
-	38,  // 33: hyperpb.test.Maps.m2e:type_name -> hyperpb.test.Maps.M2eEntry
-	39,  // 34: hyperpb.test.Maps.m2f:type_name -> hyperpb.test.Maps.M2fEntry
-	40,  // 35: hyperpb.test.Maps.m30:type_name -> hyperpb.test.Maps.M30Entry
-	41,  // 36: hyperpb.test.Maps.m31:type_name -> hyperpb.test.Maps.M31Entry
-	42,  // 37: hyperpb.test.Maps.m32:type_name -> hyperpb.test.Maps.M32Entry
-	43,  // 38: hyperpb.test.Maps.m33:type_name -> hyperpb.test.Maps.M33Entry
-	44,  // 39: hyperpb.test.Maps.m34:type_name -> hyperpb.test.Maps.M34Entry
-	45,  // 40: hyperpb.test.Maps.m35:type_name -> hyperpb.test.Maps.M35Entry
-	46,  // 41: hyperpb.test.Maps.m36:type_name -> hyperpb.test.Maps.M36Entry
-	47,  // 42: hyperpb.test.Maps.m37:type_name -> hyperpb.test.Maps.M37Entry
-	48,  // 43: hyperpb.test.Maps.m38:type_name -> hyperpb.test.Maps.M38Entry
-	49,  // 44: hyperpb.test.Maps.m39:type_name -> hyperpb.test.Maps.M39Entry
-	50,  // 45: hyperpb.test.Maps.m3a:type_name -> hyperpb.test.Maps.M3aEntry
-	51,  // 46: hyperpb.test.Maps.m3b:type_name -> hyperpb.test.Maps.M3bEntry
-	52,  // 47: hyperpb.test.Maps.m3c:type_name -> hyperpb.test.Maps.M3cEntry
-	53,  // 48: hyperpb.test.Maps.m3d:type_name -> hyperpb.test.Maps.M3dEntry
-	54,  // 49: hyperpb.test.Maps.m3e:type_name -> hyperpb.test.Maps.M3eEntry
-	55,  // 50: hyperpb.test.Maps.m3f:type_name -> hyperpb.test.Maps.M3fEntry
-	56,  // 51: hyperpb.test.Maps.m40:type_name -> hyperpb.test.Maps.M40Entry
-	57,  // 52: hyperpb.test.Maps.m41:type_name -> hyperpb.test.Maps.M41Entry
-	58,  // 53: hyperpb.test.Maps.m42:type_name -> hyperpb.test.Maps.M42Entry
-	59,  // 54: hyperpb.test.Maps.m43:type_name -> hyperpb.test.Maps.M43Entry
-	60,  // 55: hyperpb.test.Maps.m44:type_name -> hyperpb.test.Maps.M44Entry
-	61,  // 56: hyperpb.test.Maps.m45:type_name -> hyperpb.test.Maps.M45Entry
-	62,  // 57: hyperpb.test.Maps.m46:type_name -> hyperpb.test.Maps.M46Entry
-	63,  // 58: hyperpb.test.Maps.m47:type_name -> hyperpb.test.Maps.M47Entry
-	64,  // 59: hyperpb.test.Maps.m48:type_name -> hyperpb.test.Maps.M48Entry
-	65,  // 60: hyperpb.test.Maps.m49:type_name -> hyperpb.test.Maps.M49Entry
-	66,  // 61: hyperpb.test.Maps.m4a:type_name -> hyperpb.test.Maps.M4aEntry
-	67,  // 62: hyperpb.test.Maps.m4b:type_name -> hyperpb.test.Maps.M4bEntry
-	68,  // 63: hyperpb.test.Maps.m4c:type_name -> hyperpb.test.Maps.M4cEntry
-	69,  // 64: hyperpb.test.Maps.m4d:type_name -> hyperpb.test.Maps.M4dEntry
-	70,  // 65: hyperpb.test.Maps.m4e:type_name -> hyperpb.test.Maps.M4eEntry
-	71,  // 66: hyperpb.test.Maps.m4f:type_name -> hyperpb.test.Maps.M4fEntry
-	72,  // 67: hyperpb.test.Maps.m50:type_name -> hyperpb.test.Maps.M50Entry
-	73,  // 68: hyperpb.test.Maps.m51:type_name -> hyperpb.test.Maps.M51Entry
-	74,  // 69: hyperpb.test.Maps.m52:type_name -> hyperpb.test.Maps.M52Entry
-	75,  // 70: hyperpb.test.Maps.m53:type_name -> hyperpb.test.Maps.M53Entry
-	76,  // 71: hyperpb.test.Maps.m54:type_name -> hyperpb.test.Maps.M54Entry
-	77,  // 72: hyperpb.test.Maps.m55:type_name -> hyperpb.test.Maps.M55Entry
-	78,  // 73: hyperpb.test.Maps.m56:type_name -> hyperpb.test.Maps.M56Entry
-	79,  // 74: hyperpb.test.Maps.m57:type_name -> hyperpb.test.Maps.M57Entry
-	80,  // 75: hyperpb.test.Maps.m58:type_name -> hyperpb.test.Maps.M58Entry
-	81,  // 76: hyperpb.test.Maps.m59:type_name -> hyperpb.test.Maps.M59Entry
-	82,  // 77: hyperpb.test.Maps.m5a:type_name -> hyperpb.test.Maps.M5aEntry
-	83,  // 78: hyperpb.test.Maps.m5b:type_name -> hyperpb.test.Maps.M5bEntry
-	84,  // 79: hyperpb.test.Maps.m5c:type_name -> hyperpb.test.Maps.M5cEntry
-	85,  // 80: hyperpb.test.Maps.m5d:type_name -> hyperpb.test.Maps.M5dEntry
-	86,  // 81: hyperpb.test.Maps.m5e:type_name -> hyperpb.test.Maps.M5eEntry
-	87,  // 82: hyperpb.test.Maps.m5f:type_name -> hyperpb.test.Maps.M5fEntry
-	88,  // 83: hyperpb.test.Maps.m60:type_name -> hyperpb.test.Maps.M60Entry
-	89,  // 84: hyperpb.test.Maps.m61:type_name -> hyperpb.test.Maps.M61Entry
-	90,  // 85: hyperpb.test.Maps.m62:type_name -> hyperpb.test.Maps.M62Entry
-	91,  // 86: hyperpb.test.Maps.m63:type_name -> hyperpb.test.Maps.M63Entry
-	92,  // 87: hyperpb.test.Maps.m64:type_name -> hyperpb.test.Maps.M64Entry
-	93,  // 88: hyperpb.test.Maps.m65:type_name -> hyperpb.test.Maps.M65Entry
-	94,  // 89: hyperpb.test.Maps.m66:type_name -> hyperpb.test.Maps.M66Entry
-	95,  // 90: hyperpb.test.Maps.m67:type_name -> hyperpb.test.Maps.M67Entry
-	96,  // 91: hyperpb.test.Maps.m68:type_name -> hyperpb.test.Maps.M68Entry
-	97,  // 92: hyperpb.test.Maps.m69:type_name -> hyperpb.test.Maps.M69Entry
-	98,  // 93: hyperpb.test.Maps.m6a:type_name -> hyperpb.test.Maps.M6aEntry
-	99,  // 94: hyperpb.test.Maps.m6b:type_name -> hyperpb.test.Maps.M6bEntry
-	100, // 95: hyperpb.test.Maps.m6c:type_name -> hyperpb.test.Maps.M6cEntry
-	101, // 96: hyperpb.test.Maps.m6d:type_name -> hyperpb.test.Maps.M6dEntry
-	102, // 97: hyperpb.test.Maps.m6e:type_name -> hyperpb.test.Maps.M6eEntry
-	103, // 98: hyperpb.test.Maps.m6f:type_name -> hyperpb.test.Maps.M6fEntry
-	104, // 99: hyperpb.test.Maps.m70:type_name -> hyperpb.test.Maps.M70Entry
-	105, // 100: hyperpb.test.Maps.m71:type_name -> hyperpb.test.Maps.M71Entry
-	106, // 101: hyperpb.test.Maps.m72:type_name -> hyperpb.test.Maps.M72Entry
-	107, // 102: hyperpb.test.Maps.m73:type_name -> hyperpb.test.Maps.M73Entry
-	108, // 103: hyperpb.test.Maps.m74:type_name -> hyperpb.test.Maps.M74Entry
-	109, // 104: hyperpb.test.Maps.m75:type_name -> hyperpb.test.Maps.M75Entry
-	110, // 105: hyperpb.test.Maps.m76:type_name -> hyperpb.test.Maps.M76Entry
-	111, // 106: hyperpb.test.Maps.m77:type_name -> hyperpb.test.Maps.M77Entry
-	112, // 107: hyperpb.test.Maps.m78:type_name -> hyperpb.test.Maps.M78Entry
-	113, // 108: hyperpb.test.Maps.m79:type_name -> hyperpb.test.Maps.M79Entry
-	114, // 109: hyperpb.test.Maps.m7a:type_name -> hyperpb.test.Maps.M7aEntry
-	115, // 110: hyperpb.test.Maps.m7b:type_name -> hyperpb.test.Maps.M7bEntry
-	116, // 111: hyperpb.test.Maps.m7c:type_name -> hyperpb.test.Maps.M7cEntry
-	117, // 112: hyperpb.test.Maps.m7d:type_name -> hyperpb.test.Maps.M7dEntry
-	118, // 113: hyperpb.test.Maps.m7e:type_name -> hyperpb.test.Maps.M7eEntry
-	119, // 114: hyperpb.test.Maps.m7f:type_name -> hyperpb.test.Maps.M7fEntry
-	120, // 115: hyperpb.test.Maps.m80:type_name -> hyperpb.test.Maps.M80Entry
-	121, // 116: hyperpb.test.Maps.m81:type_name -> hyperpb.test.Maps.M81Entry
-	122, // 117: hyperpb.test.Maps.m82:type_name -> hyperpb.test.Maps.M82Entry
-	123, // 118: hyperpb.test.Maps.m83:type_name -> hyperpb.test.Maps.M83Entry
-	124, // 119: hyperpb.test.Maps.m84:type_name -> hyperpb.test.Maps.M84Entry
-	125, // 120: hyperpb.test.Maps.m85:type_name -> hyperpb.test.Maps.M85Entry
-	126, // 121: hyperpb.test.Maps.m86:type_name -> hyperpb.test.Maps.M86Entry
-	127, // 122: hyperpb.test.Maps.m87:type_name -> hyperpb.test.Maps.M87Entry
-	128, // 123: hyperpb.test.Maps.m88:type_name -> hyperpb.test.Maps.M88Entry
-	129, // 124: hyperpb.test.Maps.m89:type_name -> hyperpb.test.Maps.M89Entry
-	130, // 125: hyperpb.test.Maps.m8a:type_name -> hyperpb.test.Maps.M8aEntry
-	131, // 126: hyperpb.test.Maps.m8b:type_name -> hyperpb.test.Maps.M8bEntry
-	132, // 127: hyperpb.test.Maps.m8c:type_name -> hyperpb.test.Maps.M8cEntry
-	133, // 128: hyperpb.test.Maps.m8d:type_name -> hyperpb.test.Maps.M8dEntry
-	134, // 129: hyperpb.test.Maps.m8e:type_name -> hyperpb.test.Maps.M8eEntry
-	135, // 130: hyperpb.test.Maps.m8f:type_name -> hyperpb.test.Maps.M8fEntry
-	136, // 131: hyperpb.test.Maps.m90:type_name -> hyperpb.test.Maps.M90Entry
-	137, // 132: hyperpb.test.Maps.m91:type_name -> hyperpb.test.Maps.M91Entry
-	138, // 133: hyperpb.test.Maps.m92:type_name -> hyperpb.test.Maps.M92Entry
-	139, // 134: hyperpb.test.Maps.m93:type_name -> hyperpb.test.Maps.M93Entry
-	140, // 135: hyperpb.test.Maps.m94:type_name -> hyperpb.test.Maps.M94Entry
-	141, // 136: hyperpb.test.Maps.m95:type_name -> hyperpb.test.Maps.M95Entry
-	142, // 137: hyperpb.test.Maps.m96:type_name -> hyperpb.test.Maps.M96Entry
-	143, // 138: hyperpb.test.Maps.m97:type_name -> hyperpb.test.Maps.M97Entry
-	144, // 139: hyperpb.test.Maps.m98:type_name -> hyperpb.test.Maps.M98Entry
-	145, // 140: hyperpb.test.Maps.m99:type_name -> hyperpb.test.Maps.M99Entry
-	146, // 141: hyperpb.test.Maps.m9a:type_name -> hyperpb.test.Maps.M9aEntry
-	147, // 142: hyperpb.test.Maps.m9b:type_name -> hyperpb.test.Maps.M9bEntry
-	148, // 143: hyperpb.test.Maps.m9c:type_name -> hyperpb.test.Maps.M9cEntry
-	149, // 144: hyperpb.test.Maps.m9d:type_name -> hyperpb.test.Maps.M9dEntry
-	150, // 145: hyperpb.test.Maps.m9e:type_name -> hyperpb.test.Maps.M9eEntry
-	151, // 146: hyperpb.test.Maps.m9f:type_name -> hyperpb.test.Maps.M9fEntry
-	152, // 147: hyperpb.test.Maps.ma0:type_name -> hyperpb.test.Maps.Ma0Entry
-	153, // 148: hyperpb.test.Maps.ma1:type_name -> hyperpb.test.Maps.Ma1Entry
-	154, // 149: hyperpb.test.Maps.ma2:type_name -> hyperpb.test.Maps.Ma2Entry
-	155, // 150: hyperpb.test.Maps.ma3:type_name -> hyperpb.test.Maps.Ma3Entry
-	156, // 151: hyperpb.test.Maps.ma4:type_name -> hyperpb.test.Maps.Ma4Entry
-	157, // 152: hyperpb.test.Maps.ma5:type_name -> hyperpb.test.Maps.Ma5Entry
-	158, // 153: hyperpb.test.Maps.ma6:type_name -> hyperpb.test.Maps.Ma6Entry
-	159, // 154: hyperpb.test.Maps.ma7:type_name -> hyperpb.test.Maps.Ma7Entry
-	160, // 155: hyperpb.test.Maps.ma8:type_name -> hyperpb.test.Maps.Ma8Entry
-	161, // 156: hyperpb.test.Maps.ma9:type_name -> hyperpb.test.Maps.Ma9Entry
-	162, // 157: hyperpb.test.Maps.maa:type_name -> hyperpb.test.Maps.MaaEntry
-	163, // 158: hyperpb.test.Maps.mab:type_name -> hyperpb.test.Maps.MabEntry
-	164, // 159: hyperpb.test.Maps.mac:type_name -> hyperpb.test.Maps.MacEntry
-	165, // 160: hyperpb.test.Maps.mad:type_name -> hyperpb.test.Maps.MadEntry
-	166, // 161: hyperpb.test.Maps.mae:type_name -> hyperpb.test.Maps.MaeEntry
-	167, // 162: hyperpb.test.Maps.maf:type_name -> hyperpb.test.Maps.MafEntry
-	168, // 163: hyperpb.test.Maps.mb0:type_name -> hyperpb.test.Maps.Mb0Entry
-	169, // 164: hyperpb.test.Maps.mb1:type_name -> hyperpb.test.Maps.Mb1Entry
-	170, // 165: hyperpb.test.Maps.mb2:type_name -> hyperpb.test.Maps.Mb2Entry
-	171, // 166: hyperpb.test.Maps.mb3:type_name -> hyperpb.test.Maps.Mb3Entry
-	172, // 167: hyperpb.test.Maps.mb4:type_name -> hyperpb.test.Maps.Mb4Entry
-	173, // 168: hyperpb.test.Maps.mb5:type_name -> hyperpb.test.Maps.Mb5Entry
-	174, // 169: hyperpb.test.Maps.mb6:type_name -> hyperpb.test.Maps.Mb6Entry
-	175, // 170: hyperpb.test.Maps.mb7:type_name -> hyperpb.test.Maps.Mb7Entry
-	176, // 171: hyperpb.test.Maps.mb8:type_name -> hyperpb.test.Maps.Mb8Entry
-	177, // 172: hyperpb.test.Maps.mb9:type_name -> hyperpb.test.Maps.Mb9Entry
-	178, // 173: hyperpb.test.Maps.mba:type_name -> hyperpb.test.Maps.MbaEntry
-	179, // 174: hyperpb.test.Maps.mbb:type_name -> hyperpb.test.Maps.MbbEntry
-	180, // 175: hyperpb.test.Maps.mbc:type_name -> hyperpb.test.Maps.MbcEntry
-	181, // 176: hyperpb.test.Maps.mbd:type_name -> hyperpb.test.Maps.MbdEntry
-	182, // 177: hyperpb.test.Maps.mbe:type_name -> hyperpb.test.Maps.MbeEntry
-	183, // 178: hyperpb.test.Maps.mbf:type_name -> hyperpb.test.Maps.MbfEntry
-	184, // 179: hyperpb.test.Maps.mc0:type_name -> hyperpb.test.Maps.Mc0Entry
-	185, // 180: hyperpb.test.Maps.mc1:type_name -> hyperpb.test.Maps.Mc1Entry
-	186, // 181: hyperpb.test.Maps.mc2:type_name -> hyperpb.test.Maps.Mc2Entry
-	187, // 182: hyperpb.test.Maps.mc3:type_name -> hyperpb.test.Maps.Mc3Entry
-	188, // 183: hyperpb.test.Maps.mc4:type_name -> hyperpb.test.Maps.Mc4Entry
-	189, // 184: hyperpb.test.Maps.mc5:type_name -> hyperpb.test.Maps.Mc5Entry
-	190, // 185: hyperpb.test.Maps.mc6:type_name -> hyperpb.test.Maps.Mc6Entry
-	191, // 186: hyperpb.test.Maps.mc7:type_name -> hyperpb.test.Maps.Mc7Entry
-	192, // 187: hyperpb.test.Maps.mc8:type_name -> hyperpb.test.Maps.Mc8Entry
-	193, // 188: hyperpb.test.Maps.mc9:type_name -> hyperpb.test.Maps.Mc9Entry
-	194, // 189: hyperpb.test.Maps.mca:type_name -> hyperpb.test.Maps.McaEntry
-	195, // 190: hyperpb.test.Maps.mcb:type_name -> hyperpb.test.Maps.McbEntry
-	196, // 191: hyperpb.test.Maps.mcc:type_name -> hyperpb.test.Maps.MccEntry
-	197, // 192: hyperpb.test.Maps.mcd:type_name -> hyperpb.test.Maps.McdEntry
-	198, // 193: hyperpb.test.Maps.mce:type_name -> hyperpb.test.Maps.MceEntry
-	199, // 194: hyperpb.test.Maps.mcf:type_name -> hyperpb.test.Maps.McfEntry
+	9,   // 3: hyperpb.test.Maps.m10:type_name -> hyperpb.test.Maps.M10Entry
+	10,  // 4: hyperpb.test.Maps.m11:type_name -> hyperpb.test.Maps.M11Entry
+	11,  // 5: hyperpb.test.Maps.m12:type_name -> hyperpb.test.Maps.M12Entry
+	12,  // 6: hyperpb.test.Maps.m13:type_name -> hyperpb.test.Maps.M13Entry
+	13,  // 7: hyperpb.test.Maps.m14:type_name -> hyperpb.test.Maps.M14Entry
+	14,  // 8: hyperpb.test.Maps.m15:type_name -> hyperpb.test.Maps.M15Entry
+	15,  // 9: hyperpb.test.Maps.m16:type_name -> hyperpb.test.Maps.M16Entry
+	16,  // 10: hyperpb.test.Maps.m17:type_name -> hyperpb.test.Maps.M17Entry
+	17,  // 11: hyperpb.test.Maps.m18:type_name -> hyperpb.test.Maps.M18Entry
+	18,  // 12: hyperpb.test.Maps.m19:type_name -> hyperpb.test.Maps.M19Entry
+	19,  // 13: hyperpb.test.Maps.m1a:type_name -> hyperpb.test.Maps.M1aEntry
+	20,  // 14: hyperpb.test.Maps.m1b:type_name -> hyperpb.test.Maps.M1bEntry
+	21,  // 15: hyperpb.test.Maps.m1c:type_name -> hyperpb.test.Maps.M1cEntry
+	22,  // 16: hyperpb.test.Maps.m1d:type_name -> hyperpb.test.Maps.M1dEntry
+	23,  // 17: hyperpb.test.Maps.m1e:type_name -> hyperpb.test.Maps.M1eEntry
+	24,  // 18: hyperpb.test.Maps.m1f:type_name -> hyperpb.test.Maps.M1fEntry
+	25,  // 19: hyperpb.test.Maps.m20:type_name -> hyperpb.test.Maps.M20Entry
+	26,  // 20: hyperpb.test.Maps.m21:type_name -> hyperpb.test.Maps.M21Entry
+	27,  // 21: hyperpb.test.Maps.m22:type_name -> hyperpb.test.Maps.M22Entry
+	28,  // 22: hyperpb.test.Maps.m23:type_name -> hyperpb.test.Maps.M23Entry
+	29,  // 23: hyperpb.test.Maps.m24:type_name -> hyperpb.test.Maps.M24Entry
+	30,  // 24: hyperpb.test.Maps.m25:type_name -> hyperpb.test.Maps.M25Entry
+	31,  // 25: hyperpb.test.Maps.m26:type_name -> hyperpb.test.Maps.M26Entry
+	32,  // 26: hyperpb.test.Maps.m27:type_name -> hyperpb.test.Maps.M27Entry
+	33,  // 27: hyperpb.test.Maps.m28:type_name -> hyperpb.test.Maps.M28Entry
+	34,  // 28: hyperpb.test.Maps.m29:type_name -> hyperpb.test.Maps.M29Entry
+	35,  // 29: hyperpb.test.Maps.m2a:type_name -> hyperpb.test.Maps.M2aEntry
+	36,  // 30: hyperpb.test.Maps.m2b:type_name -> hyperpb.test.Maps.M2bEntry
+	37,  // 31: hyperpb.test.Maps.m2c:type_name -> hyperpb.test.Maps.M2cEntry
+	38,  // 32: hyperpb.test.Maps.m2d:type_name -> hyperpb.test.Maps.M2dEntry
+	39,  // 33: hyperpb.test.Maps.m2e:type_name -> hyperpb.test.Maps.M2eEntry
+	40,  // 34: hyperpb.test.Maps.m2f:type_name -> hyperpb.test.Maps.M2fEntry
+	41,  // 35: hyperpb.test.Maps.m30:type_name -> hyperpb.test.Maps.M30Entry
+	42,  // 36: hyperpb.test.Maps.m31:type_name -> hyperpb.test.Maps.M31Entry
+	43,  // 37: hyperpb.test.Maps.m32:type_name -> hyperpb.test.Maps.M32Entry
+	44,  // 38: hyperpb.test.Maps.m33:type_name -> hyperpb.test.Maps.M33Entry
+	45,  // 39: hyperpb.test.Maps.m34:type_name -> hyperpb.test.Maps.M34Entry
+	46,  // 40: hyperpb.test.Maps.m35:type_name -> hyperpb.test.Maps.M35Entry
+	47,  // 41: hyperpb.test.Maps.m36:type_name -> hyperpb.test.Maps.M36Entry
+	48,  // 42: hyperpb.test.Maps.m37:type_name -> hyperpb.test.Maps.M37Entry
+	49,  // 43: hyperpb.test.Maps.m38:type_name -> hyperpb.test.Maps.M38Entry
+	50,  // 44: hyperpb.test.Maps.m39:type_name -> hyperpb.test.Maps.M39Entry
+	51,  // 45: hyperpb.test.Maps.m3a:type_name -> hyperpb.test.Maps.M3aEntry
+	52,  // 46: hyperpb.test.Maps.m3b:type_name -> hyperpb.test.Maps.M3bEntry
+	53,  // 47: hyperpb.test.Maps.m3c:type_name -> hyperpb.test.Maps.M3cEntry
+	54,  // 48: hyperpb.test.Maps.m3d:type_name -> hyperpb.test.Maps.M3dEntry
+	55,  // 49: hyperpb.test.Maps.m3e:type_name -> hyperpb.test.Maps.M3eEntry
+	56,  // 50: hyperpb.test.Maps.m3f:type_name -> hyperpb.test.Maps.M3fEntry
+	57,  // 51: hyperpb.test.Maps.m40:type_name -> hyperpb.test.Maps.M40Entry
+	58,  // 52: hyperpb.test.Maps.m41:type_name -> hyperpb.test.Maps.M41Entry
+	59,  // 53: hyperpb.test.Maps.m42:type_name -> hyperpb.test.Maps.M42Entry
+	60,  // 54: hyperpb.test.Maps.m43:type_name -> hyperpb.test.Maps.M43Entry
+	61,  // 55: hyperpb.test.Maps.m44:type_name -> hyperpb.test.Maps.M44Entry
+	62,  // 56: hyperpb.test.Maps.m45:type_name -> hyperpb.test.Maps.M45Entry
+	63,  // 57: hyperpb.test.Maps.m46:type_name -> hyperpb.test.Maps.M46Entry
+	64,  // 58: hyperpb.test.Maps.m47:type_name -> hyperpb.test.Maps.M47Entry
+	65,  // 59: hyperpb.test.Maps.m48:type_name -> hyperpb.test.Maps.M48Entry
+	66,  // 60: hyperpb.test.Maps.m49:type_name -> hyperpb.test.Maps.M49Entry
+	67,  // 61: hyperpb.test.Maps.m4a:type_name -> hyperpb.test.Maps.M4aEntry
+	68,  // 62: hyperpb.test.Maps.m4b:type_name -> hyperpb.test.Maps.M4bEntry
+	69,  // 63: hyperpb.test.Maps.m4c:type_name -> hyperpb.test.Maps.M4cEntry
+	70,  // 64: hyperpb.test.Maps.m4d:type_name -> hyperpb.test.Maps.M4dEntry
+	71,  // 65: hyperpb.test.Maps.m4e:type_name -> hyperpb.test.Maps.M4eEntry
+	72,  // 66: hyperpb.test.Maps.m4f:type_name -> hyperpb.test.Maps.M4fEntry
+	73,  // 67: hyperpb.test.Maps.m50:type_name -> hyperpb.test.Maps.M50Entry
+	74,  // 68: hyperpb.test.Maps.m51:type_name -> hyperpb.test.Maps.M51Entry
+	75,  // 69: hyperpb.test.Maps.m52:type_name -> hyperpb.test.Maps.M52Entry
+	76,  // 70: hyperpb.test.Maps.m53:type_name -> hyperpb.test.Maps.M53Entry
+	77,  // 71: hyperpb.test.Maps.m54:type_name -> hyperpb.test.Maps.M54Entry
+	78,  // 72: hyperpb.test.Maps.m55:type_name -> hyperpb.test.Maps.M55Entry
+	79,  // 73: hyperpb.test.Maps.m56:type_name -> hyperpb.test.Maps.M56Entry
+	80,  // 74: hyperpb.test.Maps.m57:type_name -> hyperpb.test.Maps.M57Entry
+	81,  // 75: hyperpb.test.Maps.m58:type_name -> hyperpb.test.Maps.M58Entry
+	82,  // 76: hyperpb.test.Maps.m59:type_name -> hyperpb.test.Maps.M59Entry
+	83,  // 77: hyperpb.test.Maps.m5a:type_name -> hyperpb.test.Maps.M5aEntry
+	84,  // 78: hyperpb.test.Maps.m5b:type_name -> hyperpb.test.Maps.M5bEntry
+	85,  // 79: hyperpb.test.Maps.m5c:type_name -> hyperpb.test.Maps.M5cEntry
+	86,  // 80: hyperpb.test.Maps.m5d:type_name -> hyperpb.test.Maps.M5dEntry
+	87,  // 81: hyperpb.test.Maps.m5e:type_name -> hyperpb.test.Maps.M5eEntry
+	88,  // 82: hyperpb.test.Maps.m5f:type_name -> hyperpb.test.Maps.M5fEntry
+	89,  // 83: hyperpb.test.Maps.m60:type_name -> hyperpb.test.Maps.M60Entry
+	90,  // 84: hyperpb.test.Maps.m61:type_name -> hyperpb.test.Maps.M61Entry
+	91,  // 85: hyperpb.test.Maps.m62:type_name -> hyperpb.test.Maps.M62Entry
+	92,  // 86: hyperpb.test.Maps.m63:type_name -> hyperpb.test.Maps.M63Entry
+	93,  // 87: hyperpb.test.Maps.m64:type_name -> hyperpb.test.Maps.M64Entry
+	94,  // 88: hyperpb.test.Maps.m65:type_name -> hyperpb.test.Maps.M65Entry
+	95,  // 89: hyperpb.test.Maps.m66:type_name -> hyperpb.test.Maps.M66Entry
+	96,  // 90: hyperpb.test.Maps.m67:type_name -> hyperpb.test.Maps.M67Entry
+	97,  // 91: hyperpb.test.Maps.m68:type_name -> hyperpb.test.Maps.M68Entry
+	98,  // 92: hyperpb.test.Maps.m69:type_name -> hyperpb.test.Maps.M69Entry
+	99,  // 93: hyperpb.test.Maps.m6a:type_name -> hyperpb.test.Maps.M6aEntry
+	100, // 94: hyperpb.test.Maps.m6b:type_name -> hyperpb.test.Maps.M6bEntry
+	101, // 95: hyperpb.test.Maps.m6c:type_name -> hyperpb.test.Maps.M6cEntry
+	102, // 96: hyperpb.test.Maps.m6d:type_name -> hyperpb.test.Maps.M6dEntry
+	103, // 97: hyperpb.test.Maps.m6e:type_name -> hyperpb.test.Maps.M6eEntry
+	104, // 98: hyperpb.test.Maps.m6f:type_name -> hyperpb.test.Maps.M6fEntry
+	105, // 99: hyperpb.test.Maps.m70:type_name -> hyperpb.test.Maps.M70Entry
+	106, // 100: hyperpb.test.Maps.m71:type_name -> hyperpb.test.Maps.M71Entry
+	107, // 101: hyperpb.test.Maps.m72:type_name -> hyperpb.test.Maps.M72Entry
+	108, // 102: hyperpb.test.Maps.m73:type_name -> hyperpb.test.Maps.M73Entry
+	109, // 103: hyperpb.test.Maps.m74:type_name -> hyperpb.test.Maps.M74Entry
+	110, // 104: hyperpb.test.Maps.m75:type_name -> hyperpb.test.Maps.M75Entry
+	111, // 105: hyperpb.test.Maps.m76:type_name -> hyperpb.test.Maps.M76Entry
+	112, // 106: hyperpb.test.Maps.m77:type_name -> hyperpb.test.Maps.M77Entry
+	113, // 107: hyperpb.test.Maps.m78:type_name -> hyperpb.test.Maps.M78Entry
+	114, // 108: hyperpb.test.Maps.m79:type_name -> hyperpb.test.Maps.M79Entry
+	115, // 109: hyperpb.test.Maps.m7a:type_name -> hyperpb.test.Maps.M7aEntry
+	116, // 110: hyperpb.test.Maps.m7b:type_name -> hyperpb.test.Maps.M7bEntry
+	117, // 111: hyperpb.test.Maps.m7c:type_name -> hyperpb.test.Maps.M7cEntry
+	118, // 112: hyperpb.test.Maps.m7d:type_name -> hyperpb.test.Maps.M7dEntry
+	119, // 113: hyperpb.test.Maps.m7e:type_name -> hyperpb.test.Maps.M7eEntry
+	120, // 114: hyperpb.test.Maps.m7f:type_name -> hyperpb.test.Maps.M7fEntry
+	121, // 115: hyperpb.test.Maps.m80:type_name -> hyperpb.test.Maps.M80Entry
+	122, // 116: hyperpb.test.Maps.m81:type_name -> hyperpb.test.Maps.M81Entry
+	123, // 117: hyperpb.test.Maps.m82:type_name -> hyperpb.test.Maps.M82Entry
+	124, // 118: hyperpb.test.Maps.m83:type_name -> hyperpb.test.Maps.M83Entry
+	125, // 119: hyperpb.test.Maps.m84:type_name -> hyperpb.test.Maps.M84Entry
+	126, // 120: hyperpb.test.Maps.m85:type_name -> hyperpb.test.Maps.M85Entry
+	127, // 121: hyperpb.test.Maps.m86:type_name -> hyperpb.test.Maps.M86Entry
+	128, // 122: hyperpb.test.Maps.m87:type_name -> hyperpb.test.Maps.M87Entry
+	129, // 123: hyperpb.test.Maps.m88:type_name -> hyperpb.test.Maps.M88Entry
+	130, // 124: hyperpb.test.Maps.m89:type_name -> hyperpb.test.Maps.M89Entry
+	131, // 125: hyperpb.test.Maps.m8a:type_name -> hyperpb.test.Maps.M8aEntry
+	132, // 126: hyperpb.test.Maps.m8b:type_name -> hyperpb.test.Maps.M8bEntry
+	133, // 127: hyperpb.test.Maps.m8c:type_name -> hyperpb.test.Maps.M8cEntry
+	134, // 128: hyperpb.test.Maps.m8d:type_name -> hyperpb.test.Maps.M8dEntry
+	135, // 129: hyperpb.test.Maps.m8e:type_name -> hyperpb.test.Maps.M8eEntry
+	136, // 130: hyperpb.test.Maps.m8f:type_name -> hyperpb.test.Maps.M8fEntry
+	137, // 131: hyperpb.test.Maps.m90:type_name -> hyperpb.test.Maps.M90Entry
+	138, // 132: hyperpb.test.Maps.m91:type_name -> hyperpb.test.Maps.M91Entry
+	139, // 133: hyperpb.test.Maps.m92:type_name -> hyperpb.test.Maps.M92Entry
+	140, // 134: hyperpb.test.Maps.m93:type_name -> hyperpb.test.Maps.M93Entry
+	141, // 135: hyperpb.test.Maps.m94:type_name -> hyperpb.test.Maps.M94Entry
+	142, // 136: hyperpb.test.Maps.m95:type_name -> hyperpb.test.Maps.M95Entry
+	143, // 137: hyperpb.test.Maps.m96:type_name -> hyperpb.test.Maps.M96Entry
+	144, // 138: hyperpb.test.Maps.m97:type_name -> hyperpb.test.Maps.M97Entry
+	145, // 139: hyperpb.test.Maps.m98:type_name -> hyperpb.test.Maps.M98Entry
+	146, // 140: hyperpb.test.Maps.m99:type_name -> hyperpb.test.Maps.M99Entry
+	147, // 141: hyperpb.test.Maps.m9a:type_name -> hyperpb.test.Maps.M9aEntry
+	148, // 142: hyperpb.test.Maps.m9b:type_name -> hyperpb.test.Maps.M9bEntry
+	149, // 143: hyperpb.test.Maps.m9c:type_name -> hyperpb.test.Maps.M9cEntry
+	150, // 144: hyperpb.test.Maps.m9d:type_name -> hyperpb.test.Maps.M9dEntry
+	151, // 145: hyperpb.test.Maps.m9e:type_name -> hyperpb.test.Maps.M9eEntry
+	152, // 146: hyperpb.test.Maps.m9f:type_name -> hyperpb.test.Maps.M9fEntry
+	153, // 147: hyperpb.test.Maps.ma0:type_name -> hyperpb.test.Maps.Ma0Entry
+	154, // 148: hyperpb.test.Maps.ma1:type_name -> hyperpb.test.Maps.Ma1Entry
+	155, // 149: hyperpb.test.Maps.ma2:type_name -> hyperpb.test.Maps.Ma2Entry
+	156, // 150: hyperpb.test.Maps.ma3:type_name -> hyperpb.test.Maps.Ma3Entry
+	157, // 151: hyperpb.test.Maps.ma4:type_name -> hyperpb.test.Maps.Ma4Entry
+	158, // 152: hyperpb.test.Maps.ma5:type_name -> hyperpb.test.Maps.Ma5Entry
+	159, // 153: hyperpb.test.Maps.ma6:type_name -> hyperpb.test.Maps.Ma6Entry
+	160, // 154: hyperpb.test.Maps.ma7:type_name -> hyperpb.test.Maps.Ma7Entry
+	161, // 155: hyperpb.test.Maps.ma8:type_name -> hyperpb.test.Maps.Ma8Entry
+	162, // 156: hyperpb.test.Maps.ma9:type_name -> hyperpb.test.Maps.Ma9Entry
+	163, // 157: hyperpb.test.Maps.maa:type_name -> hyperpb.test.Maps.MaaEntry
+	164, // 158: hyperpb.test.Maps.mab:type_name -> hyperpb.test.Maps.MabEntry
+	165, // 159: hyperpb.test.Maps.mac:type_name -> hyperpb.test.Maps.MacEntry
+	166, // 160: hyperpb.test.Maps.mad:type_name -> hyperpb.test.Maps.MadEntry
+	167, // 161: hyperpb.test.Maps.mae:type_name -> hyperpb.test.Maps.MaeEntry
+	168, // 162: hyperpb.test.Maps.maf:type_name -> hyperpb.test.Maps.MafEntry
+	169, // 163: hyperpb.test.Maps.mb0:type_name -> hyperpb.test.Maps.Mb0Entry
+	170, // 164: hyperpb.test.Maps.mb1:type_name -> hyperpb.test.Maps.Mb1Entry
+	171, // 165: hyperpb.test.Maps.mb2:type_name -> hyperpb.test.Maps.Mb2Entry
+	172, // 166: hyperpb.test.Maps.mb3:type_name -> hyperpb.test.Maps.Mb3Entry
+	173, // 167: hyperpb.test.Maps.mb4:type_name -> hyperpb.test.Maps.Mb4Entry
+	174, // 168: hyperpb.test.Maps.mb5:type_name -> hyperpb.test.Maps.Mb5Entry
+	175, // 169: hyperpb.test.Maps.mb6:type_name -> hyperpb.test.Maps.Mb6Entry
+	176, // 170: hyperpb.test.Maps.mb7:type_name -> hyperpb.test.Maps.Mb7Entry
+	177, // 171: hyperpb.test.Maps.mb8:type_name -> hyperpb.test.Maps.Mb8Entry
+	178, // 172: hyperpb.test.Maps.mb9:type_name -> hyperpb.test.Maps.Mb9Entry
+	179, // 173: hyperpb.test.Maps.mba:type_name -> hyperpb.test.Maps.MbaEntry
+	180, // 174: hyperpb.test.Maps.mbb:type_name -> hyperpb.test.Maps.MbbEntry
+	181, // 175: hyperpb.test.Maps.mbc:type_name -> hyperpb.test.Maps.MbcEntry
+	182, // 176: hyperpb.test.Maps.mbd:type_name -> hyperpb.test.Maps.MbdEntry
+	183, // 177: hyperpb.test.Maps.mbe:type_name -> hyperpb.test.Maps.MbeEntry
+	184, // 178: hyperpb.test.Maps.mbf:type_name -> hyperpb.test.Maps.MbfEntry
+	185, // 179: hyperpb.test.Maps.mc0:type_name -> hyperpb.test.Maps.Mc0Entry
+	186, // 180: hyperpb.test.Maps.mc1:type_name -> hyperpb.test.Maps.Mc1Entry
+	187, // 181: hyperpb.test.Maps.mc2:type_name -> hyperpb.test.Maps.Mc2Entry
+	188, // 182: hyperpb.test.Maps.mc3:type_name -> hyperpb.test.Maps.Mc3Entry
+	189, // 183: hyperpb.test.Maps.mc4:type_name -> hyperpb.test.Maps.Mc4Entry
+	190, // 184: hyperpb.test.Maps.mc5:type_name -> hyperpb.test.Maps.Mc5Entry
+	191, // 185: hyperpb.test.Maps.mc6:type_name -> hyperpb.test.Maps.Mc6Entry
+	192, // 186: hyperpb.test.Maps.mc7:type_name -> hyperpb.test.Maps.Mc7Entry
+	193, // 187: hyperpb.test.Maps.mc8:type_name -> hyperpb.test.Maps.Mc8Entry
+	194, // 188: hyperpb.test.Maps.mc9:type_name -> hyperpb.test.Maps.Mc9Entry
+	195, // 189: hyperpb.test.Maps.mca:type_name -> hyperpb.test.Maps.McaEntry
+	196, // 190: hyperpb.test.Maps.mcb:type_name -> hyperpb.test.Maps.McbEntry
+	197, // 191: hyperpb.test.Maps.mcc:type_name -> hyperpb.test.Maps.MccEntry
+	198, // 192: hyperpb.test.Maps.mcd:type_name -> hyperpb.test.Maps.McdEntry
+	199, // 193: hyperpb.test.Maps.mce:type_name -> hyperpb.test.Maps.MceEntry
+	200, // 194: hyperpb.test.Maps.mcf:type_name -> hyperpb.test.Maps.McfEntry
 	1,   // 195: hyperpb.test.MessageMaps.scalars:type_name -> hyperpb.test.Scalars
-	200, // 196: hyperpb.test.MessageMaps.m1:type_name -> hyperpb.test.MessageMaps.M1Entry
-	201, // 197: hyperpb.test.MessageMaps.m2:type_name -> hyperpb.test.MessageMaps.M2Entry
-	202, // 198: hyperpb.test.MessageMaps.m3:type_name -> hyperpb.test.MessageMaps.M3Entry
-	203, // 199: hyperpb.test.MessageMaps.m4:type_name -> hyperpb.test.MessageMaps.M4Entry
-	204, // 200: hyperpb.test.MessageMaps.m5:type_name -> hyperpb.test.MessageMaps.M5Entry
-	205, // 201: hyperpb.test.MessageMaps.m6:type_name -> hyperpb.test.MessageMaps.M6Entry
-	206, // 202: hyperpb.test.MessageMaps.m7:type_name -> hyperpb.test.MessageMaps.M7Entry
-	207, // 203: hyperpb.test.MessageMaps.m8:type_name -> hyperpb.test.MessageMaps.M8Entry
-	208, // 204: hyperpb.test.MessageMaps.m9:type_name -> hyperpb.test.MessageMaps.M9Entry
-	209, // 205: hyperpb.test.MessageMaps.ma:type_name -> hyperpb.test.MessageMaps.MaEntry
-	210, // 206: hyperpb.test.MessageMaps.mc:type_name -> hyperpb.test.MessageMaps.McEntry
-	0,   // 207: hyperpb.test.Maps.M1dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 208: hyperpb.test.Maps.M2dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 209: hyperpb.test.Maps.M3dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 210: hyperpb.test.Maps.M4dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 211: hyperpb.test.Maps.M5dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 212: hyperpb.test.Maps.M6dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 213: hyperpb.test.Maps.M7dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 214: hyperpb.test.Maps.M8dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 215: hyperpb.test.Maps.M9dEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 216: hyperpb.test.Maps.MadEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 217: hyperpb.test.Maps.MbdEntry.value:type_name -> hyperpb.test.Enum
-	0,   // 218: hyperpb.test.Maps.McdEntry.value:type_name -> hyperpb.test.Enum
-	7,   // 219: hyperpb.test.MessageMaps.M1Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 220: hyperpb.test.MessageMaps.M2Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 221: hyperpb.test.MessageMaps.M3Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 222: hyperpb.test.MessageMaps.M4Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 223: hyperpb.test.MessageMaps.M5Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 224: hyperpb.test.MessageMaps.M6Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 225: hyperpb.test.MessageMaps.M7Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 226: hyperpb.test.MessageMaps.M8Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 227: hyperpb.test.MessageMaps.M9Entry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 228: hyperpb.test.MessageMaps.MaEntry.value:type_name -> hyperpb.test.MessageMaps
-	7,   // 229: hyperpb.test.MessageMaps.McEntry.value:type_name -> hyperpb.test.MessageMaps
-	230, // [230:230] is the sub-list for method output_type
-	230, // [230:230] is the sub-list for method input_type
-	230, // [230:230] is the sub-list for extension type_name
-	230, // [230:230] is the sub-list for extension extendee
-	0,   // [0:230] is the sub-list for field type_name
+	201, // 196: hyperpb.test.MessageMaps.m1:type_name -> hyperpb.test.MessageMaps.M1Entry
+	202, // 197: hyperpb.test.MessageMaps.m2:type_name -> hyperpb.test.MessageMaps.M2Entry
+	203, // 198: hyperpb.test.MessageMaps.m3:type_name -> hyperpb.test.MessageMaps.M3Entry
+	204, // 199: hyperpb.test.MessageMaps.m4:type_name -> hyperpb.test.MessageMaps.M4Entry
+	205, // 200: hyperpb.test.MessageMaps.m5:type_name -> hyperpb.test.MessageMaps.M5Entry
+	206, // 201: hyperpb.test.MessageMaps.m6:type_name -> hyperpb.test.MessageMaps.M6Entry
+	207, // 202: hyperpb.test.MessageMaps.m7:type_name -> hyperpb.test.MessageMaps.M7Entry
+	208, // 203: hyperpb.test.MessageMaps.m8:type_name -> hyperpb.test.MessageMaps.M8Entry
+	209, // 204: hyperpb.test.MessageMaps.m9:type_name -> hyperpb.test.MessageMaps.M9Entry
+	210, // 205: hyperpb.test.MessageMaps.ma:type_name -> hyperpb.test.MessageMaps.MaEntry
+	211, // 206: hyperpb.test.MessageMaps.mc:type_name -> hyperpb.test.MessageMaps.McEntry
+	212, // 207: hyperpb.test.Pathological.x:type_name -> hyperpb.test.Pathological.Inner
+	0,   // 208: hyperpb.test.Maps.M1dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 209: hyperpb.test.Maps.M2dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 210: hyperpb.test.Maps.M3dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 211: hyperpb.test.Maps.M4dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 212: hyperpb.test.Maps.M5dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 213: hyperpb.test.Maps.M6dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 214: hyperpb.test.Maps.M7dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 215: hyperpb.test.Maps.M8dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 216: hyperpb.test.Maps.M9dEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 217: hyperpb.test.Maps.MadEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 218: hyperpb.test.Maps.MbdEntry.value:type_name -> hyperpb.test.Enum
+	0,   // 219: hyperpb.test.Maps.McdEntry.value:type_name -> hyperpb.test.Enum
+	7,   // 220: hyperpb.test.MessageMaps.M1Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 221: hyperpb.test.MessageMaps.M2Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 222: hyperpb.test.MessageMaps.M3Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 223: hyperpb.test.MessageMaps.M4Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 224: hyperpb.test.MessageMaps.M5Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 225: hyperpb.test.MessageMaps.M6Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 226: hyperpb.test.MessageMaps.M7Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 227: hyperpb.test.MessageMaps.M8Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 228: hyperpb.test.MessageMaps.M9Entry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 229: hyperpb.test.MessageMaps.MaEntry.value:type_name -> hyperpb.test.MessageMaps
+	7,   // 230: hyperpb.test.MessageMaps.McEntry.value:type_name -> hyperpb.test.MessageMaps
+	231, // [231:231] is the sub-list for method output_type
+	231, // [231:231] is the sub-list for method input_type
+	231, // [231:231] is the sub-list for extension type_name
+	231, // [231:231] is the sub-list for extension extendee
+	0,   // [0:231] is the sub-list for field type_name
 }
 
 func init() { file_test_test_proto_init() }
@@ -4001,7 +4234,7 @@ func file_test_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   210,
+			NumMessages:   212,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

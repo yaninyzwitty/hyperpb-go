@@ -33,13 +33,14 @@ import (
 	"github.com/bufbuild/hyperpb/internal/scc"
 	"github.com/bufbuild/hyperpb/internal/swiss"
 	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
 // CompileOption is a configuration setting for [Compile].
 type Options struct {
-	Profile    Profile
+	Profile    profile.Profile
 	Extensions ExtensionResolver
 
 	// Backend connects a [compiler] with backend configuration defined in another
@@ -54,7 +55,7 @@ type Options struct {
 		// the caller is responsible for constructing the FieldSite.
 		//
 		// Returns nil if the field is not supported yet.
-		SelectArchetype(protoreflect.FieldDescriptor, FieldProfile) *Archetype
+		SelectArchetype(protoreflect.FieldDescriptor, profile.Field) *Archetype
 
 		// PopulateMethods gives the backend an opportunity to populate the
 		// fast-path methods of the generated type.
@@ -103,6 +104,12 @@ type compiler struct {
 }
 
 func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
+	if debug.Enabled {
+		if profile, ok := c.Profile.(*profile.Recorder); ok {
+			c.log("pgo", "\n%s", profile.Dump())
+		}
+	}
+
 	c.recurse(md)
 	c.dag = scc.Sort(c.types[md], func(ty *ir) iter.Seq[*ir] {
 		return func(yield func(*ir) bool) {
@@ -208,12 +215,12 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 
 // profile returns profiling information for fd in the compiler's current
 // context.
-func (c *compiler) profile(fd protoreflect.FieldDescriptor) FieldProfile {
-	site := FieldSite{Field: fd}
+func (c *compiler) profile(fd protoreflect.FieldDescriptor) profile.Field {
+	site := profile.Site{Field: fd}
 	if c.Profile == nil {
 		return site.DefaultProfile()
 	}
-	return c.Profile.Field(site)
+	return c.Profile.ForField(site)
 }
 
 func (c *compiler) fields(md protoreflect.MessageDescriptor) []protoreflect.FieldDescriptor {
@@ -374,9 +381,10 @@ func (c *compiler) codegen(ir *ir) {
 		c.write(
 			fieldParserSymbol{parser: pSym, index: i},
 			tdp.FieldParser{
-				Tag:    tag,
-				Offset: tf.offset,
-				Parse:  uintptr(unsafe2.NewPC(p.Thunk)),
+				Tag:     tag,
+				Offset:  tf.offset,
+				Preload: uint32(ir.t[pf.tIdx].prof.ExpectedCount),
+				Parse:   uintptr(unsafe2.NewPC(p.Thunk)),
 			},
 			relos...,
 		)
