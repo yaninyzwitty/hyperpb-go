@@ -49,7 +49,7 @@ jobs:
 
       - name: Benchmark
         if: ${{ matrix.tags == '' }}
-        run: make bench BENCHMARK="B/bench/^descriptor.yaml" 
+        run: make bench BENCHMARK="B/^descriptor.yaml" 
 
   lint:
     name: Lint
