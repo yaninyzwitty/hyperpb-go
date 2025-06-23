@@ -404,9 +404,9 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	// bytes without the sign bit set, in groups of 8.
 	var count int
 	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
-		n := min(8, p1.EndAddr-p)
+		n := min(8, p1.EndAddr.Sub(p))
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= tdp.SignBits << (n * 8)
+		bytes |= tdp.SignBits << uint(n*8)
 		count += bits.OnesCount64(tdp.SignBits &^ bytes)
 	}
 

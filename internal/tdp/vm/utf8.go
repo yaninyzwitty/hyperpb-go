@@ -37,7 +37,7 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 		// Fast path for ASCII: simply check that all of the bytes don't have
 		// their sign bits set.
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		mask := uint64(tdp.SignBits) >> ((8 - n) * 8)
+		mask := uint64(tdp.SignBits) >> uint((8-n)*8)
 		ascii := bits.TrailingZeros64(bytes&mask) / 8
 		p1.Log(p2, "ascii bytes", "%016x, %d bytes", bytes, ascii)
 		p = p.Add(ascii)

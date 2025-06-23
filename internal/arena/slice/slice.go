@@ -163,7 +163,34 @@ func (s Slice[T]) Grow(a *arena.Arena, n int) Slice[T] {
 	oldSize := sliceLayout[T](s.Cap())
 	newSize := sliceLayout[T](s.Cap() + n)
 
-	p := a.Realloc(newSize, oldSize, unsafe2.Cast[byte](s.ptr))
+	// Originally, this was arena.Realloc. It is inlined in-place for speed.
+	p := unsafe2.Cast[byte](s.ptr)
+	for range 1 {
+		// This Just Works regardless of whether the allocation is growing or
+		// shrinking. If it's shrinking, delta will be negative, and a.left
+		// is never negative, so this will add back the spare capacity.
+		i := a.Next.Add(-oldSize)
+		j := i.Add(newSize)
+		if unsafe2.AddrOf(p) == i && j <= a.End {
+			a.Next = j
+			a.Log("fast realloc", "%p, %d->%d:%d", p, oldSize, newSize, arena.Align)
+			break
+		}
+
+		if newSize < oldSize {
+			a.Log("realloc", "%p, %d->%d:%d", p, oldSize, newSize, arena.Align)
+			break
+		}
+
+		q := a.Alloc(newSize)
+		a.Log("realloc", "%p->%p, %d->%d:%d", p, q, oldSize, newSize, arena.Align)
+		if oldSize > 0 {
+			unsafe2.Copy(q, p, oldSize)
+		}
+
+		p = q
+	}
+
 	s.ptr = unsafe2.Cast[T](p)
 	s.cap = uint32(newSize) / uint32(size)
 	return s
@@ -249,7 +276,8 @@ func (s Untyped) String() string {
 
 func sliceLayout[T any](n int) (size int) {
 	layout := layout.Of[T]()
-	if layout.Align > arena.Align {
+	if debug.Enabled && layout.Align > arena.Align {
+		// This doesn't seem to inline correctly if we don't use debug.Enabled.
 		panic("hyperpb: over-aligned object")
 	}
 	return arena.SuggestSize(layout.Size * n)

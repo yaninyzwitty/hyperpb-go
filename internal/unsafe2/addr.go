@@ -21,19 +21,31 @@ import (
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
+// intptr is an integer type with the same layout as a uintptr but signed.
+//
+// On every platform we support, int and uintptr have the same layout.
+type intptr int
+
 // Addr is a typed raw address.
-type Addr[T any] uintptr
+//
+// The underlying type is an int64 in order to work around a Go codegen bug.
+// The bug is essentially that we want to do an arithmetic shift on the value,
+// which requires casting what would normally be a uintptr to int64. For some
+// reason, when in a generic context, this confuses Go's inliner *just
+// enough* to cause things to fail to inline, resulting in a generic function
+// call on the critical path.
+type Addr[T any] intptr
 
 // AddrOf gets the address of a pointer.
 func AddrOf[P ~*E, E any](p P) Addr[E] {
-	return Addr[E](unsafe.Pointer(p))
+	return Addr[E](uintptr(unsafe.Pointer(p)))
 }
 
 // AssertValid asserts that this address is a valid pointer.
 //
 //go:nosplit
 func (a Addr[T]) AssertValid() *T {
-	return (*T)(unsafe.Pointer(a)) // Don't worry about it.
+	return (*T)(unsafe.Pointer(uintptr(a))) // Don't worry about it.
 }
 
 // Add adds the given offset to this address.
@@ -62,17 +74,6 @@ func (a Addr[T]) Misalign(align int) (prev, next int) {
 	return prev, next
 }
 
-// ArithmeticShift does an arithmetic left shift on this address.
-//
-// Because Go lacks an intptr type, this operation is rather annoying to do
-// without a helper like this.
-func (a Addr[T]) ArithmeticShift(n int) Addr[T] {
-	if layout.Bits[Addr[T]]() == 32 {
-		return Addr[T](int32(a) >> uint(n))
-	}
-	return Addr[T](int64(a) >> uint(n))
-}
-
 // SignBit returns whether this address has its sign bit set.
 //
 // Pointers with the high bits set are never used by Go, so we can use this bit
@@ -84,7 +85,7 @@ func (a Addr[T]) SignBit() bool {
 // SignBitMask returns either all zeros or all ones, according to the sign bit
 // of a.
 func (a Addr[T]) SignBitMask() Addr[T] {
-	return a.ArithmeticShift(layout.Bits[Addr[T]]() - 1)
+	return a >> (layout.Bits[Addr[T]]() - 1)
 }
 
 // ClearSignBit clears the sign bit of this address, flipping all of the other

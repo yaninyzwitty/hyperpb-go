@@ -320,12 +320,13 @@ func (p1 P1) PushMessage(p2 P2, len int, m *dynamic.Message) (P1, P2) {
 
 	p1.endGroup = ^uint64(0)
 	p2.messageAddr = unsafe2.Addr[dynamic.Message](p2.Scratch)
-	p2.P3().t_ = unsafe2.AddrOf(p2.Message().Type().Parser)
+	t := p2.Message().Type().Parser
+	p2.P3().t_ = unsafe2.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.fieldAddr = unsafe2.AddrOf(&p2.P3().t_.AssertValid().Entrypoint)
+	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
 
 	return p1, p2
 }

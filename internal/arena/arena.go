@@ -100,20 +100,35 @@ func (a *Arena) KeepAlive(v any) {
 // Alloc allocates memory with the given size.
 //
 // All memory is pointer-aligned. If zero is true, the memory will be zeroed.
+//
+//go:nosplit
 func (a *Arena) Alloc(size int) *byte {
 	// Align size to a pointer boundary.
 	size += Align - 1
 	size &^= Align - 1
 
-	if a.Next.Add(size) > a.End {
-		a.Grow(size)
+	if a.Next.Add(size) <= a.End {
+		// Duplicating this block ensures that Go schedules this branch
+		// correctly. This block is the "hot" side of the branch.
+		p := a.Next.AssertValid()
+		a.Next = a.Next.Add(size)
+		a.Log("alloc", "%v:%v, %d:%d", p, a.Next, size, Align)
+		return p
 	}
 
+	a.Grow(size)
 	p := a.Next.AssertValid()
 	a.Next = a.Next.Add(size)
 	a.Log("alloc", "%v:%v, %d:%d", p, a.Next, size, Align)
-
 	return p
+}
+
+// Reserve ensures that at least size bytes can be allocated without calling
+// [Arena.Grow].
+func (a *Arena) Reserve(size int) {
+	if a.Next.Add(size) > a.End {
+		a.Grow(size)
+	}
 }
 
 // Free resets this arena to an "empty" state, allowing all memory allocated by
@@ -123,7 +138,19 @@ func (a *Arena) Alloc(size int) *byte {
 // trades off safety: any memory allocated by the arena must not be referenced
 // after a call to Free.
 func (a *Arena) Free() {
-	a.Next, a.End, a.Cap = 0, 0, 0
+	// Discard all but the largest block, which we clear. This means that as
+	// an arena is re-used, we will eventually wind up learning the size of the
+	// largest block we need to allocate, and use only that one, meaning that
+	// "average" calls should never have to call Grow().
+	end := len(a.blocks) - 1
+	clear(a.blocks[:end])
+	unsafe2.Clear(a.blocks[end], 1<<end)
+
+	// Set up next/end/cap to point to the largest block.
+	a.Next = unsafe2.AddrOf(a.blocks[end])
+	a.End = a.Next.Add(1 << end)
+	a.Cap = 1 << end
+
 	// Order doesn't matter here: nothing in a.blocks can point into a.keep,
 	// because the only GC-visible pointers in a.blocks are pointers back to
 	// a, the arena header.
@@ -136,43 +163,11 @@ func (a *Arena) Free() {
 	// In profiling, it turns out that doing clear(a.keep) is several times
 	// more expensive than the noscan clear that happens below.
 	a.keep = nil
-
-	for log, block := range a.blocks {
-		if block != nil {
-			unsafe2.Clear(block, 1<<log)
-		}
-	}
-}
-
-// Realloc grows an allocation.
-//
-//go:nosplit
-func (a *Arena) Realloc(newSize, oldSize int, p *byte) *byte {
-	// This Just Works regardless of whether the allocation is growing or
-	// shrinking. If it's shrinking, delta will be negative, and a.left
-	// is never negative, so this will add back the spare capacity.
-	i := a.Next.Add(-oldSize)
-	j := i.Add(newSize)
-	if unsafe2.AddrOf(p) == i && j <= a.End {
-		a.Next = j
-		a.Log("fast realloc", "%p, %d->%d:%d", p, oldSize, newSize, Align)
-		return p
-	}
-
-	if newSize < oldSize {
-		a.Log("realloc", "%p, %d->%d:%d", p, oldSize, newSize, Align)
-		return p
-	}
-
-	q := a.Alloc(newSize)
-	a.Log("realloc", "%p->%p, %d->%d:%d", p, q, oldSize, newSize, Align)
-	if oldSize > 0 {
-		unsafe2.Copy(q, p, oldSize)
-	}
-	return q
 }
 
 // Grow allocates fresh memory onto next of at least the given size.
+//
+//go:nosplit
 func (a *Arena) Grow(size int) {
 	unsafe2.Escape(a)
 	p, n := a.allocChunk(max(size, a.Cap*2))
