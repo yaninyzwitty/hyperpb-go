@@ -31,7 +31,7 @@ import (
 )
 
 func parseMapV32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], varintItem[uint32], uint32, uint32]
+	_ = parseMapKxV[varint32Item, varint32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -39,8 +39,8 @@ func parseMapV32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
-	var vi varintItem[uint32]
+	var ki varint32Item
+	var vi varint32Item
 	var k uint32
 	var v uint32
 
@@ -119,7 +119,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], varintItem[uint64], uint32, uint64]
+	_ = parseMapKxV[varint32Item, varint64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -127,8 +127,8 @@ func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
-	var vi varintItem[uint64]
+	var ki varint32Item
+	var vi varint64Item
 	var k uint32
 	var v uint64
 
@@ -207,7 +207,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], zigzagItem[uint32], uint32, uint32]
+	_ = parseMapKxV[varint32Item, zigzag32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -215,8 +215,8 @@ func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
-	var vi zigzagItem[uint32]
+	var ki varint32Item
+	var vi zigzag32Item
 	var k uint32
 	var v uint32
 
@@ -295,7 +295,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], zigzagItem[uint64], uint32, uint64]
+	_ = parseMapKxV[varint32Item, zigzag64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -303,8 +303,8 @@ func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
-	var vi zigzagItem[uint64]
+	var ki varint32Item
+	var vi zigzag64Item
 	var k uint32
 	var v uint64
 
@@ -383,7 +383,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], fixed32Item, uint32, uint32]
+	_ = parseMapKxV[varint32Item, fixed32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -391,7 +391,7 @@ func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var vi fixed32Item
 	var k uint32
 	var v uint32
@@ -471,7 +471,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], fixed64Item, uint32, uint64]
+	_ = parseMapKxV[varint32Item, fixed64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -479,7 +479,7 @@ func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var vi fixed64Item
 	var k uint32
 	var v uint64
@@ -559,7 +559,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], boolItem, uint32, uint8]
+	_ = parseMapKxV[varint32Item, boolItem, uint32, uint8]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -567,7 +567,7 @@ func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var vi boolItem
 	var k uint32
 	var v uint8
@@ -647,7 +647,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], stringItem, uint32, uint64]
+	_ = parseMapKxV[varint32Item, stringItem, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -655,7 +655,7 @@ func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var vi stringItem
 	var k uint32
 	var v uint64
@@ -735,7 +735,7 @@ insert:
 	return p1, p2
 }
 func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint32], bytesItem, uint32, uint64]
+	_ = parseMapKxV[varint32Item, bytesItem, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -743,7 +743,7 @@ func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var vi bytesItem
 	var k uint32
 	var v uint64
@@ -823,7 +823,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], varintItem[uint32], uint64, uint32]
+	_ = parseMapKxV[varint64Item, varint32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -831,8 +831,8 @@ func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
-	var vi varintItem[uint32]
+	var ki varint64Item
+	var vi varint32Item
 	var k uint64
 	var v uint32
 
@@ -911,7 +911,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], varintItem[uint64], uint64, uint64]
+	_ = parseMapKxV[varint64Item, varint64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -919,8 +919,8 @@ func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
-	var vi varintItem[uint64]
+	var ki varint64Item
+	var vi varint64Item
 	var k uint64
 	var v uint64
 
@@ -999,7 +999,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], zigzagItem[uint32], uint64, uint32]
+	_ = parseMapKxV[varint64Item, zigzag32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1007,8 +1007,8 @@ func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
-	var vi zigzagItem[uint32]
+	var ki varint64Item
+	var vi zigzag32Item
 	var k uint64
 	var v uint32
 
@@ -1087,7 +1087,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], zigzagItem[uint64], uint64, uint64]
+	_ = parseMapKxV[varint64Item, zigzag64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1095,8 +1095,8 @@ func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
-	var vi zigzagItem[uint64]
+	var ki varint64Item
+	var vi zigzag64Item
 	var k uint64
 	var v uint64
 
@@ -1175,7 +1175,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], fixed32Item, uint64, uint32]
+	_ = parseMapKxV[varint64Item, fixed32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1183,7 +1183,7 @@ func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var vi fixed32Item
 	var k uint64
 	var v uint32
@@ -1263,7 +1263,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], fixed64Item, uint64, uint64]
+	_ = parseMapKxV[varint64Item, fixed64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1271,7 +1271,7 @@ func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var vi fixed64Item
 	var k uint64
 	var v uint64
@@ -1351,7 +1351,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], boolItem, uint64, uint8]
+	_ = parseMapKxV[varint64Item, boolItem, uint64, uint8]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1359,7 +1359,7 @@ func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var vi boolItem
 	var k uint64
 	var v uint8
@@ -1439,7 +1439,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], stringItem, uint64, uint64]
+	_ = parseMapKxV[varint64Item, stringItem, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1447,7 +1447,7 @@ func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var vi stringItem
 	var k uint64
 	var v uint64
@@ -1527,7 +1527,7 @@ insert:
 	return p1, p2
 }
 func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[varintItem[uint64], bytesItem, uint64, uint64]
+	_ = parseMapKxV[varint64Item, bytesItem, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1535,7 +1535,7 @@ func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var vi bytesItem
 	var k uint64
 	var v uint64
@@ -1615,7 +1615,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], varintItem[uint32], uint32, uint32]
+	_ = parseMapKxV[zigzag32Item, varint32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1623,8 +1623,8 @@ func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
-	var vi varintItem[uint32]
+	var ki zigzag32Item
+	var vi varint32Item
 	var k uint32
 	var v uint32
 
@@ -1703,7 +1703,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], varintItem[uint64], uint32, uint64]
+	_ = parseMapKxV[zigzag32Item, varint64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1711,8 +1711,8 @@ func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
-	var vi varintItem[uint64]
+	var ki zigzag32Item
+	var vi varint64Item
 	var k uint32
 	var v uint64
 
@@ -1791,7 +1791,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], zigzagItem[uint32], uint32, uint32]
+	_ = parseMapKxV[zigzag32Item, zigzag32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1799,8 +1799,8 @@ func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
-	var vi zigzagItem[uint32]
+	var ki zigzag32Item
+	var vi zigzag32Item
 	var k uint32
 	var v uint32
 
@@ -1879,7 +1879,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], zigzagItem[uint64], uint32, uint64]
+	_ = parseMapKxV[zigzag32Item, zigzag64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1887,8 +1887,8 @@ func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
-	var vi zigzagItem[uint64]
+	var ki zigzag32Item
+	var vi zigzag64Item
 	var k uint32
 	var v uint64
 
@@ -1967,7 +1967,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], fixed32Item, uint32, uint32]
+	_ = parseMapKxV[zigzag32Item, fixed32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -1975,7 +1975,7 @@ func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var vi fixed32Item
 	var k uint32
 	var v uint32
@@ -2055,7 +2055,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], fixed64Item, uint32, uint64]
+	_ = parseMapKxV[zigzag32Item, fixed64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2063,7 +2063,7 @@ func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var vi fixed64Item
 	var k uint32
 	var v uint64
@@ -2143,7 +2143,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], boolItem, uint32, uint8]
+	_ = parseMapKxV[zigzag32Item, boolItem, uint32, uint8]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2151,7 +2151,7 @@ func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var vi boolItem
 	var k uint32
 	var v uint8
@@ -2231,7 +2231,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], stringItem, uint32, uint64]
+	_ = parseMapKxV[zigzag32Item, stringItem, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2239,7 +2239,7 @@ func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var vi stringItem
 	var k uint32
 	var v uint64
@@ -2319,7 +2319,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint32], bytesItem, uint32, uint64]
+	_ = parseMapKxV[zigzag32Item, bytesItem, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2327,7 +2327,7 @@ func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var vi bytesItem
 	var k uint32
 	var v uint64
@@ -2407,7 +2407,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], varintItem[uint32], uint64, uint32]
+	_ = parseMapKxV[zigzag64Item, varint32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2415,8 +2415,8 @@ func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
-	var vi varintItem[uint32]
+	var ki zigzag64Item
+	var vi varint32Item
 	var k uint64
 	var v uint32
 
@@ -2495,7 +2495,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], varintItem[uint64], uint64, uint64]
+	_ = parseMapKxV[zigzag64Item, varint64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2503,8 +2503,8 @@ func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
-	var vi varintItem[uint64]
+	var ki zigzag64Item
+	var vi varint64Item
 	var k uint64
 	var v uint64
 
@@ -2583,7 +2583,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], zigzagItem[uint32], uint64, uint32]
+	_ = parseMapKxV[zigzag64Item, zigzag32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2591,8 +2591,8 @@ func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
-	var vi zigzagItem[uint32]
+	var ki zigzag64Item
+	var vi zigzag32Item
 	var k uint64
 	var v uint32
 
@@ -2671,7 +2671,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], zigzagItem[uint64], uint64, uint64]
+	_ = parseMapKxV[zigzag64Item, zigzag64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2679,8 +2679,8 @@ func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
-	var vi zigzagItem[uint64]
+	var ki zigzag64Item
+	var vi zigzag64Item
 	var k uint64
 	var v uint64
 
@@ -2759,7 +2759,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], fixed32Item, uint64, uint32]
+	_ = parseMapKxV[zigzag64Item, fixed32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2767,7 +2767,7 @@ func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var vi fixed32Item
 	var k uint64
 	var v uint32
@@ -2847,7 +2847,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], fixed64Item, uint64, uint64]
+	_ = parseMapKxV[zigzag64Item, fixed64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2855,7 +2855,7 @@ func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var vi fixed64Item
 	var k uint64
 	var v uint64
@@ -2935,7 +2935,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], boolItem, uint64, uint8]
+	_ = parseMapKxV[zigzag64Item, boolItem, uint64, uint8]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -2943,7 +2943,7 @@ func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var vi boolItem
 	var k uint64
 	var v uint8
@@ -3023,7 +3023,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], stringItem, uint64, uint64]
+	_ = parseMapKxV[zigzag64Item, stringItem, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3031,7 +3031,7 @@ func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var vi stringItem
 	var k uint64
 	var v uint64
@@ -3111,7 +3111,7 @@ insert:
 	return p1, p2
 }
 func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[zigzagItem[uint64], bytesItem, uint64, uint64]
+	_ = parseMapKxV[zigzag64Item, bytesItem, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3119,7 +3119,7 @@ func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var vi bytesItem
 	var k uint64
 	var v uint64
@@ -3199,7 +3199,7 @@ insert:
 	return p1, p2
 }
 func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed32Item, varintItem[uint32], uint32, uint32]
+	_ = parseMapKxV[fixed32Item, varint32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3208,7 +3208,7 @@ func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
-	var vi varintItem[uint32]
+	var vi varint32Item
 	var k uint32
 	var v uint32
 
@@ -3287,7 +3287,7 @@ insert:
 	return p1, p2
 }
 func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed32Item, varintItem[uint64], uint32, uint64]
+	_ = parseMapKxV[fixed32Item, varint64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3296,7 +3296,7 @@ func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
-	var vi varintItem[uint64]
+	var vi varint64Item
 	var k uint32
 	var v uint64
 
@@ -3375,7 +3375,7 @@ insert:
 	return p1, p2
 }
 func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed32Item, zigzagItem[uint32], uint32, uint32]
+	_ = parseMapKxV[fixed32Item, zigzag32Item, uint32, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3384,7 +3384,7 @@ func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
-	var vi zigzagItem[uint32]
+	var vi zigzag32Item
 	var k uint32
 	var v uint32
 
@@ -3463,7 +3463,7 @@ insert:
 	return p1, p2
 }
 func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed32Item, zigzagItem[uint64], uint32, uint64]
+	_ = parseMapKxV[fixed32Item, zigzag64Item, uint32, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -3472,7 +3472,7 @@ func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed32Item
-	var vi zigzagItem[uint64]
+	var vi zigzag64Item
 	var k uint32
 	var v uint64
 
@@ -3991,7 +3991,7 @@ insert:
 	return p1, p2
 }
 func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed64Item, varintItem[uint32], uint64, uint32]
+	_ = parseMapKxV[fixed64Item, varint32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4000,7 +4000,7 @@ func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
-	var vi varintItem[uint32]
+	var vi varint32Item
 	var k uint64
 	var v uint32
 
@@ -4079,7 +4079,7 @@ insert:
 	return p1, p2
 }
 func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed64Item, varintItem[uint64], uint64, uint64]
+	_ = parseMapKxV[fixed64Item, varint64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4088,7 +4088,7 @@ func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
-	var vi varintItem[uint64]
+	var vi varint64Item
 	var k uint64
 	var v uint64
 
@@ -4167,7 +4167,7 @@ insert:
 	return p1, p2
 }
 func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed64Item, zigzagItem[uint32], uint64, uint32]
+	_ = parseMapKxV[fixed64Item, zigzag32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4176,7 +4176,7 @@ func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
-	var vi zigzagItem[uint32]
+	var vi zigzag32Item
 	var k uint64
 	var v uint32
 
@@ -4255,7 +4255,7 @@ insert:
 	return p1, p2
 }
 func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[fixed64Item, zigzagItem[uint64], uint64, uint64]
+	_ = parseMapKxV[fixed64Item, zigzag64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4264,7 +4264,7 @@ func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki fixed64Item
-	var vi zigzagItem[uint64]
+	var vi zigzag64Item
 	var k uint64
 	var v uint64
 
@@ -4783,7 +4783,7 @@ insert:
 	return p1, p2
 }
 func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[stringItem, varintItem[uint32], uint64, uint32]
+	_ = parseMapKxV[stringItem, varint32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4792,7 +4792,7 @@ func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
-	var vi varintItem[uint32]
+	var vi varint32Item
 	var k uint64
 	var v uint32
 
@@ -4871,7 +4871,7 @@ insert:
 	return p1, p2
 }
 func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[stringItem, varintItem[uint64], uint64, uint64]
+	_ = parseMapKxV[stringItem, varint64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4880,7 +4880,7 @@ func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
-	var vi varintItem[uint64]
+	var vi varint64Item
 	var k uint64
 	var v uint64
 
@@ -4959,7 +4959,7 @@ insert:
 	return p1, p2
 }
 func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[stringItem, zigzagItem[uint32], uint64, uint32]
+	_ = parseMapKxV[stringItem, zigzag32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -4968,7 +4968,7 @@ func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
-	var vi zigzagItem[uint32]
+	var vi zigzag32Item
 	var k uint64
 	var v uint32
 
@@ -5047,7 +5047,7 @@ insert:
 	return p1, p2
 }
 func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[stringItem, zigzagItem[uint64], uint64, uint64]
+	_ = parseMapKxV[stringItem, zigzag64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -5056,7 +5056,7 @@ func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki stringItem
-	var vi zigzagItem[uint64]
+	var vi zigzag64Item
 	var k uint64
 	var v uint64
 
@@ -5575,7 +5575,7 @@ insert:
 	return p1, p2
 }
 func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[bytesItem, varintItem[uint32], uint64, uint32]
+	_ = parseMapKxV[bytesItem, varint32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -5584,7 +5584,7 @@ func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
-	var vi varintItem[uint32]
+	var vi varint32Item
 	var k uint64
 	var v uint32
 
@@ -5663,7 +5663,7 @@ insert:
 	return p1, p2
 }
 func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[bytesItem, varintItem[uint64], uint64, uint64]
+	_ = parseMapKxV[bytesItem, varint64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -5672,7 +5672,7 @@ func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
-	var vi varintItem[uint64]
+	var vi varint64Item
 	var k uint64
 	var v uint64
 
@@ -5751,7 +5751,7 @@ insert:
 	return p1, p2
 }
 func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[bytesItem, zigzagItem[uint32], uint64, uint32]
+	_ = parseMapKxV[bytesItem, zigzag32Item, uint64, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -5760,7 +5760,7 @@ func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
-	var vi zigzagItem[uint32]
+	var vi zigzag32Item
 	var k uint64
 	var v uint32
 
@@ -5839,7 +5839,7 @@ insert:
 	return p1, p2
 }
 func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[bytesItem, zigzagItem[uint64], uint64, uint64]
+	_ = parseMapKxV[bytesItem, zigzag64Item, uint64, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -5848,7 +5848,7 @@ func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki bytesItem
-	var vi zigzagItem[uint64]
+	var vi zigzag64Item
 	var k uint64
 	var v uint64
 
@@ -6367,7 +6367,7 @@ insert:
 	return p1, p2
 }
 func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[boolItem, varintItem[uint32], uint8, uint32]
+	_ = parseMapKxV[boolItem, varint32Item, uint8, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -6376,7 +6376,7 @@ func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
-	var vi varintItem[uint32]
+	var vi varint32Item
 	var k uint8
 	var v uint32
 
@@ -6455,7 +6455,7 @@ insert:
 	return p1, p2
 }
 func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[boolItem, varintItem[uint64], uint8, uint64]
+	_ = parseMapKxV[boolItem, varint64Item, uint8, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -6464,7 +6464,7 @@ func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
-	var vi varintItem[uint64]
+	var vi varint64Item
 	var k uint8
 	var v uint64
 
@@ -6543,7 +6543,7 @@ insert:
 	return p1, p2
 }
 func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[boolItem, zigzagItem[uint32], uint8, uint32]
+	_ = parseMapKxV[boolItem, zigzag32Item, uint8, uint32]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -6552,7 +6552,7 @@ func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
-	var vi zigzagItem[uint32]
+	var vi zigzag32Item
 	var k uint8
 	var v uint32
 
@@ -6631,7 +6631,7 @@ insert:
 	return p1, p2
 }
 func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxV[boolItem, zigzagItem[uint64], uint8, uint64]
+	_ = parseMapKxV[boolItem, zigzag64Item, uint8, uint64]
 
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
@@ -6640,7 +6640,7 @@ func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
 	var ki boolItem
-	var vi zigzagItem[uint64]
+	var vi zigzag64Item
 	var k uint8
 	var v uint64
 
@@ -7160,14 +7160,14 @@ insert:
 }
 
 func parseMapV32xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxM[varintItem[uint32], uint32]
+	_ = parseMapKxM[varint32Item, uint32]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint32]
+	var ki varint32Item
 	var k uint32
 	var fast bool
 
@@ -7258,14 +7258,14 @@ insert:
 	return p1.PushMapEntry(p2, v)
 }
 func parseMapV64xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxM[varintItem[uint64], uint64]
+	_ = parseMapKxM[varint64Item, uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki varintItem[uint64]
+	var ki varint64Item
 	var k uint64
 	var fast bool
 
@@ -7356,14 +7356,14 @@ insert:
 	return p1.PushMapEntry(p2, v)
 }
 func parseMapZ32xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxM[zigzagItem[uint32], uint32]
+	_ = parseMapKxM[zigzag32Item, uint32]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint32]
+	var ki zigzag32Item
 	var k uint32
 	var fast bool
 
@@ -7454,14 +7454,14 @@ insert:
 	return p1.PushMapEntry(p2, v)
 }
 func parseMapZ64xM(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseMapKxM[zigzagItem[uint64], uint64]
+	_ = parseMapKxM[zigzag64Item, uint64]
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	var ki zigzagItem[uint64]
+	var ki zigzag64Item
 	var k uint64
 	var fast bool
 

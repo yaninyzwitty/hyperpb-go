@@ -18,6 +18,7 @@ package zc
 import (
 	"fmt"
 	"math"
+	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
@@ -59,11 +60,16 @@ func (r Range) End() int { return r.Start() + r.Len() }
 func (r Range) Len() int { return int(r >> 32) }
 
 // Bytes converts this Range into a byte slice, given its source.
+//
+// NOTE: Go refuses to inline this function sometimes. Range.String does not
+// appear to have this problem.
 func (r Range) Bytes(src *byte) []byte {
 	if r.Len() == 0 {
 		return nil
 	}
-	return unsafe2.Slice(unsafe2.Add(src, r.Start()), r.Len())
+
+	p := (*byte)(unsafe.Add(unsafe.Pointer(src), r.Start()))
+	return unsafe.Slice(p, r.Len())
 }
 
 // String converts this Range into a string, given its source.
@@ -71,10 +77,25 @@ func (r Range) String(src *byte) string {
 	if r.Len() == 0 {
 		return ""
 	}
-	return unsafe2.String(unsafe2.Add(src, r.Start()), r.Len())
+	return unsafe.String(unsafe2.Add(src, r.Start()), r.Len())
 }
 
 // Format implements [fmt.Formatter].
 func (r Range) Format(s fmt.State, verb rune) {
 	debug.Fprintf("[%d:%d]", r.Start(), r.End()).Format(s, verb)
+}
+
+// ExtractFrom is a helper for creating extraction funcs. It exists to work
+// around an inliner limitation.
+type ExtractFrom struct {
+	Src *byte
+}
+
+// ExtractBytes returns a func that calls [Range.Bytes].
+//
+// This exists to work around inlining failure in certain places in the parser.
+func (e ExtractFrom) Bytes(raw uint64) []byte {
+	r := Range(raw)
+	p := (*byte)(unsafe.Add(unsafe.Pointer(e.Src), r.Start()))
+	return unsafe.Slice(p, r.Len())
 }

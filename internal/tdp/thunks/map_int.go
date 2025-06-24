@@ -20,6 +20,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/swiss"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
+	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
@@ -28,7 +29,7 @@ import (
 func getMapIxI[K protoreflect2.Int, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, V]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(emptyMap{})
+		return protoreflect.ValueOf(empty.Map{})
 	}
 
 	return protoreflect.ValueOf(mapIxI[K, V]{table: *v})
@@ -36,10 +37,11 @@ func getMapIxI[K protoreflect2.Int, V any](m *dynamic.Message, _ *tdp.Type, gett
 
 // mapIxI is a [protoreflect.Map] for map<K, V> where K and V are both integer types.
 type mapIxI[K protoreflect2.Int, V any] struct {
-	unimplementedMap
+	empty.Map
 	table *swiss.Table[K, V]
 }
 
+func (m mapIxI[K, V]) IsValid() bool                   { return m.table != nil }
 func (m mapIxI[K, V]) Len() int                        { return m.table.Len() }
 func (m mapIxI[K, V]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapIxI[K, V]) Get(mk protoreflect.MapKey) protoreflect.Value {
@@ -64,7 +66,7 @@ func (m mapIxI[K, V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) 
 func getMapIxS[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(emptyMap{})
+		return protoreflect.ValueOf(empty.Map{})
 	}
 
 	return protoreflect.ValueOf(mapIxS[K]{src: m.Shared.Src, table: *v})
@@ -72,11 +74,12 @@ func getMapIxS[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp
 
 // mapIxS is a [protoreflect.Map] for map<K, string> where K is an integer type.
 type mapIxS[K protoreflect2.Int] struct {
-	unimplementedMap
+	empty.Map
 	src   *byte
 	table *swiss.Table[K, zc.Range]
 }
 
+func (m mapIxS[K]) IsValid() bool                   { return m.table != nil }
 func (m mapIxS[K]) Len() int                        { return m.table.Len() }
 func (m mapIxS[K]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapIxS[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
@@ -101,7 +104,7 @@ func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 func getMapIxB[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(emptyMap{})
+		return protoreflect.ValueOf(empty.Map{})
 	}
 
 	return protoreflect.ValueOf(mapIxB[K]{src: m.Shared.Src, table: *v})
@@ -109,11 +112,12 @@ func getMapIxB[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp
 
 // mapIxB is a [protoreflect.Map] for map<K, bytes> where K is an integer type.
 type mapIxB[K protoreflect2.Int] struct {
-	unimplementedMap
+	empty.Map
 	src   *byte
 	table *swiss.Table[K, zc.Range]
 }
 
+func (m mapIxB[K]) IsValid() bool                   { return m.table != nil }
 func (m mapIxB[K]) Len() int                        { return m.table.Len() }
 func (m mapIxB[K]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapIxB[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
@@ -138,7 +142,7 @@ func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 func getMapIxM[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(emptyMap{})
+		return protoreflect.ValueOf(empty.Map{})
 	}
 
 	return protoreflect.ValueOf(mapIxM[K]{table: *v})
@@ -146,10 +150,11 @@ func getMapIxM[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp
 
 // mapIxM is a [protoreflect.Map] for map<string, V> where V is an integer type.
 type mapIxM[K protoreflect2.Int] struct {
-	unimplementedMap
+	empty.Map
 	table *swiss.Table[K, *dynamic.Message]
 }
 
+func (m mapIxM[K]) IsValid() bool                   { return m.table != nil }
 func (m mapIxM[K]) Len() int                        { return m.table.Len() }
 func (m mapIxM[K]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapIxM[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
