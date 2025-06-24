@@ -27,37 +27,6 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
 )
 
-// CompileOption is a configuration setting for [Compile].
-type CompileOption func(*compiler.Options)
-
-// WithExtensions provides an extension resolver for a compiler.
-//
-// Unlike ordinary Protobuf parsers, hyperpb does not perform extension
-// resolution on the fly. Instead, any extensions that should be parsed must
-// be provided up-front.
-func WithExtensions(resolver compiler.ExtensionResolver) CompileOption {
-	return func(c *compiler.Options) { c.Extensions = resolver }
-}
-
-// WithExtensionsFromTypes uses a type registry to provide extension information
-// about a message type.
-func WithExtensionsFromTypes(types *protoregistry.Types) CompileOption {
-	return func(c *compiler.Options) { c.Extensions = (*compiler.ExtensionsFromRegistry)(types) }
-}
-
-// WithExtensionsFromFiles uses a file registry to provide extension information
-// about a message type.
-func WithExtensionsFromFiles(files *protoregistry.Files) CompileOption {
-	return func(c *compiler.Options) { c.Extensions = compiler.ExtensionsFromFile(files) }
-}
-
-// WithPGO provides a profile for profile-guided optimization.
-//
-// Typically, you'll prefer to use [Type.Recompile].
-func WithPGO(profile *Profile) CompileOption {
-	return func(c *compiler.Options) { c.Profile = &profile.impl }
-}
-
 // CompileFor is a helper for calling [Compile] using the descriptor of an
 // existing message type.
 //
@@ -108,8 +77,8 @@ func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type 
 	}
 
 	for _, opt := range options {
-		if opt != nil {
-			opt(&opts)
+		if opt.apply != nil {
+			opt.apply(&opts)
 		}
 	}
 

@@ -18,6 +18,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/prototest"
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
+	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/protocolbuffers/protoscope"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -82,6 +84,8 @@ func (p Profile) ForField(site profile.Site) profile.Field {
 	}
 	return site.DefaultProfile()
 }
+
+func (p Profile) Apply(opts *compiler.Options) { opts.Profile = p }
 
 // RunAll runs all of the test cases against the given harness.
 func RunAll[T Harness[T]](t T, f func(T, *TestCase)) {
@@ -187,8 +191,10 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 	dec.KnownFields(true)
 	err := dec.Decode(&test)
 	require.NoError(t, err, "loading test %q", path)
-	if b, ok := t.(*testing.B); ok && !test.Benchmark {
-		b.SkipNow()
+
+	_, isBench := t.(*testing.B)
+	if isBench && !test.Benchmark {
+		t.SkipNow()
 	}
 
 	test.Name = strings.TrimPrefix(path, "testdata/")
@@ -199,7 +205,10 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 	test.Type.Fast = hyperpb.Compile(
 		test.Type.Gencode.Descriptor(),
 		hyperpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
-		func(o *compiler.Options) { o.Profile = test.PGO },
+
+		// There isn't a way we can easily expose for constructing a
+		// custom CompileOption, so we just bitcast one into existence.
+		unsafe2.BitCast[hyperpb.CompileOption](test.PGO.Apply),
 	)
 
 	for _, raw := range test.Hex {
@@ -227,6 +236,14 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 		require.NoError(t, err, "loading test %q", path)
 
 		test.Specimens = append(test.Specimens, b)
+	}
+
+	if isBench {
+		for i := range test.Specimens {
+			// Avoid confounding between the normal/zerocopy benchmarks by
+			// making sure we have optimal message placement before we start.
+			test.Specimens[i] = vm.RelocatePageBoundary(test.Specimens[i], false)
+		}
 	}
 
 	return test

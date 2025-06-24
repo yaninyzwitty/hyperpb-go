@@ -17,7 +17,6 @@ package hyperpb
 import (
 	"errors"
 	"fmt"
-	"math"
 	"unsafe"
 
 	"google.golang.org/protobuf/proto"
@@ -32,6 +31,13 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+)
+
+var (
+	_ proto.Message        = new(Message)
+	_ protoreflect.Message = new(Message)
+
+	errInvalid = errors.New("hyperpb: invalid message")
 )
 
 // Message is a dynamic message value constructed with this package.
@@ -66,73 +72,14 @@ func New(ty *Type) *Message {
 func (m *Message) Unmarshal(data []byte, options ...UnmarshalOption) error {
 	opts := vm.NewOptions()
 	for _, opt := range options {
-		if opt != nil {
-			opt(&opts)
+		if opt.apply != nil {
+			// Avoid having opt pointlessly escape to the heap.
+			// Users cannot create their own UnmarshalOptions, so violation
+			// of memory safety isn't a thing we need to worry about.
+			opt.apply(unsafe2.NoEscape(&opts))
 		}
 	}
 	return vm.Run(&m.impl, data, opts)
-}
-
-// CompileOption is a configuration setting for [Type.Unmarshal].
-type UnmarshalOption func(*vm.Options)
-
-// WithMaxDecodeMisses sets the number of decode misses allowed in the parser before
-// switching to the slow path.
-//
-// Large values may improve performance for common protos, but introduce a
-// potential DoS vector due to quadratic worst case performance. The default
-// is 4.
-func WithMaxDecodeMisses(maxMisses int) UnmarshalOption {
-	return func(opts *vm.Options) { opts.MaxMisses = maxMisses }
-}
-
-// WithMaxDepth sets the maximum recursion depth for the parser.
-//
-// Setting a large value enables potential DoS vectors.
-func WithMaxDepth(depth int) UnmarshalOption {
-	return func(opts *vm.Options) { opts.MaxDepth = min(depth, math.MaxUint32) }
-}
-
-// WithDiscardUnknown sets whether unknown fields should be discarded while
-// parsing. Analogous to [proto.UnmarshalOptions].
-//
-// Setting this option will break round-tripping, but will also improve parse
-// speeds of messages with many unknown fields.
-func WithDiscardUnknown(discard bool) UnmarshalOption {
-	return func(opts *vm.Options) { opts.DiscardUnknown = discard }
-}
-
-// WithAllowInvalidUTF8 sets whether UTF-8 is validated when parsing string
-// fields originating from non-proto2 files.
-func WithAllowInvalidUTF8(allow bool) UnmarshalOption {
-	return func(opts *vm.Options) { opts.AllowInvalidUTF8 = allow }
-}
-
-// WithAllowAlias sets whether aliasing the input buffer is allowed. This avoids
-// an expensive copy at the start of parsing.
-//
-// Analogous to [protoimpl.UnmarshalAliasBuffer].
-func WithAllowAlias(allow bool) UnmarshalOption {
-	return func(opts *vm.Options) { opts.AllowAlias = allow }
-}
-
-// WithRecordProfile sets a profiler for an unmarshaling operation. Rate is a
-// value from 0 to 1 that specifies the sampling rate. profile may be nil, in
-// which case nothing will be recorded.
-//
-// Profiling should be done with many, many message types, all with the same
-// rate. This will allow the profiler to collect statistically relevant data,
-// which can be used to recompile this type to be more efficient using
-// [Type.Recompile].
-func WithRecordProfile(profile *Profile, rate float64) UnmarshalOption {
-	return func(opts *vm.Options) {
-		if profile == nil {
-			opts.Recorder = nil
-		} else {
-			opts.Recorder = &profile.impl
-		}
-		opts.ProfileRate = rate
-	}
 }
 
 // Shared returns state shared by this message and its submessages.
@@ -420,10 +367,3 @@ func requiredShim(in protoiface.CheckInitializedInput) (out protoiface.CheckInit
 	//nolint:errcheck // This conversion will never fail.
 	return out, in.Message.(*Message).Initialized()
 }
-
-var (
-	_ proto.Message        = new(Message)
-	_ protoreflect.Message = new(Message)
-
-	errInvalid = errors.New("hyperpb: invalid message")
-)

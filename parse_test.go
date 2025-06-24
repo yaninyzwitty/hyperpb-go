@@ -101,10 +101,11 @@ func BenchmarkUnmarshal(b *testing.B) {
 				}
 				ty := test.Type.Fast.Recompile(profile)
 
+				o := hyperpb.WithAllowAlias(true)
 				b.ResetTimer()
 				for range b.N {
 					m := ctx.New(ty)
-					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
+					_ = m.Unmarshal(specimen, o)
 					ctx.Free()
 				}
 			})

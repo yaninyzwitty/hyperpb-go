@@ -26,7 +26,7 @@ import (
 // also ok.
 const pageBoundary = 0x1000
 
-// conditionInputBuffer ensures that it is always possible to read nine bytes
+// RelocatePageBoundary ensures that it is always possible to read nine bytes
 // beyond the end of data. This allows us to elide virtually all bounds checks
 // in the parser, since it will only ever look ahead at most nine bytes (to
 // parse a rare ten-byte varint).
@@ -39,18 +39,29 @@ const pageBoundary = 0x1000
 // met.
 //
 // If forceCopy is set, this copy is performed unconditionally.
-func conditionInputBuffer(data []byte, forceCopy bool) *byte {
-	end := unsafe2.AddrOf(unsafe.SliceData(data))
-	end += unsafe2.Addr[byte](cap(data))
+//
+// Exported for use by benchmarks.
+//
+//go:nosplit
+func RelocatePageBoundary(data []byte, force bool) []byte {
+	if !force {
+		// Check if there is capacity to spare.
+		if cap(data)-len(data) >= 9 {
+			return data
+		}
 
-	_, up := end.Misalign(pageBoundary)
-	if up >= 9 && !forceCopy {
-		// All good, we have nine or more bytes ahead of us before the next
-		// page boundary.
-		return unsafe.SliceData(data)
+		// If not, we need to check if there is a page boundary beyond this
+		// slice.
+		end := unsafe2.AddrOf(unsafe.SliceData(data))
+		end += unsafe2.Addr[byte](len(data))
+		_, up := end.Misalign(pageBoundary)
+		if up >= 9 {
+			// All good, we have nine or more bytes ahead of us before the next
+			// page boundary.
+			return data
+		}
 	}
 
 	// Copy to a new slice with just enough capacity.
-	data = append(make([]byte, 0, len(data)+9), data...)
-	return unsafe.SliceData(data)
+	return append(data[:cap(data)], make([]byte, 9)...)[:len(data):cap(data)]
 }
