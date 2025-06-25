@@ -184,56 +184,51 @@ func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 }
 
 //go:nosplit
-//hyperpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32] StoreFromScratch -> StoreFromScratch32
-//hyperpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64] StoreFromScratch -> StoreFromScratch64
-func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
-	return vm.SetBit(p1, p2)
+func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	vm.SetBit(p1, p2)
+	return parseVarint32(p1, p2)
 }
 
 //go:nosplit
-//hyperpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32] StoreFromScratch -> StoreFromScratch32
-//hyperpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64] StoreFromScratch -> StoreFromScratch64
-func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
-	return vm.SetBit(p1, p2)
+func parseOptionalVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	vm.SetBit(p1, p2)
+	return parseVarint64(p1, p2)
+}
+
+//go:nosplit
+func parseOptionalZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	vm.SetBit(p1, p2)
+	return parseZigZag32(p1, p2)
+}
+
+//go:nosplit
+func parseOptionalZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	vm.SetBit(p1, p2)
+	return parseZigZag64(p1, p2)
 }
 
 //go:nosplit
 func parseOptionalFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var n uint32
-	p1, p2, n = p1.Fixed32(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(n))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
-	return vm.SetBit(p1, p2)
+	vm.SetBit(p1, p2)
+	return parseFixed32(p1, p2)
 }
 
 //go:nosplit
 func parseOptionalFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Fixed64(p2))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
-	return vm.SetBit(p1, p2)
+	vm.SetBit(p1, p2)
+	return parseFixed64(p1, p2)
 }
 
 //go:nosplit
 func parseOptionalString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var r zc.Range
-	p1, p2, r = p1.UTF8(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
-	return vm.SetBit(p1, p2)
+	vm.SetBit(p1, p2)
+	return parseString(p1, p2)
 }
 
 //go:nosplit
 func parseOptionalBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var r zc.Range
-	p1, p2, r = p1.Bytes(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
-	return vm.SetBit(p1, p2)
+	vm.SetBit(p1, p2)
+	return parseBytes(p1, p2)
 }
 
 //go:nosplit

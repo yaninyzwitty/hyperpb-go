@@ -8043,82 +8043,6 @@ insert:
 }
 
 //go:nosplit
-func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOneofVarint[uint32]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
-	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
-}
-
-//go:nosplit
-func parseOneofVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOneofVarint[uint64]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
-	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
-}
-
-//go:nosplit
-func parseOneofZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOneofZigZag[uint32]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
-	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
-}
-
-//go:nosplit
-func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOneofZigZag[uint64]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
-	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
-}
-
-//go:nosplit
-func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOptionalVarint[uint32]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
-	return vm.SetBit(p1, p2)
-}
-
-//go:nosplit
-func parseOptionalVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOptionalVarint[uint64]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
-	return vm.SetBit(p1, p2)
-}
-
-//go:nosplit
-func parseOptionalZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOptionalZigZag[uint32]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
-	return vm.SetBit(p1, p2)
-}
-
-//go:nosplit
-func parseOptionalZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	_ = parseOptionalZigZag[uint64]
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
-	return vm.SetBit(p1, p2)
-}
-
-//go:nosplit
 func parseRepeatedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseRepeatedVarint[uint8]
 	var n uint64
@@ -8804,7 +8728,10 @@ exit:
 func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
+
+	var p *uint32
+	p1, p2, p = vm.GetMutableField[uint32](p1, p2)
+	*p = uint32(p2.Scratch())
 
 	return p1, p2
 }
@@ -8813,7 +8740,10 @@ func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
+
+	var p *uint64
+	p1, p2, p = vm.GetMutableField[uint64](p1, p2)
+	*p = uint64(p2.Scratch())
 
 	return p1, p2
 }
@@ -8823,7 +8753,10 @@ func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
+
+	var p *uint32
+	p1, p2, p = vm.GetMutableField[uint32](p1, p2)
+	*p = uint32(p2.Scratch())
 
 	return p1, p2
 }
@@ -8833,7 +8766,38 @@ func parseZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
+
+	var p *uint64
+	p1, p2, p = vm.GetMutableField[uint64](p1, p2)
+	*p = uint64(p2.Scratch())
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	_ = parseFixed[uint32]
+	if p1.Len() < layout.Size[uint32]() {
+		p1.Fail(p2, vm.ErrorTruncated)
+	}
+	var p *uint32
+	p1, p2, p = vm.GetMutableField[uint32](p1, p2)
+	*p = *unsafe2.Cast[uint32](p1.PtrAddr.AssertValid())
+	p1 = p1.Advance(layout.Size[uint32]())
+
+	return p1, p2
+}
+
+//go:nosplit
+func parseFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	_ = parseFixed[uint64]
+	if p1.Len() < layout.Size[uint64]() {
+		p1.Fail(p2, vm.ErrorTruncated)
+	}
+	var p *uint64
+	p1, p2, p = vm.GetMutableField[uint64](p1, p2)
+	*p = *unsafe2.Cast[uint64](p1.PtrAddr.AssertValid())
+	p1 = p1.Advance(layout.Size[uint64]())
 
 	return p1, p2
 }

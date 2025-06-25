@@ -221,68 +221,51 @@ func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) pro
 }
 
 //go:nosplit
-//hyperpb:stencil parseOneofVarint32 parseOneofVarint[uint32] StoreFromScratch -> StoreFromScratch32
-//hyperpb:stencil parseOneofVarint64 parseOneofVarint[uint64] StoreFromScratch -> StoreFromScratch64
-func parseOneofVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
+	return parseVarint32(p1, p2)
 }
 
 //go:nosplit
-//hyperpb:stencil parseOneofZigZag32 parseOneofZigZag[uint32] StoreFromScratch -> StoreFromScratch32
-//hyperpb:stencil parseOneofZigZag64 parseOneofZigZag[uint64] StoreFromScratch -> StoreFromScratch64
-func parseOneofZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+func parseOneofVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
+	return parseVarint32(p1, p2)
+}
 
-	return p1, p2
+//go:nosplit
+func parseOneofZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
+	return parseZigZag32(p1, p2)
+}
+
+//go:nosplit
+func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
+	return parseZigZag32(p1, p2)
 }
 
 //go:nosplit
 func parseOneofFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var n uint32
-	p1, p2, n = p1.Fixed32(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(n))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
+	return parseFixed32(p1, p2)
 }
 
 //go:nosplit
 func parseOneofFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Fixed64(p2))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
+	return parseFixed64(p1, p2)
 }
 
 //go:nosplit
 func parseOneofString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var r zc.Range
-	p1, p2, r = p1.UTF8(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
+	return parseString(p1, p2)
 }
 
 //go:nosplit
 func parseOneofBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var r zc.Range
-	p1, p2, r = p1.Bytes(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
-
-	return p1, p2
+	return parseBytes(p1, p2)
 }
 
 func parseOneofBool(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {

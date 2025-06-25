@@ -259,7 +259,10 @@ func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoref
 //hyperpb:stencil parseVarint64 parseVarint[uint64] StoreFromScratch -> StoreFromScratch64
 func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+
+	var p *T
+	p1, p2, p = vm.GetMutableField[T](p1, p2)
+	*p = T(p2.Scratch())
 
 	return p1, p2
 }
@@ -270,25 +273,25 @@ func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[T](p1, p2)
+
+	var p *T
+	p1, p2, p = vm.GetMutableField[T](p1, p2)
+	*p = T(p2.Scratch())
 
 	return p1, p2
 }
 
 //go:nosplit
-func parseFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	var n uint32
-	p1, p2, n = p1.Fixed32(p2)
-	p1, p2 = p1.SetScratch(p2, uint64(n))
-	p1, p2 = vm.StoreFromScratch32(p1, p2)
-
-	return p1, p2
-}
-
-//go:nosplit
-func parseFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
-	p1, p2 = vm.P1.SetScratch(p1.Fixed64(p2))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
+//hyperpb:stencil parseFixed32 parseFixed[uint32]
+//hyperpb:stencil parseFixed64 parseFixed[uint64]
+func parseFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
+	if p1.Len() < layout.Size[T]() {
+		p1.Fail(p2, vm.ErrorTruncated)
+	}
+	var p *T
+	p1, p2, p = vm.GetMutableField[T](p1, p2)
+	*p = *unsafe2.Cast[T](p1.PtrAddr.AssertValid())
+	p1 = p1.Advance(layout.Size[T]())
 
 	return p1, p2
 }
@@ -298,7 +301,10 @@ func parseString(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.UTF8(p2)
 	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
+
+	var p *zc.Range
+	p1, p2, p = vm.GetMutableField[zc.Range](p1, p2)
+	*p = zc.Range(p2.Scratch())
 
 	return p1, p2
 }
@@ -308,7 +314,10 @@ func parseBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var r zc.Range
 	p1, p2, r = p1.Bytes(p2)
 	p1, p2 = p1.SetScratch(p2, uint64(r))
-	p1, p2 = vm.StoreFromScratch64(p1, p2)
+
+	var p *zc.Range
+	p1, p2, p = vm.GetMutableField[zc.Range](p1, p2)
+	*p = zc.Range(p2.Scratch())
 
 	return p1, p2
 }
