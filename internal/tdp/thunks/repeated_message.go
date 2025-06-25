@@ -68,8 +68,7 @@ func (r *repeatedMessage) Len() int {
 func (r *repeatedMessage) Get(n int) protoreflect.Value {
 	if r.stride != 0 {
 		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
-		p := unsafe2.ByteAdd(r.raw.Ptr.AssertValid(), n*int(r.stride))
-		m := unsafe2.Cast[dynamic.Message](p)
+		m := unsafe2.ByteAdd[dynamic.Message](r.raw.Ptr.AssertValid(), n*int(r.stride))
 		return protoreflect.ValueOf(WrapMessage(m))
 	}
 

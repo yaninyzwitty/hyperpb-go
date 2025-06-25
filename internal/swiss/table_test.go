@@ -33,14 +33,13 @@ type value struct {
 
 func TestIntTable(t *testing.T) {
 	t.Parallel()
+	defer debug.WithTesting(t)()
 	arena := new(arena.Arena)
 
 	size, _ := swiss.Layout[int32, value](0)
 	m := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range int32(1000) {
-		defer debug.WithTesting(t)()
-
 		t.Log(m.Dump())
 		v := m.Insert(k, nil)
 		if v == nil {
@@ -70,6 +69,7 @@ func TestIntTable(t *testing.T) {
 
 func TestStringTable(t *testing.T) {
 	t.Parallel()
+	defer debug.WithTesting(t)()
 	arena := new(arena.Arena)
 	extract := func(n uint32) []byte {
 		return unsafe2.StringToSlice[[]byte](urlSlice[n])
@@ -79,8 +79,6 @@ func TestStringTable(t *testing.T) {
 	m := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range uint32(1000) {
-		defer debug.WithTesting(t)()
-
 		t.Log(m.Dump())
 		v := m.Insert(k, extract)
 		if v == nil {

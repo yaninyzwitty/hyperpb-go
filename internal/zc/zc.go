@@ -67,9 +67,7 @@ func (r Range) Bytes(src *byte) []byte {
 	if r.Len() == 0 {
 		return nil
 	}
-
-	p := (*byte)(unsafe.Add(unsafe.Pointer(src), r.Start()))
-	return unsafe.Slice(p, r.Len())
+	return unsafe.Slice(unsafe2.Add(src, r.Start()), r.Len())
 }
 
 // String converts this Range into a string, given its source.

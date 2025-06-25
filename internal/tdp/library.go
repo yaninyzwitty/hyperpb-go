@@ -42,5 +42,5 @@ func (l *Library) Type(md protoreflect.MessageDescriptor) (*Type, bool) {
 
 // AtOffset the [Type] at the give byte offset in this Library.
 func (l *Library) AtOffset(n uint32) *Type {
-	return unsafe2.ByteAdd(l.Base, n)
+	return unsafe2.ByteAdd[Type](l.Base, n)
 }

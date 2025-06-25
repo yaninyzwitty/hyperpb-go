@@ -208,7 +208,7 @@ number:
 			p1 = p1.Advance(1)
 
 			t := p2.Type()
-			lut := unsafe2.ByteAdd(unsafe2.Cast[byte](t), unsafe.Offsetof(t.TagLUT))
+			lut := unsafe2.ByteAdd[byte](t, unsafe.Offsetof(t.TagLUT))
 			offset := unsafe2.Load(lut, p2.Scratch())
 			p1.Log(p2, "small tag", "%v -> %#x", tdp.Tag(p2.Scratch()), offset)
 
@@ -505,7 +505,7 @@ func checkLargeVarint(p1 P1, p2 P2) (P1, P2) {
 	switch unsafe2.Load(p1.Ptr(), -1) {
 	case 0x00:
 	case 0x80:
-		if unsafe2.Load(p1.Ptr(), 0) != 0x00 {
+		if *p1.Ptr() != 0x00 {
 			p1.Fail(p2, ErrorOverflow)
 		}
 		p1 = p1.Advance(1)

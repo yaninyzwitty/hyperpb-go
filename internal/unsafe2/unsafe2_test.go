@@ -23,47 +23,36 @@ import (
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
-func TestMisalign(t *testing.T) {
-	t.Parallel()
-
-	type A = unsafe2.Addr[byte]
-
-	prev, next := A(0).Misalign(8)
-	assert.Equal(t, 0, prev)
-	assert.Equal(t, 0, next)
-
-	prev, next = A(1).Misalign(8)
-	assert.Equal(t, 1, prev)
-	assert.Equal(t, 7, next)
-	prev, next = A(3).Misalign(8)
-	assert.Equal(t, 3, prev)
-	assert.Equal(t, 5, next)
-	prev, next = A(4).Misalign(8)
-	assert.Equal(t, 4, prev)
-	assert.Equal(t, 4, next)
-	prev, next = A(7).Misalign(8)
-	assert.Equal(t, 7, prev)
-	assert.Equal(t, 1, next)
-	prev, next = A(8).Misalign(8)
-	assert.Equal(t, 0, prev)
-	assert.Equal(t, 0, next)
-}
-
 func TestIndirect(t *testing.T) {
 	t.Parallel()
 
-	assert.False(t, unsafe2.InlinedAny[int]())
-	assert.False(t, unsafe2.InlinedAny[string]())
-	assert.False(t, unsafe2.InlinedAny[[]byte]())
+	assert.False(t, unsafe2.IsDirect[int]())
+	assert.False(t, unsafe2.IsDirect[string]())
+	assert.False(t, unsafe2.IsDirect[[]byte]())
 
-	assert.True(t, unsafe2.InlinedAny[*int]())
-	assert.True(t, unsafe2.InlinedAny[[1]*int]())
-	assert.True(t, unsafe2.InlinedAny[any]())
-	assert.True(t, unsafe2.InlinedAny[map[int]int]())
-	assert.True(t, unsafe2.InlinedAny[chan int]())
-	assert.True(t, unsafe2.InlinedAny[unsafe.Pointer]())
-	assert.True(t, unsafe2.InlinedAny[struct{ _ *int }]())
-	assert.True(t, unsafe2.InlinedAny[*struct{ _ *int }]())
+	assert.True(t, unsafe2.IsDirect[*int]())
+	assert.True(t, unsafe2.IsDirect[[1]*int]())
+	assert.True(t, unsafe2.IsDirect[any]())
+	assert.True(t, unsafe2.IsDirect[map[int]int]())
+	assert.True(t, unsafe2.IsDirect[chan int]())
+	assert.True(t, unsafe2.IsDirect[unsafe.Pointer]())
+	assert.True(t, unsafe2.IsDirect[struct{ _ *int }]())
+	assert.True(t, unsafe2.IsDirect[*struct{ _ *int }]())
+}
+
+func TestAnyBytes(t *testing.T) {
+	t.Parallel()
+
+	i := 0xaaaa
+	p := &i
+	assert.False(t, unsafe2.IsDirectAny(i))
+	assert.True(t, unsafe2.IsDirectAny(p))
+
+	assert.Equal(t, unsafe2.Bytes(&i), unsafe2.AnyBytes(i))
+	assert.Equal(t, unsafe2.Bytes(&p), unsafe2.AnyBytes(p))
+
+	p2 := struct{ p *int }{p}
+	assert.Equal(t, unsafe2.Bytes(&p2), unsafe2.AnyBytes(p2))
 }
 
 func TestPC(t *testing.T) {

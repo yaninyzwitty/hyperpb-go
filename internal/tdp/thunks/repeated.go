@@ -16,6 +16,7 @@ package thunks
 
 import (
 	"math/bits"
+	"unsafe"
 
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -540,6 +541,15 @@ func appendFixed[T uint32 | uint64](p1 vm.P1, p2 vm.P2, v T) (vm.P1, vm.P2) {
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
+	} else if r.raw.OffArena() {
+		// Already holds a borrow. Need to spill to arena.
+		// This is the worst-case scenario.
+		borrow := s.Raw()
+		s = slice.Make[T](p1.Arena(), len(borrow)+1)
+		copy(s.Raw(), borrow)
+		s = s.SetLen(len(borrow))
+
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 	}
 
 	s = s.AppendOne(p1.Arena(), v)
@@ -578,13 +588,21 @@ func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		goto exit
 	}
 
-	// If r.raw is off-arena, it will have len==cap, so it will force a
-	// realloc when we call Append.
-
 	{
 		s := slice.CastUntyped[T](r.raw)
+		if r.raw.OffArena() {
+			// Already holds a borrow. Need to spill to arena.
+			// This is the worst-case scenario.
+			borrow := s.Raw()
+			s = slice.Make[T](p1.Arena(), len(borrow)+n/size)
+			copy(s.Raw(), borrow)
+			s = s.SetLen(len(borrow))
+
+			p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		}
+
 		size := layout.Size[T]()
-		borrowed := unsafe2.Slice(unsafe2.Cast[T](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(unsafe2.Cast[T](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}

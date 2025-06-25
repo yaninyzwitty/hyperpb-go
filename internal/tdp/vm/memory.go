@@ -15,8 +15,6 @@
 package vm
 
 import (
-	"unsafe"
-
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
@@ -52,10 +50,7 @@ func RelocatePageBoundary(data []byte, force bool) []byte {
 
 		// If not, we need to check if there is a page boundary beyond this
 		// slice.
-		end := unsafe2.AddrOf(unsafe.SliceData(data))
-		end += unsafe2.Addr[byte](len(data))
-		_, up := end.Misalign(pageBoundary)
-		if up >= 9 {
+		if unsafe2.EndOf(data).Padding(pageBoundary) >= 9 {
 			// All good, we have nine or more bytes ahead of us before the next
 			// page boundary.
 			return data

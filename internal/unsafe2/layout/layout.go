@@ -21,6 +21,13 @@ package layout
 
 import "unsafe"
 
+// Int is any integer type.
+type Int interface {
+	int | int8 | int16 | int32 | int64 |
+		uint | uint8 | uint16 | uint32 | uint64 |
+		uintptr
+}
+
 // Size returns T's size in bytes.
 func Size[T any]() int {
 	var z T
@@ -52,4 +59,19 @@ func Of[T any]() Layout {
 // largest among l and that.
 func (l Layout) Max(that Layout) Layout {
 	return Layout{max(l.Size, that.Size), max(l.Align, that.Align)}
+}
+
+// RoundDown rounds v down to a power of two.
+func RoundDown[T Int](v, align T) T {
+	return v & (align - 1)
+}
+
+// RoundDown rounds v up to a power of two.
+func RoundUp[T Int](v, align T) T {
+	return (v + align - 1) &^ (align - 1)
+}
+
+// Padding returns [RoundUp](v, align) - v.
+func Padding[T Int](v, align T) T {
+	return (align - v) & (align - 1)
 }

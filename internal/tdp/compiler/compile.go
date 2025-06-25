@@ -36,6 +36,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -142,7 +143,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 	// Copy buf onto some memory that the GC can trace through md to keep all of
 	// the descriptors alive.
 	p := arena.AllocTraceable(len(c.buf), unsafe.Pointer(unsafe.SliceData(auxes)))
-	copy(unsafe2.Slice(p, len(c.buf)), c.buf)
+	copy(unsafe.Slice(p, len(c.buf)), c.buf)
 
 	// Resolve all relocations.
 	c.link(p)
@@ -502,8 +503,7 @@ func (c *compiler) link(base *byte) {
 func (c *compiler) write(symbol, v any, relos ...relo) int {
 	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
 		align := reflect.TypeOf(v).Align()
-		_, up := unsafe2.Addr[byte](len(c.buf)).Misalign(align)
-		b = append(b, make([]byte, up)...)
+		b = append(b, make([]byte, layout.Padding(len(c.buf), align))...)
 
 		return len(b), append(b, unsafe2.AnyBytes(v)...)
 	}, relos...)

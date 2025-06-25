@@ -16,6 +16,7 @@ package slice
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/debug"
@@ -107,14 +108,14 @@ func (s Slice[T]) Store(n int, v T) {
 //
 // The return value of this function must never escape outside of this module.
 func (s Slice[T]) Raw() []T {
-	return unsafe2.Slice2(s.Ptr(), s.len, s.cap)
+	return unsafe.Slice(s.Ptr(), s.cap)[:s.len]
 }
 
 // Rest returns the portion of s between the length and the capacity.
 //
 // The return value of this function must never escape outside of this module.
 func (s Slice[T]) Rest() []T {
-	return unsafe2.Slice(unsafe2.Add(s.Ptr(), s.len), s.cap-s.len)
+	return unsafe.Slice(unsafe2.Add(s.Ptr(), s.len), s.cap-s.len)
 }
 
 // Append appends the given elements to a slice, reallocating on the given

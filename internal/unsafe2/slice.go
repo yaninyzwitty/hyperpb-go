@@ -28,47 +28,15 @@ func BoundsCheck(n, len int) {
 	_ = dummy[n]
 }
 
-// Slice is like [unsafe.Slice], but isn't as branchy.
-func Slice[P ~*E, E any, I Int](p P, len I) []E {
-	return Slice2(p, len, len)
-}
-
-// Slice2 is like [unsafe.Slice], but allows specifying length and capacity
-// separately.
-func Slice2[P ~*E, E any, I Int](p P, len, cap I) []E {
-	return unsafe.Slice(p, cap)[:len]
-}
-
 // Bytes converts a pointer into a slice of its contents.
 func Bytes[P ~*E, E any](p P) []byte {
 	size := layout.Size[E]()
-	return Slice(Cast[byte](p), size)
-}
-
-// String is like [unsafe.String], but isn't as branchy.
-func String[P ~*E, E any, I Int](p P, len I) string {
-	size := layout.Size[E]()
-	slice := struct {
-		ptr P
-		len int
-	}{p, int(len) * size}
-
-	return BitCast[string](slice)
+	return unsafe.Slice(Cast[byte](p), size)
 }
 
 // LoadSlice loads a slice without performing a bounds check.
 func LoadSlice[S ~[]E, E any, I Int](s S, n I) E {
 	return Load(unsafe.SliceData(s), n)
-}
-
-// Copy copies n elements from one pointer to the other.
-func Copy[P ~*E, E any, I Int](dst, src P, n I) {
-	copy(Slice(dst, n), Slice(src, n))
-}
-
-// Clear zeros n elements at p.
-func Clear[P ~*E, E any, I Int](p P, n I) {
-	clear(Slice(p, n))
 }
 
 // SliceToString converts a slice into a string, multiplying the slice length

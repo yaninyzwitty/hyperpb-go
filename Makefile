@@ -87,7 +87,7 @@ clean: ## Delete intermediate build artifacts
 
 .PHONY: test
 test: build $(BIN)/test2 ## Run unit tests
-	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKGS) -- \
+	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -checkptr -p $(PKGS) -- \
 		$(TESTFLAGS)
 
 .PHONY: bench

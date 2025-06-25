@@ -198,6 +198,7 @@ func (m *Message) Initialized() error {
 
 		// This is a message field, which we need to recurse into.
 		f := m.impl.Type().ByIndex(int(^idx))
+
 		switch v := f.Get(unsafe.Pointer(m)).Interface().(type) {
 		case empty.Message:
 			continue

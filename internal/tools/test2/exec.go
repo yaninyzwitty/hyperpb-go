@@ -39,12 +39,13 @@ var errFailed = errors.New("tests failed")
 
 // runner is all the information necessary to build and run a test.
 type runner struct {
-	tool    string   // Path to the go tool.
-	pkgs    string   // Target to build.
-	output  string   // Output directory.
-	tags    string   // Build tags to use.
-	profile bool     // If set, -cpuprofile will be set.
-	args    []string // Args for the test binary(s).
+	tool     string   // Path to the go tool.
+	pkgs     string   // Target to build.
+	output   string   // Output directory.
+	tags     string   // Build tags to use.
+	profile  bool     // If set, -cpuprofile will be set.
+	checkptr bool     // Whether to build with -c=checkptr.
+	args     []string // Args for the test binary(s).
 }
 
 type test string
@@ -77,6 +78,11 @@ func (r *runner) build() ([]test, error) {
 		return nil, err
 	}
 
+	checkptr := "-gcflags=-d=checkptr=0"
+	if r.checkptr {
+		checkptr = "-gcflags=-d=checkptr=1"
+	}
+
 	// Build the command we're going to run.
 	cmd := exec.Command(
 		r.tool,
@@ -84,6 +90,7 @@ func (r *runner) build() ([]test, error) {
 		"-c",
 		"-o", r.output,
 		"-tags", r.tags,
+		checkptr,
 		r.pkgs,
 	)
 	cmd.Env = os.Environ()

@@ -28,12 +28,13 @@ import (
 )
 
 var (
-	goTool  = flag.String("go-tool", "go", "path to the go tool")
-	pkgs    = flag.String("p", ".", "test target to run")
-	output  = flag.String("o", "", "output directory to use; must be set")
-	tags    = flag.String("tags", "", "build tags to pass to go build")
-	profile = flag.Bool("profile", false, "whether to collect CPU profiles")
-	remote  = flag.String("remote", "", "SSH remote to run tests at")
+	goTool   = flag.String("go-tool", "go", "path to the go tool")
+	pkgs     = flag.String("p", ".", "test target to run")
+	output   = flag.String("o", "", "output directory to use; must be set")
+	tags     = flag.String("tags", "", "build tags to pass to go build")
+	profile  = flag.Bool("profile", false, "whether to collect CPU profiles")
+	remote   = flag.String("remote", "", "SSH remote to run tests at")
+	checkptr = flag.Bool("checkptr", false, "build with checkptr (crappy asan) instrumentation")
 
 	benchCsv   = flag.String("csv", "", "file for benchmark csv output")
 	benchTable = flag.String("table", "", "file for benchmark table output")
@@ -56,12 +57,13 @@ func run() error {
 	}
 
 	r := &runner{
-		tool:    *goTool,
-		pkgs:    *pkgs,
-		output:  *output,
-		tags:    *tags,
-		profile: *profile,
-		args:    flag.Args(),
+		tool:     *goTool,
+		pkgs:     *pkgs,
+		output:   *output,
+		tags:     *tags,
+		profile:  *profile,
+		checkptr: *checkptr,
+		args:     flag.Args(),
 	}
 
 	tests, err := r.build()

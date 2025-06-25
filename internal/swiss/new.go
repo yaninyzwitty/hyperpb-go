@@ -39,7 +39,7 @@ func KV[K, V any](k K, v V) Entry[K, V] { return Entry[K, V]{k, v} }
 // V must not contain pointers.
 func New[K Key, V any](out []byte, extract func(K) []byte, entries ...Entry[K, V]) ([]byte, *Table[K, V]) {
 	size, align := Layout[K, V](len(entries))
-	_, padding := unsafe2.Misalign(unsafe.SliceData(out), align)
+	padding := unsafe2.EndOf(out).Padding(align)
 
 	skip := len(out)
 	out = append(out, make([]byte, padding+size)...)

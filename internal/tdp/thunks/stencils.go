@@ -8600,6 +8600,14 @@ func appendFixed32(p1 vm.P1, p2 vm.P2, v uint32) (vm.P1, vm.P2) {
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
+	} else if r.raw.OffArena() {
+
+		borrow := s.Raw()
+		s = slice.Make[uint32](p1.Arena(), len(borrow)+1)
+		copy(s.Raw(), borrow)
+		s = s.SetLen(len(borrow))
+
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 	}
 
 	s = s.AppendOne(p1.Arena(), v)
@@ -8622,6 +8630,14 @@ func appendFixed64(p1 vm.P1, p2 vm.P2, v uint64) (vm.P1, vm.P2) {
 
 		r.raw = s.Addr().Untyped()
 		return p1, p2
+	} else if r.raw.OffArena() {
+
+		borrow := s.Raw()
+		s = slice.Make[uint64](p1.Arena(), len(borrow)+1)
+		copy(s.Raw(), borrow)
+		s = s.SetLen(len(borrow))
+
+		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
 	}
 
 	s = s.AppendOne(p1.Arena(), v)
@@ -8660,8 +8676,18 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	{
 		s := slice.CastUntyped[uint32](r.raw)
+		if r.raw.OffArena() {
+
+			borrow := s.Raw()
+			s = slice.Make[uint32](p1.Arena(), len(borrow)+n/size)
+			copy(s.Raw(), borrow)
+			s = s.SetLen(len(borrow))
+
+			p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		}
+
 		size := layout.Size[uint32]()
-		borrowed := unsafe2.Slice(unsafe2.Cast[uint32](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(unsafe2.Cast[uint32](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
@@ -8709,8 +8735,18 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	{
 		s := slice.CastUntyped[uint64](r.raw)
+		if r.raw.OffArena() {
+
+			borrow := s.Raw()
+			s = slice.Make[uint64](p1.Arena(), len(borrow)+n/size)
+			copy(s.Raw(), borrow)
+			s = s.SetLen(len(borrow))
+
+			p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		}
+
 		size := layout.Size[uint64]()
-		borrowed := unsafe2.Slice(unsafe2.Cast[uint64](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(unsafe2.Cast[uint64](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}

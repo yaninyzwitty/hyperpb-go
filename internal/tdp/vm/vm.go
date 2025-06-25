@@ -234,7 +234,7 @@ func (p1 P1) Buf() []byte {
 	if p1.Len() == 0 {
 		return nil
 	}
-	return unsafe2.Slice(p1.Ptr(), p1.Len())
+	return unsafe.Slice(p1.Ptr(), p1.Len())
 }
 
 func (p1 P1) Advance(n int) P1 {

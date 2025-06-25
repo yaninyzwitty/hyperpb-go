@@ -25,6 +25,8 @@ import (
 type VLA[T any] [0]T
 
 // Beyond obtains the VLA past the end of p.
+//
+// Address calculation assumes that p is well-aligned.
 func Beyond[T, Header any](p *Header) *VLA[T] {
 	// The below code performs the following address calculation without
 	// triggering a load (Go likes to perform loads of the result of pointer
@@ -35,11 +37,10 @@ func Beyond[T, Header any](p *Header) *VLA[T] {
 	//    VLA VLA[T]
 	//  }](p).VLA
 
-	size := layout.Size[Header]()
 	align := layout.Align[T]()
-	size = (size + align - 1) &^ (align - 1)
-
-	return Cast[VLA[T]](ByteAdd(p, size))
+	return Addr[VLA[T]](
+		AddrOf(p).Add(1).RoundUpTo(align),
+	).AssertValid()
 }
 
 // Get returns a pointer to the nth element of this array.
@@ -49,7 +50,7 @@ func (a *VLA[T]) Get(n int) *T {
 
 // Get returns a pointer to the element of this array at the given byte offset.
 func (a *VLA[T]) ByteGet(n int) *T {
-	return ByteAdd(Cast[T](a), n)
+	return ByteAdd[T](a, n)
 }
 
 // Slice converts this VLA into a slice of the given length.

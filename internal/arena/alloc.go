@@ -83,9 +83,7 @@ func AllocTraceable(size int, ptr unsafe.Pointer) *byte {
 	// each power of two size. For non-powers of two, we hammer reflection
 	// every time, because that path is not used by the arena implementation.
 	var shape reflect.Type
-
-	_, up := unsafe2.Addr[byte](size).Misalign(layout.Align[*byte]())
-	size += up
+	size = layout.RoundUp(size, layout.Align[*byte]())
 
 	if isPow2(size) {
 		// Power-of-two shapes avoid needing to take a trip through reflection.

@@ -41,6 +41,12 @@ func AddrOf[P ~*E, E any](p P) Addr[E] {
 	return Addr[E](uintptr(unsafe.Pointer(p)))
 }
 
+// EndOf calculates the one-past-the-end address of s without creating an
+// intermediate one-past-the-end pointer.
+func EndOf[S ~[]E, E any](s S) Addr[E] {
+	return AddrOf(unsafe.SliceData(s)).Add(len(s))
+}
+
 // AssertValid asserts that this address is a valid pointer.
 //
 //go:nosplit
@@ -63,15 +69,15 @@ func (a Addr[T]) Sub(b Addr[T]) int {
 	return int(a-b) / layout.Size[T]()
 }
 
-// Misalign returns the misalignment for an address: i.e., the byte offset to
-// make this pointer aligned to the previous, or next, align-aligned word.
-//
-// align must be a power of two. If p is aligned, returns 0, 0.
-func (a Addr[T]) Misalign(align int) (prev, next int) {
-	addr := int(a)
-	prev = addr & (align - 1)           // p % align
-	next = (align - addr) & (align - 1) // (align - p) % align
-	return prev, next
+// Padding returns the number of bytes between this address and the next address
+// aligned to the given alignment, which must be a power of two.
+func (a Addr[T]) Padding(align int) int {
+	return layout.Padding(int(a), align)
+}
+
+// RoundUp rounds this address upwards to align, which must be a power of two.
+func (a Addr[T]) RoundUpTo(align int) Addr[T] {
+	return Addr[T](layout.RoundUp(uintptr(a), uintptr(align)))
 }
 
 // SignBit returns whether this address has its sign bit set.

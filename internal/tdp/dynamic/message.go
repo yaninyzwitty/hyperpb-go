@@ -167,9 +167,9 @@ func GetField[T any](m *Message, offset tdp.Offset) *T {
 		if cold == nil {
 			return nil
 		}
-		return unsafe2.Cast[T](unsafe2.ByteAdd(cold, ^offset.Data))
+		return unsafe2.ByteAdd[T](cold, ^offset.Data)
 	}
-	return unsafe2.Cast[T](unsafe2.ByteAdd(m, offset.Data))
+	return unsafe2.ByteAdd[T](m, offset.Data)
 }
 
 // GetBit gets the value of the nth bit from this message's bitset.

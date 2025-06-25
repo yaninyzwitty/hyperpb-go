@@ -28,7 +28,6 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 )
 
@@ -168,11 +167,6 @@ func (ir *ir) doLayout(c *compiler) {
 		}
 	}
 
-	// Append hidden zero-size fields at the end to ensure that the stride of
-	// this type is divisible by 8.
-	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: true})
-	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: false})
-
 	slices.SortStableFunc(ir.s, func(a, b sField) int {
 		// Sort hot fields before cold fields. This simplifies the code below.
 		switch {
@@ -184,6 +178,11 @@ func (ir *ir) doLayout(c *compiler) {
 			return 1
 		}
 	})
+
+	// Append hidden zero-size fields at the end to ensure that the stride of
+	// this type is divisible by 8.
+	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: true})
+	ir.s = append(ir.s, sField{layout: layout.Of[[0]uint64](), hot: false})
 
 	// Figure out the number of bit words we need. We use 32-bit words.
 	const bitsPerWord = 32
@@ -209,15 +208,15 @@ func (ir *ir) doLayout(c *compiler) {
 			size = &ir.cold
 		}
 
-		_, up := unsafe2.Addr[byte](*size).Misalign(sf.layout.Align)
-		*size += up
-		if debug.Enabled && up > 0 {
+		padding := layout.Padding(*size, sf.layout.Align)
+		*size += padding
+		if debug.Enabled && padding > 0 {
 			// Note alignment padding required for the previous field.
 			if i == 0 && sf.hot {
-				ir.layout.BitWords += up / 4
+				ir.layout.BitWords += padding / 4
 			} else if ir.s[i-1].hot == sf.hot {
 				f := ir.layout.Fields
-				f[len(f)-1].Padding = uint32(up)
+				f[len(f)-1].Padding = uint32(padding)
 			}
 		}
 
