@@ -15,8 +15,10 @@ import (
 
 	"github.com/bufbuild/hyperpb"
 	"github.com/bufbuild/hyperpb/internal/debug"
+	"github.com/bufbuild/hyperpb/internal/flag2"
 	"github.com/bufbuild/hyperpb/internal/prototest"
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
+	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
@@ -28,6 +30,13 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"gopkg.in/yaml.v3"
+
+	_ "github.com/bufbuild/hyperpb/internal/gen/rsb/log"
+	_ "github.com/bufbuild/hyperpb/internal/gen/rsb/mesh"
+	_ "github.com/bufbuild/hyperpb/internal/gen/rsb/minecraft"
+	_ "github.com/bufbuild/hyperpb/internal/gen/rsb/mk48"
+	_ "github.com/bufbuild/hyperpb/internal/gen/test"
+	_ "google.golang.org/protobuf/types/descriptorpb"
 )
 
 //go:embed *
@@ -53,6 +62,8 @@ type TestCase struct {
 
 	// If set, run this test as a benchmark.
 	Benchmark bool `yaml:"benchmark"`
+	// Set for very large benchmarks.
+	Large bool `yaml:"large"`
 
 	PGO Profile `yaml:"pgo"`
 
@@ -124,6 +135,10 @@ func RunAll[T Harness[T]](t T, f func(T, *TestCase)) {
 func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 	t.Helper()
 
+	if debug.Enabled && test.Large && !flag2.Parsed("test.run") {
+		t.Skipf("skipping large test because of -tags debug; set -test.run to run it anyways")
+	}
+
 	run := func(t *testing.T, specimen []byte) {
 		t.Helper()
 
@@ -150,6 +165,10 @@ func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 
 		runtime.GC()
 		prototest.Equal(t, m1, m2)
+
+		// Make sure that we didn't leave the message locked by mistake.
+		impl := unsafe2.Cast[dynamic.Shared](m2.Shared())
+		require.True(t, impl.Lock.TryLock(), "internal arena lock was not released")
 
 		if verbose {
 			options := protojson.MarshalOptions{

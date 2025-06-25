@@ -21,12 +21,10 @@ import (
 	"testing"
 
 	"google.golang.org/protobuf/proto"
-	_ "google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 
 	"github.com/bufbuild/hyperpb"
 	"github.com/bufbuild/hyperpb/internal/flag2"
-	_ "github.com/bufbuild/hyperpb/internal/gen/test"
 	"github.com/bufbuild/hyperpb/internal/testdata"
 )
 

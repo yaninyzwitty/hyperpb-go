@@ -268,7 +268,7 @@ func (r *repeatedZigzag[Z, E]) Get(n int) protoreflect.Value {
 }
 
 func getRepeatedBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
-	p := dynamic.GetField[repeatedString](m, getter.Offset)
+	p := dynamic.GetField[repeatedBool](m, getter.Offset)
 	return protoreflect.ValueOf(p)
 }
 

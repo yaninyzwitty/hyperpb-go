@@ -14,6 +14,7 @@
 
 type: hyperpb.test.Pathological
 benchmark: true
+large: true
 protoscope: 
 - | # go run ./internal/testdata/repeated/gen.go -f '1: {100: {%q}}' -ascii -hi 24 -n 512 -row 3
   1: {100: {"&}axxUj/L~DA_ICe!8)#/f$g"}}    1: {100: {"BFXpzFtYN(:uGg'5&-yN"}}          1: {100: {"Q*dNpRZ6B'|IbtCDnTns'|-"}}

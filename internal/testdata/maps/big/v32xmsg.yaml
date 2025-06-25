@@ -14,6 +14,7 @@
 
 type: hyperpb.test.MessageMaps
 benchmark: true
+large: true
 protoscope:
 - | # go run testdata/repeated/gen.go -f '0x14: { 1: %d 2: -%[1]dz }' -hi 0x3f -n 2048 -row 4
   0x11: { 1: 52 2: {1:{1: -52}} } 0x11: { 1: 17 2: {1:{1: -17}} } 0x11: { 1: 56 2: {1:{1: -56}} }

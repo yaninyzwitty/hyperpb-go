@@ -14,6 +14,7 @@
 
 type: hyperpb.test.Maps
 benchmark: true
+large: true
 protoscope:
 - | # go run testdata/repeated/gen.go -f '0xc0: { 1: {%q} 2: 42 }' -hi 8 -ascii -row 4 -n 512
   0xc0: { 1: {"P-M"} 2: 42 }        0xc0: { 1: {"9hY_NLOE"} 2: 42 }   0xc0: { 1: {"dL^sg=s"} 2: 42 }    0xc0: { 1: {"a#YM79Fj"} 2: 42 }

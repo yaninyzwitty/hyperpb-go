@@ -77,6 +77,10 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 		return &ParseError{code: ErrorTooBig}
 	}
 
+	if len(data) == 0 {
+		return nil
+	}
+
 	m.Shared.Lock.Lock()
 
 	p3 := p3Pool.Get()
@@ -86,10 +90,6 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	m.Shared.Src = unsafe.SliceData(data)
 	m.Shared.Len = len(data)
 	// The arena keeps m.context alive, so we don't need to KeepAlive src.
-
-	if m.Shared.Len == 0 {
-		return nil
-	}
 
 	stack := stackPool.Get()
 	if cap(*stack) < p3.MaxDepth {

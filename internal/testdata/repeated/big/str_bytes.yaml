@@ -14,6 +14,7 @@
 
 type: hyperpb.test.Repeated
 benchmark: true
+large: true
 protoscope:
 - | # go run testdata/repeated/gen.go -f '9: {`%x`}' -bytes -hi 24 -n 512 -row 2
   9: {`c387c3b479c3a43b3c0bc2ba79c39d484cc3b17d6ac3b1c391c28ec2b7c38fc2af43397a`}           9: {`c3a5326ec39fc3acc3bb6258c2902cc3804470c280c3ab4518c298c386c3b35a5fc388c3be`}

@@ -14,7 +14,16 @@
 
 package flag2
 
-import "flag"
+import (
+	"flag"
+	"sync"
+)
+
+var parsed = sync.OnceValue(func() map[string]struct{} {
+	m := make(map[string]struct{})
+	flag.Visit(func(f *flag.Flag) { m[f.Name] = struct{}{} })
+	return m
+})
 
 // Lookup looks up a flag by name of the given type.
 //
@@ -22,4 +31,13 @@ import "flag"
 // [flag.Getter].
 func Lookup[T any](name string) T {
 	return flag.Lookup(name).Value.(flag.Getter).Get().(T) //nolint:errcheck
+}
+
+// Parsed returns whether the given flag was parsed.
+func Parsed(name string) bool {
+	if !flag.Parsed() {
+		return false
+	}
+	_, ok := parsed()[name]
+	return ok
 }

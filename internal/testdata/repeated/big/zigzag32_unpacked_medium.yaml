@@ -14,6 +14,7 @@
 
 type: hyperpb.test.Repeated
 benchmark: true
+large: true
 protoscope:
 - | # go run testdata/bench/gen_repeated.go -f '3: %d' -hi 0xfff -n 2048 -zipf 
   3: 15   3: 17   3: 26   3: 117  3: 504  3: 218  3: 18   3: 270  3: 38   3: 180  3: 462  3: 0    3: 6    3: 185  3: 20   3: 2

@@ -14,6 +14,7 @@
 
 type: hyperpb.test.FileDescriptorSet
 benchmark: true
+large: true
 hex:
 - | # protoc -o/dev/stdout --include_source_info google/protobuf/descriptor.proto | xxd -ps
   0acba2040a20676f6f676c652f70726f746f6275662f6465736372697074

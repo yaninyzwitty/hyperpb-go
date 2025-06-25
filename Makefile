@@ -133,7 +133,7 @@ lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 		--fix
 
 .PHONY: generate
-generate: internal/gen/test/*.pb.go $(BIN)/license-header ## Regenerate code and licenses
+generate: internal/gen/*/*.pb.go $(BIN)/license-header ## Regenerate code and licenses
 	$(GO_HOST) generate ./...
 	$(BIN)/license-header \
 		--license-type apache \
@@ -152,7 +152,7 @@ checkgenerate:
 	@# Used in CI to verify that `make generate` doesn't produce a diff.
 	git --no-pager diff --exit-code >&2
 
-internal/gen/test/*.pb.go: $(BIN)/buf internal/proto/test/*.proto
+internal/gen/*/*.pb.go: $(BIN)/buf internal/proto/*/*.proto internal/proto/*/*/*.proto
 	$(BIN)/buf generate --clean
 	$(BIN)/buf generate --template buf.gen.vt.yaml \
 		--exclude-path internal/proto/test/proto2.proto,internal/proto/test/editions.proto # Work around a bug.
