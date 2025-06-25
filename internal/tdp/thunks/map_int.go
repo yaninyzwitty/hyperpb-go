@@ -29,10 +29,10 @@ import (
 func getMapIxI[K protoreflect2.Int, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, V]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapIxI[K, V]{table: *v})
+	return protoreflect.ValueOfMap(mapIxI[K, V]{table: *v})
 }
 
 // mapIxI is a [protoreflect.Map] for map<K, V> where K and V are both integer types.
@@ -48,15 +48,15 @@ func (m mapIxI[K, V]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := protoreflect2.GetInt[K](mk.Value())
 	v := m.table.Lookup(k)
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(*v)
+	return protoreflect2.ValueOfScalar(*v)
 }
 
 func (m mapIxI[K, V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect2.ValueOfScalar(k)), protoreflect2.ValueOfScalar(v)) {
 			return
 		}
 	}
@@ -66,10 +66,10 @@ func (m mapIxI[K, V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) 
 func getMapIxS[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapIxS[K]{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapIxS[K]{src: m.Shared.Src, table: *v})
 }
 
 // mapIxS is a [protoreflect.Map] for map<K, string> where K is an integer type.
@@ -86,15 +86,15 @@ func (m mapIxS[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := protoreflect2.GetInt[K](mk.Value())
 	v := m.table.Lookup(k)
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(v.String(m.src))
+	return protoreflect.ValueOfString(v.String(m.src))
 }
 
 func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.String(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect2.ValueOfScalar(k)), protoreflect.ValueOfString(v.String(m.src))) {
 			return
 		}
 	}
@@ -104,10 +104,10 @@ func (m mapIxS[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 func getMapIxB[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapIxB[K]{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapIxB[K]{src: m.Shared.Src, table: *v})
 }
 
 // mapIxB is a [protoreflect.Map] for map<K, bytes> where K is an integer type.
@@ -124,15 +124,15 @@ func (m mapIxB[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := protoreflect2.GetInt[K](mk.Value())
 	v := m.table.Lookup(k)
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(v.Bytes(m.src))
+	return protoreflect.ValueOfBytes(v.Bytes(m.src))
 }
 
 func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v.Bytes(m.src))) {
+		if !yield(protoreflect.MapKey(protoreflect2.ValueOfScalar(k)), protoreflect.ValueOfBytes(v.Bytes(m.src))) {
 			return
 		}
 	}
@@ -142,10 +142,10 @@ func (m mapIxB[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 func getMapIxM[K protoreflect2.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[K, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapIxM[K]{table: *v})
+	return protoreflect.ValueOfMap(mapIxM[K]{table: *v})
 }
 
 // mapIxM is a [protoreflect.Map] for map<string, V> where V is an integer type.
@@ -161,15 +161,15 @@ func (m mapIxM[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := protoreflect2.GetInt[K](mk.Value())
 	v := m.table.Lookup(k)
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(WrapMessage(*v))
+	return protoreflect.ValueOfMessage(WrapMessage(*v))
 }
 
 func (m mapIxM[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(WrapMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect2.ValueOfScalar(k)), protoreflect.ValueOfMessage(WrapMessage(v))) {
 			return
 		}
 	}

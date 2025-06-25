@@ -23,6 +23,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -154,33 +155,33 @@ var optionalFields = map[protoreflect.Kind]*compiler.Archetype{
 
 func getOptionalScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	if !m.GetBit(getter.Offset.Bit) {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	v := *dynamic.GetField[T](m, getter.Offset)
-	return protoreflect.ValueOf(v)
+	return protoreflect2.ValueOfScalar(v)
 }
 
 func getOptionalBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	if !m.GetBit(getter.Offset.Bit) {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
-	return protoreflect.ValueOf(m.GetBit(getter.Offset.Bit + 1))
+	return protoreflect.ValueOfBool(m.GetBit(getter.Offset.Bit + 1))
 }
 
 func getOptionalString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	if !m.GetBit(getter.Offset.Bit) {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	r := *dynamic.GetField[zc.Range](m, getter.Offset)
-	return protoreflect.ValueOf(r.String(m.Shared.Src))
+	return protoreflect.ValueOfString(r.String(m.Shared.Src))
 }
 
 func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	if !m.GetBit(getter.Offset.Bit) {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	r := *dynamic.GetField[zc.Range](m, getter.Offset)
-	return protoreflect.ValueOf(r.Bytes(m.Shared.Src))
+	return protoreflect.ValueOfBytes(r.Bytes(m.Shared.Src))
 }
 
 //go:nosplit

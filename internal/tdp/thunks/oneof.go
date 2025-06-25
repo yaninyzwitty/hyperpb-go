@@ -25,6 +25,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -178,46 +179,46 @@ var oneofFields = map[protoreflect.Kind]*compiler.Archetype{
 func getOneofScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	v := *dynamic.GetField[T](m, getter.Offset)
-	return protoreflect.ValueOf(v)
+	return protoreflect2.ValueOfScalar(v)
 }
 
 func getOneofBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	v := *dynamic.GetField[byte](m, getter.Offset)
-	return protoreflect.ValueOf(v != 0)
+	return protoreflect.ValueOfBool(v != 0)
 }
 
 func getOneofString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	r := *dynamic.GetField[zc.Range](m, getter.Offset)
-	return protoreflect.ValueOf(r.String(m.Shared.Src))
+	return protoreflect.ValueOfString(r.String(m.Shared.Src))
 }
 
 func getOneofBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 	r := *dynamic.GetField[zc.Range](m, getter.Offset)
-	return protoreflect.ValueOf(r.Bytes(m.Shared.Src))
+	return protoreflect.ValueOfBytes(r.Bytes(m.Shared.Src))
 }
 
 func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	which := unsafe2.ByteLoad[uint32](m, getter.Offset.Bit)
 	if which != getter.Offset.Number {
-		return protoreflect.ValueOf(empty.NewMessage(ty))
+		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
 	ptr := *dynamic.GetField[*dynamic.Message](m, getter.Offset)
-	return protoreflect.ValueOf(WrapMessage(ptr))
+	return protoreflect.ValueOfMessage(WrapMessage(ptr))
 }
 
 //go:nosplit

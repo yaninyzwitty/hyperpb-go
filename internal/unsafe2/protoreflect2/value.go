@@ -32,6 +32,34 @@ type Int interface {
 	protoreflect.EnumNumber | int32 | uint32 | int64 | uint64
 }
 
+// ValueOfScalar is like protoreflect.ValueOf, but it assumes that v is stored directly
+// inside of a protoreflect.Value. Unlike protoreflect.ValueOf, it will not
+// cause v to escape.
+func ValueOfScalar(v any) protoreflect.Value {
+	switch v := v.(type) {
+	case nil:
+		return protoreflect.Value{}
+	case bool:
+		return protoreflect.ValueOfBool(v)
+	case int32:
+		return protoreflect.ValueOfInt32(v)
+	case int64:
+		return protoreflect.ValueOfInt64(v)
+	case uint32:
+		return protoreflect.ValueOfUint32(v)
+	case uint64:
+		return protoreflect.ValueOfUint64(v)
+	case float32:
+		return protoreflect.ValueOfFloat32(v)
+	case float64:
+		return protoreflect.ValueOfFloat64(v)
+	case protoreflect.EnumNumber:
+		return protoreflect.ValueOfEnum(v)
+	default:
+		panic(fmt.Sprintf("invalid type: %T", v))
+	}
+}
+
 // GetInt extracts a scalar value out of a [protoreflect.Value].
 //
 // Panics if this is the wrong type.

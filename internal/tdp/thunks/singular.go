@@ -27,6 +27,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -157,24 +158,24 @@ var singularFields = map[protoreflect.Kind]*compiler.Archetype{
 func getScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[T](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	v := *p
 	var zero T
 	if v == zero {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(v)
+	return protoreflect2.ValueOfScalar(v)
 }
 
 func getBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	b := m.GetBit(getter.Offset.Bit)
 	if !b {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
-	return protoreflect.ValueOf(true)
+	return protoreflect.ValueOfBool(true)
 }
 
 // We can't use the stencil above due to negative zero: 0.0 == -0.0 according
@@ -186,72 +187,72 @@ func getBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect
 func getFloat32(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[uint32](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	v := *p
 	if v == 0 {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
-	return protoreflect.ValueOf(math.Float32frombits(v))
+	return protoreflect.ValueOfFloat32(math.Float32frombits(v))
 }
 
 func getFloat64(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[uint64](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	v := *p
 	if v == 0 {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
-	return protoreflect.ValueOf(math.Float64frombits(v))
+	return protoreflect.ValueOfFloat64(math.Float64frombits(v))
 }
 
 func getString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[zc.Range](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	r := *p
 	data := r.String(m.Shared.Src)
 
 	if data == "" {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(data)
+	return protoreflect.ValueOfString(data)
 }
 
 func getBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[zc.Range](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	r := *p
 	data := r.Bytes(m.Shared.Src)
 
 	if len(data) == 0 {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(data)
+	return protoreflect.ValueOfBytes(data)
 }
 
 func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[*dynamic.Message](m, getter.Offset)
 	if p == nil {
-		return protoreflect.ValueOf(empty.NewMessage(ty))
+		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
 
 	sub := *p
 	if sub == nil {
-		return protoreflect.ValueOf(empty.NewMessage(ty))
+		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
-	return protoreflect.ValueOf(WrapMessage(sub))
+	return protoreflect.ValueOfMessage(WrapMessage(sub))
 }
 
 //go:nosplit

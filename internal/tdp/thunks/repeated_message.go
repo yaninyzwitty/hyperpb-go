@@ -34,7 +34,7 @@ import (
 
 func getRepeatedMessage(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedMessage](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 // repeatedMessage is a [protoreflect.List] implementation for message types.
@@ -69,11 +69,11 @@ func (r *repeatedMessage) Get(n int) protoreflect.Value {
 	if r.stride != 0 {
 		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
 		m := unsafe2.ByteAdd[dynamic.Message](r.raw.Ptr.AssertValid(), n*int(r.stride))
-		return protoreflect.ValueOf(WrapMessage(m))
+		return protoreflect.ValueOfMessage(WrapMessage(m))
 	}
 
 	raw := slice.CastUntyped[*dynamic.Message](r.raw).Raw()
-	return protoreflect.ValueOf(WrapMessage(raw[n]))
+	return protoreflect.ValueOfMessage(WrapMessage(raw[n]))
 }
 
 //go:nosplit

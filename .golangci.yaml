@@ -22,7 +22,6 @@ linters:
     - errname           # Our errors are named errXXX or ErrXXX.
     - exhaustive        # Seemingly made of false positives.
     - exhaustruct       # Listing every field is not idiomatic.
-    - forbidigo         # We don't have forbidden patterns.
     - forcetypeassert   # Covered by errcheck.
 
     - gochecknoglobals  # Globals are good actually.
@@ -64,6 +63,13 @@ linters:
       # temporary hacks, and use godox to prevent committing them.
       keywords: [FIXME]
 
+    forbidigo:
+      forbid:
+        - pattern: '^protoreflect\.ValueOf$'
+          msg: |
+            ValueOf() unconditionally escapes its argument, causing unnecessary
+            heap allocations. Use one of the typed variants, or protoreflect2.Direct() instead.
+
   exclusions:
     presets:
       - comments
@@ -82,6 +88,9 @@ linters:
       # Don't ban use of fmt.Errorf to create new errors, but the remaining
       # checks from err113 are useful.
       - { path: '.*', text: "do not define dynamic errors.*" }
+
+      # Only applies inside of the thunks package.
+      - { path-except: 'tdp/thunks', text: "ValueOf" }
 
       # The integer overflow is excessively noisy since it doesn't seem to
       # go away by adding appropriate range checks.

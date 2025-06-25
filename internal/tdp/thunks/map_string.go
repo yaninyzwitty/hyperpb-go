@@ -22,6 +22,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -29,10 +30,10 @@ import (
 func getMapSxI[V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, V]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapSxI[V]{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapSxI[V]{src: m.Shared.Src, table: *v})
 }
 
 // mapSxI is a [protoreflect.Map] for map<string, V> where V is an integer type.
@@ -53,16 +54,16 @@ func (m mapSxI[V]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
 	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(*v)
+	return protoreflect2.ValueOfScalar(*v)
 }
 
 func (m mapSxI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect2.ValueOfScalar(v)) {
 			return
 		}
 	}
@@ -72,10 +73,10 @@ func (m mapSxI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) boo
 func getMapSxS(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapSxS{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapSxS{src: m.Shared.Src, table: *v})
 }
 
 // mapSxS is a [protoreflect.Map] for map<string, string>.
@@ -92,17 +93,17 @@ func (m mapSxS) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
 	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(v.String(m.src))
+	return protoreflect.ValueOfString(v.String(m.src))
 }
 
 func (m mapSxS) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
 		v := v.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfString(v)) {
 			return
 		}
 	}
@@ -116,10 +117,10 @@ func (m mapSxS) extract() func(zc.Range) []byte {
 func getMapSxB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, zc.Range]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapSxB{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapSxB{src: m.Shared.Src, table: *v})
 }
 
 // stringScalarMap is a [protoreflect.Map] for map<string, bytes>.
@@ -136,17 +137,17 @@ func (m mapSxB) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
 	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(v.Bytes(m.src))
+	return protoreflect.ValueOfBytes(v.Bytes(m.src))
 }
 
 func (m mapSxB) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
 		v := v.Bytes(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfBytes(v)) {
 			return
 		}
 	}
@@ -160,10 +161,10 @@ func (m mapSxB) extract() func(zc.Range) []byte {
 func getMapSxM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	v := dynamic.GetField[*swiss.Table[zc.Range, *dynamic.Message]](m, getter.Offset)
 	if v == nil || *v == nil {
-		return protoreflect.ValueOf(empty.Map{})
+		return protoreflect.ValueOfMap(empty.Map{})
 	}
 
-	return protoreflect.ValueOf(mapSxM{src: m.Shared.Src, table: *v})
+	return protoreflect.ValueOfMap(mapSxM{src: m.Shared.Src, table: *v})
 }
 
 // mapSxM is a [protoreflect.Map] for map<string, V> where V is a message type.
@@ -180,16 +181,16 @@ func (m mapSxM) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
 	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOf(WrapMessage(*v))
+	return protoreflect.ValueOfMessage(WrapMessage(*v))
 }
 
 func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOf(k)), protoreflect.ValueOf(WrapMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfMessage(WrapMessage(v))) {
 			return
 		}
 	}

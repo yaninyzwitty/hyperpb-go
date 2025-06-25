@@ -205,7 +205,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 						n.Fun = sel
 					}
 				}
-			} else if idx, ok := n.Fun.(*ast.IndexListExpr); ok {
+			} else if idx, ok := n.Fun.(*ast.IndexExpr); ok {
 				// Special case for calling a generic function.
 				if sel, ok := idx.X.(*ast.SelectorExpr); ok {
 					if arg, ok := dir.Renames[sel.Sel.Name]; ok {

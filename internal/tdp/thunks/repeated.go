@@ -30,6 +30,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -205,7 +206,7 @@ type repeatedScalarElement interface {
 
 func getRepeatedScalar[Z, E repeatedScalarElement](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedScalar[Z, E]](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 type repeatedScalar[Z, E repeatedScalarElement] struct {
@@ -229,15 +230,15 @@ func (r *repeatedScalar[Z, E]) Get(n int) protoreflect.Value {
 	raw := r.raw
 	if raw.OffArena() {
 		v := slice.CastUntyped[Z](raw).Raw()[n]
-		return protoreflect.ValueOf(E(v))
+		return protoreflect2.ValueOfScalar(E(v))
 	}
 	v := slice.CastUntyped[E](raw).Raw()[n]
-	return protoreflect.ValueOf(v)
+	return protoreflect2.ValueOfScalar(v)
 }
 
 func getRepeatedZigzag[Z, E tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedZigzag[Z, E]](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 type repeatedZigzag[Z, E tdp.Int] struct {
@@ -261,15 +262,15 @@ func (r *repeatedZigzag[Z, E]) Get(n int) protoreflect.Value {
 	raw := r.raw
 	if raw.Ptr.SignBit() {
 		v := slice.CastUntyped[Z](raw).Raw()[n]
-		return protoreflect.ValueOf(zigzag(E(v)))
+		return protoreflect2.ValueOfScalar(zigzag(E(v)))
 	}
 	v := slice.CastUntyped[E](raw).Raw()[n]
-	return protoreflect.ValueOf(zigzag(v))
+	return protoreflect2.ValueOfScalar(zigzag(v))
 }
 
 func getRepeatedBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedBool](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 type repeatedBool struct {
@@ -291,12 +292,12 @@ func (r *repeatedBool) Len() int {
 // Get implements [protoreflect.List].
 func (r *repeatedBool) Get(n int) protoreflect.Value {
 	v := r.raw.AssertValid().Raw()[n]
-	return protoreflect.ValueOf(v != 0)
+	return protoreflect.ValueOfBool(v != 0)
 }
 
 func getRepeatedString(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedString](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 // repeatedString is a [protoreflect.List] implementation for string.
@@ -318,12 +319,12 @@ func (r *repeatedString) Len() int {
 
 func (r *repeatedString) Get(n int) protoreflect.Value {
 	zc := r.raw.AssertValid().Raw()[n]
-	return protoreflect.ValueOf(zc.String(r.src))
+	return protoreflect.ValueOfString(zc.String(r.src))
 }
 
 func getRepeatedBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
 	p := dynamic.GetField[repeatedBytes](m, getter.Offset)
-	return protoreflect.ValueOf(p)
+	return protoreflect.ValueOfList(p)
 }
 
 // repeatedBytes is a [protoreflect.List] implementation for string.
@@ -345,7 +346,7 @@ func (r *repeatedBytes) Len() int {
 
 func (r *repeatedBytes) Get(n int) protoreflect.Value {
 	zc := r.raw.AssertValid().Raw()[n]
-	return protoreflect.ValueOf(zc.Bytes(r.src))
+	return protoreflect.ValueOfBytes(zc.Bytes(r.src))
 }
 
 //go:nosplit
