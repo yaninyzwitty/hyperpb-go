@@ -141,7 +141,10 @@ type TypeParser struct {
 
 // Fields returns a raw pointer to this parser's field array.
 func (p *TypeParser) Fields() *unsafe2.VLA[FieldParser] {
-	return unsafe2.Beyond[FieldParser](p)
+	// Don't use Beyond, since Go does not inline it in a critical place.
+	// TypeParser and FieldParser have the same alignment, so this can be
+	// a pure pointer increment.
+	return unsafe2.Cast[unsafe2.VLA[FieldParser]](unsafe2.Add(p, 1))
 }
 
 // Format implements [fmt.Formatter].

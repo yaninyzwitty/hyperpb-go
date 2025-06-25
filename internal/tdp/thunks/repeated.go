@@ -407,13 +407,28 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 
 	// Count the number of varints in this packed field. We do this by counting
 	// bytes without the sign bit set, in groups of 8.
+
 	var count int
-	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
-		n := min(8, p1.EndAddr.Sub(p))
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= tdp.SignBits << uint(n*8)
-		count += bits.OnesCount64(tdp.SignBits &^ bytes)
+	{
+		p := p1.PtrAddr
+		e := p1.EndAddr
+		e8 := p.Add(layout.RoundDown(int(e-p), 8))
+		if p < e8 {
+		again:
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & tdp.SignBits)
+			p = p.Add(8)
+			if p < e8 {
+				goto again
+			}
+		}
+		if p < e {
+			left := int(e - p)
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
+		}
 	}
+	count = n - count
 
 	var r *repeatedScalar[byte, T]
 	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, T]](p1, p2)

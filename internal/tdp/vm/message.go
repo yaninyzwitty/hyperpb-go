@@ -23,6 +23,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
 )
 
+//go:generate go run ../../tools/stencil
+
 // This file contains inlined or modified versions of functions from
 // package [dynamic], since Go cannot seem to inline them, resulting in
 // spills of p1/p2 across hot calls.
@@ -58,6 +60,9 @@ func StoreField[T any](p1 P1, p2 P2, v T) (P1, P2) {
 	*(*T)(p) = v
 	return p1, p2
 }
+
+//hyperpb:stencil StoreFromScratch32 StoreFromScratch[uint32]
+//hyperpb:stencil StoreFromScratch64 StoreFromScratch[uint64]
 
 // StoreFromScratch is like [StoreField], but it uses p2.scratch as the value to
 // store. This is useful for avoiding spills, by writing the temporary parsed

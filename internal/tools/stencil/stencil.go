@@ -186,18 +186,34 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 			}
 
 		case *ast.CallExpr:
-			// Special case for calling a method that is in the renames
-			// array.
-			sel, ok := n.Fun.(*ast.SelectorExpr)
-			if !ok {
-				break
-			}
-			if arg, ok := dir.Renames[sel.Sel.Name]; ok {
-				// Rewrite the function expression to an identifier.
-				n.Fun = &ast.Ident{Name: arg}
+			if sel, ok := n.Fun.(*ast.SelectorExpr); ok {
+				// Special case for calling a method that is in the renames
+				// array.
+				if arg, ok := dir.Renames[sel.Sel.Name]; ok {
+					// Rewrite the function expression to an identifier.
+					n.Fun = &ast.Ident{Name: arg}
 
-				// Append the selectee as the first argument of the call.
-				n.Args = slices.Insert(n.Args, 0, sel.X)
+					// Append the selectee as the first argument of the call.
+					n.Args = slices.Insert(n.Args, 0, sel.X)
+				}
+			} else if idx, ok := n.Fun.(*ast.IndexExpr); ok {
+				// Special case for calling a generic function.
+				if sel, ok := idx.X.(*ast.SelectorExpr); ok {
+					if arg, ok := dir.Renames[sel.Sel.Name]; ok {
+						// Rewrite the call to be non-generic.
+						sel.Sel.Name = arg
+						n.Fun = sel
+					}
+				}
+			} else if idx, ok := n.Fun.(*ast.IndexListExpr); ok {
+				// Special case for calling a generic function.
+				if sel, ok := idx.X.(*ast.SelectorExpr); ok {
+					if arg, ok := dir.Renames[sel.Sel.Name]; ok {
+						// Rewrite the call to be non-generic.
+						sel.Sel.Name = arg
+						n.Fun = sel
+					}
+				}
 			}
 		}
 

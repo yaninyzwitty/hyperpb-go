@@ -100,7 +100,7 @@ bench: build $(BIN)/test2 ## Run benchmarks
 profile: build $(BIN)/test2 ## Profile benchmarks and open them in pprof
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKG) -profile -- \
 		-test.run '^B' -test.bench '$(BENCHMARK)' \
-		-test.benchtime 3s $(BENCHFLAGS)
+		-test.benchtime 5s $(BENCHFLAGS)
 	@$(GO_HOST) tool pprof -http localhost:8000 $(TESTS)/*.test $(TESTS)/*.prof
 
 .PHONY: asm

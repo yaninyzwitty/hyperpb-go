@@ -63,7 +63,7 @@ func (l Layout) Max(that Layout) Layout {
 
 // RoundDown rounds v down to a power of two.
 func RoundDown[T Int](v, align T) T {
-	return v & (align - 1)
+	return v &^ (align - 1)
 }
 
 // RoundDown rounds v up to a power of two.

@@ -184,8 +184,8 @@ func getOptionalBytes(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) pro
 }
 
 //go:nosplit
-//hyperpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32]
-//hyperpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64]
+//hyperpb:stencil parseOptionalVarint32 parseOptionalVarint[uint32] StoreFromScratch -> StoreFromScratch32
+//hyperpb:stencil parseOptionalVarint64 parseOptionalVarint[uint64] StoreFromScratch -> StoreFromScratch64
 func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = vm.StoreFromScratch[T](p1, p2)
@@ -193,8 +193,8 @@ func parseOptionalVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 }
 
 //go:nosplit
-//hyperpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32]
-//hyperpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64]
+//hyperpb:stencil parseOptionalZigZag32 parseOptionalZigZag[uint32] StoreFromScratch -> StoreFromScratch32
+//hyperpb:stencil parseOptionalZigZag64 parseOptionalZigZag[uint64] StoreFromScratch -> StoreFromScratch64
 func parseOptionalZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
@@ -236,6 +236,7 @@ func parseOptionalBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	return vm.SetBit(p1, p2)
 }
 
+//go:nosplit
 func parseOptionalBool(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)

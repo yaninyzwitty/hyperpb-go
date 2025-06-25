@@ -20,20 +20,66 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 // verifyUTF8 validates that the next n bytes after p1.Ptr() are valid UTF-8.
 //
 // Fails the parse if validation fails.
+//
+//go:nosplit
 func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
+	if n == 0 {
+		return p1, p2, 0
+	}
+
+	p := p1.PtrAddr
 	e := p1.PtrAddr.Add(n)
+	e8 := p.Add(layout.RoundDown(int(e-p), 8))
+
+	// This first part is an extremely optimized, vectorized ASCII checker.
+	// It is split into a chunked part that does eight byte chunks at once,
+	// and a remainder part that only does 0 to 7 bytes.
+	if e8 > p {
+	again:
+		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		p = p.Add(8)
+		if bytes&tdp.SignBits != 0 {
+			p = p.Add(-8) // Back up, need to take the slow path.
+			goto unicode
+		}
+		if p < e8 {
+			goto again
+		}
+	}
+	if e > p {
+		// Fast path for if the last few bytes are also ASCII.
+		left := int(e - p)
+		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		p = p.Add(left)
+		if bytes&(tdp.SignBits>>uint((8-left)*8)) != 0 {
+			p = p.Add(-left)
+			goto unicode
+		}
+	}
+	{
+		r := zc.NewRaw(p.Sub(unsafe2.AddrOf(p1.Src()))-n, n)
+		p1.PtrAddr = p
+
+		if debug.Enabled {
+			text := r.Bytes(p1.Src())
+			p1.Log(p2, "utf8", "%#v, %q", r, text)
+		}
+		return p1, p2, r
+	}
 
 	// All non-spatial errors are accumulated so we only have to do one branch
 	// at the end.
+unicode:
 	ok := true
-	for p := p1.PtrAddr; p < e; {
-		n := min(8, e-p)
+	for p < e {
+		n := min(8, int(e-p))
 		// Fast path for ASCII: simply check that all of the bytes don't have
 		// their sign bits set.
 		bytes := *unsafe2.Cast[uint64](p.AssertValid())
@@ -130,8 +176,8 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 	}
 
 	if ok {
-		r := zc.NewRaw(p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())), n)
-		p1 = p1.Advance(n)
+		r := zc.NewRaw(e.Sub(unsafe2.AddrOf(p1.Src()))-n, n)
+		p1.PtrAddr = e
 
 		if debug.Enabled {
 			text := r.Bytes(p1.Src())

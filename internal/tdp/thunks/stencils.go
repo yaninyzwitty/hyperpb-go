@@ -8046,7 +8046,7 @@ insert:
 func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofVarint[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
@@ -8056,7 +8056,7 @@ func parseOneofVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOneofVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofVarint[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
@@ -8067,7 +8067,7 @@ func parseOneofZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofZigZag[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
@@ -8078,7 +8078,7 @@ func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOneofZigZag[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	unsafe2.ByteStore(p2.Message(), p2.Field().Offset.Bit, p2.Field().Offset.Number)
 
 	return p1, p2
@@ -8088,7 +8088,7 @@ func parseOneofZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalVarint[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 	return vm.SetBit(p1, p2)
 }
 
@@ -8096,7 +8096,7 @@ func parseOptionalVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseOptionalVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalVarint[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	return vm.SetBit(p1, p2)
 }
 
@@ -8105,7 +8105,7 @@ func parseOptionalZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalZigZag[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 	return vm.SetBit(p1, p2)
 }
 
@@ -8114,7 +8114,7 @@ func parseOptionalZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseOptionalZigZag[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 	return vm.SetBit(p1, p2)
 }
 
@@ -8247,15 +8247,27 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	// Count the number of varints in this packed field. We do this by counting
-	// bytes without the sign bit set, in groups of 8.
 	var count int
-	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
-		n := min(8, p1.EndAddr.Sub(p))
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= tdp.SignBits << uint(n*8)
-		count += bits.OnesCount64(tdp.SignBits &^ bytes)
+	{
+		p := p1.PtrAddr
+		e := p1.EndAddr
+		e8 := p.Add(layout.RoundDown(int(e-p), 8))
+		if p < e8 {
+		again:
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & tdp.SignBits)
+			p = p.Add(8)
+			if p < e8 {
+				goto again
+			}
+		}
+		if p < e {
+			left := int(e - p)
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
+		}
 	}
+	count = n - count
 
 	var r *repeatedScalar[byte, uint8]
 	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint8]](p1, p2)
@@ -8364,15 +8376,27 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	// Count the number of varints in this packed field. We do this by counting
-	// bytes without the sign bit set, in groups of 8.
 	var count int
-	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
-		n := min(8, p1.EndAddr.Sub(p))
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= tdp.SignBits << uint(n*8)
-		count += bits.OnesCount64(tdp.SignBits &^ bytes)
+	{
+		p := p1.PtrAddr
+		e := p1.EndAddr
+		e8 := p.Add(layout.RoundDown(int(e-p), 8))
+		if p < e8 {
+		again:
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & tdp.SignBits)
+			p = p.Add(8)
+			if p < e8 {
+				goto again
+			}
+		}
+		if p < e {
+			left := int(e - p)
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
+		}
 	}
+	count = n - count
 
 	var r *repeatedScalar[byte, uint32]
 	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint32]](p1, p2)
@@ -8481,15 +8505,27 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = p1.SetScratch(p2, uint64(p1.EndAddr))
 	p1.EndAddr = p1.PtrAddr.Add(n)
 
-	// Count the number of varints in this packed field. We do this by counting
-	// bytes without the sign bit set, in groups of 8.
 	var count int
-	for p := p1.PtrAddr; p < p1.EndAddr; p += 8 {
-		n := min(8, p1.EndAddr.Sub(p))
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
-		bytes |= tdp.SignBits << uint(n*8)
-		count += bits.OnesCount64(tdp.SignBits &^ bytes)
+	{
+		p := p1.PtrAddr
+		e := p1.EndAddr
+		e8 := p.Add(layout.RoundDown(int(e-p), 8))
+		if p < e8 {
+		again:
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & tdp.SignBits)
+			p = p.Add(8)
+			if p < e8 {
+				goto again
+			}
+		}
+		if p < e {
+			left := int(e - p)
+			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
+		}
 	}
+	count = n - count
 
 	var r *repeatedScalar[byte, uint64]
 	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint64]](p1, p2)
@@ -8768,7 +8804,7 @@ exit:
 func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 
 	return p1, p2
 }
@@ -8777,7 +8813,7 @@ func parseVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseVarint[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 
 	return p1, p2
 }
@@ -8787,7 +8823,7 @@ func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint32](p1, p2)
+	p1, p2 = vm.StoreFromScratch32(p1, p2)
 
 	return p1, p2
 }
@@ -8797,7 +8833,7 @@ func parseZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
 	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
-	p1, p2 = vm.StoreFromScratch[uint64](p1, p2)
+	p1, p2 = vm.StoreFromScratch64(p1, p2)
 
 	return p1, p2
 }
