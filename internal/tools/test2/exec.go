@@ -28,6 +28,7 @@ import (
 	"syscall"
 	"time"
 
+	"al.essio.dev/pkg/shellescape"
 	"github.com/melbahja/goph"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
@@ -252,6 +253,11 @@ func (r *runner) runOverSSH(remote string, tests []test) (string, error) {
 		args := r.args
 		if r.profile {
 			args = append(args, "-test.cpuprofile", test.profile(r, tmpdir))
+		}
+
+		for i, arg := range args {
+			// goph doesn't know that it has to escape shell arguments >_>
+			args[i] = shellescape.Quote(arg)
 		}
 
 		cmd, err := ssh.Command(test.binary(r, tmpdir), args...)
