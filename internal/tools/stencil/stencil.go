@@ -25,8 +25,6 @@
 //
 // Generated functions are placed in a file called _stencils.go. All files in
 // a package are processed in one go.
-//
-//nolint:errcheck // Internal tool; Panicking on error is fine.
 package main
 
 import (
@@ -49,6 +47,8 @@ import (
 
 	"github.com/tiendc/go-deepcopy"
 	"golang.org/x/tools/go/packages"
+
+	"github.com/bufbuild/hyperpb/internal/xsync"
 )
 
 var (
@@ -56,12 +56,18 @@ var (
 	rename    = regexp.MustCompile(`(\w+)\s*->\s*([\w.]+)`)
 )
 
+// Directive is a //hyperpb:stencil directive, as described in the package comments.
 type Directive struct {
+	// The target and source function names.
 	Target, Source string
-	Args           []string
-	Renames        map[string]string
+	// The explicit generic arguments taken from the source function.
+	Args []string
+	// Any renames for this stencil of the form A -> B.
+	Renames map[string]string
 }
 
+// parseDirective parses a [Directive] out of a comment, if it's in the right
+// format.
 func parseDirective(comment *ast.Comment) (dir Directive, ok bool) {
 	match := directive.FindStringSubmatch(comment.Text)
 	if match == nil {
@@ -83,6 +89,7 @@ func parseDirective(comment *ast.Comment) (dir Directive, ok bool) {
 	return dir, true
 }
 
+// parseDirectives finds and parses all directives in the file f.
 func parseDirectives(f *ast.File) (dirs []Directive) {
 	for _, cg := range f.Comments {
 		for _, c := range cg.List {
@@ -94,7 +101,17 @@ func parseDirectives(f *ast.File) (dirs []Directive) {
 	return dirs
 }
 
-func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map) (*ast.FuncDecl, error) {
+// makeStencil accepts a generic function, and a directive which attempts to
+// stencil it, and constructs a new function AST with the stencil operations
+// applied.
+//
+// bases and nosplits are used to track information used for postprocessing:
+// namely, imports and //go:nosplit insertions, respectively.
+func makeStencil(
+	dir Directive,
+	generic *ast.FuncDecl,
+	bases, nosplits *xsync.Set[string],
+) (*ast.FuncDecl, error) {
 	if generic == nil {
 		return nil, fmt.Errorf("no function with name %s", dir.Source)
 	}
@@ -102,7 +119,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 
 	for _, c := range generic.Doc.List {
 		if c.Text == "//go:nosplit" {
-			nosplits.Store(dir.Target, nil)
+			nosplits.Store(dir.Target)
 			break
 		}
 	}
@@ -111,7 +128,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 	var stencil *ast.FuncDecl
 	err := deepcopy.Copy(&stencil, &generic)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	stencil.Doc = nil
@@ -141,7 +158,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 			if len(args) == 0 {
 				return nil, fmt.Errorf("too few arguments for %s", dir.Source)
 			}
-			dir.Renames[ty.(*ast.Ident).Name] = args[0]
+			dir.Renames[ty.(*ast.Ident).Name] = args[0] //nolint:errcheck
 			args = args[1:]
 		}
 
@@ -182,7 +199,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 
 		case *ast.SelectorExpr:
 			if id, ok := n.X.(*ast.Ident); ok {
-				bases.Store(id.Name, nil)
+				bases.Store(id.Name)
 			}
 
 		case *ast.CallExpr:
@@ -224,7 +241,7 @@ func makeStencil(dir Directive, generic *ast.FuncDecl, bases, nosplits *sync.Map
 	for _, tgt := range dir.Renames {
 		base, _, ok := strings.Cut(tgt, ".")
 		if ok {
-			bases.Store(base, nil)
+			bases.Store(base)
 		}
 	}
 
@@ -275,11 +292,7 @@ func run() error {
 	}
 
 	path := os.Getenv("GOFILE")
-	text, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	pkg := string(regexp.MustCompile(`(?:^|\n)package (\w+)`).FindSubmatch(text)[1])
+	pkg := os.Getenv("GOPACKAGE")
 
 	dirname := filepath.Dir(path)
 	dir, err := os.ReadDir(dirname)
@@ -323,15 +336,14 @@ func run() error {
 
 	slices.Sort(files)
 
-	out := new(ast.File)
-	out.Name = ast.NewIdent("x")
+	var (
+		out  = ast.File{Name: ast.NewIdent("x")}
+		fset = token.NewFileSet()
 
-	fset := token.NewFileSet()
-	imports := new(sync.Map)
-	nosplits := new(sync.Map)
-	bases := new(sync.Map)
-
-	pkgCache := new(sync.Map)
+		imports         xsync.Map[string, *ast.ImportSpec]
+		bases, nosplits xsync.Set[string]
+		pkgCache        xsync.Map[string, []*packages.Package]
+	)
 
 	wg := new(sync.WaitGroup)
 	ch := make(chan error)
@@ -342,6 +354,7 @@ func run() error {
 		}
 	}()
 
+	// Stenciling isn't super fast; parallelizing it helps a lot.
 	decls := make([][]ast.Decl, len(files))
 	for i, path := range files {
 		wg.Add(1)
@@ -373,7 +386,7 @@ func run() error {
 					}
 					pkgCache.Store(path, pkgs)
 				}
-				imports.Store(pkgs.([]*packages.Package)[0].Name, imp)
+				imports.Store(pkgs[0].Name, imp)
 			}
 
 			// Build a map of names to funcs.
@@ -421,7 +434,7 @@ func run() error {
 
 					// Start by finding a func in file with this name.
 					generic := funcs[dir.Source]
-					stencil, err := makeStencil(dir, generic, bases, nosplits)
+					stencil, err := makeStencil(dir, generic, &bases, &nosplits)
 					if err != nil {
 						ch <- err
 						return
@@ -443,10 +456,10 @@ func run() error {
 	out.Decls = slices.Concat(decls...)
 
 	var imported []string
-	for base := range bases.Range {
+	for base := range bases.All() {
 		imp, ok := imports.Load(base)
 		if ok {
-			imported = append(imported, imp.(*ast.ImportSpec).Path.Value)
+			imported = append(imported, imp.Path.Value)
 		}
 	}
 	slices.SortFunc(imported, func(a, b string) int {
@@ -472,14 +485,13 @@ import (%s)
 
 	// Print to a string, so that we can add nosplit comments the "easy" way.
 	buf := new(strings.Builder)
-	if err := printer.Fprint(buf, fset, out); err != nil {
+	if err := printer.Fprint(buf, fset, &out); err != nil {
 		return err
 	}
 	source := buf.String()
 
 	oldnew := []string{"package x\n", header}
-	for name := range nosplits.Range {
-		name := name.(string)
+	for name := range nosplits.All() {
 		oldnew = append(oldnew, "func "+name, "//go:nosplit\nfunc "+name)
 	}
 	source = strings.NewReplacer(oldnew...).Replace(source)

@@ -14,7 +14,7 @@
 
 // Package layout includes helpers for working with type layouts.
 //
-// It is separate from unsafe2, because nothing in this package is actually
+// It is separate from xunsafe, because nothing in this package is actually
 // unsafe.
 
 package layout

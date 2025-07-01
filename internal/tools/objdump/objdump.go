@@ -13,10 +13,38 @@
 // limitations under the License.
 
 // objdump cleans up the output of go tool objdump into something readable.
-//
-// Based on the Go integration in Godbolt. See
-// https://github.com/compiler-explorer/compiler-explorer/blob/61d10c320af1e3af1c39d776f6a0cd8868ca418b/lib/compilers/golang.ts#L57.
 package main
+
+// Based on the Go integration in compiler-explorer (aka godbolt.com). Translated
+// partly from TypeScript.
+//
+// See https://github.com/compiler-explorer/compiler-explorer/blob/gh-15542/lib/compilers/golang.ts#L55.
+//
+// BSD 2-Clause License
+//
+// Copyright (c) 2012-2022, Compiler Explorer Authors
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this
+//    list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import (
 	"bytes"
@@ -30,7 +58,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bufbuild/hyperpb/internal/errors2"
+	"github.com/bufbuild/hyperpb/internal/xerrors"
 )
 
 var (
@@ -318,7 +346,7 @@ func run(binary string) error {
 func main() {
 	flag.Parse()
 	if err := run(flag.Arg(0)); err != nil {
-		if exit, ok := errors2.As[*exec.ExitError](err); ok {
+		if exit, ok := xerrors.As[*exec.ExitError](err); ok {
 			os.Exit(exit.ExitCode())
 		}
 

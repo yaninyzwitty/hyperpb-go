@@ -24,7 +24,7 @@ linters:
     - exhaustruct       # Listing every field is not idiomatic.
     - forcetypeassert   # Covered by errcheck.
 
-    - gochecknoglobals  # Globals are good actually.
+    - gochecknoglobals  # Several places require globals for performance (e.g. sync.Pool).
     - gochecknoinits    # Ditto. ^
 
     - gocognit          # Dubious "cognitive overhead" quantification.

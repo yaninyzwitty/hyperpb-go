@@ -27,24 +27,23 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
 )
 
-// CompileFor is a helper for calling [Compile] using the descriptor of an
-// existing message type.
+// Compile compiles a dynamic [MessageType] for a generated message type.
 //
-// This is useful for getting a [Type] for a message type compiled into the
+// This is useful for getting a [MessageType] for a message type compiled into the
 // binary. This will not work if T is some kind of dynamic type, like a
 // *dynamicpb.Message, or a *hyperpb.Message.
-func CompileFor[T proto.Message](options ...CompileOption) *Type {
+func Compile[T proto.Message](options ...CompileOption) *MessageType {
 	// Allow the caller to override the extension registry by placing our
 	// default registry first.
 	options = append([]CompileOption{WithExtensionsFromTypes(protoregistry.GlobalTypes)}, options...)
 
 	var m T
-	return Compile(m.ProtoReflect().Descriptor(), options...)
+	return CompileForDescriptor(m.ProtoReflect().Descriptor(), options...)
 }
 
-// CompileFromBytes unmarshals a google.protobuf.FileDescriptorSet from schema,
+// CompileForBytes unmarshals a google.protobuf.FileDescriptorSet from schema,
 // looks up a message with the given name, and compiles a type for it.
-func CompileFromBytes(schema []byte, messageName protoreflect.FullName, options ...CompileOption) (*Type, error) {
+func CompileForBytes(schema []byte, messageName protoreflect.FullName, options ...CompileOption) (*MessageType, error) {
 	fds := new(descriptorpb.FileDescriptorSet)
 	if err := proto.Unmarshal(schema, fds); err != nil {
 		return nil, err
@@ -65,13 +64,13 @@ func CompileFromBytes(schema []byte, messageName protoreflect.FullName, options 
 	// Allow the caller to override the extension registry by placing our
 	// default registry first.
 	options = append([]CompileOption{WithExtensionsFromFiles(files)}, options...)
-	return Compile(msgDesc, options...), nil
+	return CompileForDescriptor(msgDesc, options...), nil
 }
 
-// Compile compiles a descriptor into a [Type], for optimized parsing.
+// CompileForDescriptor compiles a descriptor into a [MessageType], for optimized parsing.
 //
 // Panics if md is too complicated (i.e. it exceeds internal limitations for the compiler).
-func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type {
+func CompileForDescriptor(md protoreflect.MessageDescriptor, options ...CompileOption) *MessageType {
 	opts := compiler.Options{
 		Backend: (*backend)(nil),
 	}
@@ -85,7 +84,7 @@ func Compile(md protoreflect.MessageDescriptor, options ...CompileOption) *Type 
 	ty := compiler.Compile(md, opts)
 	ty.Library.Metadata = options
 
-	return newType(ty)
+	return wrapType(ty)
 }
 
 // backend implements the compiler backend interface.

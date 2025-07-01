@@ -19,7 +19,7 @@ import (
 	"math/bits"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // hash is a simple hasher.
@@ -79,31 +79,31 @@ func (h hash) bytes(in []byte) hash {
 	if n <= 16 {
 		if n >= 4 {
 			if n >= 8 {
-				x0 ^= unsafe2.ByteLoad[uint64](p, 0)
-				x1 ^= unsafe2.ByteLoad[uint64](p, n-8)
+				x0 ^= xunsafe.ByteLoad[uint64](p, 0)
+				x1 ^= xunsafe.ByteLoad[uint64](p, n-8)
 			} else {
-				x0 ^= uint64(unsafe2.ByteLoad[uint32](p, 0))
-				x1 ^= uint64(unsafe2.ByteLoad[uint32](p, n-4))
+				x0 ^= uint64(xunsafe.ByteLoad[uint32](p, 0))
+				x1 ^= uint64(xunsafe.ByteLoad[uint32](p, n-4))
 			}
 		} else if n > 0 {
-			x0 ^= uint64(unsafe2.ByteLoad[uint8](p, 0))
-			x1 ^= uint64(unsafe2.ByteLoad[uint8](p, n-1))
-			x1 ^= uint64(unsafe2.ByteLoad[uint8](p, n/2)) << 8
+			x0 ^= uint64(xunsafe.ByteLoad[uint8](p, 0))
+			x1 ^= uint64(xunsafe.ByteLoad[uint8](p, n-1))
+			x1 ^= uint64(xunsafe.ByteLoad[uint8](p, n/2)) << 8
 		}
 	} else {
-		end := unsafe2.AddrOf(p).Add(int(n) - 16)
-		for unsafe2.AddrOf(p) < end {
+		end := xunsafe.AddrOf(p).Add(int(n) - 16)
+		for xunsafe.AddrOf(p) < end {
 			// TODO: Go does not know how to unroll this loop (Go is bad
 			// at unroll-and-jam), so in the future we can probably get better
 			// perf for large buffers by unroll-and-jamming this loop ourselves.
-			y0 := unsafe2.ByteLoad[uint64](p, 0)
-			y1 := unsafe2.ByteLoad[uint64](p, 8)
+			y0 := xunsafe.ByteLoad[uint64](p, 0)
+			y1 := xunsafe.ByteLoad[uint64](p, 8)
 			x0, x1 = x1, mix(x0^y0, c2^y1)
-			p = unsafe2.Add(p, 16)
+			p = xunsafe.Add(p, 16)
 		}
 
-		x0 ^= unsafe2.ByteLoad[uint64](end.AssertValid(), 0)
-		x1 ^= unsafe2.ByteLoad[uint64](end.AssertValid(), 8)
+		x0 ^= xunsafe.ByteLoad[uint64](end.AssertValid(), 0)
+		x1 ^= xunsafe.ByteLoad[uint64](end.AssertValid(), 8)
 	}
 
 	return h.u64(mix(x0, x1) ^ n)

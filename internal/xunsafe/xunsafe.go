@@ -14,13 +14,13 @@
 
 // Package unsafe provides a more convenient interface for performing unsafe
 // operations than Go's built-in package unsafe.
-package unsafe2
+package xunsafe
 
 import (
 	"sync"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // NoCopy is a type that go vet will complain about having been moved.

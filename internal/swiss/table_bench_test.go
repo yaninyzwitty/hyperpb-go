@@ -27,7 +27,7 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 const (
@@ -72,7 +72,7 @@ func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 			entries[i].Key = k
 			entries[i].Value = uint32(i)
 			if extract != nil {
-				theirsString[unsafe2.SliceToString(extract(k))] = uint32(i)
+				theirsString[xunsafe.SliceToString(extract(k))] = uint32(i)
 			} else {
 				theirsScalar[k] = uint32(i)
 			}
@@ -116,7 +116,7 @@ func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 				if extract != nil {
 					for range b.N {
 						for _, k := range lookup {
-							_ = theirsString[unsafe2.SliceToString(extract(k))]
+							_ = theirsString[xunsafe.SliceToString(extract(k))]
 						}
 					}
 				} else {
@@ -146,7 +146,7 @@ func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 				b.ResetTimer()
 				for range b.N {
 					size, _ := swiss.Layout[K, uint32](0)
-					m := unsafe2.Cast[swiss.Table[K, uint32]](arena.Alloc(size))
+					m := xunsafe.Cast[swiss.Table[K, uint32]](arena.Alloc(size))
 					m.Init(0, nil, extract)
 					if *benchProbes {
 						m.Record(metrics)
@@ -155,7 +155,7 @@ func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 						v := m.Insert(kv.Key, extract)
 						if v == nil {
 							size, _ := swiss.Layout[K, uint32](m.Len() + 1)
-							m2 := unsafe2.Cast[swiss.Table[K, uint32]](arena.Alloc(size))
+							m2 := xunsafe.Cast[swiss.Table[K, uint32]](arena.Alloc(size))
 							m2.Init(m.Len()+1, m, extract)
 							m = m2
 							v = m.Insert(kv.Key, extract)
@@ -176,7 +176,7 @@ func scalarBenchmark[K swiss.Key](b *testing.B, c corpus[K], mapSize int) {
 					for range b.N {
 						gomap := make(map[string]uint32)
 						for _, kv := range entries {
-							k := unsafe2.SliceToString(extract(kv.Key))
+							k := xunsafe.SliceToString(extract(kv.Key))
 							gomap[k] = kv.Value
 						}
 					}
@@ -268,7 +268,7 @@ func (u *uuids) sample(r *rand.Rand, missing bool) uint32 {
 }
 
 func (u *uuids) extract(k uint32) []byte {
-	return unsafe2.StringToSlice[[]byte]((*u)[k])
+	return xunsafe.StringToSlice[[]byte]((*u)[k])
 }
 
 type kilobytes []string
@@ -299,7 +299,7 @@ func (d *kilobytes) sample(r *rand.Rand, missing bool) uint32 {
 }
 
 func (d *kilobytes) extract(k uint32) []byte {
-	return unsafe2.StringToSlice[[]byte]((*d)[k])
+	return xunsafe.StringToSlice[[]byte]((*d)[k])
 }
 
 var (
@@ -327,7 +327,7 @@ func (urls) sample(r *rand.Rand, missing bool) uint32 {
 }
 
 func (urls) extract(k uint32) []byte {
-	return unsafe2.StringToSlice[[]byte](urlSlice[k])
+	return xunsafe.StringToSlice[[]byte](urlSlice[k])
 }
 
 type english struct{}
@@ -341,7 +341,7 @@ func (english) sample(r *rand.Rand, missing bool) uint32 {
 }
 
 func (english) extract(k uint32) []byte {
-	return unsafe2.StringToSlice[[]byte](englishSlice[k])
+	return xunsafe.StringToSlice[[]byte](englishSlice[k])
 }
 
 type runtimeSource struct{}

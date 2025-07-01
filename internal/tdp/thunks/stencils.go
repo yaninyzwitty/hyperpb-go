@@ -23,8 +23,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"google.golang.org/protobuf/encoding/protowire"
 	"math/bits"
 	"unsafe"
@@ -64,8 +64,8 @@ func parseMapV32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -99,23 +99,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -152,8 +152,8 @@ func parseMapV32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -187,23 +187,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -240,8 +240,8 @@ func parseMapV32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -275,23 +275,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -328,8 +328,8 @@ func parseMapV32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -363,23 +363,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -416,8 +416,8 @@ func parseMapV32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -451,23 +451,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -504,8 +504,8 @@ func parseMapV32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -539,23 +539,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -592,8 +592,8 @@ func parseMapV32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -627,23 +627,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -680,8 +680,8 @@ func parseMapV32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -715,23 +715,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -768,8 +768,8 @@ func parseMapV32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -803,23 +803,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -856,8 +856,8 @@ func parseMapV64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -891,23 +891,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -944,8 +944,8 @@ func parseMapV64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -979,23 +979,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1032,8 +1032,8 @@ func parseMapV64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1067,23 +1067,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1120,8 +1120,8 @@ func parseMapV64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1155,23 +1155,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1208,8 +1208,8 @@ func parseMapV64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1243,23 +1243,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1296,8 +1296,8 @@ func parseMapV64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1331,23 +1331,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1384,8 +1384,8 @@ func parseMapV64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1419,23 +1419,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1472,8 +1472,8 @@ func parseMapV64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1507,23 +1507,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1560,8 +1560,8 @@ func parseMapV64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1595,23 +1595,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1648,8 +1648,8 @@ func parseMapZ32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1683,23 +1683,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1736,8 +1736,8 @@ func parseMapZ32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1771,23 +1771,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1824,8 +1824,8 @@ func parseMapZ32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1859,23 +1859,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -1912,8 +1912,8 @@ func parseMapZ32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -1947,23 +1947,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2000,8 +2000,8 @@ func parseMapZ32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2035,23 +2035,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2088,8 +2088,8 @@ func parseMapZ32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2123,23 +2123,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2176,8 +2176,8 @@ func parseMapZ32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2211,23 +2211,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2264,8 +2264,8 @@ func parseMapZ32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2299,23 +2299,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2352,8 +2352,8 @@ func parseMapZ32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2387,23 +2387,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2440,8 +2440,8 @@ func parseMapZ64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2475,23 +2475,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2528,8 +2528,8 @@ func parseMapZ64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2563,23 +2563,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2616,8 +2616,8 @@ func parseMapZ64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2651,23 +2651,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2704,8 +2704,8 @@ func parseMapZ64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2739,23 +2739,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2792,8 +2792,8 @@ func parseMapZ64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2827,23 +2827,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2880,8 +2880,8 @@ func parseMapZ64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -2915,23 +2915,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -2968,8 +2968,8 @@ func parseMapZ64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3003,23 +3003,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3056,8 +3056,8 @@ func parseMapZ64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3091,23 +3091,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3144,8 +3144,8 @@ func parseMapZ64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3179,23 +3179,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3232,8 +3232,8 @@ func parseMapF32xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3267,23 +3267,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3320,8 +3320,8 @@ func parseMapF32xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3355,23 +3355,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3408,8 +3408,8 @@ func parseMapF32xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3443,23 +3443,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3496,8 +3496,8 @@ func parseMapF32xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3531,23 +3531,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3584,8 +3584,8 @@ func parseMapF32xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3619,23 +3619,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3672,8 +3672,8 @@ func parseMapF32xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3707,23 +3707,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3760,8 +3760,8 @@ func parseMapF32x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3795,23 +3795,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3848,8 +3848,8 @@ func parseMapF32xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3883,23 +3883,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -3936,8 +3936,8 @@ func parseMapF32xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -3971,23 +3971,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4024,8 +4024,8 @@ func parseMapF64xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4059,23 +4059,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4112,8 +4112,8 @@ func parseMapF64xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4147,23 +4147,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4200,8 +4200,8 @@ func parseMapF64xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4235,23 +4235,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4288,8 +4288,8 @@ func parseMapF64xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4323,23 +4323,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4376,8 +4376,8 @@ func parseMapF64xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4411,23 +4411,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4464,8 +4464,8 @@ func parseMapF64xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4499,23 +4499,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4552,8 +4552,8 @@ func parseMapF64x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4587,23 +4587,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4640,8 +4640,8 @@ func parseMapF64xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4675,23 +4675,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapF64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4728,8 +4728,8 @@ func parseMapF64xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4763,23 +4763,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4816,8 +4816,8 @@ func parseMapSxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4851,23 +4851,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4904,8 +4904,8 @@ func parseMapSxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -4939,23 +4939,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -4992,8 +4992,8 @@ func parseMapSxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5027,23 +5027,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5080,8 +5080,8 @@ func parseMapSxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5115,23 +5115,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5168,8 +5168,8 @@ func parseMapSxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5203,23 +5203,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5256,8 +5256,8 @@ func parseMapSxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5291,23 +5291,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5344,8 +5344,8 @@ func parseMapSx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5379,23 +5379,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5432,8 +5432,8 @@ func parseMapSxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5467,23 +5467,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapSxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5520,8 +5520,8 @@ func parseMapSxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5555,23 +5555,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5608,8 +5608,8 @@ func parseMapBxV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5643,23 +5643,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5696,8 +5696,8 @@ func parseMapBxV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5731,23 +5731,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5784,8 +5784,8 @@ func parseMapBxZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5819,23 +5819,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5872,8 +5872,8 @@ func parseMapBxZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5907,23 +5907,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -5960,8 +5960,8 @@ func parseMapBxF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -5995,23 +5995,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6048,8 +6048,8 @@ func parseMapBxF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6083,23 +6083,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6136,8 +6136,8 @@ func parseMapBx2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6171,23 +6171,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6224,8 +6224,8 @@ func parseMapBxS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6259,23 +6259,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMapBxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6312,8 +6312,8 @@ func parseMapBxB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6347,23 +6347,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6400,8 +6400,8 @@ func parseMap2xV32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6435,23 +6435,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6488,8 +6488,8 @@ func parseMap2xV64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6523,23 +6523,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6576,8 +6576,8 @@ func parseMap2xZ32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6611,23 +6611,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6664,8 +6664,8 @@ func parseMap2xZ64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6699,23 +6699,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6752,8 +6752,8 @@ func parseMap2xF32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6787,23 +6787,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint32](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint32](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6840,8 +6840,8 @@ func parseMap2xF64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6875,23 +6875,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -6928,8 +6928,8 @@ func parseMap2x2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -6963,23 +6963,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint8](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU8(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU8(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint8](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU8(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU8(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -7016,8 +7016,8 @@ func parseMap2xS(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -7051,23 +7051,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 func parseMap2xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
@@ -7104,8 +7104,8 @@ func parseMap2xB(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -7139,23 +7139,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, uint64](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, uint64](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -7227,16 +7227,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
@@ -7244,9 +7244,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7325,16 +7325,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
@@ -7342,9 +7342,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7423,16 +7423,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
@@ -7440,9 +7440,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7521,16 +7521,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
@@ -7538,9 +7538,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7619,16 +7619,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint32, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint32, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
@@ -7636,9 +7636,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7717,16 +7717,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
@@ -7734,9 +7734,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7815,16 +7815,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
@@ -7832,9 +7832,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -7913,16 +7913,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint64, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint64, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
@@ -7930,9 +7930,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -8011,16 +8011,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[uint8, V](cap)
-		m = unsafe2.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xP(m, cap, nil, extract)
 	}
 
 	vp := swiss.InsertU8xP(m, k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[uint8, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xP(m2, m.Len()+1, m, extract)
 		vp = swiss.InsertU8xP(m2, k, extract)
 	}
@@ -8028,9 +8028,9 @@ insert:
 	var v *dynamic.Message
 
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	if fast {
@@ -8178,7 +8178,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		e8 := p.Add(layout.RoundDown(int(e-p), 8))
 		if p < e8 {
 		again:
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & tdp.SignBits)
 			p = p.Add(8)
 			if p < e8 {
@@ -8187,7 +8187,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		if p < e {
 			left := int(e - p)
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
 		}
 	}
@@ -8203,7 +8203,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8228,7 +8228,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p := xunsafe.AddrOf(s.Ptr()).Add(s.Len())
 	p1.Log(p2, "store at", "%v", p)
 
 	switch {
@@ -8280,11 +8280,11 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8307,7 +8307,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		e8 := p.Add(layout.RoundDown(int(e-p), 8))
 		if p < e8 {
 		again:
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & tdp.SignBits)
 			p = p.Add(8)
 			if p < e8 {
@@ -8316,7 +8316,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		if p < e {
 			left := int(e - p)
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
 		}
 	}
@@ -8332,7 +8332,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8357,7 +8357,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p := xunsafe.AddrOf(s.Ptr()).Add(s.Len())
 	p1.Log(p2, "store at", "%v", p)
 
 	switch {
@@ -8409,11 +8409,11 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8436,7 +8436,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		e8 := p.Add(layout.RoundDown(int(e-p), 8))
 		if p < e8 {
 		again:
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & tdp.SignBits)
 			p = p.Add(8)
 			if p < e8 {
@@ -8445,7 +8445,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		if p < e {
 			left := int(e - p)
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
 		}
 	}
@@ -8461,7 +8461,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -8486,7 +8486,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p := xunsafe.AddrOf(s.Ptr()).Add(s.Len())
 	p1.Log(p2, "store at", "%v", p)
 
 	switch {
@@ -8538,11 +8538,11 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -8647,7 +8647,7 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 
 		size := layout.Size[uint32]()
-		borrowed := unsafe.Slice(unsafe2.Cast[uint32](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(xunsafe.Cast[uint32](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
@@ -8706,7 +8706,7 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 
 		size := layout.Size[uint64]()
-		borrowed := unsafe.Slice(unsafe2.Cast[uint64](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(xunsafe.Cast[uint64](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
@@ -8782,7 +8782,7 @@ func parseFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	var p *uint32
 	p1, p2, p = vm.GetMutableField[uint32](p1, p2)
-	*p = *unsafe2.Cast[uint32](p1.PtrAddr.AssertValid())
+	*p = *xunsafe.Cast[uint32](p1.PtrAddr.AssertValid())
 	p1 = p1.Advance(layout.Size[uint32]())
 
 	return p1, p2
@@ -8796,7 +8796,7 @@ func parseFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	var p *uint64
 	p1, p2, p = vm.GetMutableField[uint64](p1, p2)
-	*p = *unsafe2.Cast[uint64](p1.PtrAddr.AssertValid())
+	*p = *xunsafe.Cast[uint64](p1.PtrAddr.AssertValid())
 	p1 = p1.Advance(layout.Size[uint64]())
 
 	return p1, p2

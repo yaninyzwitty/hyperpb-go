@@ -21,8 +21,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // Archetype represents a class of fields that have the same layout within a
@@ -68,5 +68,5 @@ type Parser struct {
 type Getter func(*dynamic.Message, *tdp.Type, *tdp.Accessor) protoreflect.Value
 
 func (g Getter) adapt() tdp.Getter {
-	return unsafe2.BitCast[tdp.Getter](g)
+	return xunsafe.BitCast[tdp.Getter](g)
 }

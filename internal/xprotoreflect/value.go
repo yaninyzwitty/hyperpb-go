@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package protoreflect2 contains helpers for working around inefficiencies in
+// Package xprotoreflect contains helpers for working around inefficiencies in
 // protoreflect.
-package protoreflect2
+package xprotoreflect
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Int is any integer type that a [protoreflect.Value] will contain inline
@@ -66,7 +66,7 @@ func ValueOfScalar(v any) protoreflect.Value {
 func GetInt[T Int](v protoreflect.Value) T {
 	var z T
 	r := unwrapValue(v)
-	if r.typ != unsafe2.AnyType(z) {
+	if r.typ != xunsafe.AnyType(z) {
 		panic(typeMismatch(protoreflect.ValueOf(z), v))
 	}
 
@@ -86,7 +86,7 @@ func GetInt[T Int](v protoreflect.Value) T {
 // Panics if this is the wrong type.
 func GetMessage[T protoreflect.Message](v protoreflect.Value) T {
 	r := unwrapValue(v)
-	x, ok := unsafe2.MakeAny(r.typ, r.data).(T)
+	x, ok := xunsafe.MakeAny(r.typ, r.data).(T)
 	if !ok {
 		panic(typeMismatch(protoreflect.ValueOf(x), v))
 	}
@@ -97,7 +97,7 @@ func GetMessage[T protoreflect.Message](v protoreflect.Value) T {
 // one.
 func List(v protoreflect.Value) protoreflect.List {
 	r := unwrapValue(v)
-	x, ok := unsafe2.MakeAny(r.typ, r.data).(protoreflect.List)
+	x, ok := xunsafe.MakeAny(r.typ, r.data).(protoreflect.List)
 	if !ok {
 		x = empty.List{}
 	}
@@ -108,7 +108,7 @@ func List(v protoreflect.Value) protoreflect.List {
 // one.
 func Map(v protoreflect.Value) protoreflect.Map {
 	r := unwrapValue(v)
-	x, ok := unsafe2.MakeAny(r.typ, r.data).(protoreflect.Map)
+	x, ok := xunsafe.MakeAny(r.typ, r.data).(protoreflect.Map)
 	if !ok {
 		x = empty.Map{}
 	}
@@ -138,7 +138,7 @@ type rawValue struct {
 // unwrapValue unwraps a protoreflect.Value so that we can access its internal
 // structures.
 func unwrapValue(v protoreflect.Value) rawValue {
-	return unsafe2.BitCast[rawValue](v)
+	return xunsafe.BitCast[rawValue](v)
 }
 
 func typeMismatch(want, got protoreflect.Value) string {

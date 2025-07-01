@@ -19,7 +19,7 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Entry is an entry for building a table with [New].
@@ -39,12 +39,12 @@ func KV[K, V any](k K, v V) Entry[K, V] { return Entry[K, V]{k, v} }
 // V must not contain pointers.
 func New[K Key, V any](out []byte, extract func(K) []byte, entries ...Entry[K, V]) ([]byte, *Table[K, V]) {
 	size, align := Layout[K, V](len(entries))
-	padding := unsafe2.EndOf(out).Padding(align)
+	padding := xunsafe.EndOf(out).Padding(align)
 
 	skip := len(out)
 	out = append(out, make([]byte, padding+size)...)
-	p := unsafe2.Add(unsafe.SliceData(out), skip)
-	t := unsafe2.Cast[Table[K, V]](p)
+	p := xunsafe.Add(unsafe.SliceData(out), skip)
+	t := xunsafe.Cast[Table[K, V]](p)
 	t.Init(len(entries), nil, nil)
 
 	// Load up the entries in the map.

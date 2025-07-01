@@ -33,7 +33,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 
-	"github.com/bufbuild/hyperpb/internal/errors2"
+	"github.com/bufbuild/hyperpb/internal/xerrors"
 )
 
 var errFailed = errors.New("tests failed")
@@ -97,7 +97,7 @@ func (r *runner) build() ([]test, error) {
 	cmd.Env = os.Environ()
 	fmt.Printf("running: %s %s\n", cmd.Path, strings.Join(cmd.Args, " "))
 	if out, err := cmd.CombinedOutput(); err != nil {
-		if exit, ok := errors2.As[*exec.ExitError](err); ok {
+		if exit, ok := xerrors.As[*exec.ExitError](err); ok {
 			exit.Stderr = out
 		}
 
@@ -139,7 +139,7 @@ func (r *runner) runLocally(tests []test) (string, error) {
 
 		what := "ok"
 		if err != nil {
-			if exit, ok := errors2.As[*exec.ExitError](err); ok && exit.ExitCode() != 0 {
+			if exit, ok := xerrors.As[*exec.ExitError](err); ok && exit.ExitCode() != 0 {
 				what = "FAILED"
 			} else {
 				fmt.Printf("error: %v\n", err)
@@ -273,7 +273,7 @@ func (r *runner) runOverSSH(remote string, tests []test) (string, error) {
 
 		what := "ok"
 		if err != nil {
-			if exit, ok := errors2.As[*exec.ExitError](err); ok && exit.ExitCode() != 0 {
+			if exit, ok := xerrors.As[*exec.ExitError](err); ok && exit.ExitCode() != 0 {
 				what = "FAILED"
 			} else {
 				fmt.Printf("error: %v\n", err)

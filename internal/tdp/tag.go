@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Tag is a specially-formatted tag for the parser.
@@ -33,7 +33,7 @@ type Tag uint64
 // encode encodes this field tag from the given number and type.
 func EncodeTag(n protowire.Number, t protowire.Type) Tag {
 	var tag Tag
-	protowire.AppendTag(unsafe2.Bytes(&tag)[:0], n, t)
+	protowire.AppendTag(xunsafe.Bytes(&tag)[:0], n, t)
 	tag &^= SignBits
 	return tag
 }

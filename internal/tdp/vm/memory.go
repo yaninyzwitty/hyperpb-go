@@ -15,7 +15,7 @@
 package vm
 
 import (
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // pageBoundary is the alignment of the smallest physical memory page on any
@@ -50,7 +50,7 @@ func RelocatePageBoundary(data []byte, force bool) []byte {
 
 		// If not, we need to check if there is a page boundary beyond this
 		// slice.
-		if unsafe2.EndOf(data).Padding(pageBoundary) >= 9 {
+		if xunsafe.EndOf(data).Padding(pageBoundary) >= 9 {
 			// All good, we have nine or more bytes ahead of us before the next
 			// page boundary.
 			return data

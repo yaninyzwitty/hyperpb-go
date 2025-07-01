@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2
+package xunsafe
 
 import (
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // Cast casts one pointer type to another.

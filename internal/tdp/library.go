@@ -17,7 +17,7 @@ package tdp
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Library represents the full output of [Compile]. Given any [Type], it can
@@ -42,5 +42,5 @@ func (l *Library) Type(md protoreflect.MessageDescriptor) (*Type, bool) {
 
 // AtOffset the [Type] at the give byte offset in this Library.
 func (l *Library) AtOffset(n uint32) *Type {
-	return unsafe2.ByteAdd[Type](l.Base, n)
+	return xunsafe.ByteAdd[Type](l.Base, n)
 }

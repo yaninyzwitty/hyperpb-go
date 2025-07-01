@@ -21,7 +21,7 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Range is a representation of a []byte as a slice relative to some larger byte
@@ -39,7 +39,7 @@ type Range uint64
 // New creates a new Range over the given source buffer with the given start
 // and length.
 func New(src *byte, start *byte, len int) Range {
-	offset := unsafe2.Sub(start, src)
+	offset := xunsafe.Sub(start, src)
 	return NewRaw(offset, len)
 }
 
@@ -67,7 +67,7 @@ func (r Range) Bytes(src *byte) []byte {
 	if r.Len() == 0 {
 		return nil
 	}
-	return unsafe.Slice(unsafe2.Add(src, r.Start()), r.Len())
+	return unsafe.Slice(xunsafe.Add(src, r.Start()), r.Len())
 }
 
 // String converts this Range into a string, given its source.
@@ -75,7 +75,7 @@ func (r Range) String(src *byte) string {
 	if r.Len() == 0 {
 		return ""
 	}
-	return unsafe.String(unsafe2.Add(src, r.Start()), r.Len())
+	return unsafe.String(xunsafe.Add(src, r.Start()), r.Len())
 }
 
 // Format implements [fmt.Formatter].

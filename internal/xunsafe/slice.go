@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2
+package xunsafe
 
 import (
 	"math"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // BoundsCheck emulates a bounds check on a slice with the given index and

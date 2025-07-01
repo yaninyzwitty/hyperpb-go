@@ -20,8 +20,8 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // Slice is a slice that points into an arena.
@@ -40,9 +40,9 @@ func FromParts[T any](ptr *T, len, cap uint32) Slice[T] {
 
 // Addr converts this slice into an address slice.
 //
-// See the caveats of [unsafe2.AddrOf].
+// See the caveats of [xunsafe.AddrOf].
 func (s Slice[T]) Addr() Addr[T] {
-	return Addr[T]{unsafe2.AddrOf(s.ptr), s.len, s.cap}
+	return Addr[T]{xunsafe.AddrOf(s.ptr), s.len, s.cap}
 }
 
 // Of allocates a slice for the given values.
@@ -55,7 +55,7 @@ func Of[T any](a *arena.Arena, values ...T) Slice[T] {
 // Make allocates a slice of the given length.
 func Make[T any](a *arena.Arena, n int) Slice[T] {
 	cap := sliceLayout[T](n)
-	p := unsafe2.Cast[T](a.Alloc(cap))
+	p := xunsafe.Cast[T](a.Alloc(cap))
 
 	size := layout.Size[T]()
 	s := FromParts(p, uint32(n), uint32(cap/size))
@@ -64,7 +64,7 @@ func Make[T any](a *arena.Arena, n int) Slice[T] {
 
 // Ptr returns this slice's pointer value.
 func (s Slice[T]) Ptr() *T {
-	return unsafe2.Cast[T](s.ptr)
+	return xunsafe.Cast[T](s.ptr)
 }
 
 // Len returns this slice's length.
@@ -93,7 +93,7 @@ func (s Slice[T]) Load(n int) T {
 	if debug.Enabled {
 		return s.Raw()[n]
 	}
-	return unsafe2.Load(s.Ptr(), n)
+	return xunsafe.Load(s.Ptr(), n)
 }
 
 // Store stores a value at the given index.
@@ -101,7 +101,7 @@ func (s Slice[T]) Store(n int, v T) {
 	if debug.Enabled {
 		s.Raw()[n] = v
 	}
-	unsafe2.Store(s.Ptr(), n, v)
+	xunsafe.Store(s.Ptr(), n, v)
 }
 
 // Raw returns the underlying slice for this slice.
@@ -115,7 +115,7 @@ func (s Slice[T]) Raw() []T {
 //
 // The return value of this function must never escape outside of this module.
 func (s Slice[T]) Rest() []T {
-	return unsafe.Slice(unsafe2.Add(s.Ptr(), s.len), s.cap-s.len)
+	return unsafe.Slice(xunsafe.Add(s.Ptr(), s.len), s.cap-s.len)
 }
 
 // Append appends the given elements to a slice, reallocating on the given
@@ -143,7 +143,7 @@ func (s Slice[T]) AppendOne(a *arena.Arena, elem T) Slice[T] {
 		s = s.Grow(a, 1)
 	}
 
-	unsafe2.Store(s.Ptr(), s.len, elem)
+	xunsafe.Store(s.Ptr(), s.len, elem)
 	s.len += 1
 	return s
 }
@@ -156,7 +156,7 @@ func (s Slice[T]) Grow(a *arena.Arena, n int) Slice[T] {
 
 	if s.ptr == nil {
 		cap := sliceLayout[T](n)
-		s.ptr = unsafe2.Cast[T](a.Alloc(cap))
+		s.ptr = xunsafe.Cast[T](a.Alloc(cap))
 		s.cap = uint32(cap) / uint32(size)
 		return s
 	}
@@ -165,14 +165,14 @@ func (s Slice[T]) Grow(a *arena.Arena, n int) Slice[T] {
 	newSize := sliceLayout[T](s.Cap() + n)
 
 	// Originally, this was arena.Realloc. It is inlined in-place for speed.
-	p := unsafe2.Cast[byte](s.ptr)
+	p := xunsafe.Cast[byte](s.ptr)
 	for range 1 {
 		// This Just Works regardless of whether the allocation is growing or
 		// shrinking. If it's shrinking, delta will be negative, and a.left
 		// is never negative, so this will add back the spare capacity.
 		i := a.Next.Add(-oldSize)
 		j := i.Add(newSize)
-		if unsafe2.AddrOf(p) == i && j <= a.End {
+		if xunsafe.AddrOf(p) == i && j <= a.End {
 			a.Next = j
 			a.Log("fast realloc", "%p, %d->%d:%d", p, oldSize, newSize, arena.Align)
 			break
@@ -186,13 +186,13 @@ func (s Slice[T]) Grow(a *arena.Arena, n int) Slice[T] {
 		q := a.Alloc(newSize)
 		a.Log("realloc", "%p->%p, %d->%d:%d", p, q, oldSize, newSize, arena.Align)
 		if oldSize > 0 {
-			unsafe2.Copy(q, p, oldSize)
+			xunsafe.Copy(q, p, oldSize)
 		}
 
 		p = q
 	}
 
-	s.ptr = unsafe2.Cast[T](p)
+	s.ptr = xunsafe.Cast[T](p)
 	s.cap = uint32(newSize) / uint32(size)
 	return s
 }
@@ -210,23 +210,23 @@ func (s Slice[T]) Format(state fmt.State, v rune) {
 // Addr is like [Slice], but its pointer is replaced with an address, so
 // loading/storing values of this type issues no write barriers.
 type Addr[T any] struct {
-	Ptr      unsafe2.Addr[T]
+	Ptr      xunsafe.Addr[T]
 	Len, Cap uint32
 }
 
 // AssertValid converts this address slice into a true [Slice].
 //
-// See the caveats of [unsafe2.Addr.AssertValid].
+// See the caveats of [xunsafe.Addr.AssertValid].
 func (s Addr[T]) AssertValid() Slice[T] {
 	return Slice[T]{s.Ptr.ClearSignBit().AssertValid(), s.Len, s.Cap}
 }
 
 // Untyped converts this address slice into a true [Slice].
 //
-// See the caveats of [unsafe2.Addr.AssertValid].
+// See the caveats of [xunsafe.Addr.AssertValid].
 func (s Addr[T]) Untyped() Untyped {
 	return Untyped{
-		Ptr: unsafe2.Addr[byte](s.Ptr),
+		Ptr: xunsafe.Addr[byte](s.Ptr),
 		Len: s.Len,
 		Cap: s.Cap,
 	}
@@ -239,7 +239,7 @@ func (s Addr[T]) String() string {
 
 // Untyped is an [Addr] that has forgotten what type it is.
 type Untyped struct {
-	Ptr      unsafe2.Addr[byte]
+	Ptr      xunsafe.Addr[byte]
 	Len, Cap uint32
 }
 
@@ -248,7 +248,7 @@ type Untyped struct {
 // When cast to a concrete type, this will clear.
 func OffArena[T any](ptr *T, len int) Untyped {
 	return Untyped{
-		Ptr: ^unsafe2.Addr[byte](unsafe2.AddrOf(ptr)),
+		Ptr: ^xunsafe.Addr[byte](xunsafe.AddrOf(ptr)),
 		Len: uint32(len),
 		Cap: uint32(len),
 	}
@@ -258,7 +258,7 @@ func OffArena[T any](ptr *T, len int) Untyped {
 // process.
 func CastUntyped[To any](s Untyped) Slice[To] {
 	return Slice[To]{
-		ptr: unsafe2.Addr[To](s.Ptr.ClearSignBit()).AssertValid(),
+		ptr: xunsafe.Addr[To](s.Ptr.ClearSignBit()).AssertValid(),
 		len: s.Len,
 		cap: s.Cap,
 	}

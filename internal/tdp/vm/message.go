@@ -20,7 +20,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 //go:generate go run ../../tools/stencil
@@ -33,12 +33,12 @@ import (
 func MutableCold(p1 P1, p2 P2) (P1, P2, *dynamic.Cold) {
 	if p2.Message().ColdIndex < 0 {
 		size := int(p2.Message().Type().ColdSize)
-		cold := unsafe2.Cast[dynamic.Cold](p1.Arena().Alloc(size))
+		cold := xunsafe.Cast[dynamic.Cold](p1.Arena().Alloc(size))
 		p2.Message().ColdIndex = int32(len(p1.Shared().Cold))
 		p1.Shared().Cold = append(p1.Shared().Cold, cold)
 		return p1, p2, cold
 	}
-	return p1, p2, unsafe2.LoadSlice(p1.Shared().Cold, p2.Message().ColdIndex)
+	return p1, p2, xunsafe.LoadSlice(p1.Shared().Cold, p2.Message().ColdIndex)
 }
 
 // GetMutableField returns the field data for a given message. Uses p2.m and p2.f for
@@ -81,7 +81,7 @@ func StoreFromScratch[T tdp.Int](p1 P1, p2 P2) (P1, P2) {
 // p1 and p2.
 func SetBit(p1 P1, p2 P2) (P1, P2) {
 	n := int(p2.Field().Offset.Bit)
-	word := unsafe2.Add(unsafe2.Cast[uint32](unsafe2.Add(p2.Message(), 1)), n/32)
+	word := xunsafe.Add(xunsafe.Cast[uint32](xunsafe.Add(p2.Message(), 1)), n/32)
 	mask := uint32(1) << (n % 32)
 	*word |= mask
 	return p1, p2
@@ -100,15 +100,15 @@ func AllocMessage(p1 P1, p2 P2) (P1, P2, *dynamic.Message) {
 	// size += arena.Align - 1
 	// size &^= arena.Align - 1
 
-	var n unsafe2.Addr[byte]
+	var n xunsafe.Addr[byte]
 	n, a.Next = a.Next, a.Next.Add(size)
 	if a.Next <= a.End {
 		p := n.AssertValid()
 		a.Log("alloc", "%v:%v, %d:%d", p, a.Next, size, arena.Align)
 
 		// Go seems unwilling to inline AllocInPlace() here.
-		m := unsafe2.Cast[dynamic.Message](p)
-		unsafe2.StoreNoWB(&m.Shared, p1.Shared())
+		m := xunsafe.Cast[dynamic.Message](p)
+		xunsafe.StoreNoWB(&m.Shared, p1.Shared())
 		m.TypeOffset = p2.Field().Message.TypeOffset
 		m.ColdIndex = -1
 		return p1, p2, m
@@ -128,8 +128,8 @@ func AllocMessage(p1 P1, p2 P2) (P1, P2, *dynamic.Message) {
 //
 //go:nosplit
 func AllocInPlace(p1 P1, p2 P2, data *byte) (P1, P2, *dynamic.Message) {
-	m := unsafe2.Cast[dynamic.Message](data)
-	unsafe2.StoreNoWB(&m.Shared, p1.Shared())
+	m := xunsafe.Cast[dynamic.Message](data)
+	xunsafe.StoreNoWB(&m.Shared, p1.Shared())
 	m.TypeOffset = p2.Field().Message.TypeOffset
 	m.ColdIndex = -1
 	return p1, p2, m

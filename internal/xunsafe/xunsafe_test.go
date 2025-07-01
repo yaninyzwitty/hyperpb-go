@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2_test
+package xunsafe_test
 
 import (
 	"testing"
@@ -20,24 +20,24 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 func TestIndirect(t *testing.T) {
 	t.Parallel()
 
-	assert.False(t, unsafe2.IsDirect[int]())
-	assert.False(t, unsafe2.IsDirect[string]())
-	assert.False(t, unsafe2.IsDirect[[]byte]())
+	assert.False(t, xunsafe.IsDirect[int]())
+	assert.False(t, xunsafe.IsDirect[string]())
+	assert.False(t, xunsafe.IsDirect[[]byte]())
 
-	assert.True(t, unsafe2.IsDirect[*int]())
-	assert.True(t, unsafe2.IsDirect[[1]*int]())
-	assert.True(t, unsafe2.IsDirect[any]())
-	assert.True(t, unsafe2.IsDirect[map[int]int]())
-	assert.True(t, unsafe2.IsDirect[chan int]())
-	assert.True(t, unsafe2.IsDirect[unsafe.Pointer]())
-	assert.True(t, unsafe2.IsDirect[struct{ _ *int }]())
-	assert.True(t, unsafe2.IsDirect[*struct{ _ *int }]())
+	assert.True(t, xunsafe.IsDirect[*int]())
+	assert.True(t, xunsafe.IsDirect[[1]*int]())
+	assert.True(t, xunsafe.IsDirect[any]())
+	assert.True(t, xunsafe.IsDirect[map[int]int]())
+	assert.True(t, xunsafe.IsDirect[chan int]())
+	assert.True(t, xunsafe.IsDirect[unsafe.Pointer]())
+	assert.True(t, xunsafe.IsDirect[struct{ _ *int }]())
+	assert.True(t, xunsafe.IsDirect[*struct{ _ *int }]())
 }
 
 func TestAnyBytes(t *testing.T) {
@@ -45,21 +45,21 @@ func TestAnyBytes(t *testing.T) {
 
 	i := 0xaaaa
 	p := &i
-	assert.False(t, unsafe2.IsDirectAny(i))
-	assert.True(t, unsafe2.IsDirectAny(p))
+	assert.False(t, xunsafe.IsDirectAny(i))
+	assert.True(t, xunsafe.IsDirectAny(p))
 
-	assert.Equal(t, unsafe2.Bytes(&i), unsafe2.AnyBytes(i))
-	assert.Equal(t, unsafe2.Bytes(&p), unsafe2.AnyBytes(p))
+	assert.Equal(t, xunsafe.Bytes(&i), xunsafe.AnyBytes(i))
+	assert.Equal(t, xunsafe.Bytes(&p), xunsafe.AnyBytes(p))
 
 	p2 := struct{ p *int }{p}
-	assert.Equal(t, unsafe2.Bytes(&p2), unsafe2.AnyBytes(p2))
+	assert.Equal(t, xunsafe.Bytes(&p2), xunsafe.AnyBytes(p2))
 }
 
 func TestPC(t *testing.T) {
 	t.Parallel()
 
 	f := func() int { return 42 }
-	pc := unsafe2.NewPC(f)
+	pc := xunsafe.NewPC(f)
 
 	t.Logf("%#x\n", pc)
 	assert.Equal(t, 42, pc.Get()())

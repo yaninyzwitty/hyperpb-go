@@ -51,7 +51,7 @@ The other important internal packages are:
 * `debug` - Debugging utilities. Enable with `-tags debug`.
 * `swiss` - Full-fledged Swisstable implementation.
 * `tools/stencil` - Code generator for manually specializing generic functions.
-* `unsafe2` - Unsafe helpers.
+* `xunsafe` - Unsafe helpers.
 
 # Implementation Details
 

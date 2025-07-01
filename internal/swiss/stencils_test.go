@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"math/rand/v2"
 	"slices"
 	"strings"
@@ -47,7 +47,7 @@ func u32Benchmark(b *testing.B, c corpus[uint32], mapSize int) {
 			entries[i].Key = k
 			entries[i].Value = uint32(i)
 			if extract != nil {
-				theirsString[unsafe2.SliceToString(extract(k))] = uint32(i)
+				theirsString[xunsafe.SliceToString(extract(k))] = uint32(i)
 			} else {
 				theirsScalar[k] = uint32(i)
 			}
@@ -91,7 +91,7 @@ func u32Benchmark(b *testing.B, c corpus[uint32], mapSize int) {
 				if extract != nil {
 					for range b.N {
 						for _, k := range lookup {
-							_ = theirsString[unsafe2.SliceToString(extract(k))]
+							_ = theirsString[xunsafe.SliceToString(extract(k))]
 						}
 					}
 				} else {
@@ -121,7 +121,7 @@ func u32Benchmark(b *testing.B, c corpus[uint32], mapSize int) {
 				b.ResetTimer()
 				for range b.N {
 					size, _ := swiss.Layout[uint32, uint32](0)
-					m := unsafe2.Cast[swiss.Table[uint32, uint32]](arena.Alloc(size))
+					m := xunsafe.Cast[swiss.Table[uint32, uint32]](arena.Alloc(size))
 					swiss.InitU32xU32(m, 0, nil, extract)
 					if *benchProbes {
 						m.Record(metrics)
@@ -130,7 +130,7 @@ func u32Benchmark(b *testing.B, c corpus[uint32], mapSize int) {
 						v := swiss.InsertU32xU32(m, kv.Key, extract)
 						if v == nil {
 							size, _ := swiss.Layout[uint32, uint32](m.Len() + 1)
-							m2 := unsafe2.Cast[swiss.Table[uint32, uint32]](arena.Alloc(size))
+							m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](arena.Alloc(size))
 							swiss.InitU32xU32(m2, m.Len()+1, m, extract)
 							m = m2
 							v = swiss.InsertU32xU32(m, kv.Key, extract)
@@ -151,7 +151,7 @@ func u32Benchmark(b *testing.B, c corpus[uint32], mapSize int) {
 					for range b.N {
 						gomap := make(map[string]uint32)
 						for _, kv := range entries {
-							k := unsafe2.SliceToString(extract(kv.Key))
+							k := xunsafe.SliceToString(extract(kv.Key))
 							gomap[k] = kv.Value
 						}
 					}
@@ -187,7 +187,7 @@ func u64Benchmark(b *testing.B, c corpus[uint64], mapSize int) {
 			entries[i].Key = k
 			entries[i].Value = uint32(i)
 			if extract != nil {
-				theirsString[unsafe2.SliceToString(extract(k))] = uint32(i)
+				theirsString[xunsafe.SliceToString(extract(k))] = uint32(i)
 			} else {
 				theirsScalar[k] = uint32(i)
 			}
@@ -231,7 +231,7 @@ func u64Benchmark(b *testing.B, c corpus[uint64], mapSize int) {
 				if extract != nil {
 					for range b.N {
 						for _, k := range lookup {
-							_ = theirsString[unsafe2.SliceToString(extract(k))]
+							_ = theirsString[xunsafe.SliceToString(extract(k))]
 						}
 					}
 				} else {
@@ -261,7 +261,7 @@ func u64Benchmark(b *testing.B, c corpus[uint64], mapSize int) {
 				b.ResetTimer()
 				for range b.N {
 					size, _ := swiss.Layout[uint64, uint32](0)
-					m := unsafe2.Cast[swiss.Table[uint64, uint32]](arena.Alloc(size))
+					m := xunsafe.Cast[swiss.Table[uint64, uint32]](arena.Alloc(size))
 					swiss.InitU64xU32(m, 0, nil, extract)
 					if *benchProbes {
 						m.Record(metrics)
@@ -270,7 +270,7 @@ func u64Benchmark(b *testing.B, c corpus[uint64], mapSize int) {
 						v := swiss.InsertU64xU32(m, kv.Key, extract)
 						if v == nil {
 							size, _ := swiss.Layout[uint64, uint32](m.Len() + 1)
-							m2 := unsafe2.Cast[swiss.Table[uint64, uint32]](arena.Alloc(size))
+							m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](arena.Alloc(size))
 							swiss.InitU64xU32(m2, m.Len()+1, m, extract)
 							m = m2
 							v = swiss.InsertU64xU32(m, kv.Key, extract)
@@ -291,7 +291,7 @@ func u64Benchmark(b *testing.B, c corpus[uint64], mapSize int) {
 					for range b.N {
 						gomap := make(map[string]uint32)
 						for _, kv := range entries {
-							k := unsafe2.SliceToString(extract(kv.Key))
+							k := xunsafe.SliceToString(extract(kv.Key))
 							gomap[k] = kv.Value
 						}
 					}

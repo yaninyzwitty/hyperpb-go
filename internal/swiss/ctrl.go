@@ -19,7 +19,7 @@ import (
 	"math/bits"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 const (
@@ -31,12 +31,12 @@ const (
 )
 
 type prober struct {
-	words   *unsafe2.VLA[ctrl]
+	words   *xunsafe.VLA[ctrl]
 	i, mask int
 	h1      int
 }
 
-func newProber(words *unsafe2.VLA[ctrl], hard int, hash hash) prober {
+func newProber(words *xunsafe.VLA[ctrl], hard int, hash hash) prober {
 	return prober{
 		words: words,
 		mask:  hard - 1,

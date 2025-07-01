@@ -28,9 +28,9 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -230,10 +230,10 @@ func (r *repeatedScalar[Z, E]) Get(n int) protoreflect.Value {
 	raw := r.raw
 	if raw.OffArena() {
 		v := slice.CastUntyped[Z](raw).Raw()[n]
-		return protoreflect2.ValueOfScalar(E(v))
+		return xprotoreflect.ValueOfScalar(E(v))
 	}
 	v := slice.CastUntyped[E](raw).Raw()[n]
-	return protoreflect2.ValueOfScalar(v)
+	return xprotoreflect.ValueOfScalar(v)
 }
 
 func getRepeatedZigzag[Z, E tdp.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
@@ -262,10 +262,10 @@ func (r *repeatedZigzag[Z, E]) Get(n int) protoreflect.Value {
 	raw := r.raw
 	if raw.Ptr.SignBit() {
 		v := slice.CastUntyped[Z](raw).Raw()[n]
-		return protoreflect2.ValueOfScalar(zigzag(E(v)))
+		return xprotoreflect.ValueOfScalar(zigzag(E(v)))
 	}
 	v := slice.CastUntyped[E](raw).Raw()[n]
-	return protoreflect2.ValueOfScalar(zigzag(v))
+	return xprotoreflect.ValueOfScalar(zigzag(v))
 }
 
 func getRepeatedBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
@@ -416,7 +416,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		e8 := p.Add(layout.RoundDown(int(e-p), 8))
 		if p < e8 {
 		again:
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & tdp.SignBits)
 			p = p.Add(8)
 			if p < e8 {
@@ -425,7 +425,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 		if p < e {
 			left := int(e - p)
-			bytes := *unsafe2.Cast[uint64](p.AssertValid())
+			bytes := *xunsafe.Cast[uint64](p.AssertValid())
 			count += bits.OnesCount64(bytes & (tdp.SignBits >> uint((8-left)*8)))
 		}
 	}
@@ -441,7 +441,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 			p1.Log(p2, "zc", "%v", r.raw)
 
 			p1.PtrAddr = p1.EndAddr
-			p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 			return p1, p2
 		}
 		s = s.Grow(p1.Arena(), count)
@@ -467,7 +467,7 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	p := unsafe2.AddrOf(s.Ptr()).Add(s.Len())
+	p := xunsafe.AddrOf(s.Ptr()).Add(s.Len())
 	p1.Log(p2, "store at", "%v", p)
 
 	// There are three variants of this loop: one for the cases where every
@@ -524,11 +524,11 @@ func parsePackedVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 	}
 
-	s = s.SetLen(p.Sub(unsafe2.AddrOf(s.Ptr())))
+	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
 	r.raw = s.Addr().Untyped()
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -618,7 +618,7 @@ func parsePackedFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		}
 
 		size := layout.Size[T]()
-		borrowed := unsafe.Slice(unsafe2.Cast[T](p1.Ptr()), n/size)
+		borrowed := unsafe.Slice(xunsafe.Cast[T](p1.Ptr()), n/size)
 		if debug.Enabled {
 			p1.Log(p2, "appending", "%v, %v", borrowed, s.Raw())
 		}
@@ -650,7 +650,7 @@ func parseRepeatedBytes(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.Src())
+	xunsafe.StoreNoWB(&r.src, p1.Src())
 
 	return p1, p2
 }
@@ -669,7 +669,7 @@ func parseRepeatedUTF8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	r.raw = r.raw.AssertValid().AppendOne(p1.Arena(), v).Addr()
-	unsafe2.StoreNoWB(&r.src, p1.Src())
+	xunsafe.StoreNoWB(&r.src, p1.Src())
 
 	return p1, p2
 }

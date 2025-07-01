@@ -24,11 +24,11 @@ import (
 
 	"github.com/bufbuild/hyperpb"
 	testpb "github.com/bufbuild/hyperpb/internal/gen/test"
-	"github.com/bufbuild/hyperpb/internal/sync2"
 	"github.com/bufbuild/hyperpb/internal/testdata"
+	"github.com/bufbuild/hyperpb/internal/xsync"
 )
 
-var contexts = sync2.Pool[hyperpb.Shared]{Reset: (*hyperpb.Shared).Free}
+var contexts = xsync.Pool[hyperpb.Shared]{Reset: (*hyperpb.Shared).Free}
 
 func FuzzScalars(f *testing.F)    { fuzz[*testpb.Scalars](f) }
 func FuzzRepeated(f *testing.F)   { fuzz[*testpb.Repeated](f) }
@@ -44,7 +44,7 @@ func fuzz[M proto.Message](f *testing.F) {
 	var z M
 	test := new(testdata.TestCase)
 	test.Type.Gencode = z.ProtoReflect().Type()
-	test.Type.Fast = hyperpb.Compile(test.Type.Gencode.Descriptor())
+	test.Type.Fast = hyperpb.CompileForDescriptor(test.Type.Gencode.Descriptor())
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		ctx := contexts.Get()

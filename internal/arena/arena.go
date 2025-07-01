@@ -52,8 +52,8 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // Arena is an Arena for holding values of any type which does not contain
@@ -61,11 +61,11 @@ import (
 //
 // A zero Arena is empty and ready to use.
 type Arena struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	// Exported to allow for open-coding of Alloc() in some hot callsites,
 	// because Go won't inline it >_>
-	Next, End unsafe2.Addr[byte]
+	Next, End xunsafe.Addr[byte]
 	Cap       int // Always a power of 2.
 
 	// Blocks of memory allocated by this arena. Indexed by their size log 2.
@@ -86,7 +86,7 @@ func New[T any](a *Arena, value T) *T {
 		panic("hyperpb: over-aligned object")
 	}
 
-	p := unsafe2.Cast[T](a.Alloc(layout.Size))
+	p := xunsafe.Cast[T](a.Alloc(layout.Size))
 	*p = value
 	return p
 }
@@ -94,7 +94,7 @@ func New[T any](a *Arena, value T) *T {
 // KeepAlive ensures that v is not swept by the GC until all pointers into the
 // arena go away.
 func (a *Arena) KeepAlive(v any) {
-	a.keep = append(a.keep, unsafe.Pointer(unsafe2.AnyData(v)))
+	a.keep = append(a.keep, unsafe.Pointer(xunsafe.AnyData(v)))
 }
 
 // Alloc allocates memory with the given size.
@@ -144,10 +144,10 @@ func (a *Arena) Free() {
 	// "average" calls should never have to call Grow().
 	end := len(a.blocks) - 1
 	clear(a.blocks[:end])
-	unsafe2.Clear(a.blocks[end], 1<<end)
+	xunsafe.Clear(a.blocks[end], 1<<end)
 
 	// Set up next/end/cap to point to the largest block.
-	a.Next = unsafe2.AddrOf(a.blocks[end])
+	a.Next = xunsafe.AddrOf(a.blocks[end])
 	a.End = a.Next.Add(1 << end)
 	a.Cap = 1 << end
 
@@ -169,12 +169,12 @@ func (a *Arena) Free() {
 //
 //go:nosplit
 func (a *Arena) Grow(size int) {
-	unsafe2.Escape(a)
+	xunsafe.Escape(a)
 	p, n := a.allocChunk(max(size, a.Cap*2))
 	// No need to KeepAlive(p) this pointer, since allocChunk sticks it in the
 	// dedicated memory block array.
 
-	a.Next = unsafe2.AddrOf(p)
+	a.Next = xunsafe.AddrOf(p)
 	a.End = a.Next.Add(n)
 	a.Cap = n
 	a.Log("grow", "%v:%v:%d\n", a.Next, a.End, a.Cap)

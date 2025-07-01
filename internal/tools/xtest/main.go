@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// test2 is a helper for running tests that adds a few useful features:
+// xtest is a helper for running tests that adds a few useful features:
 //
 // 1. Benchmark output as CSV and as a table.
 // 2. Running tests on remote hosts over SSH.
@@ -24,7 +24,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/bufbuild/hyperpb/internal/errors2"
+	"github.com/bufbuild/hyperpb/internal/xerrors"
 )
 
 var (
@@ -114,7 +114,7 @@ func run() error {
 
 func main() {
 	if err := run(); err != nil {
-		if exit, ok := errors2.As[*exec.ExitError](err); ok {
+		if exit, ok := xerrors.As[*exec.ExitError](err); ok {
 			fmt.Printf("%s\n", exit.Stderr)
 			os.Exit(exit.ExitCode())
 		}

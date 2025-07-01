@@ -14,16 +14,14 @@
 
 package stats
 
-import (
-	"github.com/bufbuild/hyperpb/internal/sync2"
-)
+import "github.com/bufbuild/hyperpb/internal/xsync"
 
 // Mean tracks an average statistic.
 //
 // The zero value is ready to use. [Mean.Record] may be called concurrently,
 // but not with [Mean.Get].
 type Mean struct {
-	total, samples sync2.AtomicFloat64
+	total, samples xsync.AtomicFloat64
 }
 
 // Record records a sample.

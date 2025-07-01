@@ -27,8 +27,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -49,7 +49,7 @@ type Cold struct {
 // gets marked whenever the GC sweeps a *root. As such, all of the fields of
 // a Message are laid out in memory that follows it.
 type Message struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	Shared     *Shared
 	TypeOffset uint32
@@ -102,7 +102,7 @@ func (m *Message) Range(yield func(protoreflect.FieldDescriptor, protoreflect.Va
 		}
 
 	skip:
-		f = unsafe2.Add(f, 1)
+		f = xunsafe.Add(f, 1)
 		i++
 	}
 }
@@ -167,23 +167,23 @@ func GetField[T any](m *Message, offset tdp.Offset) *T {
 		if cold == nil {
 			return nil
 		}
-		return unsafe2.ByteAdd[T](cold, ^offset.Data)
+		return xunsafe.ByteAdd[T](cold, ^offset.Data)
 	}
-	return unsafe2.ByteAdd[T](m, offset.Data)
+	return xunsafe.ByteAdd[T](m, offset.Data)
 }
 
 // GetBit gets the value of the nth bit from this message's bitset.
 func (m *Message) GetBit(n uint32) bool {
-	words := unsafe2.Cast[uint32](unsafe2.Add(m, 1))
-	word := unsafe2.Load(words, int(n)/32)
+	words := xunsafe.Cast[uint32](xunsafe.Add(m, 1))
+	word := xunsafe.Load(words, int(n)/32)
 	mask := uint32(1) << (n % 32)
 	return word&mask != 0
 }
 
 // StBit sets the value of the nth bit from this message's bitset.
 func (m *Message) SetBit(n uint32, flag bool) {
-	words := unsafe2.Cast[uint32](unsafe2.Add(m, 1))
-	word := unsafe2.Add(words, int(n)/32)
+	words := xunsafe.Cast[uint32](xunsafe.Add(m, 1))
+	word := xunsafe.Add(words, int(n)/32)
 	mask := uint32(1) << (n % 32)
 
 	if flag {
@@ -203,20 +203,20 @@ func (m *Message) Cold() *Cold {
 	if m.ColdIndex < 0 {
 		return nil
 	}
-	return unsafe2.LoadSlice(m.Shared.Cold, m.ColdIndex)
+	return xunsafe.LoadSlice(m.Shared.Cold, m.ColdIndex)
 }
 
 // MutableCold returns a pointer to the cold region, allocating one if needed.
 func (m *Message) MutableCold() *Cold {
 	if m.ColdIndex < 0 {
 		size := int(m.Type().ColdSize)
-		cold := unsafe2.Cast[Cold](m.Shared.arena.Alloc(size))
+		cold := xunsafe.Cast[Cold](m.Shared.arena.Alloc(size))
 
 		m.ColdIndex = int32(len(m.Shared.Cold))
 		m.Shared.Cold = append(m.Shared.Cold, cold)
 		return cold
 	}
-	return unsafe2.LoadSlice(m.Shared.Cold, m.ColdIndex)
+	return xunsafe.LoadSlice(m.Shared.Cold, m.ColdIndex)
 }
 
 // Dump dumps the internal state of a message.
@@ -241,7 +241,7 @@ func (m *Message) Dump() string {
 	// Print out the bit words.
 	if tLayout.BitWords > 0 {
 		fmt.Fprint(buf, "bits:")
-		words := unsafe2.Beyond[byte](m).Slice(tLayout.BitWords * 4)
+		words := xunsafe.Beyond[byte](m).Slice(tLayout.BitWords * 4)
 		for i, word := range words {
 			if i > 0 && i%4 == 0 {
 				fmt.Fprintf(buf, "\n     ")
@@ -269,7 +269,7 @@ func (m *Message) Dump() string {
 			case field.Size == 0:
 				fmt.Fprint(buf, "  0x----/0x")
 
-				nybbles := (bits.Len(uint(unsafe2.AddrOf(data))) + 3) / 4
+				nybbles := (bits.Len(uint(xunsafe.AddrOf(data))) + 3) / 4
 				for range nybbles {
 					fmt.Fprint(buf, "-")
 				}
@@ -328,11 +328,11 @@ func (m *Message) Dump() string {
 				} else if i%4 == 0 {
 					fmt.Fprint(buf, " ")
 				}
-				fmt.Fprintf(buf, "%02x", unsafe2.ByteLoad[byte](data, i))
+				fmt.Fprintf(buf, "%02x", xunsafe.ByteLoad[byte](data, i))
 			}
 
 			if int(field.Size) == layout.Size[zc.Range]() {
-				zc := unsafe2.ByteLoad[zc.Range](data, 0)
+				zc := xunsafe.ByteLoad[zc.Range](data, 0)
 				start, end := zc.Start(), zc.End()
 				if start <= m.Shared.Len && end <= m.Shared.Len && start < end {
 					fmt.Fprintf(buf, " %q", zc.Bytes(m.Shared.Src))

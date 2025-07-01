@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package protoreflect2_test
+package xprotoreflect_test
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ import (
 
 	"github.com/bufbuild/hyperpb"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
 )
 
 func TestScalar(t *testing.T) {
@@ -40,27 +40,27 @@ func TestScalar(t *testing.T) {
 func TestMessage(t *testing.T) {
 	t.Parallel()
 
-	ty := hyperpb.CompileFor[*emptypb.Empty]()
+	ty := hyperpb.Compile[*emptypb.Empty]()
 	m := ty.New()
 
 	v := protoreflect.ValueOf(m)
-	assert.Same(t, m, protoreflect2.GetMessage[*hyperpb.Message](v))
-	assert.Same(t, m, protoreflect2.GetMessage[protoreflect.Message](v))
+	assert.Same(t, m, xprotoreflect.GetMessage[*hyperpb.Message](v))
+	assert.Same(t, m, xprotoreflect.GetMessage[protoreflect.Message](v))
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(nil)
-		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
+		_ = xprotoreflect.GetMessage[*hyperpb.Message](w)
 	})
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(int32(42))
-		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
+		_ = xprotoreflect.GetMessage[*hyperpb.Message](w)
 	})
 	assert.Panics(t, func() {
 		w := protoreflect.ValueOf(empty.Message{})
-		_ = protoreflect2.GetMessage[*hyperpb.Message](w)
+		_ = xprotoreflect.GetMessage[*hyperpb.Message](w)
 	})
 }
 
-func testScalar[T protoreflect2.Int](t *testing.T) {
+func testScalar[T xprotoreflect.Int](t *testing.T) {
 	t.Helper()
 
 	var bits uint64 = 0xcdcdcdcdcdcdcdcd
@@ -69,16 +69,16 @@ func testScalar[T protoreflect2.Int](t *testing.T) {
 		t.Parallel()
 
 		w := protoreflect.ValueOf(v)
-		assert.Equal(t, v, protoreflect2.GetInt[T](w))
+		assert.Equal(t, v, xprotoreflect.GetInt[T](w))
 
 		assert.Panics(t, func() {
 			w := protoreflect.ValueOf(nil)
-			_ = protoreflect2.GetInt[T](w)
+			_ = xprotoreflect.GetInt[T](w)
 		})
 
 		assert.Panics(t, func() {
 			w := protoreflect.ValueOf(false)
-			_ = protoreflect2.GetInt[T](w)
+			_ = xprotoreflect.GetInt[T](w)
 		})
 	})
 }

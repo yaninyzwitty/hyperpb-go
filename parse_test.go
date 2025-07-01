@@ -24,17 +24,17 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 
 	"github.com/bufbuild/hyperpb"
-	"github.com/bufbuild/hyperpb/internal/flag2"
 	"github.com/bufbuild/hyperpb/internal/testdata"
+	"github.com/bufbuild/hyperpb/internal/xflag"
 )
 
 var verbose bool
 
 func TestMain(m *testing.M) {
 	flag.Parse()
-	verbose = flag2.Lookup[bool]("test.v")
+	verbose = xflag.Lookup[bool]("test.v")
 
-	if flag2.Lookup[string]("test.bench") != "" {
+	if xflag.Lookup[string]("test.bench") != "" {
 		// Annoyingly, benchmarking won't print the compiler used...
 		fmt.Printf("compiler: %v %v\n", runtime.Compiler, runtime.Version())
 	}
@@ -60,7 +60,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
 				for range b.N {
-					m := hyperpb.New(test.Type.Fast)
+					m := hyperpb.NewMessage(test.Type.Fast)
 					_ = proto.Unmarshal(specimen, m)
 				}
 			})
@@ -68,7 +68,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				b.ReportAllocs()
 				b.SetBytes(int64(len(specimen)))
 				for range b.N {
-					m := hyperpb.New(test.Type.Fast)
+					m := hyperpb.NewMessage(test.Type.Fast)
 					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
 				}
 			})
@@ -77,7 +77,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				b.SetBytes(int64(len(specimen)))
 				ctx := new(hyperpb.Shared)
 				for range b.N {
-					m := ctx.New(test.Type.Fast)
+					m := ctx.NewMessage(test.Type.Fast)
 					_ = m.Unmarshal(specimen, hyperpb.WithAllowAlias(true))
 					ctx.Free()
 				}
@@ -90,7 +90,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				// Warmup.
 				profile := test.Type.Fast.NewProfile()
 				for range 16 {
-					m := ctx.New(test.Type.Fast)
+					m := ctx.NewMessage(test.Type.Fast)
 					_ = m.Unmarshal(specimen,
 						hyperpb.WithAllowAlias(true),
 						hyperpb.WithRecordProfile(profile, 1.0),
@@ -102,7 +102,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 				o := hyperpb.WithAllowAlias(true)
 				b.ResetTimer()
 				for range b.N {
-					m := ctx.New(ty)
+					m := ctx.NewMessage(ty)
 					_ = m.Unmarshal(specimen, o)
 					ctx.Free()
 				}

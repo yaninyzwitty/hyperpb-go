@@ -34,7 +34,7 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/stats"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 //go:generate go run ../tools/stencil
@@ -129,7 +129,7 @@ func (t *Table[K, V]) Init(len int, from *Table[K, V], extract func(K) []byte) *
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -253,16 +253,16 @@ func (t *Table[K, V]) Insert(k K, extract func(K) []byte) *V {
 		idx, occupied = t.searchFunc(h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[K](last)
+	keys := xunsafe.Beyond[K](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[V](last2)
+	values := xunsafe.Beyond[V](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -338,10 +338,10 @@ func (t *Table[K, V]) search(h hash, k K) (idx int, occupied bool) {
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[K](last)
+	keys := xunsafe.Beyond[K](last)
 	len := 0
 	for {
 		// Guaranteed to terminate because there's always going to be an open
@@ -394,7 +394,7 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -444,22 +444,22 @@ func (t *Table[K, V]) searchFunc(h hash, k []byte, extract func(K) []byte) (idx 
 // XXX: Go bizarrely does not inline the below functions, so they are manually
 // inlined in some places above.
 
-func (t *Table[K, V]) ctrl() *unsafe2.VLA[ctrl] {
-	return unsafe2.Beyond[ctrl](t)
+func (t *Table[K, V]) ctrl() *xunsafe.VLA[ctrl] {
+	return xunsafe.Beyond[ctrl](t)
 }
 
-func (t *Table[K, V]) keys() *unsafe2.VLA[K] {
-	ctrl := unsafe2.Beyond[ctrl](t)
+func (t *Table[K, V]) keys() *xunsafe.VLA[K] {
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	return unsafe2.Beyond[K](last)
+	return xunsafe.Beyond[K](last)
 }
 
-func (t *Table[K, V]) values() *unsafe2.VLA[V] {
-	ctrl := unsafe2.Beyond[ctrl](t)
+func (t *Table[K, V]) values() *xunsafe.VLA[V] {
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[K](last)
+	keys := xunsafe.Beyond[K](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	return unsafe2.Beyond[V](last2)
+	return xunsafe.Beyond[V](last2)
 }
 
 func (t *Table[K, V]) log(op, format string, args ...any) {
@@ -515,13 +515,13 @@ func (t *Table[K, V]) Dump() string {
 
 	buf := new(strings.Builder)
 	size, align := Layout[K, V](int(t.len))
-	end := unsafe2.Addr[byte](unsafe2.AddrOf(t)).Add(size)
+	end := xunsafe.Addr[byte](xunsafe.AddrOf(t)).Add(size)
 	fmt.Fprintf(buf, "%p:%v: Table[%T, %T]\n", t, end, k, v)
 	fmt.Fprintf(buf, "len: %v, cap: %v/%v, load factor: %v\n", t.len, t.soft, t.hard, float64(t.len)/float64(t.hard))
 	fmt.Fprintf(buf, "seed: %016x, layout: [%d:%d]\n", uint64(t.seed), size, align)
 
 	fmt.Fprintf(buf, "ctrl:")
-	ctrl := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	for i := range int(t.hard) + ctrlSize {
 		if i%ctrlSize == 0 {
 			fmt.Fprintf(buf, "\n  %p:%04d", ctrl.Get(i), i)
@@ -537,7 +537,7 @@ func (t *Table[K, V]) Dump() string {
 		if i%perLine == 0 {
 			fmt.Fprintf(buf, "\n  %p/%04d:", keys.Get(i), i)
 		}
-		fmt.Fprintf(buf, " %x", unsafe2.AnyBytes(*keys.Get(i)))
+		fmt.Fprintf(buf, " %x", xunsafe.AnyBytes(*keys.Get(i)))
 	}
 	fmt.Fprintln(buf)
 
@@ -548,7 +548,7 @@ func (t *Table[K, V]) Dump() string {
 		if i%perLine == 0 {
 			fmt.Fprintf(buf, "\n  %p/%04d:", values.Get(i), i)
 		}
-		fmt.Fprintf(buf, " %x", unsafe2.AnyBytes(*values.Get(i)))
+		fmt.Fprintf(buf, " %x", xunsafe.AnyBytes(*values.Get(i)))
 	}
 	fmt.Fprintln(buf)
 

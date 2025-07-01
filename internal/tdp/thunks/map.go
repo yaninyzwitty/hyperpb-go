@@ -24,8 +24,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -805,8 +805,8 @@ func parseMapKxV[
 			p1.Log(p2, "map done?",
 				"%v:%v, %v/%x: %v/%x",
 				p1.PtrAddr, p1.EndAddr,
-				k, unsafe2.Bytes(&k),
-				v, unsafe2.Bytes(&v))
+				k, xunsafe.Bytes(&k),
+				v, xunsafe.Bytes(&v))
 			if p1.PtrAddr == p1.EndAddr {
 				goto insert
 			}
@@ -842,23 +842,23 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[K, V](cap)
-		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		m.Init(cap, nil, extract)
 	}
 
 	vp := m.Insert(k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[K, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
 		vp = m2.Insert(k, extract)
 	}
 
 	*vp = v
 
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
 
@@ -946,16 +946,16 @@ insert:
 	if m == nil {
 		cap := int(max(1, p2.Field().Preload))
 		size, _ := swiss.Layout[K, V](cap)
-		m = unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m)
+		m = xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m)
 		m.Init(cap, nil, extract)
 	}
 
 	vp := m.Insert(k, extract)
 	if vp == nil {
 		size, _ := swiss.Layout[K, V](m.Len() + 1)
-		m2 := unsafe2.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
-		unsafe2.StoreNoWB(mp, m2)
+		m2 := xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
+		xunsafe.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
 		vp = m2.Insert(k, extract)
 	}
@@ -965,10 +965,10 @@ insert:
 	// TODO: This could instead clear, but that optimization will almost never
 	// be relevant, because no serializer will ever emit the same key twice.
 	p1, p2, v = vm.AllocMessage(p1, p2)
-	unsafe2.StoreNoWBUntyped(vp, unsafe.Pointer(v))
+	xunsafe.StoreNoWBUntyped(vp, unsafe.Pointer(v))
 
 	// Unspill the old end pointer.
-	p1.EndAddr = unsafe2.Addr[byte](p2.Scratch())
+	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	p1, p2 = p1.SetScratch(p2, uint64(n))
 
 	// Schedule a message parse.

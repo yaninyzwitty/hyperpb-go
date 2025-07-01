@@ -26,7 +26,7 @@
 // # Usage
 //
 // The core conceit of hyperpb is that you must pre-compile a parser using
-// hyperpb.[Compile] at runtime, much like regular expressions require that you use
+// hyperpb.[CompileForDescriptor] at runtime, much like regular expressions require that you use
 // [regexp.Compile] them. Doing this allows hyperpb to run optimization passes on
 // your message, and delaying it to runtime allows us to continuously improve
 // layout optimizations, without making any source-breaking changes.
@@ -43,7 +43,7 @@
 //	data := /* ... */
 //
 //	// Allocate a fresh message using that type.
-//	msg := hyperpb.New(ty)
+//	msg := hyperpb.NewMessage(ty)
 //
 //	// Parse the message, using proto.Unmarshal like any other message type.
 //	if err := proto.Unmarshal(data, msg); err != nil {
@@ -100,14 +100,14 @@
 //
 //	type requestContext struct {
 //	    shared *hyperpb.Shared
-//	    types map[string]*hyperpb.Type
+//	    types map[string]*hyperpb.MessageType
 //	    // ...
 //	}
 //
 //	func (c *requestContext) Handle(req Request) {
 //	    // ...
 //	    ty := types[req.Type]
-//	    msg := c.shared.New(ty)
+//	    msg := c.shared.NewMessage(ty)
 //	    defer c.shared.Free()
 //
 //	    c.process(msg, req, ...)
@@ -127,9 +127,9 @@
 // can build an optimized type, using that corpus as the profile, using
 // `Type.Recompile`:
 //
-//	func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.Type {
+//	func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
 //		// Compile the type without any profiling information.
-//		ty := hyperpb.Compile(md)
+//		ty := hyperpb.CompileForDescriptor(md)
 //
 //		// Construct a new profile recorder.
 //		profile := ty.NewProfile()
@@ -138,7 +138,7 @@
 //		// for all of them.
 //		s := new(hyperpb.Shared)
 //		for _, specimen := range corpus {
-//			s.New(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+//			s.NewMessage(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
 //			s.Free()
 //		}
 //
@@ -158,7 +158,7 @@ package hyperpb
 import (
 	"google.golang.org/protobuf/types/dynamicpb" // For doc links.
 
-	_ "github.com/bufbuild/hyperpb/internal/unsafe2/support"
+	_ "github.com/bufbuild/hyperpb/internal/xunsafe/support"
 )
 
 var _ = dynamicpb.Message{} // Force the dynamicpb import to be kept.

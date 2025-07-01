@@ -28,7 +28,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Equal validates that two Protobuf messages have the same observable value.
@@ -109,8 +109,8 @@ func (e *equal) any(v1, v2 any, rec bool) {
 
 		// Compare byte-wise. We want to get exact comparisons for floats, even
 		// NaN payloads.
-		b1 := unsafe2.AnyBytes(v1)
-		b2 := unsafe2.AnyBytes(v2)
+		b1 := xunsafe.AnyBytes(v1)
+		b2 := xunsafe.AnyBytes(v2)
 
 		if bytes.Equal(b1, b2) {
 			break

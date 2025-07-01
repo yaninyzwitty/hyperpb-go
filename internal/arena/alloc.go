@@ -21,8 +21,8 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 //go:generate ./make_shapes.sh shapes.go 49
@@ -56,7 +56,7 @@ func (a *Arena) allocChunk(size int) (*byte, int) {
 	if a.blocks == nil {
 		a.blocks = make([]*byte, 64)
 		if debug.Enabled {
-			addr := unsafe2.AddrOf(a)
+			addr := xunsafe.AddrOf(a)
 			runtime.SetFinalizer(unsafe.SliceData(a.blocks), func(**byte) {
 				debug.Log(nil, "arena collected", "addr: %v", addr)
 			})
@@ -98,7 +98,7 @@ func AllocTraceable(size int, ptr unsafe.Pointer) *byte {
 	}
 
 	p := (*byte)(reflect.New(shape).UnsafePointer())
-	unsafe2.ByteStore(p, size, ptr) // Store the tracee pointer at the end.
+	xunsafe.ByteStore(p, size, ptr) // Store the tracee pointer at the end.
 
 	return p
 }

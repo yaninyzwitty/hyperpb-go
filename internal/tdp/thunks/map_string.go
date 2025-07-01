@@ -21,8 +21,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -52,18 +52,18 @@ func (m mapSxI[V]) Len() int                        { return m.table.Len() }
 func (m mapSxI[V]) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapSxI[V]) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
-	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
+	v := m.table.LookupFunc(xunsafe.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect2.ValueOfScalar(*v)
+	return xprotoreflect.ValueOfScalar(*v)
 }
 
 func (m mapSxI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect2.ValueOfScalar(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), xprotoreflect.ValueOfScalar(v)) {
 			return
 		}
 	}
@@ -91,7 +91,7 @@ func (m mapSxS) Len() int                        { return m.table.Len() }
 func (m mapSxS) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapSxS) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
-	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
+	v := m.table.LookupFunc(xunsafe.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
 		return protoreflect.Value{}
 	}
@@ -135,7 +135,7 @@ func (m mapSxB) Len() int                        { return m.table.Len() }
 func (m mapSxB) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapSxB) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
-	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
+	v := m.table.LookupFunc(xunsafe.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
 		return protoreflect.Value{}
 	}
@@ -179,18 +179,18 @@ func (m mapSxM) Len() int                        { return m.table.Len() }
 func (m mapSxM) Has(mk protoreflect.MapKey) bool { return m.Get(mk).IsValid() }
 func (m mapSxM) Get(mk protoreflect.MapKey) protoreflect.Value {
 	k := mk.String()
-	v := m.table.LookupFunc(unsafe2.StringToSlice[[]byte](k), m.extract())
+	v := m.table.LookupFunc(xunsafe.StringToSlice[[]byte](k), m.extract())
 	if v == nil {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOfMessage(WrapMessage(*v))
+	return protoreflect.ValueOfMessage(wrapMessage(*v))
 }
 
 func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfMessage(WrapMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfMessage(wrapMessage(v))) {
 			return
 		}
 	}

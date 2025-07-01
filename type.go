@@ -17,19 +17,20 @@ package hyperpb
 import (
 	"fmt"
 	"slices"
+	_ "unsafe"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
-// Type is an optimized message descriptor.
+// MessageType implements [protoreflect.MessageType].
 //
-// *Type implements [protoreflect.MessageType].
-type Type struct {
+// To obtain an optimized [MessageType], use any of the Compile* functions.
+type MessageType struct {
 	impl tdp.Type
 }
 
@@ -37,7 +38,10 @@ type Type struct {
 // collection of types. It can later be used to re-compile the original types
 // to be more efficient.
 //
-// See [Type.NewProfile].
+// Profile itself is an opaque pointer; it only exists to be passed into
+// different calls to [WithProfile].
+//
+// See [MessageType.NewProfile].
 type Profile struct {
 	impl profile.Recorder
 }
@@ -45,7 +49,7 @@ type Profile struct {
 // Descriptor returns the message descriptor.
 //
 // Descriptor implements [protoreflect.MessageType].
-func (t *Type) Descriptor() protoreflect.MessageDescriptor {
+func (t *MessageType) Descriptor() protoreflect.MessageDescriptor {
 	if t == nil {
 		return nil
 	}
@@ -56,20 +60,20 @@ func (t *Type) Descriptor() protoreflect.MessageDescriptor {
 // It may return nil for synthetic messages representing a map entry.
 //
 // New implements [protoreflect.MessageType].
-func (t *Type) New() protoreflect.Message {
-	return new(Shared).New(t).ProtoReflect()
+func (t *MessageType) New() protoreflect.Message {
+	return new(Shared).NewMessage(t).ProtoReflect()
 }
 
 // Zero returns an empty, read-only message.
 // It may return nil for synthetic messages representing a map entry.
 //
 // Zero implements [protoreflect.MessageType].
-func (t *Type) Zero() protoreflect.Message {
+func (t *MessageType) Zero() protoreflect.Message {
 	return empty.NewMessage(&t.impl)
 }
 
 // Format implements [fmt.Formatter].
-func (t *Type) Format(f fmt.State, verb rune) {
+func (t *MessageType) Format(f fmt.State, verb rune) {
 	if f.Flag('#') {
 		fmt.Fprintf(f, fmt.FormatString(f, verb), t.Descriptor())
 	} else {
@@ -81,28 +85,24 @@ func (t *Type) Format(f fmt.State, verb rune) {
 // profile messages of this type when unmarshaling.
 //
 // The returned profiler cannot be used with messages of other types.
-func (t *Type) NewProfile() *Profile {
-	return unsafe2.Cast[Profile](profile.NewRecorder(t.impl.Library))
+func (t *MessageType) NewProfile() *Profile {
+	return xunsafe.Cast[Profile](profile.NewRecorder(t.impl.Library))
 }
 
 // Recompile recompiles this type with a recorded profile.
 //
 // Note that this profile cannot be used with the new type; you must create a
-// fresh profile using [Type.NewProfile] and begin recording anew.
-func (t *Type) Recompile(profile *Profile) *Type {
+// fresh profile using [MessageType.NewProfile] and begin recording anew.
+func (t *MessageType) Recompile(profile *Profile) *MessageType {
 	options := slices.Clone(t.impl.Library.Metadata.([]CompileOption)) //nolint:errcheck
-	options = append(options, WithPGO(profile))
+	options = append(options, WithProfile(profile))
 
-	return Compile(t.Descriptor(), options...)
+	return CompileForDescriptor(t.Descriptor(), options...)
 }
 
-// newType wraps an internal Type pointer.
-func newType(s *tdp.Type) *Type {
-	return unsafe2.Cast[Type](s)
-}
-
-func init() {
-	empty.WrapType = func(t *tdp.Type) protoreflect.MessageType {
-		return newType(t)
-	}
+// wrapType wraps an internal Type pointer.
+//
+//go:linkname wrapType github.com/bufbuild/hyperpb/internal/tdp/empty.wrapType
+func wrapType(s *tdp.Type) *MessageType {
+	return xunsafe.Cast[MessageType](s)
 }

@@ -19,8 +19,8 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -43,7 +43,7 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 	// and a remainder part that only does 0 to 7 bytes.
 	if e8 > p {
 	again:
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		bytes := *xunsafe.Cast[uint64](p.AssertValid())
 		p = p.Add(8)
 		if bytes&tdp.SignBits != 0 {
 			p = p.Add(-8) // Back up, need to take the slow path.
@@ -56,7 +56,7 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 	if e > p {
 		// Fast path for if the last few bytes are also ASCII.
 		left := int(e - p)
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		bytes := *xunsafe.Cast[uint64](p.AssertValid())
 		p = p.Add(left)
 		if bytes&(tdp.SignBits>>uint((8-left)*8)) != 0 {
 			p = p.Add(-left)
@@ -64,7 +64,7 @@ func verifyUTF8(p1 P1, p2 P2, n int) (P1, P2, zc.Range) {
 		}
 	}
 	{
-		r := zc.NewRaw(p.Sub(unsafe2.AddrOf(p1.Src()))-n, n)
+		r := zc.NewRaw(p.Sub(xunsafe.AddrOf(p1.Src()))-n, n)
 		p1.PtrAddr = p
 
 		if debug.Enabled {
@@ -82,7 +82,7 @@ unicode:
 		n := min(8, int(e-p))
 		// Fast path for ASCII: simply check that all of the bytes don't have
 		// their sign bits set.
-		bytes := *unsafe2.Cast[uint64](p.AssertValid())
+		bytes := *xunsafe.Cast[uint64](p.AssertValid())
 		mask := uint64(tdp.SignBits) >> uint((8-n)*8)
 		ascii := bits.TrailingZeros64(bytes&mask) / 8
 		p1.Log(p2, "ascii bytes", "%016x, %d bytes", bytes, ascii)
@@ -114,8 +114,8 @@ unicode:
 		// Bounds check is complete here. We are free to load four bytes
 		// and mask off what we don't need. We can't re-use bytes here
 		// because the rune might straddle a boundary.
-		raw := *unsafe2.Cast[uint32](p.AssertValid())
-		p1.Log(p2, "wide rune bits", "%08b, %d bytes", unsafe2.Bytes(&raw), count)
+		raw := *xunsafe.Cast[uint32](p.AssertValid())
+		p1.Log(p2, "wide rune bits", "%08b, %d bytes", xunsafe.Bytes(&raw), count)
 
 		// This puts the contents of the first byte into r.
 		r := rune(raw & ((1 << (8 - count)) - 1))
@@ -176,7 +176,7 @@ unicode:
 	}
 
 	if ok {
-		r := zc.NewRaw(e.Sub(unsafe2.AddrOf(p1.Src()))-n, n)
+		r := zc.NewRaw(e.Sub(xunsafe.AddrOf(p1.Src()))-n, n)
 		p1.PtrAddr = e
 
 		if debug.Enabled {

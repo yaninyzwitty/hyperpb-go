@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2
+package xunsafe
 
 import (
 	"fmt"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // intptr is an integer type with the same layout as a uintptr but signed.

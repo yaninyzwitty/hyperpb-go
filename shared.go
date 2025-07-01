@@ -16,7 +16,7 @@ package hyperpb
 
 import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Shared is state that is shared by all messages in a particular tree of
@@ -27,8 +27,8 @@ type Shared struct {
 	impl dynamic.Shared
 }
 
-// New allocates a new message using this value's resources.
-func (s *Shared) New(ty *Type) *Message {
+// NewMessage allocates a new message using this value's resources.
+func (s *Shared) NewMessage(ty *MessageType) *Message {
 	if s == nil {
 		s = new(Shared)
 	}
@@ -46,7 +46,7 @@ func (s *Shared) New(ty *Type) *Message {
 	// It is now redundant, because Context stores ty.Library(). The comment is
 	// kept for posterity about a nasty bug.
 
-	return newMessage(s.impl.New(&ty.impl))
+	return wrapMessage(s.impl.New(&ty.impl))
 }
 
 // Free releases any resources held by this value, allowing them to be re-used.
@@ -54,7 +54,7 @@ func (s *Shared) New(ty *Type) *Message {
 // Any messages previously parsed using this value must not be reused.
 func (s *Shared) Free() { s.impl.Free() }
 
-// newShared wraps an internal Shared pointer.
-func newShared(s *dynamic.Shared) *Shared {
-	return unsafe2.Cast[Shared](s)
+// wrapShared wraps an internal Shared pointer.
+func wrapShared(s *dynamic.Shared) *Shared {
+	return xunsafe.Cast[Shared](s)
 }

@@ -29,7 +29,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -96,7 +96,7 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 		*stack = make([]frame, p3.MaxDepth)
 	}
 
-	p3.stack.top = unsafe2.AddrOf(unsafe.SliceData(*stack))
+	p3.stack.top = xunsafe.AddrOf(unsafe.SliceData(*stack))
 	p3.stack.bottom = p3.stack.top.Add(p3.MaxDepth)
 
 	p3.stack.ptr = p3.stack.bottom
@@ -129,11 +129,11 @@ func Run(m *dynamic.Message, data []byte, options Options) (err error) {
 	}()
 
 	p1 := P1{
-		shared:  unsafe2.AddrOf(m.Shared),
-		PtrAddr: unsafe2.AddrOf(m.Shared.Src),
+		shared:  xunsafe.AddrOf(m.Shared),
+		PtrAddr: xunsafe.AddrOf(m.Shared.Src),
 	}
 	p2 := P2{
-		p3Addr:  unsafe2.AddrOf(p3),
+		p3Addr:  xunsafe.AddrOf(p3),
 		scratch: uint64(m.Shared.Len),
 	}
 
@@ -208,19 +208,19 @@ number:
 			p1 = p1.Advance(1)
 
 			t := p2.Type()
-			lut := unsafe2.ByteAdd[byte](t, unsafe.Offsetof(t.TagLUT))
-			offset := unsafe2.Load(lut, p2.Scratch())
+			lut := xunsafe.ByteAdd[byte](t, unsafe.Offsetof(t.TagLUT))
+			offset := xunsafe.Load(lut, p2.Scratch())
 			p1.Log(p2, "small tag", "%v -> %#x", tdp.Tag(p2.Scratch()), offset)
 
 			if offset != 0xff {
-				p2.fieldAddr = unsafe2.AddrOf(t.Fields().Get(int(offset)))
+				p2.fieldAddr = xunsafe.AddrOf(t.Fields().Get(int(offset)))
 				goto parseField
 			}
 			goto field
 		}
 
 		// Load up to eight bytes for the varint (at most 5 will be used).
-		p1, p2 = p1.SetScratch(p2, unsafe2.ByteLoad[uint64](p1.Ptr(), 0))
+		p1, p2 = p1.SetScratch(p2, xunsafe.ByteLoad[uint64](p1.Ptr(), 0))
 		p1.Log(p2, "raw number", "%#x", p2.Scratch())
 
 		// Flip all of the sign bits. This essentially clears the sign bits
@@ -290,9 +290,9 @@ parseField:
 		// do not allocate any memory do not cause it to fall out of
 		// the cache, slowing down memory allocations due to the need
 		// to pull the arena's internal pointers from L2 cache.
-		unsafe2.Ping(p1.Shared())
+		xunsafe.Ping(p1.Shared())
 
-		thunk := (*unsafe2.PC[Thunk])(&p2.Field().Parse).Get()
+		thunk := (*xunsafe.PC[Thunk])(&p2.Field().Parse).Get()
 		p1.Log(p2, "call", "%v, %#x", debug.Func(thunk), p2.fieldAddr)
 
 		// NOTE: Thunks are allowed to rely on p2.Scratch() still containing
@@ -375,14 +375,14 @@ missedField:
 				// we're in at this position, so we just send this to the main
 				// parsing loop.
 				p2.fieldAddr = p2.Type().Entrypoint.NextOk
-				p1.PtrAddr = unsafe2.Addr[byte](p2.Scratch())
+				p1.PtrAddr = xunsafe.Addr[byte](p2.Scratch())
 				p1.Log(p2, "goto end group", "%d", tag2)
 				goto number
 			}
 
 			p1, p2, tag2 = p1.byTag(p2, tag2)
 			if p2.Field() != nil {
-				p1.PtrAddr = unsafe2.Addr[byte](p2.Scratch())
+				p1.PtrAddr = xunsafe.Addr[byte](p2.Scratch())
 				p1.Log(p2, "goto number", "%d", tag2)
 				goto number
 			}
@@ -434,7 +434,7 @@ func handleUnknown(p1 P1, p2 P2, tag uint64) (P1, P2) {
 		r := zc.New(p1.Src(), start.AssertValid(), n)
 		cold := p2.Message().MutableCold()
 		if cold.Unknown.Len() > 0 {
-			last := unsafe2.Add(cold.Unknown.Ptr(), cold.Unknown.Len()-1)
+			last := xunsafe.Add(cold.Unknown.Ptr(), cold.Unknown.Len()-1)
 			if r.Start() == last.End() {
 				*last = zc.NewRaw(last.Start(), last.Len()+r.Len())
 				return p1, p2
@@ -502,7 +502,7 @@ func checkLargeVarint(p1 P1, p2 P2) (P1, P2) {
 
 	// This is a very large varint. We need to check the next two words.
 	// This is a slow path, so we can afford to not be efficient.
-	switch unsafe2.Load(p1.Ptr(), -1) {
+	switch xunsafe.Load(p1.Ptr(), -1) {
 	case 0x00:
 	case 0x80:
 		if *p1.Ptr() != 0x00 {

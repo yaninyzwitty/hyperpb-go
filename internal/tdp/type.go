@@ -22,13 +22,13 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 const SignBits = 0x80_80_80_80_80_80_80_80
 
 type Type struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 	*Aux
 
 	// The number of bytes of memory that must be allocated for a *message of
@@ -58,7 +58,7 @@ type Type struct {
 //
 // This function does not perform bounds checks.
 func (t *Type) ByIndex(n int) *Field {
-	return unsafe2.Beyond[Field](t).Get(n)
+	return xunsafe.Beyond[Field](t).Get(n)
 }
 
 // ByDescriptor returns the field with the given descriptor.
@@ -116,7 +116,7 @@ type TypeLayout struct {
 
 // TypeParser is a parser for some [Type]. A [Type] may have multiple parsers.
 type TypeParser struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	// Maps offsets to field tags for the first 128 field tags. A value of
 	// -1 means that if there is a parser at that position, it is farther away
@@ -140,11 +140,11 @@ type TypeParser struct {
 }
 
 // Fields returns a raw pointer to this parser's field array.
-func (p *TypeParser) Fields() *unsafe2.VLA[FieldParser] {
+func (p *TypeParser) Fields() *xunsafe.VLA[FieldParser] {
 	// Don't use Beyond, since Go does not inline it in a critical place.
 	// TypeParser and FieldParser have the same alignment, so this can be
 	// a pure pointer increment.
-	return unsafe2.Cast[unsafe2.VLA[FieldParser]](unsafe2.Add(p, 1))
+	return xunsafe.Cast[xunsafe.VLA[FieldParser]](xunsafe.Add(p, 1))
 }
 
 // Format implements [fmt.Formatter].

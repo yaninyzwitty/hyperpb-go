@@ -23,7 +23,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Repeated messages use two different layouts, and a hasbit is used to
@@ -67,13 +67,13 @@ func (r *repeatedMessage) Len() int {
 // Get implements [protoreflect.List].
 func (r *repeatedMessage) Get(n int) protoreflect.Value {
 	if r.stride != 0 {
-		unsafe2.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
-		m := unsafe2.ByteAdd[dynamic.Message](r.raw.Ptr.AssertValid(), n*int(r.stride))
-		return protoreflect.ValueOfMessage(WrapMessage(m))
+		xunsafe.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
+		m := xunsafe.ByteAdd[dynamic.Message](r.raw.Ptr.AssertValid(), n*int(r.stride))
+		return protoreflect.ValueOfMessage(wrapMessage(m))
 	}
 
 	raw := slice.CastUntyped[*dynamic.Message](r.raw).Raw()
-	return protoreflect.ValueOfMessage(WrapMessage(raw[n]))
+	return protoreflect.ValueOfMessage(wrapMessage(raw[n]))
 }
 
 //go:nosplit
@@ -130,7 +130,7 @@ func allocRepeatedMessage2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) 
 		}
 
 		s = slice.CastUntyped[byte](r.raw)
-		p := unsafe2.Add(s.Ptr(), s.Len())
+		p := xunsafe.Add(s.Ptr(), s.Len())
 		s = s.SetLen(s.Len() + stride)
 		r.raw = s.Addr().Untyped()
 
@@ -142,7 +142,7 @@ pointers:
 	{
 		p1, p2, m = vm.AllocMessage(p1, p2)
 
-		r := unsafe2.Cast[slice.Addr[unsafe2.Addr[dynamic.Message]]](r)
+		r := xunsafe.Cast[slice.Addr[xunsafe.Addr[dynamic.Message]]](r)
 		s := r.AssertValid()
 		if s.Len() == s.Cap() {
 			p1, p2, m = appendOneMessage(p1, p2, m)
@@ -151,7 +151,7 @@ pointers:
 		}
 
 		s = s.SetLen(s.Len() + 1)
-		s.Store(s.Len()-1, unsafe2.AddrOf(m))
+		s.Store(s.Len()-1, xunsafe.AddrOf(m))
 		p1.Log(p2, "outline repeated message", "%v, %p", s.Addr(), m)
 		*r = s.Addr()
 	}
@@ -183,11 +183,11 @@ func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm
 	s := slice.CastUntyped[byte](r.raw)
 
 	// Spill all of the messages onto a pointer slice.
-	spill := slice.Make[unsafe2.Addr[dynamic.Message]](p1.Arena(), s.Cap()/stride*2)
+	spill := slice.Make[xunsafe.Addr[dynamic.Message]](p1.Arena(), s.Cap()/stride*2)
 	var j int
 	for i := 0; i < s.Len(); i += stride {
-		m := unsafe2.Cast[dynamic.Message](unsafe2.Add(s.Ptr(), i))
-		spill.Store(j, unsafe2.AddrOf(m))
+		m := xunsafe.Cast[dynamic.Message](xunsafe.Add(s.Ptr(), i))
+		spill.Store(j, xunsafe.AddrOf(m))
 		j++
 	}
 	spill = spill.SetLen(j)
@@ -202,7 +202,7 @@ func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm
 func appendOneMessage(p1 vm.P1, p2 vm.P2, m *dynamic.Message) (vm.P1, vm.P2, *dynamic.Message) {
 	var slot *repeatedMessage
 	p1, p2, slot = vm.GetMutableField[repeatedMessage](p1, p2)
-	s := slice.CastUntyped[unsafe2.Addr[dynamic.Message]](slot.raw)
-	slot.raw = s.AppendOne(p1.Arena(), unsafe2.AddrOf(m)).Addr().Untyped()
+	s := slice.CastUntyped[xunsafe.Addr[dynamic.Message]](slot.raw)
+	slot.raw = s.AppendOne(p1.Arena(), xunsafe.AddrOf(m)).Addr().Untyped()
 	return p1, p2, m
 }

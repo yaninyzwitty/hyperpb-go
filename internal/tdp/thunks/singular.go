@@ -25,9 +25,9 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -167,7 +167,7 @@ func getScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *tdp.Access
 		return protoreflect.Value{}
 	}
 
-	return protoreflect2.ValueOfScalar(v)
+	return xprotoreflect.ValueOfScalar(v)
 }
 
 func getBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
@@ -252,7 +252,7 @@ func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoref
 	if sub == nil {
 		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
-	return protoreflect.ValueOfMessage(WrapMessage(sub))
+	return protoreflect.ValueOfMessage(wrapMessage(sub))
 }
 
 //go:nosplit
@@ -291,7 +291,7 @@ func parseFixed[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	var p *T
 	p1, p2, p = vm.GetMutableField[T](p1, p2)
-	*p = *unsafe2.Cast[T](p1.PtrAddr.AssertValid())
+	*p = *xunsafe.Cast[T](p1.PtrAddr.AssertValid())
 	p1 = p1.Advance(layout.Size[T]())
 
 	return p1, p2
@@ -343,7 +343,7 @@ func parseMessage(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	m := *mp
 	if m == nil {
 		p1, p2, m = vm.AllocMessage(p1, p2)
-		unsafe2.StoreNoWB(mp, m)
+		xunsafe.StoreNoWB(mp, m)
 	}
 
 	return p1.PushMessage(p2, m)
@@ -356,7 +356,7 @@ func parseGroup(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	m := *mp
 	if m == nil {
 		p1, p2, m = vm.AllocMessage(p1, p2)
-		unsafe2.StoreNoWB(mp, m)
+		xunsafe.StoreNoWB(mp, m)
 	}
 
 	return p1.PushGroup(p2, m)

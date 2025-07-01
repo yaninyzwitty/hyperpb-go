@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2
+package xunsafe
 
 // PC is a raw function pointer, which can be used to store captureless
 // funcs.

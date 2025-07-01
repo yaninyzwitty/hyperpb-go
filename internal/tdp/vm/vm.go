@@ -31,18 +31,18 @@ import (
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/sync2"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xsync"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
 const notAGroup = ^tdp.Tag(0)
 
 var (
-	stackPool = sync2.Pool[[]frame]{}
-	p3Pool    = sync2.Pool[p3]{
+	stackPool = xsync.Pool[[]frame]{}
+	p3Pool    = xsync.Pool[p3]{
 		Reset: func(pp *p3) { *pp = p3{} },
 	}
 )
@@ -81,18 +81,18 @@ var (
 //	x86:     rax, rbx, rcx, rdi, rsi,  r8,  r9, r10
 //	aarch64:  r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7
 type P1 struct {
-	PtrAddr unsafe2.Addr[byte]
-	EndAddr unsafe2.Addr[byte] // One past the end of the stream.
+	PtrAddr xunsafe.Addr[byte]
+	EndAddr xunsafe.Addr[byte] // One past the end of the stream.
 
-	shared   unsafe2.Addr[dynamic.Shared]
+	shared   xunsafe.Addr[dynamic.Shared]
 	endGroup tdp.Tag // End-of-group tag.
 }
 
 // P2 is the other half of the state for the TDP parser. See [P1].
 type P2 struct {
-	messageAddr unsafe2.Addr[dynamic.Message]
-	fieldAddr   unsafe2.Addr[tdp.FieldParser]
-	p3Addr      unsafe2.Addr[p3]
+	messageAddr xunsafe.Addr[dynamic.Message]
+	fieldAddr   xunsafe.Addr[tdp.FieldParser]
+	p3Addr      xunsafe.Addr[p3]
 
 	// A scratch register that is preserved across *most* calls. Thunks
 	// do not preserve the scratch register, and some functions in this file
@@ -102,25 +102,25 @@ type P2 struct {
 
 // p3 is parser state that is passed behind a pointer.
 type p3 struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	err   ParseError
 	stack struct {
-		ptr         unsafe2.Addr[frame]
-		top, bottom unsafe2.Addr[frame]
+		ptr         xunsafe.Addr[frame]
+		top, bottom xunsafe.Addr[frame]
 	}
 
-	t_ unsafe2.Addr[tdp.TypeParser]
+	t_ xunsafe.Addr[tdp.TypeParser]
 	Options
 }
 
 // frame is a recursion frame for the parser.
 type frame struct {
-	end     unsafe2.Addr[byte]
+	end     xunsafe.Addr[byte]
 	g       tdp.Tag
-	message unsafe2.Addr[dynamic.Message]
-	ty      unsafe2.Addr[tdp.TypeParser]
-	field   unsafe2.Addr[tdp.FieldParser]
+	message xunsafe.Addr[dynamic.Message]
+	ty      xunsafe.Addr[tdp.TypeParser]
+	field   xunsafe.Addr[tdp.FieldParser]
 }
 
 func (p1 P1) Shared() *dynamic.Shared {
@@ -187,7 +187,7 @@ func (p1 P1) Len() int {
 func (p1 P1) Fail(p2 P2, err ErrorCode) {
 	p2.p3().err = ParseError{
 		code:   err,
-		offset: p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())),
+		offset: p1.PtrAddr.Sub(xunsafe.AddrOf(p1.Src())),
 	}
 
 	_ = *(*byte)(nil) // Trigger a panic without calling runtime.gopanic. Linters hate this!
@@ -201,8 +201,8 @@ func (p1 P1) Log(p2 P2, op, format string, args ...any) {
 		return
 	}
 
-	start := p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src()))
-	end := p1.EndAddr.Sub(unsafe2.AddrOf(p1.Src()))
+	start := p1.PtrAddr.Sub(xunsafe.AddrOf(p1.Src()))
+	end := p1.EndAddr.Sub(xunsafe.AddrOf(p1.Src()))
 	height := p2.p3().stack.bottom.Sub(p2.p3().stack.ptr)
 	var b byte
 	if p1.PtrAddr < p1.EndAddr {
@@ -261,7 +261,7 @@ func (p1 P1) Varint(p2 P2) (P1, P2, uint64) {
 // Fixed32 parses a 32-bit fixed-width integer.
 func (p1 P1) Fixed32(p2 P2) (P1, P2, uint32) {
 	p1, p2 = p1.AtLeast(p2, 4)
-	x := unsafe2.ByteLoad[uint32](p1.Ptr(), 0)
+	x := xunsafe.ByteLoad[uint32](p1.Ptr(), 0)
 	p1 = p1.Advance(4)
 
 	p1.Log(p2, "fixed32", "%d:%#x (%d bytes)", x, x, 4)
@@ -271,7 +271,7 @@ func (p1 P1) Fixed32(p2 P2) (P1, P2, uint32) {
 // Fixed64 parses a 64-bit fixed-width integer.
 func (p1 P1) Fixed64(p2 P2) (P1, P2, uint64) {
 	p1, p2 = p1.AtLeast(p2, 8)
-	x := unsafe2.ByteLoad[uint64](p1.Ptr(), 0)
+	x := xunsafe.ByteLoad[uint64](p1.Ptr(), 0)
 	p1 = p1.Advance(8)
 
 	p1.Log(p2, "fixed64", "%d:%#x (%d bytes)", x, x, 8)
@@ -302,7 +302,7 @@ func (p1 P1) Bytes(p2 P2) (P1, P2, zc.Range) {
 	var n int
 	p1, p2, n = p1.LengthPrefix(p2)
 
-	r := zc.NewRaw(p1.PtrAddr.Sub(unsafe2.AddrOf(p1.Src())), n)
+	r := zc.NewRaw(p1.PtrAddr.Sub(xunsafe.AddrOf(p1.Src())), n)
 	p1 = p1.Advance(n)
 
 	if debug.Enabled {
@@ -354,15 +354,15 @@ func (p1 P1) PushMessage(p2 P2, m *dynamic.Message) (P1, P2) {
 	}
 
 	p1.endGroup = notAGroup
-	p2.messageAddr = unsafe2.AddrOf(m)
+	p2.messageAddr = xunsafe.AddrOf(m)
 
 	t := p2.Message().Type().Parser
-	p2.p3().t_ = unsafe2.AddrOf(t)
+	p2.p3().t_ = xunsafe.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
+	p2.fieldAddr = xunsafe.AddrOf(&t.Entrypoint)
 
 	return p1, p2
 }
@@ -383,15 +383,15 @@ func (p1 P1) PushMapEntry(p2 P2, m *dynamic.Message) (P1, P2) {
 	}
 
 	p1.endGroup = notAGroup
-	p2.messageAddr = unsafe2.AddrOf(m)
+	p2.messageAddr = xunsafe.AddrOf(m)
 
 	t := p2.Message().Type().Parser.MapEntry
-	p2.p3().t_ = unsafe2.AddrOf(t)
+	p2.p3().t_ = xunsafe.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
+	p2.fieldAddr = xunsafe.AddrOf(&t.Entrypoint)
 
 	return p1, p2
 }
@@ -410,15 +410,15 @@ func (p1 P1) PushGroup(p2 P2, m *dynamic.Message) (P1, P2) {
 	p1, p2 = p1.push(p2, p1.EndAddr)
 
 	p1.endGroup = end
-	p2.messageAddr = unsafe2.AddrOf(m)
+	p2.messageAddr = xunsafe.AddrOf(m)
 
 	t := p2.Message().Type().Parser
-	p2.p3().t_ = unsafe2.AddrOf(t)
+	p2.p3().t_ = xunsafe.AddrOf(t)
 	if debug.Enabled {
 		p1, p2 = logMessage(p1, p2)
 	}
 
-	p2.fieldAddr = unsafe2.AddrOf(&t.Entrypoint)
+	p2.fieldAddr = xunsafe.AddrOf(&t.Entrypoint)
 
 	return p1, p2
 }
@@ -443,7 +443,7 @@ func (p3 *p3) stackSlice() []frame {
 // push pushes a parser frame.
 //
 //go:nosplit
-func (p1 P1) push(p2 P2, end unsafe2.Addr[byte]) (P1, P2) {
+func (p1 P1) push(p2 P2, end xunsafe.Addr[byte]) (P1, P2) {
 	if debug.Enabled {
 		p1, p2 = logPush(p1, p2)
 	}
@@ -514,6 +514,6 @@ func (p1 P1) byTag(p2 P2, tag2 uint64) (P1, P2, uint64) {
 		p2.fieldAddr = 0
 		return p1, p2, tag2
 	}
-	p2.fieldAddr = unsafe2.AddrOf(t.Fields().Get(int(*p)))
+	p2.fieldAddr = xunsafe.AddrOf(t.Fields().Get(int(*p)))
 	return p1, p2, tag2
 }

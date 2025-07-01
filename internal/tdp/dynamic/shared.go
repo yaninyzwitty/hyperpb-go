@@ -19,7 +19,7 @@ import (
 
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Shared is state that is shared by all messages in a particular tree of
@@ -27,7 +27,7 @@ import (
 //
 // A zero Shared is ready to use.
 type Shared struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	// Shared is the only memory not allocated on the arena.
 	arena arena.Arena
@@ -68,9 +68,9 @@ func (s *Shared) New(ty *tdp.Type) *Message {
 	}
 
 	data := s.arena.Alloc(int(ty.Size))
-	m := unsafe2.Cast[Message](data)
-	unsafe2.StoreNoWB(&m.Shared, s)
-	m.TypeOffset = uint32(unsafe2.ByteSub(ty, s.lib.Base))
+	m := xunsafe.Cast[Message](data)
+	xunsafe.StoreNoWB(&m.Shared, s)
+	m.TypeOffset = uint32(xunsafe.ByteSub(ty, s.lib.Base))
 	m.ColdIndex = -1
 	return m
 }

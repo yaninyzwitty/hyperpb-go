@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package flag2
+package xflag
 
 import (
 	"flag"
@@ -24,6 +24,17 @@ var parsed = sync.OnceValue(func() map[string]struct{} {
 	flag.Visit(func(f *flag.Flag) { m[f.Name] = struct{}{} })
 	return m
 })
+
+// Func is like [flags.Func], but avoids the need for an init func by allocating
+// its own storage for the return value.
+func Func[T any](name, usage string, fn func(string) (T, error)) *T {
+	v := new(T)
+	flag.Func(name, usage, func(s string) (err error) {
+		*v, err = fn(s)
+		return err
+	})
+	return v
+}
 
 // Lookup looks up a flag by name of the given type.
 //

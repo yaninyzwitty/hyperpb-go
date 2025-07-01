@@ -21,12 +21,12 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Field is an optimized descriptor for a message field.
 type Field struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	// The Message type for this field, if there is one.
 	Message *Type
@@ -74,7 +74,7 @@ type Getter func(unsafe.Pointer, *Type, *Accessor) protoreflect.Value
 
 // FieldParser is a parser for a single field.
 type FieldParser struct {
-	_ unsafe2.NoCopy
+	_ xunsafe.NoCopy
 
 	// The expected, partially decoded Tag value for the field.
 	Tag Tag
@@ -91,7 +91,7 @@ type FieldParser struct {
 
 	// The parser to jump to after this one, depending on whether the parse
 	// succeeds or fails.
-	NextOk, NextErr unsafe2.Addr[FieldParser]
+	NextOk, NextErr xunsafe.Addr[FieldParser]
 
 	// The thunk to call for this field. The type of this thunk is stored in
 	// the parser package.

@@ -22,8 +22,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -158,7 +158,7 @@ func getOptionalScalar[T tdp.Scalar](m *dynamic.Message, _ *tdp.Type, getter *td
 		return protoreflect.Value{}
 	}
 	v := *dynamic.GetField[T](m, getter.Offset)
-	return protoreflect2.ValueOfScalar(v)
+	return xprotoreflect.ValueOfScalar(v)
 }
 
 func getOptionalBool(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {

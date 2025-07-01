@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sync2
+package xsync
 
 import (
 	"iter"
@@ -33,6 +33,11 @@ func (m *Map[K, V]) Load(k K) (V, bool) {
 	}
 
 	return v.(V), ok //nolint:errcheck
+}
+
+// Store forwards to [sync.Map.Store].
+func (m *Map[K, V]) Store(k K, v V) {
+	m.impl.Store(k, v)
 }
 
 // LoadOrStore loads a value if its present, or constructs it with make and

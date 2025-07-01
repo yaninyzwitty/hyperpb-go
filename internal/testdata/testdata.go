@@ -15,13 +15,13 @@ import (
 
 	"github.com/bufbuild/hyperpb"
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/flag2"
 	"github.com/bufbuild/hyperpb/internal/prototest"
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xflag"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"github.com/protocolbuffers/protoscope"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -57,7 +57,7 @@ type TestCase struct {
 	TypeName string `yaml:"type"`
 	Type     struct {
 		Gencode protoreflect.MessageType
-		Fast    *hyperpb.Type
+		Fast    *hyperpb.MessageType
 	} `yaml:"-"`
 
 	// If set, run this test as a benchmark.
@@ -135,7 +135,7 @@ func RunAll[T Harness[T]](t T, f func(T, *TestCase)) {
 func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 	t.Helper()
 
-	if debug.Enabled && test.Large && !flag2.Parsed("test.run") {
+	if debug.Enabled && test.Large && !xflag.Parsed("test.run") {
 		t.Skipf("skipping large test because of -tags debug; set -test.run to run it anyways")
 	}
 
@@ -150,7 +150,7 @@ func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 		err1 := proto.Unmarshal(specimen, m1)
 
 		// Parse using hyperpb.
-		m2 := ctx.New(test.Type.Fast)
+		m2 := ctx.NewMessage(test.Type.Fast)
 		err2 := proto.Unmarshal(specimen, m2)
 
 		if verbose {
@@ -167,7 +167,7 @@ func (test *TestCase) Run(t *testing.T, ctx *hyperpb.Shared, verbose bool) {
 		prototest.Equal(t, m1, m2)
 
 		// Make sure that we didn't leave the message locked by mistake.
-		impl := unsafe2.Cast[dynamic.Shared](m2.Shared())
+		impl := xunsafe.Cast[dynamic.Shared](m2.Shared())
 		require.True(t, impl.Lock.TryLock(), "internal arena lock was not released")
 
 		if verbose {
@@ -221,13 +221,13 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 		protoreflect.FullName(test.TypeName))
 	require.NoError(t, err, "loading type %q", test.TypeName)
 
-	test.Type.Fast = hyperpb.Compile(
+	test.Type.Fast = hyperpb.CompileForDescriptor(
 		test.Type.Gencode.Descriptor(),
 		hyperpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
 
 		// There isn't a way we can easily expose for constructing a
 		// custom CompileOption, so we just bitcast one into existence.
-		unsafe2.BitCast[hyperpb.CompileOption](test.PGO.Apply),
+		xunsafe.BitCast[hyperpb.CompileOption](test.PGO.Apply),
 	)
 
 	for _, raw := range test.Hex {

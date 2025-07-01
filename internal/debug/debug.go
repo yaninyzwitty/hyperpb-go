@@ -26,6 +26,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/bufbuild/hyperpb/internal/xflag"
 	"github.com/timandy/routine"
 )
 
@@ -34,16 +35,9 @@ import (
 const Enabled = true
 
 var (
-	debugPattern *regexp.Regexp
+	debugPattern = xflag.Func("hyperpb.filter", "regexp to filter debug logs by", regexp.Compile)
 	nocapture    = flag.Bool("hyperpb.nocapture", false, "disables capturing debug logs as test logs")
 )
-
-func init() {
-	flag.Func("hyperpb.filter", "regexp to filter debug logs by", func(s string) (err error) {
-		debugPattern, err = regexp.Compile(s)
-		return err
-	})
-}
 
 // Log prints debugging information to stderr.
 //
@@ -81,8 +75,8 @@ again:
 	_, _ = fmt.Fprintf(buf, "] %s: ", operation)
 	_, _ = fmt.Fprintf(buf, format, args...)
 
-	if debugPattern != nil &&
-		!debugPattern.MatchString(buf.String()) {
+	if *debugPattern != nil &&
+		!(*debugPattern).MatchString(buf.String()) {
 		return
 	}
 

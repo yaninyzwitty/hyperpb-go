@@ -51,7 +51,7 @@ unexport GOARCH
 GO ?= go
 GO_HOST := $(HOST_TARGET) $(GO)
 GO := $(EXEC_ENV) $(GO)
-TEST := $(EXEC_ENV) $(BIN)/test2 -o $(TESTS)
+TEST := $(EXEC_ENV) $(BIN)/xtest -o $(TESTS)
 
 TAGS ?= ""
 REMOTE ?= ""
@@ -86,18 +86,18 @@ clean: ## Delete intermediate build artifacts
 	git clean -Xdf
 
 .PHONY: test
-test: build $(BIN)/test2 ## Run unit tests
+test: build $(BIN)/xtest ## Run unit tests
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -checkptr -p $(PKGS) -- \
 		$(TESTFLAGS)
 
 .PHONY: bench
-bench: build $(BIN)/test2 ## Run benchmarks
+bench: build $(BIN)/xtest ## Run benchmarks
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKGS) \
 		-csv hyperpb.csv -table - -- \
 		-test.bench '$(BENCHMARK)' $(BENCHFLAGS)
 
 .PHONY: profile
-profile: build $(BIN)/test2 ## Profile benchmarks and open them in pprof
+profile: build $(BIN)/xtest ## Profile benchmarks and open them in pprof
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKG) -profile -- \
 		-test.run '^B' -test.bench '$(BENCHMARK)' \
 		-test.benchtime 5s $(BENCHFLAGS)
@@ -157,10 +157,10 @@ internal/gen/*/*.pb.go: $(BIN)/buf internal/proto/*/*.proto internal/proto/*/*/*
 	$(BIN)/buf generate --template buf.gen.vt.yaml \
 		--exclude-path internal/proto/test/proto2.proto,internal/proto/test/editions.proto # Work around a bug.
 
-.PHONY: $(BIN)/test2
-$(BIN)/test2: generate
+.PHONY: $(BIN)/xtest
+$(BIN)/xtest: generate
 	@mkdir -p $(@D)
-	$(GO_HOST) build -o $(BIN)/test2 ./internal/tools/test2
+	$(GO_HOST) build -o $(BIN)/xtest ./internal/tools/xtest
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)

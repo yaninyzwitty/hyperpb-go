@@ -12,12 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package errors2
+package xunsafe
 
-import "errors"
+import "unsafe"
 
-// As is like [errors.As], but less painful to use.
-func As[Err error](err error) (actual Err, ok bool) {
-	ok = errors.As(err, &actual)
-	return actual, ok
+var (
+	alwaysFalse bool
+	sink        unsafe.Pointer //nolint:unused
+)
+
+// Escape escapes a pointer to the heap.
+func Escape[P ~*E, E any](p P) P {
+	if alwaysFalse {
+		sink = unsafe.Pointer(p)
+	}
+	return p
+}
+
+// NoEscape hides a pointer from escape analysis, preventing it from
+// escaping to the heap.
+func NoEscape[P ~*E, E any](p P) P {
+	//nolint:staticcheck // False positive: complains that p^0 does nothing.
+	return P((AddrOf(p) ^ 0).AssertValid())
 }

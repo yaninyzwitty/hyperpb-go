@@ -21,7 +21,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
 	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
 	"github.com/bufbuild/hyperpb/internal/zc"
 )
 
@@ -65,12 +65,12 @@ func (m map2xI[V]) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect2.ValueOfScalar(*v)
+	return xprotoreflect.ValueOfScalar(*v)
 }
 
 func (m map2xI[V]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOfBool(k != 0)), protoreflect2.ValueOfScalar(v)) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfBool(k != 0)), xprotoreflect.ValueOfScalar(v)) {
 			return
 		}
 	}
@@ -215,12 +215,12 @@ func (m map2xM) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOfMessage(WrapMessage(*v))
+	return protoreflect.ValueOfMessage(wrapMessage(*v))
 }
 
 func (m map2xM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(protoreflect.ValueOfBool(k != 0)), protoreflect.ValueOfMessage(WrapMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfBool(k != 0)), protoreflect.ValueOfMessage(wrapMessage(v))) {
 			return
 		}
 	}

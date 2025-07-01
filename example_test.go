@@ -28,12 +28,12 @@ import (
 func Example() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
+	ty := hyperpb.Compile[*weatherv1.WeatherReport]()
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := hyperpb.New(ty)
+	msg := hyperpb.NewMessage(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}
@@ -73,12 +73,12 @@ func Example() {
 func Example_protovalidate() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
+	ty := hyperpb.Compile[*weatherv1.WeatherReport]()
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := hyperpb.New(ty)
+	msg := hyperpb.NewMessage(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ func Example_protovalidate() {
 func Example_unmarshalFromDescriptor() {
 	// Download a descriptor off of the network, unmarshal it, and compile a
 	// type from it.
-	ty, err := hyperpb.CompileFromBytes(
+	ty, err := hyperpb.CompileForBytes(
 		examples.DownloadWeatherReportSchema(),
 		"example.weather.v1.WeatherReport", // The type we want to compile.
 	)
@@ -106,7 +106,7 @@ func Example_unmarshalFromDescriptor() {
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
 	// Unmarshal it, just how you normally would.
-	msg := hyperpb.New(ty)
+	msg := hyperpb.NewMessage(ty)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		panic(err)
 	}

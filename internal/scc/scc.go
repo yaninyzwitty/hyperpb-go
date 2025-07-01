@@ -23,7 +23,7 @@ import (
 	"unsafe"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 // Graph is a "local" representation of a directed graph, which exposes the
@@ -99,7 +99,7 @@ func (c *Component[Node]) Deps() iter.Seq[*Component[Node]] {
 
 // Index returns this component's position in topological order.
 func (c *Component[Node]) Index() int {
-	return unsafe2.Sub(c, unsafe.SliceData(c.dag.components))
+	return xunsafe.Sub(c, unsafe.SliceData(c.dag.components))
 }
 
 // tarjan is the state needed to execute Tarjan's recursive SCC algorithm.

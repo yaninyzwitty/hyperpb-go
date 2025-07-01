@@ -28,11 +28,8 @@ import (
 // the critical path. CompileOption is the same for symmetry, because having it
 // be an interface while UnmarshalOption isn't would be weird.
 
-// CompileOption is a configuration setting for [Compile].
+// CompileOption is a configuration setting for [CompileForDescriptor].
 type CompileOption struct{ apply func(*compiler.Options) }
-
-// UnmarshalOption is a configuration setting for [Message.Unmarshal].
-type UnmarshalOption struct{ apply func(*vm.Options) }
 
 // WithExtensions provides an extension resolver for a compiler.
 //
@@ -55,12 +52,15 @@ func WithExtensionsFromFiles(files *protoregistry.Files) CompileOption {
 	return CompileOption{func(c *compiler.Options) { c.Extensions = compiler.ExtensionsFromFile(files) }}
 }
 
-// WithPGO provides a profile for profile-guided optimization.
+// WithProfile provides a profile for profile-guided optimization.
 //
-// Typically, you'll prefer to use [Type.Recompile].
-func WithPGO(profile *Profile) CompileOption {
+// Typically, you'll prefer to use [MessageType.Recompile].
+func WithProfile(profile *Profile) CompileOption {
 	return CompileOption{func(c *compiler.Options) { c.Profile = &profile.impl }}
 }
+
+// UnmarshalOption is a configuration setting for [Message.Unmarshal].
+type UnmarshalOption struct{ apply func(*vm.Options) }
 
 // WithMaxDecodeMisses sets the number of decode misses allowed in the parser before
 // switching to the slow path.
@@ -109,7 +109,7 @@ func WithAllowAlias(allow bool) UnmarshalOption {
 // Profiling should be done with many, many message types, all with the same
 // rate. This will allow the profiler to collect statistically relevant data,
 // which can be used to recompile this type to be more efficient using
-// [Type.Recompile].
+// [MessageType.Recompile].
 func WithRecordProfile(profile *Profile, rate float64) UnmarshalOption {
 	return UnmarshalOption{func(opts *vm.Options) {
 		if profile == nil {

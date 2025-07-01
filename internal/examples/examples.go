@@ -12,24 +12,123 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package examples contains helpers for making the examples in
+// hyperpb/example_test.go easier to read.
 package examples
 
-import "encoding/base64"
+//go:generate go run ../tools/genexamples
 
-// Helpers for making the examples in `./example_test.go` easier to read.
+//hyperpb:example DownloadWeatherReportSchema
+// // DownloadWeatherReportSchema returns a compiled Protobuf schema for a
+// // weather report protocol.
+//
+// 1: {
+//   1: {"internal/proto/example/weather/v1/weather.proto"}
+//   2: {"example.weather.v1"}
+//   4: {
+//     1: {"StationReport"}
+//     2: {
+//       1: {"station"}
+//       3: 1
+//       4: 1
+//       5: 9
+//       10: {"station"}
+//     }
+//     2: {
+//       1: {"frequency"}
+//       3: 2
+//       4: 1
+//       5: 2
+//       10: {"frequency"}
+//     }
+//     2: {
+//       1: {"temperature"}
+//       3: 3
+//       4: 1
+//       5: 2
+//       10: {"temperature"}
+//     }
+//     2: {
+//       1: {"pressure"}
+//       3: 4
+//       4: 1
+//       5: 2
+//       10: {"pressure"}
+//     }
+//     2: {
+//       1: {"wind_speed"}
+//       3: 5
+//       4: 1
+//       5: 2
+//       10: {"windSpeed"}
+//     }
+//     2: {
+//       1: {"conditions"}
+//       3: 6
+//       4: 1
+//       5: 14
+//       6: {".example.weather.v1.Condition"}
+//       10: {"conditions"}
+//     }
+//   }
+//   4: {
+//     1: {"WeatherReport"}
+//     2: {
+//       1: {"region"}
+//       3: 1
+//       4: 1
+//       5: 9
+//       10: {"region"}
+//     }
+//     2: {
+//       1: {"weather_stations"}
+//       3: 2
+//       4: 3
+//       5: 11
+//       6: {".example.weather.v1.StationReport"}
+//       10: {"weatherStations"}
+//     }
+//   }
+//   5: {
+//     1: {"Condition"}
+//     2: {
+//       1: {"CONDITION_UNSPECIFIED"}
+//       2: 0
+//     }
+//     2: {
+//       1: {"CONDITION_SUNNY"}
+//       2: 1
+//     }
+//     2: {
+//       1: {"CONDITION_RAINY"}
+//       2: 2
+//     }
+//     2: {
+//       1: {"CONDITION_OVERCAST"}
+//       2: 3
+//     }
+//   }
+// 	 12: {"proto3"}
+// }
 
-func DownloadWeatherReportSchema() []byte {
-	bytes, err := base64.StdEncoding.DecodeString(`CpQECi9pbnRlcm5hbC9wcm90by9leGFtcGxlL3dlYXRoZXIvdjEvd2VhdGhlci5wcm90bxISZXhhbXBsZS53ZWF0aGVyLnYxIuMBCg1TdGF0aW9uUmVwb3J0EhgKB3N0YXRpb24YASABKAlSB3N0YXRpb24SHAoJZnJlcXVlbmN5GAIgASgCUglmcmVxdWVuY3kSIAoLdGVtcGVyYXR1cmUYAyABKAJSC3RlbXBlcmF0dXJlEhoKCHByZXNzdXJlGAQgASgCUghwcmVzc3VyZRIdCgp3aW5kX3NwZWVkGAUgASgCUgl3aW5kU3BlZWQSPQoKY29uZGl0aW9ucxgGIAEoDjIdLmV4YW1wbGUud2VhdGhlci52MS5Db25kaXRpb25SCmNvbmRpdGlvbnMidQoNV2VhdGhlclJlcG9ydBIWCgZyZWdpb24YASABKAlSBnJlZ2lvbhJMChB3ZWF0aGVyX3N0YXRpb25zGAIgAygLMiEuZXhhbXBsZS53ZWF0aGVyLnYxLlN0YXRpb25SZXBvcnRSD3dlYXRoZXJTdGF0aW9ucypoCglDb25kaXRpb24SGQoVQ09ORElUSU9OX1VOU1BFQ0lGSUVEEAASEwoPQ09ORElUSU9OX1NVTk5ZEAESEwoPQ09ORElUSU9OX1JBSU5ZEAISFgoSQ09ORElUSU9OX09WRVJDQVNUEANiBnByb3RvMw==`)
-	if err != nil {
-		panic(err)
-	}
-	return bytes
-}
-
-func ReadWeatherData() []byte {
-	bytes, err := base64.StdEncoding.DecodeString(`CgdTZWF0dGxlEh0KBUtBRDkzFWaGIkMdzcw0QSXXo/BBLTMzE0AwAxIdCgVLSEI2MBXNjCJDHTMzW0ElUrjgQS0zM/M/MAM=`)
-	if err != nil {
-		panic(err)
-	}
-	return bytes
-}
+//hyperpb:example ReadWeatherData
+// // ReadWeatherData downloads some weather report data from the internet,
+// // using the protocol from [DownloadWeatherReportSchema].
+//
+// 1: {"Seattle"}
+// 2: {
+//   1: {"KAD93"}
+//   2: 162.525i32
+//   3: 11.3i32
+//   4: 30.08i32
+//   5: 2.3i32
+//   6: 3
+// }
+// 2: {
+//   1: {"KHB60"}
+//   2: 162.55i32
+//   3: 13.7i32
+//   4: 28.09i32
+//   5: 1.9i32
+//   6: 3
+// }

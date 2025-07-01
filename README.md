@@ -34,7 +34,7 @@ ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
 data := /* ... */
 
 // Allocate a fresh message using that type.
-msg := hyperpb.New(ty)
+msg := hyperpb.NewMessage(ty)
 
 // Parse the message, using proto.Unmarshal like any other message type.
 if err := proto.Unmarshal(data, msg); err != nil {
@@ -80,13 +80,13 @@ is included in the documentation.
 
 ### Using types from a registry
 
-We can use the `hyperpb.CompileFromBytes` function to parse a dynamic type and
+We can use the `hyperpb.CompileForBytes` function to parse a dynamic type and
 use it to walk the fields of a message:
 
 ```go
-ty := hyperpb.CompileFromBytes(encodedSchema, messageName) // Remember to cache this!
+ty := hyperpb.CompileForBytes(encodedSchema, messageName) // Remember to cache this!
 
-msg := hyperpb.New(ty)
+msg := hyperpb.NewMessage(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
 }
@@ -104,8 +104,8 @@ runtime-loaded messages.
 
 ```go
 // Unmarshal like before.
-ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
-msg := hyperpb.New(ty)
+ty := hyperpb.CompileForBytes(encodedSchema, messageName)
+msg := hyperpb.NewMessage(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // ...
 }
@@ -118,7 +118,7 @@ bytes, err := protojson.Marshal(msg)
 
 ```go
 // Unmarshal like before.
-ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
+ty := hyperpb.CompileForBytes(encodedSchema, messageName)
 msg := hyperpb.New(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
@@ -135,8 +135,8 @@ optimization knobs available. Calling `Message.Unmarshal` directly instead
 of `proto.Unmarshal` allows setting custom `UnmarshalOption`s:
 
 ```go
-ty := hyperpb.CompileFromBytes(encodedSchema, messageName)
-msg := hyperpb.New(ty)
+ty := hyperpb.CompileForBytes(encodedSchema, messageName)
+msg := hyperpb.NewMessage(ty)
 
 // Unmarshal with custom performance knobs.
 err := msg.Unmarshal(data,
@@ -149,7 +149,7 @@ The compiler also takes `CompileOptions`, such as for configuring how extensions
 are resolved:
 
 ```go
-ty := hyperpb.CompileFromBytes(encodedSchema, messageName,
+ty := hyperpb.CompileForBytes(encodedSchema, messageName,
     hyperpb.WithExtensionsFromTypes(typeRegistry),
 )
 ```
@@ -168,14 +168,14 @@ away, allowing for re-use. Consider the following example of a request handler:
 ```go
 type requestContext struct {
     shared *hyperpb.Shared
-    types map[string]*hyperpb.Type
+    types map[string]*hyperpb.MessageType
     // ...
 }
 
 func (c *requestContext) Handle(req Request) {
     // ...
     ty := c.types[req.Type]
-    msg := c.shared.New(ty)
+    msg := c.shared.NewMessage(ty)
     defer c.shared.Free()
 
     c.process(msg, req, ...)
@@ -197,9 +197,9 @@ can build an optimized type, using that corpus as the profile, using
 `Type.Recompile`:
 
 ```go
-func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.Type {
+func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
     // Compile the type without any profiling information.
-    ty := hyperpb.Compile(md)
+    ty := hyperpb.CompileForDescriptor(md)
 
     // Construct a new profile recorder.
     profile := ty.NewProfile()
@@ -208,7 +208,7 @@ func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.Typ
     // for all of them.
     s := new(hyperpb.Shared)
     for _, specimen := range corpus {
-        s.New(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+        s.NewMessage(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
         s.Free()
     }
 
@@ -239,7 +239,7 @@ func (c *requestContext) Handle(req Request) {
     tyInfo.Lock()
     
     // Parse the type as usual.
-    msg := c.shared.New(tyInfo.ty.Load())
+    msg := c.shared.NewMessage(tyInfo.ty.Load())
     defer c.shared.Free()
     err := msg.Unmarshal(
         // Only profile 1% of messages.

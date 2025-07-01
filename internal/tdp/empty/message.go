@@ -15,6 +15,8 @@
 package empty
 
 import (
+	_ "unsafe"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
@@ -23,9 +25,12 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 )
 
-// Callback for constructing the actual MessageType implementation defined in
-// the root package.
-var WrapType func(*tdp.Type) protoreflect.MessageType
+// wrapType is a callback to construct the root package's message type.
+//
+// It is connected to the root package via linkname.
+//
+//go:linkname wrapType
+func wrapType(*tdp.Type) protoreflect.MessageType
 
 // Message is an Message value of any [Type].
 type Message struct{ ty *tdp.Type }
@@ -47,7 +52,7 @@ func (e Message) Descriptor() protoreflect.MessageDescriptor {
 
 // Type implements {protoreflect.Message}.
 func (e Message) Type() protoreflect.MessageType {
-	return WrapType(e.ty)
+	return wrapType(e.ty)
 }
 
 // New implements [protoreflect.Message].

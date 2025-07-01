@@ -19,26 +19,30 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	_ "unsafe"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/stats"
-	"github.com/bufbuild/hyperpb/internal/sync2"
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/protoreflect2"
+	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"github.com/bufbuild/hyperpb/internal/xsync"
 )
 
-// ActualMessageType is a pointer to the itab for *hyperpb.Message. This exists
-// to break a dependency cyle.
-var ActualMessageType uintptr
+// hyperpbMessage is the itab for *hyperpb.Message.
+//
+// This is connected to the root package via linkname.
+//
+//go:linkname hyperpbMessage
+var hyperpbMessage uintptr
 
 // Recorder is a profile recorder, which walks a message to record information
 // about its fields after a successful parse.
 type Recorder struct {
 	library  *tdp.Library
-	profiles sync2.Map[*tdp.Field, *metrics]
+	profiles xsync.Map[*tdp.Field, *metrics]
 }
 
 // NewRecorder returns a new recorder for the given type library.
@@ -66,16 +70,16 @@ func (r *Recorder) Record(m *dynamic.Message) {
 		})
 		metrics.parse.Record(1)
 
-		if m := protoreflect2.UnsafeUnwrap(pv, ActualMessageType); m != nil {
+		if m := xprotoreflect.UnsafeUnwrap(pv, hyperpbMessage); m != nil {
 			r.Record((*dynamic.Message)(m))
 			continue
 		}
 
-		if l := protoreflect2.List(pv); l.IsValid() {
+		if l := xprotoreflect.List(pv); l.IsValid() {
 			metrics.count.Record(float64(l.Len()))
 			for i := range l.Len() {
 				pv := l.Get(i)
-				m := protoreflect2.UnsafeUnwrap(pv, ActualMessageType)
+				m := xprotoreflect.UnsafeUnwrap(pv, hyperpbMessage)
 				if m == nil {
 					break // None of these are going to be messages.
 				}
@@ -84,10 +88,10 @@ func (r *Recorder) Record(m *dynamic.Message) {
 			continue
 		}
 
-		if m := protoreflect2.Map(pv); m.IsValid() {
+		if m := xprotoreflect.Map(pv); m.IsValid() {
 			metrics.count.Record(float64(m.Len()))
 			for _, pv := range m.Range {
-				m := protoreflect2.UnsafeUnwrap(pv, ActualMessageType)
+				m := xprotoreflect.UnsafeUnwrap(pv, hyperpbMessage)
 				if m == nil {
 					break // None of these are going to be messages.
 				}

@@ -35,8 +35,8 @@ import (
 	"github.com/bufbuild/hyperpb/internal/tdp"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
-	"github.com/bufbuild/hyperpb/internal/unsafe2/layout"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -151,7 +151,7 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 	// Resolve all message type references. This needs to be done as a separate
 	// step due to potential cycles.
 	lib := &tdp.Library{
-		Base:  unsafe2.Cast[tdp.Type](p),
+		Base:  xunsafe.Cast[tdp.Type](p),
 		Types: make(map[protoreflect.MessageDescriptor]*tdp.Type),
 	}
 	requiredSet := make(map[int32]struct{})
@@ -385,7 +385,7 @@ func (c *compiler) codegen(ir *ir) {
 				Tag:     tag,
 				Offset:  tf.offset,
 				Preload: uint32(ir.t[pf.tIdx].prof.ExpectedCount),
-				Parse:   uintptr(unsafe2.NewPC(p.Thunk)),
+				Parse:   uintptr(xunsafe.NewPC(p.Thunk)),
 			},
 			relos...,
 		)
@@ -442,7 +442,7 @@ func (c *compiler) codegen(ir *ir) {
 		fieldParserSymbol{parser: mSym, index: 0},
 		tdp.FieldParser{
 			Tag:   mapValue,
-			Parse: uintptr(unsafe2.NewPC(vm.Thunk(vm.P1.ParseMapEntry))),
+			Parse: uintptr(xunsafe.NewPC(vm.Thunk(vm.P1.ParseMapEntry))),
 		},
 		relo{
 			symbol: fieldParserSymbol{parser: mSym, index: 0},
@@ -488,11 +488,11 @@ func (c *compiler) link(base *byte) {
 
 		if relo.relative {
 			c.log("relo", "%#v %#x->%#x", relo.symbol, target, uint32(offset))
-			unsafe2.ByteStore(base, target, uint32(offset))
+			xunsafe.ByteStore(base, target, uint32(offset))
 		} else {
-			value := unsafe2.Add(base, offset)
+			value := xunsafe.Add(base, offset)
 			c.log("relo", "%#v %#x->%#x", relo.symbol, target, value)
-			unsafe2.ByteStore(base, target, value)
+			xunsafe.ByteStore(base, target, value)
 		}
 	}
 }
@@ -505,7 +505,7 @@ func (c *compiler) write(symbol, v any, relos ...relo) int {
 		align := reflect.TypeOf(v).Align()
 		b = append(b, make([]byte, layout.Padding(len(c.buf), align))...)
 
-		return len(b), append(b, unsafe2.AnyBytes(v)...)
+		return len(b), append(b, xunsafe.AnyBytes(v)...)
 	}, relos...)
 }
 
@@ -530,7 +530,7 @@ func writeLUT(c *compiler, offset int, entries []swiss.Entry[int32, uint32]) {
 func writeTable[V comparable](c *compiler, symbol any, entries []swiss.Entry[int32, V]) int {
 	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
 		b, t := swiss.New(b, nil, entries...)
-		return unsafe2.Sub(unsafe2.Cast[byte](t), unsafe.SliceData(b)), b
+		return xunsafe.Sub(xunsafe.Cast[byte](t), unsafe.SliceData(b)), b
 	})
 }
 

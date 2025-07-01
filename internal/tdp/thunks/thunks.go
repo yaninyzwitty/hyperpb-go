@@ -16,6 +16,8 @@
 package thunks
 
 import (
+	_ "unsafe"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
@@ -30,8 +32,12 @@ const (
 	proto2StringKind protoreflect.Kind = ^iota
 )
 
-// Callback to construct the root package's message type.
-var WrapMessage func(*dynamic.Message) protoreflect.Message
+// wrapMessage is a callback to construct the root package's message type.
+//
+// It is connected to the root package via linkname.
+//
+//go:linkname wrapMessage
+func wrapMessage(*dynamic.Message) protoreflect.Message
 
 // SelectArchetype selects an archetype from among those in this package.
 func SelectArchetype(fd protoreflect.FieldDescriptor, prof profile.Field) *compiler.Archetype {

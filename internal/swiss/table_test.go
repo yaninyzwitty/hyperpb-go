@@ -24,7 +24,7 @@ import (
 	"github.com/bufbuild/hyperpb/internal/arena"
 	"github.com/bufbuild/hyperpb/internal/debug"
 	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 )
 
 type value struct {
@@ -37,14 +37,14 @@ func TestIntTable(t *testing.T) {
 	arena := new(arena.Arena)
 
 	size, _ := swiss.Layout[int32, value](0)
-	m := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
+	m := xunsafe.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range int32(1000) {
 		t.Log(m.Dump())
 		v := m.Insert(k, nil)
 		if v == nil {
 			size, _ := swiss.Layout[int32, value](m.Len() + 1)
-			m2 := unsafe2.Cast[swiss.Table[int32, value]](arena.Alloc(size))
+			m2 := xunsafe.Cast[swiss.Table[int32, value]](arena.Alloc(size))
 			m2.Init(m.Len()+1, m, nil)
 			m = m2
 			v = m.Insert(k, nil)
@@ -72,18 +72,18 @@ func TestStringTable(t *testing.T) {
 	defer debug.WithTesting(t)()
 	arena := new(arena.Arena)
 	extract := func(n uint32) []byte {
-		return unsafe2.StringToSlice[[]byte](urlSlice[n])
+		return xunsafe.StringToSlice[[]byte](urlSlice[n])
 	}
 
 	size, _ := swiss.Layout[uint32, value](0)
-	m := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
+	m := xunsafe.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
 	m.Init(0, nil, nil)
 	for k := range uint32(1000) {
 		t.Log(m.Dump())
 		v := m.Insert(k, extract)
 		if v == nil {
 			size, _ := swiss.Layout[uint32, value](m.Len() + 1)
-			m2 := unsafe2.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
+			m2 := xunsafe.Cast[swiss.Table[uint32, value]](arena.Alloc(size))
 			m2.Init(m.Len()+1, m, extract)
 			m = m2
 			v = m.Insert(k, extract)

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unsafe2
+package xunsafe
 
 import (
 	"reflect"
@@ -21,10 +21,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/hyperpb/internal/sync2"
+	"github.com/bufbuild/hyperpb/internal/xsync"
 )
 
-var isDirectMap sync2.Map[reflect.Type, bool]
+var isDirectMap xsync.Map[reflect.Type, bool]
 
 // iface is the internal representation an a Go interface value.
 type iface struct {

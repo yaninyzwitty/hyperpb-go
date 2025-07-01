@@ -19,7 +19,7 @@ package swiss
 import (
 	"bytes"
 	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/unsafe2"
+	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"math/rand/v2"
 	"unsafe"
 )
@@ -44,7 +44,7 @@ func InitU8xU8(t *Table[uint8, uint8], len int, from *Table[uint8, uint8], extra
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -130,7 +130,7 @@ func InitU32xU8(t *Table[uint32, uint8], len int, from *Table[uint32, uint8], ex
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -216,7 +216,7 @@ func InitU64xU8(t *Table[uint64, uint8], len int, from *Table[uint64, uint8], ex
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -302,7 +302,7 @@ func InitU8xU32(t *Table[uint8, uint32], len int, from *Table[uint8, uint32], ex
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -388,7 +388,7 @@ func InitU32xU32(t *Table[uint32, uint32], len int, from *Table[uint32, uint32],
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -474,7 +474,7 @@ func InitU64xU32(t *Table[uint64, uint32], len int, from *Table[uint64, uint32],
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -560,7 +560,7 @@ func InitU8xU64(t *Table[uint8, uint64], len int, from *Table[uint8, uint64], ex
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -646,7 +646,7 @@ func InitU32xU64(t *Table[uint32, uint64], len int, from *Table[uint32, uint64],
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -732,7 +732,7 @@ func InitU64xU64(t *Table[uint64, uint64], len int, from *Table[uint64, uint64],
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -818,7 +818,7 @@ func InitU8xP(t *Table[uint8, unsafe.Pointer], len int, from *Table[uint8, unsaf
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -904,7 +904,7 @@ func InitU32xP(t *Table[uint32, unsafe.Pointer], len int, from *Table[uint32, un
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -990,7 +990,7 @@ func InitU64xP(t *Table[uint64, unsafe.Pointer], len int, from *Table[uint64, un
 	keys1 := from.keys()
 	vals1 := from.values()
 
-	ctrl2 := unsafe2.Cast[unsafe2.VLA[byte]](t.ctrl())
+	ctrl2 := xunsafe.Cast[xunsafe.VLA[byte]](t.ctrl())
 	keys2 := t.keys()
 	vals2 := t.values()
 
@@ -1075,16 +1075,16 @@ func InsertU8xU8(t *Table[uint8, uint8], k uint8, extract func(uint8) []byte) *u
 		idx, occupied = searchFuncU8xU8(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint8](last2)
+	values := xunsafe.Beyond[uint8](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1108,16 +1108,16 @@ func InsertU32xU8(t *Table[uint32, uint8], k uint32, extract func(uint32) []byte
 		idx, occupied = searchFuncU32xU8(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint8](last2)
+	values := xunsafe.Beyond[uint8](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1141,16 +1141,16 @@ func InsertU64xU8(t *Table[uint64, uint8], k uint64, extract func(uint64) []byte
 		idx, occupied = searchFuncU64xU8(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint8](last2)
+	values := xunsafe.Beyond[uint8](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1174,16 +1174,16 @@ func InsertU8xU32(t *Table[uint8, uint32], k uint8, extract func(uint8) []byte) 
 		idx, occupied = searchFuncU8xU32(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint32](last2)
+	values := xunsafe.Beyond[uint32](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1207,16 +1207,16 @@ func InsertU32xU32(t *Table[uint32, uint32], k uint32, extract func(uint32) []by
 		idx, occupied = searchFuncU32xU32(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint32](last2)
+	values := xunsafe.Beyond[uint32](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1240,16 +1240,16 @@ func InsertU64xU32(t *Table[uint64, uint32], k uint64, extract func(uint64) []by
 		idx, occupied = searchFuncU64xU32(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint32](last2)
+	values := xunsafe.Beyond[uint32](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1273,16 +1273,16 @@ func InsertU8xU64(t *Table[uint8, uint64], k uint8, extract func(uint8) []byte) 
 		idx, occupied = searchFuncU8xU64(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint64](last2)
+	values := xunsafe.Beyond[uint64](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1306,16 +1306,16 @@ func InsertU32xU64(t *Table[uint32, uint64], k uint32, extract func(uint32) []by
 		idx, occupied = searchFuncU32xU64(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint64](last2)
+	values := xunsafe.Beyond[uint64](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1339,16 +1339,16 @@ func InsertU64xU64(t *Table[uint64, uint64], k uint64, extract func(uint64) []by
 		idx, occupied = searchFuncU64xU64(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[uint64](last2)
+	values := xunsafe.Beyond[uint64](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1372,16 +1372,16 @@ func InsertU8xP(t *Table[uint8, unsafe.Pointer], k uint8, extract func(uint8) []
 		idx, occupied = searchFuncU8xP(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[unsafe.Pointer](last2)
+	values := xunsafe.Beyond[unsafe.Pointer](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1405,16 +1405,16 @@ func InsertU32xP(t *Table[uint32, unsafe.Pointer], k uint32, extract func(uint32
 		idx, occupied = searchFuncU32xP(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[unsafe.Pointer](last2)
+	values := xunsafe.Beyond[unsafe.Pointer](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1438,16 +1438,16 @@ func InsertU64xP(t *Table[uint64, unsafe.Pointer], k uint64, extract func(uint64
 		idx, occupied = searchFuncU64xP(t, h, k, extract)
 	}
 
-	ctrl := unsafe2.Beyond[ctrl](t)
+	ctrl := xunsafe.Beyond[ctrl](t)
 	last := ctrl.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	last2 := keys.Get(int(t.hard) - 1)
-	values := unsafe2.Beyond[unsafe.Pointer](last2)
+	values := xunsafe.Beyond[unsafe.Pointer](last2)
 
 	if !occupied {
 		mirrored := t.mirrorIndex(idx)
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(idx) = h.h2()
-		*unsafe2.Cast[unsafe2.VLA[byte]](ctrl).Get(mirrored) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(idx) = h.h2()
+		*xunsafe.Cast[xunsafe.VLA[byte]](ctrl).Get(mirrored) = h.h2()
 		*keys.Get(idx) = k
 		t.len++
 	}
@@ -1461,10 +1461,10 @@ func searchU8xU8(t *Table[uint8, uint8], h hash, k uint8) (idx int, occupied boo
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	len := 0
 	for {
 
@@ -1512,10 +1512,10 @@ func searchU32xU8(t *Table[uint32, uint8], h hash, k uint32) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	len := 0
 	for {
 
@@ -1563,10 +1563,10 @@ func searchU64xU8(t *Table[uint64, uint8], h hash, k uint64) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	len := 0
 	for {
 
@@ -1614,10 +1614,10 @@ func searchU8xU32(t *Table[uint8, uint32], h hash, k uint8) (idx int, occupied b
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	len := 0
 	for {
 
@@ -1665,10 +1665,10 @@ func searchU32xU32(t *Table[uint32, uint32], h hash, k uint32) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	len := 0
 	for {
 
@@ -1716,10 +1716,10 @@ func searchU64xU32(t *Table[uint64, uint32], h hash, k uint64) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	len := 0
 	for {
 
@@ -1767,10 +1767,10 @@ func searchU8xU64(t *Table[uint8, uint64], h hash, k uint8) (idx int, occupied b
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	len := 0
 	for {
 
@@ -1818,10 +1818,10 @@ func searchU32xU64(t *Table[uint32, uint64], h hash, k uint32) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	len := 0
 	for {
 
@@ -1869,10 +1869,10 @@ func searchU64xU64(t *Table[uint64, uint64], h hash, k uint64) (idx int, occupie
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	len := 0
 	for {
 
@@ -1920,10 +1920,10 @@ func searchU8xP(t *Table[uint8, unsafe.Pointer], h hash, k uint8) (idx int, occu
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint8](last)
+	keys := xunsafe.Beyond[uint8](last)
 	len := 0
 	for {
 
@@ -1971,10 +1971,10 @@ func searchU32xP(t *Table[uint32, unsafe.Pointer], h hash, k uint32) (idx int, o
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint32](last)
+	keys := xunsafe.Beyond[uint32](last)
 	len := 0
 	for {
 
@@ -2022,10 +2022,10 @@ func searchU64xP(t *Table[uint64, unsafe.Pointer], h hash, k uint64) (idx int, o
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[uint64](last)
+	keys := xunsafe.Beyond[uint64](last)
 	len := 0
 	for {
 
@@ -2074,7 +2074,7 @@ func searchFuncU8xU8(t *Table[uint8, uint8], h hash, k []byte, extract func(uint
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2123,7 +2123,7 @@ func searchFuncU32xU8(t *Table[uint32, uint8], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2172,7 +2172,7 @@ func searchFuncU64xU8(t *Table[uint64, uint8], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2221,7 +2221,7 @@ func searchFuncU8xU32(t *Table[uint8, uint32], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2270,7 +2270,7 @@ func searchFuncU32xU32(t *Table[uint32, uint32], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2319,7 +2319,7 @@ func searchFuncU64xU32(t *Table[uint64, uint32], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2368,7 +2368,7 @@ func searchFuncU8xU64(t *Table[uint8, uint64], h hash, k []byte, extract func(ui
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2417,7 +2417,7 @@ func searchFuncU32xU64(t *Table[uint32, uint64], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2466,7 +2466,7 @@ func searchFuncU64xU64(t *Table[uint64, uint64], h hash, k []byte, extract func(
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2515,7 +2515,7 @@ func searchFuncU8xP(t *Table[uint8, unsafe.Pointer], h hash, k []byte, extract f
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2564,7 +2564,7 @@ func searchFuncU32xP(t *Table[uint32, unsafe.Pointer], h hash, k []byte, extract
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2613,7 +2613,7 @@ func searchFuncU64xP(t *Table[uint64, unsafe.Pointer], h hash, k []byte, extract
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
 	keys := t.keys()
 	len := 0
 	for {
@@ -2700,10 +2700,10 @@ func searchI32xU32(t *Table[int32, uint32], h hash, k int32) (idx int, occupied 
 	h2 := broadcast(h.h2())
 	empty := broadcast(empty)
 
-	p := newProber(unsafe2.Beyond[ctrl](t), int(t.hard), h)
-	ctrls := unsafe2.Beyond[ctrl](t)
+	p := newProber(xunsafe.Beyond[ctrl](t), int(t.hard), h)
+	ctrls := xunsafe.Beyond[ctrl](t)
 	last := ctrls.Get(int(t.hard) / ctrlSize)
-	keys := unsafe2.Beyond[int32](last)
+	keys := xunsafe.Beyond[int32](last)
 	len := 0
 	for {
 
