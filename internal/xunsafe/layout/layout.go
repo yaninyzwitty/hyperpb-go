@@ -75,3 +75,8 @@ func RoundUp[T Int](v, align T) T {
 func Padding[T Int](v, align T) T {
 	return (align - v) & (align - 1)
 }
+
+// PadSlice appends zeros to buf until its length is a multiple of align.
+func PadSlice(buf []byte, align int) []byte {
+	return append(buf, make([]byte, Padding(len(buf), align))...)
+}

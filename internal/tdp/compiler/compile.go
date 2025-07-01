@@ -18,8 +18,6 @@ import (
 	"cmp"
 	"fmt"
 	"iter"
-	"math"
-	"reflect"
 	"runtime"
 	"slices"
 	"unsafe"
@@ -33,10 +31,10 @@ import (
 	"github.com/bufbuild/hyperpb/internal/scc"
 	"github.com/bufbuild/hyperpb/internal/swiss"
 	"github.com/bufbuild/hyperpb/internal/tdp"
+	"github.com/bufbuild/hyperpb/internal/tdp/compiler/linker"
 	"github.com/bufbuild/hyperpb/internal/tdp/profile"
 	"github.com/bufbuild/hyperpb/internal/tdp/vm"
 	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
 )
 
 // CompileOption is a configuration setting for [Compile].
@@ -75,9 +73,6 @@ func Compile(md protoreflect.MessageDescriptor, options Options) *tdp.Type {
 		types:   make(map[protoreflect.MessageDescriptor]*ir),
 		sccInfo: make(map[*scc.Component[*ir]]*sccInfo),
 
-		symbols: make(map[any]int),
-		relos:   make(map[int]relo),
-
 		fdCache: make(map[protoreflect.MessageDescriptor][]protoreflect.ExtensionDescriptor),
 	}
 
@@ -90,16 +85,10 @@ type compiler struct {
 	root  protoreflect.MessageDescriptor
 	types map[protoreflect.MessageDescriptor]*ir
 
-	buf []byte
+	linker.Linker
 
 	dag     *scc.DAG[*ir]
 	sccInfo map[*scc.Component[*ir]]*sccInfo
-
-	// Maps used for linking. Symbols maps arbitrary keys to an offset in buf
-	// and relos maps offsets to pointer values that should be filled in with
-	// the final pointer value for that symbol.
-	symbols map[any]int
-	relos   map[int]relo
 
 	fdCache map[protoreflect.MessageDescriptor][]protoreflect.FieldDescriptor
 }
@@ -133,35 +122,30 @@ func (c *compiler) compile(md protoreflect.MessageDescriptor) *tdp.Type {
 		}
 	}
 
-	c.log("bytes", "%d", len(c.buf))
-	if len(c.buf) > math.MaxInt32 {
-		panic(fmt.Errorf("hyperpb: type has too many dependencies: %s", md.FullName()))
+	auxes := make([]tdp.Aux, len(c.types))
+	buf, err := c.Link(func(size, align int) []byte {
+		// Copy buf onto some memory that the GC can trace through md to keep all of
+		// the descriptors alive.
+		ptr := arena.AllocTraceable(size, unsafe.Pointer(unsafe.SliceData(auxes)))
+		return unsafe.Slice(ptr, size)
+	})
+	if err != nil {
+		// This only panics if the compiler hits a hard limit somewhere; this is
+		// not really an error that can be meaningfully handled.
+		panic(fmt.Errorf("hyperpb: failed to link parser for %s: %w", c.root.FullName(), err))
 	}
 
-	auxes := make([]tdp.Aux, len(c.types))
-
-	// Copy buf onto some memory that the GC can trace through md to keep all of
-	// the descriptors alive.
-	p := arena.AllocTraceable(len(c.buf), unsafe.Pointer(unsafe.SliceData(auxes)))
-	copy(unsafe.Slice(p, len(c.buf)), c.buf)
-
-	// Resolve all relocations.
-	c.link(p)
+	c.log("bytes", "%d", len(buf))
 
 	// Resolve all message type references. This needs to be done as a separate
 	// step due to potential cycles.
 	lib := &tdp.Library{
-		Base:  xunsafe.Cast[tdp.Type](p),
+		Base:  xunsafe.Cast[tdp.Type](unsafe.SliceData(buf)),
 		Types: make(map[protoreflect.MessageDescriptor]*tdp.Type),
 	}
 	requiredSet := make(map[int32]struct{})
 	var i int
-	for symbol, offset := range c.symbols {
-		sym, ok := symbol.(typeSymbol)
-		if !ok {
-			continue
-		}
-
+	for sym, offset := range linker.Symbols[typeSymbol](&c.Linker) {
 		ty := lib.AtOffset(uint32(offset))
 		ty.Aux = &auxes[i]
 		i++
@@ -272,76 +256,80 @@ func (c *compiler) recurse(md protoreflect.MessageDescriptor) {
 // codegen code-generates the analyzed contents of an intermediate
 // representation.
 func (c *compiler) codegen(ir *ir) {
-	tSym := typeSymbol{ir.d}
-	pSym := parserSymbol{ir.d, false}
-	mSym := parserSymbol{ir.d, true}
+	tSym := typeSymbol{ty: ir.d}
+	pSym := parserSymbol{ty: ir.d}
+	mSym := parserSymbol{ty: ir.d, mapEntry: true}
 
-	c.write(tSym,
-		tdp.Type{
-			Size:     uint32(ir.hot),
-			ColdSize: uint32(ir.cold),
-			Count:    uint32(len(ir.t)),
+	ty := c.NewSymbol(tSym)
+	ty.Rel(
+		linker.Rel{
+			Symbol: pSym,
+			Offset: unsafe.Offsetof(tdp.Type{}.Parser),
+			Kind:   linker.Address,
 		},
-		relo{
-			symbol: pSym,
-			offset: unsafe.Offsetof(tdp.Type{}.Parser),
-		},
-		relo{
-			symbol: tableSymbol{tSym},
-			offset: unsafe.Offsetof(tdp.Type{}.Numbers),
+		linker.Rel{
+			Symbol: tableSymbol{tSym},
+			Offset: unsafe.Offsetof(tdp.Type{}.Numbers),
+			Kind:   linker.Address,
 		},
 	)
+	ty.Push(tdp.Type{
+		Size:     uint32(ir.hot),
+		ColdSize: uint32(ir.cold),
+		Count:    uint32(len(ir.t)),
+	})
 
 	numbers := make([]swiss.Entry[int32, uint32], 0, len(ir.t))
 	for i, tf := range ir.t {
-		var relos []relo
 		if md := fieldMessage(tf.d); md != nil {
-			relos = []relo{{
-				symbol: typeSymbol{md},
-				offset: unsafe.Offsetof(tdp.Field{}.Message),
-			}}
+			ty.Rel(linker.Rel{
+				Symbol: typeSymbol{md},
+				Offset: unsafe.Offsetof(tdp.Field{}.Message),
+				Kind:   linker.Address,
+			})
 		}
 
 		// Append whatever field data we can before doing layout.
-		c.write(nil,
-			tdp.Field{
-				Accessor: tdp.Accessor{
-					Offset: tf.offset,
-					Getter: tf.arch.Getter.adapt(),
-				},
+		ty.Push(tdp.Field{
+			Accessor: tdp.Accessor{
+				Offset: tf.offset,
+				Getter: tf.arch.Getter.adapt(),
 			},
-			relos...,
-		)
+		})
 
 		numbers = append(numbers, swiss.KV(int32(tf.d.Number()), uint32(i)))
 	}
 	// Append the dummy end field.
-	c.write(nil, tdp.Field{})
+	ty.Push(tdp.Field{})
 
 	// Append the field number table.
-	writeTable(c, tableSymbol{tSym}, numbers)
+	linker.PushTable(c.NewSymbol(tableSymbol{tSym}), numbers...)
 
-	offset := c.write(pSym,
-		tdp.TypeParser{},
-		relo{
-			symbol:   tSym,
-			offset:   unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
-			relative: true,
+	tp := c.NewSymbol(pSym)
+	tp.Rel(
+		linker.Rel{
+			Symbol: tSym,
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
+			Kind:   linker.Abs32,
 		},
-		relo{
-			symbol: tableSymbol{pSym},
-			offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
+		linker.Rel{
+			Symbol: tableSymbol{pSym},
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
+			Kind:   linker.Address,
 		},
-		relo{
-			symbol: mSym,
-			offset: unsafe.Offsetof(tdp.TypeParser{}.MapEntry),
+		linker.Rel{
+			Symbol: mSym,
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.MapEntry),
+			Kind:   linker.Address,
 		},
-		relo{
-			symbol: fieldParserSymbol{parser: pSym, index: 0},
-			offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
+		linker.Rel{
+			Symbol: fieldParserSymbol{parser: pSym, index: 0},
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
 				unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+			Kind: linker.Address,
 		},
 	)
+	tpOffset := tp.Push(tdp.TypeParser{})
 
 	numbers = numbers[:0]
 	// Lay out the parser table.
@@ -362,107 +350,116 @@ func (c *compiler) codegen(ir *ir) {
 			nextErr = 0
 		}
 
-		relos := []relo{
-			{
-				symbol: fieldParserSymbol{parser: pSym, index: nextOk},
-				offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+		fp := c.NewSymbol(fieldParserSymbol{parser: pSym, index: i})
+		fp.Rel(
+			linker.Rel{
+				Symbol: fieldParserSymbol{parser: pSym, index: nextOk},
+				Offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+				Kind:   linker.Address,
 			},
-			{
-				symbol: fieldParserSymbol{parser: pSym, index: nextErr},
-				offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
+			linker.Rel{
+				Symbol: fieldParserSymbol{parser: pSym, index: nextErr},
+				Offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
+				Kind:   linker.Address,
 			},
-		}
+		)
+
 		if md := fieldMessage(tf.d); md != nil {
-			relos = append(relos, relo{
-				symbol: parserSymbol{md, false},
-				offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
+			fp.Rel(linker.Rel{
+				Symbol: parserSymbol{ty: md},
+				Offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
+				Kind:   linker.Address,
 			})
 		}
 
-		c.write(
-			fieldParserSymbol{parser: pSym, index: i},
-			tdp.FieldParser{
-				Tag:     tag,
-				Offset:  tf.offset,
-				Preload: uint32(ir.t[pf.tIdx].prof.ExpectedCount),
-				Parse:   uintptr(xunsafe.NewPC(p.Thunk)),
-			},
-			relos...,
-		)
+		fp.Push(tdp.FieldParser{
+			Tag:     tag,
+			Offset:  tf.offset,
+			Preload: uint32(ir.t[pf.tIdx].prof.ExpectedCount),
+			Parse:   uintptr(xunsafe.NewPC(p.Thunk)),
+		})
 	}
 
 	// Ensure that there is at least one parser to be the entry-point.
 	if len(ir.p) == 0 {
-		c.write(
-			fieldParserSymbol{parser: pSym, index: 0},
-			tdp.FieldParser{
-				Tag: ^tdp.Tag(0), // This will never be matched.
+		fp := c.NewSymbol(fieldParserSymbol{parser: pSym, index: 0})
+		fp.Rel(
+			linker.Rel{
+				Symbol: fieldParserSymbol{parser: pSym, index: 0},
+				Offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+				Kind:   linker.Address,
 			},
-			relo{
-				symbol: fieldParserSymbol{parser: pSym, index: 0},
-				offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
-			},
-			relo{
-				symbol: fieldParserSymbol{parser: pSym, index: 0},
-				offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
+			linker.Rel{
+				Symbol: fieldParserSymbol{parser: pSym, index: 0},
+				Offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
+				Kind:   linker.Address,
 			},
 		)
+		fp.Push(tdp.FieldParser{
+			Tag: ^tdp.Tag(0), // This will never be matched.
+		})
 	}
 
 	// Write the fast-lookup lut.
-	writeLUT(c, offset, numbers)
+	writeLUT(c, tp, tpOffset, numbers)
 
 	// Append the parser's field number table.
-	writeTable(c, tableSymbol{pSym}, numbers)
+	linker.PushTable(c.NewSymbol(tableSymbol{pSym}), numbers...)
 
-	offset = c.write(mSym,
-		tdp.TypeParser{
-			DiscardUnknown: true,
+	mp := c.NewSymbol(mSym)
+	mp.Rel(
+		linker.Rel{
+			Symbol: tSym,
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
+			Kind:   linker.Abs32,
 		},
-		relo{
-			symbol:   tSym,
-			offset:   unsafe.Offsetof(tdp.TypeParser{}.TypeOffset),
-			relative: true,
+		linker.Rel{
+			Symbol: tableSymbol{mSym},
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
+			Kind:   linker.Address,
 		},
-		relo{
-			symbol: tableSymbol{mSym},
-			offset: unsafe.Offsetof(tdp.TypeParser{}.Tags),
-		},
-		relo{
-			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
+		linker.Rel{
+			Symbol: fieldParserSymbol{parser: mSym, index: 0},
+			Offset: unsafe.Offsetof(tdp.TypeParser{}.Entrypoint) +
 				unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+			Kind: linker.Address,
 		},
 	)
+	mpOffset := mp.Push(tdp.TypeParser{
+		DiscardUnknown: true,
+	})
 
 	// Write the map entry parser.
 	const mapValue = 0x2<<3 | tdp.Tag(protowire.BytesType) // Field number 2 with bytes type (so, 0b10010).
 	numbers = []swiss.Entry[int32, uint32]{{Key: int32(mapValue), Value: 0}}
-	c.write(
-		fieldParserSymbol{parser: mSym, index: 0},
-		tdp.FieldParser{
-			Tag:   mapValue,
-			Parse: uintptr(xunsafe.NewPC(vm.Thunk(vm.P1.ParseMapEntry))),
+	mpf := c.NewSymbol(fieldParserSymbol{parser: mSym, index: 0})
+	mpf.Rel(
+		linker.Rel{
+			Symbol: fieldParserSymbol{parser: mSym, index: 0},
+			Offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+			Kind:   linker.Abs32,
 		},
-		relo{
-			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(tdp.FieldParser{}.NextOk),
+		linker.Rel{
+			Symbol: fieldParserSymbol{parser: mSym, index: 0},
+			Offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
+			Kind:   linker.Address,
 		},
-		relo{
-			symbol: fieldParserSymbol{parser: mSym, index: 0},
-			offset: unsafe.Offsetof(tdp.FieldParser{}.NextErr),
-		},
-		relo{
-			symbol: pSym,
-			offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
+		linker.Rel{
+			Symbol: pSym,
+			Offset: unsafe.Offsetof(tdp.FieldParser{}.Message),
+			Kind:   linker.Address,
 		},
 	)
+	mpf.Push(tdp.FieldParser{
+		Tag:   mapValue,
+		Parse: uintptr(xunsafe.NewPC(vm.Thunk(vm.P1.ParseMapEntry))),
+	})
 
 	// Write the fast-lookup lut.
-	writeLUT(c, offset, numbers)
+	writeLUT(c, mp, mpOffset, numbers)
 
 	// Append the parser's field number table.
-	writeTable(c, tableSymbol{mSym}, numbers)
+	linker.PushTable(c.NewSymbol(tableSymbol{mSym}), numbers...)
 }
 
 func fieldMessage(fd protoreflect.FieldDescriptor) protoreflect.MessageDescriptor {
@@ -472,46 +469,9 @@ func fieldMessage(fd protoreflect.FieldDescriptor) protoreflect.MessageDescripto
 	return fd.Message()
 }
 
-// relo is a relocation that is resolved in [compiler.link].
-type relo struct {
-	symbol   any
-	offset   uintptr
-	relative bool // If true, the written value is relative to the base address.
-}
-
-func (c *compiler) link(base *byte) {
-	for target, relo := range c.relos {
-		offset, ok := c.symbols[relo.symbol]
-		if !ok {
-			panic(fmt.Sprintf("hyperpb: undefined symbol while linking %v: %v", c.root.FullName(), relo.symbol))
-		}
-
-		if relo.relative {
-			c.log("relo", "%#v %#x->%#x", relo.symbol, target, uint32(offset))
-			xunsafe.ByteStore(base, target, uint32(offset))
-		} else {
-			value := xunsafe.Add(base, offset)
-			c.log("relo", "%#v %#x->%#x", relo.symbol, target, value)
-			xunsafe.ByteStore(base, target, value)
-		}
-	}
-}
-
-// write writes a value to the inner buffer and returns its offset.
-//
-// If symbol is not nil, the offset is recorded as a symbol.
-func (c *compiler) write(symbol, v any, relos ...relo) int {
-	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
-		align := reflect.TypeOf(v).Align()
-		b = append(b, make([]byte, layout.Padding(len(c.buf), align))...)
-
-		return len(b), append(b, xunsafe.AnyBytes(v)...)
-	}, relos...)
-}
-
-func writeLUT(c *compiler, offset int, entries []swiss.Entry[int32, uint32]) {
+func writeLUT(c *compiler, sym *linker.Sym, offset int, entries []swiss.Entry[int32, uint32]) {
 	offset += int(unsafe.Offsetof(tdp.TypeParser{}.TagLUT))
-	lut := (*[128]uint8)(c.buf[offset : offset+128])
+	lut := sym.At(offset, offset+128)
 
 	for i := range lut {
 		lut[i] = 0xff
@@ -525,36 +485,6 @@ func writeLUT(c *compiler, offset int, entries []swiss.Entry[int32, uint32]) {
 	}
 
 	c.log("lut", "%x", lut)
-}
-
-func writeTable[V comparable](c *compiler, symbol any, entries []swiss.Entry[int32, V]) int {
-	return c.writeFunc(symbol, func(b []byte) (int, []byte) {
-		b, t := swiss.New(b, nil, entries...)
-		return xunsafe.Sub(xunsafe.Cast[byte](t), unsafe.SliceData(b)), b
-	})
-}
-
-// writeFunc is like write, but it uses the given function to append data.
-func (c *compiler) writeFunc(symbol any, f func([]byte) (int, []byte), relos ...relo) int {
-	var offset int
-	offset, c.buf = f(c.buf)
-
-	if symbol != nil {
-		if old, ok := c.symbols[symbol]; ok {
-			panic(fmt.Sprintf("hyperpb: symbol %#v defined twice: %#x, %#x", symbol, old, offset))
-		}
-		c.symbols[symbol] = offset
-	}
-
-	for _, relo := range relos {
-		offset := int(relo.offset) + offset
-		if _, ok := c.relos[offset]; ok {
-			panic(fmt.Sprintf("hyperpb: two relocations for the same offset %#x", offset))
-		}
-		c.relos[offset] = relo
-	}
-
-	return offset
 }
 
 func (c *compiler) log(op, format string, args ...any) {
