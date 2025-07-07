@@ -18,7 +18,7 @@ import (
 	"math"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // BoundsCheck emulates a bounds check on a slice with the given index and

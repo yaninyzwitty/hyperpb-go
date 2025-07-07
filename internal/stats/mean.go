@@ -14,7 +14,7 @@
 
 package stats
 
-import "github.com/bufbuild/hyperpb/internal/xsync"
+import "buf.build/go/hyperpb/internal/xsync"
 
 // Mean tracks an average statistic.
 //

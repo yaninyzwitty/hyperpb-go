@@ -24,7 +24,7 @@
 package mesh
 
 import (
-	_ "github.com/bufbuild/hyperpb/internal/gen/rsb"
+	_ "buf.build/go/hyperpb/internal/gen/rsb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -226,8 +226,8 @@ const file_rsb_mesh_mesh_proto_rawDesc = "" +
 	"\x02v2\x18\x03 \x01(\v2\x19.hyperpb.rsb.mesh.Vector3B\x0e\x8a\xe3\xfb\x02\t\t\x00\x00\x00\x00\x00\x00\xf0?R\x02v2\x12A\n" +
 	"\x06normal\x18\x04 \x01(\v2\x19.hyperpb.rsb.mesh.Vector3B\x0e\x8a\xe3\xfb\x02\t\t\x00\x00\x00\x00\x00\x00\xf0?R\x06normal\"Z\n" +
 	"\x04Mesh\x12R\n" +
-	"\ttriangles\x18\x01 \x03(\v2\x1a.hyperpb.rsb.mesh.TriangleB\x18\x8a\xe3\xfb\x02\x13\t\x00\x00\x00\x00\x00\x00\xf0?R\b\b\xa0\x8d\x06\x10\xa0\x8d\x06R\ttrianglesB\xb6\x01\n" +
-	"\x14com.hyperpb.rsb.meshB\tMeshProtoP\x01Z1github.com/bufbuild/hyperpb/internal/gen/rsb/mesh\xa2\x02\x03HRM\xaa\x02\x10Hyperpb.Rsb.Mesh\xca\x02\x10Hyperpb\\Rsb\\Mesh\xe2\x02\x1cHyperpb\\Rsb\\Mesh\\GPBMetadata\xea\x02\x12Hyperpb::Rsb::Meshb\x06proto3"
+	"\ttriangles\x18\x01 \x03(\v2\x1a.hyperpb.rsb.mesh.TriangleB\x18\x8a\xe3\xfb\x02\x13\t\x00\x00\x00\x00\x00\x00\xf0?R\b\b\xa0\x8d\x06\x10\xa0\x8d\x06R\ttrianglesB\xaf\x01\n" +
+	"\x14com.hyperpb.rsb.meshB\tMeshProtoP\x01Z*buf.build/go/hyperpb/internal/gen/rsb/mesh\xa2\x02\x03HRM\xaa\x02\x10Hyperpb.Rsb.Mesh\xca\x02\x10Hyperpb\\Rsb\\Mesh\xe2\x02\x1cHyperpb\\Rsb\\Mesh\\GPBMetadata\xea\x02\x12Hyperpb::Rsb::Meshb\x06proto3"
 
 var (
 	file_rsb_mesh_mesh_proto_rawDescOnce sync.Once

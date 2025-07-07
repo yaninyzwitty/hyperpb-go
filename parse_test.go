@@ -23,9 +23,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/dynamicpb"
 
-	"github.com/bufbuild/hyperpb"
-	"github.com/bufbuild/hyperpb/internal/testdata"
-	"github.com/bufbuild/hyperpb/internal/xflag"
+	"buf.build/go/hyperpb"
+	"buf.build/go/hyperpb/internal/testdata"
+	"buf.build/go/hyperpb/internal/xflag"
 )
 
 var verbose bool

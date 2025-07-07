@@ -22,9 +22,9 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
-	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/tdp/thunks"
+	"buf.build/go/hyperpb/internal/tdp/compiler"
+	"buf.build/go/hyperpb/internal/tdp/profile"
+	"buf.build/go/hyperpb/internal/tdp/thunks"
 )
 
 // Compile compiles a dynamic [MessageType] for a generated message type.

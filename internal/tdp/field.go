@@ -20,8 +20,8 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Field is an optimized descriptor for a message field.

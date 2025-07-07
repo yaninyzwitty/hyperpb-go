@@ -17,12 +17,12 @@ package thunks
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
-	"github.com/bufbuild/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
+	"buf.build/go/hyperpb/internal/zc"
 )
 
 // map<bool, V> is implemented as a uint8-keyed map. They could be implemented

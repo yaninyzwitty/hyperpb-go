@@ -18,10 +18,10 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // Slice is a slice that points into an arena.

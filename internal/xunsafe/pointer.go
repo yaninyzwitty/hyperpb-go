@@ -17,7 +17,7 @@ package xunsafe
 import (
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // Cast casts one pointer type to another.

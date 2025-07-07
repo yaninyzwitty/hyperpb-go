@@ -17,13 +17,13 @@ package thunks
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/zc"
 )
 
 // getMapSxI is a [getterThunk] for map<string, V> where V is an integer type.

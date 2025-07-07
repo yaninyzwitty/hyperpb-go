@@ -370,8 +370,8 @@ const file_rsb_options_proto_rawDesc = "" +
 	"\x04_minB\x06\n" +
 	"\x04_max:L\n" +
 	"\x01m\x12\x1f.google.protobuf.MessageOptions\x18\xb1\xbc/ \x01(\v2\x1b.hyperpb.rsb.MessageOptionsR\x01m:H\n" +
-	"\x01f\x12\x1d.google.protobuf.FieldOptions\x18\xb1\xbc/ \x01(\v2\x19.hyperpb.rsb.FieldOptionsR\x01fB\x9a\x01\n" +
-	"\x0fcom.hyperpb.rsbB\fOptionsProtoP\x01Z,github.com/bufbuild/hyperpb/internal/gen/rsb\xa2\x02\x03HRX\xaa\x02\vHyperpb.Rsb\xca\x02\vHyperpb\\Rsb\xe2\x02\x17Hyperpb\\Rsb\\GPBMetadata\xea\x02\fHyperpb::Rsbb\x06proto3"
+	"\x01f\x12\x1d.google.protobuf.FieldOptions\x18\xb1\xbc/ \x01(\v2\x19.hyperpb.rsb.FieldOptionsR\x01fB\x93\x01\n" +
+	"\x0fcom.hyperpb.rsbB\fOptionsProtoP\x01Z%buf.build/go/hyperpb/internal/gen/rsb\xa2\x02\x03HRX\xaa\x02\vHyperpb.Rsb\xca\x02\vHyperpb\\Rsb\xe2\x02\x17Hyperpb\\Rsb\\GPBMetadata\xea\x02\fHyperpb::Rsbb\x06proto3"
 
 var (
 	file_rsb_options_proto_rawDescOnce sync.Once

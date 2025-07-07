@@ -24,7 +24,7 @@
 package minecraft
 
 import (
-	_ "github.com/bufbuild/hyperpb/internal/gen/rsb"
+	_ "buf.build/go/hyperpb/internal/gen/rsb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -1175,8 +1175,8 @@ const file_rsb_minecraft_minecraft_proto_rawDesc = "" +
 	"\bSURVIVAL\x10\x00\x12\f\n" +
 	"\bCREATIVE\x10\x01\x12\r\n" +
 	"\tADVENTURE\x10\x02\x12\r\n" +
-	"\tSPECTATOR\x10\x03B\xd9\x01\n" +
-	"\x19com.hyperpb.rsb.minecraftB\x0eMinecraftProtoP\x01Z6github.com/bufbuild/hyperpb/internal/gen/rsb/minecraft\xa2\x02\x03HRM\xaa\x02\x15Hyperpb.Rsb.Minecraft\xca\x02\x15Hyperpb\\Rsb\\Minecraft\xe2\x02!Hyperpb\\Rsb\\Minecraft\\GPBMetadata\xea\x02\x17Hyperpb::Rsb::Minecraftb\x06proto3"
+	"\tSPECTATOR\x10\x03B\xd2\x01\n" +
+	"\x19com.hyperpb.rsb.minecraftB\x0eMinecraftProtoP\x01Z/buf.build/go/hyperpb/internal/gen/rsb/minecraft\xa2\x02\x03HRM\xaa\x02\x15Hyperpb.Rsb.Minecraft\xca\x02\x15Hyperpb\\Rsb\\Minecraft\xe2\x02!Hyperpb\\Rsb\\Minecraft\\GPBMetadata\xea\x02\x17Hyperpb::Rsb::Minecraftb\x06proto3"
 
 var (
 	file_rsb_minecraft_minecraft_proto_rawDescOnce sync.Once

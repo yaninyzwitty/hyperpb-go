@@ -24,7 +24,7 @@
 package mk48
 
 import (
-	_ "github.com/bufbuild/hyperpb/internal/gen/rsb"
+	_ "buf.build/go/hyperpb/internal/gen/rsb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -662,8 +662,8 @@ const file_rsb_mk48_mk48_proto_rawDesc = "" +
 	"\aKOLKATA\x10\x06\x12\a\n" +
 	"\x03OSA\x10\a\x12\t\n" +
 	"\x05YASEN\x10\b\x12\b\n" +
-	"\x04ZUBR\x10\tB\xb6\x01\n" +
-	"\x14com.hyperpb.rsb.mk48B\tMk48ProtoP\x01Z1github.com/bufbuild/hyperpb/internal/gen/rsb/mk48\xa2\x02\x03HRM\xaa\x02\x10Hyperpb.Rsb.Mk48\xca\x02\x10Hyperpb\\Rsb\\Mk48\xe2\x02\x1cHyperpb\\Rsb\\Mk48\\GPBMetadata\xea\x02\x12Hyperpb::Rsb::Mk48b\x06proto3"
+	"\x04ZUBR\x10\tB\xaf\x01\n" +
+	"\x14com.hyperpb.rsb.mk48B\tMk48ProtoP\x01Z*buf.build/go/hyperpb/internal/gen/rsb/mk48\xa2\x02\x03HRM\xaa\x02\x10Hyperpb.Rsb.Mk48\xca\x02\x10Hyperpb\\Rsb\\Mk48\xe2\x02\x1cHyperpb\\Rsb\\Mk48\\GPBMetadata\xea\x02\x12Hyperpb::Rsb::Mk48b\x06proto3"
 
 var (
 	file_rsb_mk48_mk48_proto_rawDescOnce sync.Once

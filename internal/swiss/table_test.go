@@ -21,10 +21,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 type value struct {

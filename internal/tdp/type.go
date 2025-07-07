@@ -20,9 +20,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 const SignBits = 0x80_80_80_80_80_80_80_80

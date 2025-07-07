@@ -20,9 +20,9 @@ import (
 	"buf.build/go/protovalidate"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/bufbuild/hyperpb"
-	"github.com/bufbuild/hyperpb/internal/examples"
-	weatherv1 "github.com/bufbuild/hyperpb/internal/gen/example/weather/v1"
+	"buf.build/go/hyperpb"
+	"buf.build/go/hyperpb/internal/examples"
+	weatherv1 "buf.build/go/hyperpb/internal/gen/example/weather/v1"
 )
 
 func Example() {

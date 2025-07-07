@@ -24,7 +24,7 @@
 package log
 
 import (
-	_ "github.com/bufbuild/hyperpb/internal/gen/rsb"
+	_ "buf.build/go/hyperpb/internal/gen/rsb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -262,8 +262,8 @@ const file_rsb_log_log_proto_rawDesc = "" +
 	"\x04code\x18\x06 \x01(\rR\x04code\x12\x12\n" +
 	"\x04size\x18\a \x01(\x04R\x04size\"H\n" +
 	"\x04Logs\x12@\n" +
-	"\x04logs\x18\x01 \x03(\v2\x14.hyperpb.rsb.log.LogB\x16\x8a\xe3\xfb\x02\x11\t\x00\x00\x00\x00\x00\x00\xf0?R\x06\b\x90N\x10\x90NR\x04logsB\xaf\x01\n" +
-	"\x13com.hyperpb.rsb.logB\bLogProtoP\x01Z0github.com/bufbuild/hyperpb/internal/gen/rsb/log\xa2\x02\x03HRL\xaa\x02\x0fHyperpb.Rsb.Log\xca\x02\x0fHyperpb\\Rsb\\Log\xe2\x02\x1bHyperpb\\Rsb\\Log\\GPBMetadata\xea\x02\x11Hyperpb::Rsb::Logb\x06proto3"
+	"\x04logs\x18\x01 \x03(\v2\x14.hyperpb.rsb.log.LogB\x16\x8a\xe3\xfb\x02\x11\t\x00\x00\x00\x00\x00\x00\xf0?R\x06\b\x90N\x10\x90NR\x04logsB\xa8\x01\n" +
+	"\x13com.hyperpb.rsb.logB\bLogProtoP\x01Z)buf.build/go/hyperpb/internal/gen/rsb/log\xa2\x02\x03HRL\xaa\x02\x0fHyperpb.Rsb.Log\xca\x02\x0fHyperpb\\Rsb\\Log\xe2\x02\x1bHyperpb\\Rsb\\Log\\GPBMetadata\xea\x02\x11Hyperpb::Rsb::Logb\x06proto3"
 
 var (
 	file_rsb_log_log_proto_rawDescOnce sync.Once

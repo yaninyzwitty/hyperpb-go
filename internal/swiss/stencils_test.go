@@ -17,10 +17,10 @@
 package swiss_test
 
 import (
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/xunsafe"
 	"fmt"
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"math/rand/v2"
 	"slices"
 	"strings"

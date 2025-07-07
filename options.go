@@ -19,8 +19,8 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoregistry"
 
-	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
-	"github.com/bufbuild/hyperpb/internal/tdp/vm"
+	"buf.build/go/hyperpb/internal/tdp/compiler"
+	"buf.build/go/hyperpb/internal/tdp/vm"
 )
 
 // The below are not interfaces because of https://github.com/golang/go/issues/74356,

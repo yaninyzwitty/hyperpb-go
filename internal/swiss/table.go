@@ -32,9 +32,9 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/stats"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/stats"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 //go:generate go run ../tools/stencil

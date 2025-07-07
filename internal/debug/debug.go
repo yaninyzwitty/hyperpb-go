@@ -26,7 +26,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/bufbuild/hyperpb/internal/xflag"
+	"buf.build/go/hyperpb/internal/xflag"
 	"github.com/timandy/routine"
 )
 

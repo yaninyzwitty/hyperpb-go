@@ -19,7 +19,7 @@ import (
 	"math/bits"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 const (

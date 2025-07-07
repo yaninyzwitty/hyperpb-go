@@ -27,8 +27,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Equal validates that two Protobuf messages have the same observable value.

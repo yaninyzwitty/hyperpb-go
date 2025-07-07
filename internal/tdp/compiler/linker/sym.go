@@ -18,9 +18,9 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 const (

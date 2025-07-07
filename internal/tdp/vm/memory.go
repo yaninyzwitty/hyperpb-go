@@ -15,7 +15,7 @@
 package vm
 
 import (
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // pageBoundary is the alignment of the smallest physical memory page on any

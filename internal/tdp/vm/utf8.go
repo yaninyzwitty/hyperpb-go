@@ -17,11 +17,11 @@ package vm
 import (
 	"math/bits"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
-	"github.com/bufbuild/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/zc"
 )
 
 // verifyUTF8 validates that the next n bytes after p1.Ptr() are valid UTF-8.

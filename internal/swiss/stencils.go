@@ -17,9 +17,9 @@
 package swiss
 
 import (
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 	"bytes"
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
 	"math/rand/v2"
 	"unsafe"
 )

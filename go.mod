@@ -1,4 +1,4 @@
-module github.com/bufbuild/hyperpb
+module buf.build/go/hyperpb
 
 go 1.23.0
 

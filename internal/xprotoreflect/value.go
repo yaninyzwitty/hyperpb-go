@@ -22,8 +22,8 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Int is any integer type that a [protoreflect.Value] will contain inline

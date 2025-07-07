@@ -22,10 +22,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/bufbuild/hyperpb"
-	testpb "github.com/bufbuild/hyperpb/internal/gen/test"
-	"github.com/bufbuild/hyperpb/internal/testdata"
-	"github.com/bufbuild/hyperpb/internal/xsync"
+	"buf.build/go/hyperpb"
+	testpb "buf.build/go/hyperpb/internal/gen/test"
+	"buf.build/go/hyperpb/internal/testdata"
+	"buf.build/go/hyperpb/internal/xsync"
 )
 
 var contexts = xsync.Pool[hyperpb.Shared]{Reset: (*hyperpb.Shared).Free}

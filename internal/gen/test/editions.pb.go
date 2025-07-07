@@ -158,8 +158,8 @@ const file_test_editions_proto_rawDesc = "" +
 	"\aS3Entry\x12\x17\n" +
 	"\x03key\x18\x01 \x01(\tB\x05\xaa\x01\x02 \x03R\x03key\x12\x1b\n" +
 	"\x05value\x18\x02 \x01(\tB\x05\xaa\x01\x02 \x03R\x05value:\x028\x01B\x03\n" +
-	"\x01oB\xa1\x01\n" +
-	"\x10com.hyperpb.testB\rEditionsProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\beditionsp\xe8\a"
+	"\x01oB\x9a\x01\n" +
+	"\x10com.hyperpb.testB\rEditionsProtoP\x01Z&buf.build/go/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\beditionsp\xe8\a"
 
 var (
 	file_test_editions_proto_rawDescOnce sync.Once

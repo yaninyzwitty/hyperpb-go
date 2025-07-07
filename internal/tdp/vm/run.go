@@ -25,12 +25,12 @@ import (
 
 	"google.golang.org/protobuf/encoding/protowire"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/profile"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/zc"
 )
 
 // Options is options for [Run].

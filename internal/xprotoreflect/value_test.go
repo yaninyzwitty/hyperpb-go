@@ -22,9 +22,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/bufbuild/hyperpb"
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
+	"buf.build/go/hyperpb"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
 )
 
 func TestScalar(t *testing.T) {

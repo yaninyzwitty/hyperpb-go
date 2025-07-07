@@ -18,8 +18,8 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Entry is an entry for building a table with [New].

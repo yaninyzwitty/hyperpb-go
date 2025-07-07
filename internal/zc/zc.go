@@ -20,8 +20,8 @@ import (
 	"math"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Range is a representation of a []byte as a slice relative to some larger byte

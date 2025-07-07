@@ -28,14 +28,14 @@ package vm
 import (
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/xsync"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/xsync"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/zc"
 )
 
 const notAGroup = ^tdp.Tag(0)

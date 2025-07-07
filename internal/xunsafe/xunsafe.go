@@ -20,7 +20,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // NoCopy is a type that go vet will complain about having been moved.

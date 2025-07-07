@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // intptr is an integer type with the same layout as a uintptr but signed.

@@ -17,7 +17,7 @@ package xunsafe
 import (
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // VLA is a mechanism for accessing a variable-length array that follows

@@ -24,12 +24,12 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/tdp/vm"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 
 	errInvalid = errors.New("hyperpb: invalid message")
 
-	//go:linkname hyperpbMessage github.com/bufbuild/hyperpb/internal/tdp/profile.hyperpbMessage
+	//go:linkname hyperpbMessage buf.build/go/hyperpb/internal/tdp/profile.hyperpbMessage
 	hyperpbMessage = xunsafe.AnyType((*Message)(nil))
 )
 
@@ -363,7 +363,7 @@ func wrapMessage(m *dynamic.Message) *Message {
 	return xunsafe.Cast[Message](m)
 }
 
-//go:linkname wrapMessage2 github.com/bufbuild/hyperpb/internal/tdp/thunks.wrapMessage
+//go:linkname wrapMessage2 buf.build/go/hyperpb/internal/tdp/thunks.wrapMessage
 func wrapMessage2(m *dynamic.Message) protoreflect.Message {
 	return wrapMessage(m)
 }

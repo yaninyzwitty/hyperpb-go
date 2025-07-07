@@ -21,7 +21,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/hyperpb/internal/xsync"
+	"buf.build/go/hyperpb/internal/xsync"
 )
 
 var isDirectMap xsync.Map[reflect.Type, bool]

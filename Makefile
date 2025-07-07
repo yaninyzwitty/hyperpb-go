@@ -56,7 +56,7 @@ TEST := $(EXEC_ENV) $(BIN)/xtest -o $(TESTS)
 TAGS ?= ""
 REMOTE ?= ""
 
-ASM_FILTER ?= ^github.com/bufbuild/hyperpb
+ASM_FILTER ?= ^buf.build/go/hyperpb
 ASM_INFO ?= fileline
 
 BENCHMARK ?= .
@@ -109,7 +109,7 @@ asm: build ## Generate assembly output for manual inspection
 	$(GO_HOST) run ./internal/tools/objdump \
 		-s '$(ASM_FILTER)' \
 		-info $(ASM_INFO) \
-		-prefix 'github.com/bufbuild/hyperpb' \
+		-prefix 'buf.build/go/hyperpb' \
 		-nops \
 		-o hyperpb.s \
 		hyperpb.test

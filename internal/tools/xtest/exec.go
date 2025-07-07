@@ -33,7 +33,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 
-	"github.com/bufbuild/hyperpb/internal/xerrors"
+	"buf.build/go/hyperpb/internal/xerrors"
 )
 
 var errFailed = errors.New("tests failed")

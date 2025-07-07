@@ -17,7 +17,7 @@ package vm
 import (
 	"runtime"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/debug"
 )
 
 // parseVarint is the core varint parsing implementation.

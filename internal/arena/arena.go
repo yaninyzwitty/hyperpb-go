@@ -51,9 +51,9 @@ package arena
 import (
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
-	"github.com/bufbuild/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/xunsafe/layout"
 )
 
 // Arena is an Arena for holding values of any type which does not contain

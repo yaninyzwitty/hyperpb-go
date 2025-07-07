@@ -3738,8 +3738,8 @@ const file_test_test_proto_rawDesc = "" +
 	"\n" +
 	"\x06ENUM_2\x10\x02\x12\n" +
 	"\n" +
-	"\x06ENUM_3\x10\x03B\x9d\x01\n" +
-	"\x10com.hyperpb.testB\tTestProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\x06proto3"
+	"\x06ENUM_3\x10\x03B\x96\x01\n" +
+	"\x10com.hyperpb.testB\tTestProtoP\x01Z&buf.build/go/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Testb\x06proto3"
 
 var (
 	file_test_test_proto_rawDescOnce sync.Once

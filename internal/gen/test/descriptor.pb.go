@@ -4192,8 +4192,8 @@ const file_test_descriptor_proto_rawDesc = "" +
 	"\x17EDITION_99997_TEST_ONLY\x10\x9d\x8d\x06\x12\x1d\n" +
 	"\x17EDITION_99998_TEST_ONLY\x10\x9e\x8d\x06\x12\x1d\n" +
 	"\x17EDITION_99999_TEST_ONLY\x10\x9f\x8d\x06\x12\x13\n" +
-	"\vEDITION_MAX\x10\xff\xff\xff\xff\aB\xa3\x01\n" +
-	"\x10com.hyperpb.testB\x0fDescriptorProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
+	"\vEDITION_MAX\x10\xff\xff\xff\xff\aB\x9c\x01\n" +
+	"\x10com.hyperpb.testB\x0fDescriptorProtoP\x01Z&buf.build/go/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
 
 var (
 	file_test_descriptor_proto_rawDescOnce sync.Once

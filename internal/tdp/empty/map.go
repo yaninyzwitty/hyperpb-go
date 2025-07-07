@@ -17,7 +17,7 @@ package empty
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/debug"
 )
 
 // Map is an empty, untyped, immutable [protoreflect.Map].

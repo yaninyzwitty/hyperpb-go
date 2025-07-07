@@ -24,7 +24,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/bufbuild/hyperpb/internal/xerrors"
+	"buf.build/go/hyperpb/internal/xerrors"
 )
 
 var (

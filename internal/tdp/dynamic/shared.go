@@ -17,9 +17,9 @@ package dynamic
 import (
 	"sync"
 
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Shared is state that is shared by all messages in a particular tree of

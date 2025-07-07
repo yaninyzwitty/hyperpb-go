@@ -26,15 +26,15 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	"github.com/bufbuild/hyperpb/internal/arena"
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/scc"
-	"github.com/bufbuild/hyperpb/internal/swiss"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/compiler/linker"
-	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/tdp/vm"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/arena"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/scc"
+	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/compiler/linker"
+	"buf.build/go/hyperpb/internal/tdp/profile"
+	"buf.build/go/hyperpb/internal/tdp/vm"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // CompileOption is a configuration setting for [Compile].

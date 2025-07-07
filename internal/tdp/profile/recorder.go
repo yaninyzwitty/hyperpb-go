@@ -23,12 +23,12 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/stats"
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/xprotoreflect"
-	"github.com/bufbuild/hyperpb/internal/xsync"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/stats"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
+	"buf.build/go/hyperpb/internal/xsync"
 )
 
 // hyperpbMessage is the itab for *hyperpb.Message.

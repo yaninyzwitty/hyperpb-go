@@ -22,8 +22,8 @@ import (
 	"slices"
 	"unsafe"
 
-	"github.com/bufbuild/hyperpb/internal/debug"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/debug"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Graph is a "local" representation of a directed graph, which exposes the

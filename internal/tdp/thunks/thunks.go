@@ -20,9 +20,9 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/tdp/compiler"
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/tdp/profile"
+	"buf.build/go/hyperpb/internal/tdp/compiler"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/profile"
 )
 
 //go:generate go run ../../tools/stencil

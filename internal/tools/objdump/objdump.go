@@ -58,7 +58,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bufbuild/hyperpb/internal/xerrors"
+	"buf.build/go/hyperpb/internal/xerrors"
 )
 
 var (

@@ -158,7 +158,7 @@ package hyperpb
 import (
 	"google.golang.org/protobuf/types/dynamicpb" // For doc links.
 
-	_ "github.com/bufbuild/hyperpb/internal/xunsafe/support"
+	_ "buf.build/go/hyperpb/internal/xunsafe/support"
 )
 
 var _ = dynamicpb.Message{} // Force the dynamicpb import to be kept.

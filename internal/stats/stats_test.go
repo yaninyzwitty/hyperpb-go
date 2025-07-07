@@ -19,7 +19,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bufbuild/hyperpb/internal/stats"
+	"buf.build/go/hyperpb/internal/stats"
 )
 
 func TestMean(t *testing.T) {

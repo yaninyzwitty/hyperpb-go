@@ -16,11 +16,11 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/gen/rsb"
-	logpb "github.com/bufbuild/hyperpb/internal/gen/rsb/log"
-	meshpb "github.com/bufbuild/hyperpb/internal/gen/rsb/mesh"
-	minecraftpb "github.com/bufbuild/hyperpb/internal/gen/rsb/minecraft"
-	mk48pb "github.com/bufbuild/hyperpb/internal/gen/rsb/mk48"
+	"buf.build/go/hyperpb/internal/gen/rsb"
+	logpb "buf.build/go/hyperpb/internal/gen/rsb/log"
+	meshpb "buf.build/go/hyperpb/internal/gen/rsb/mesh"
+	minecraftpb "buf.build/go/hyperpb/internal/gen/rsb/minecraft"
+	mk48pb "buf.build/go/hyperpb/internal/gen/rsb/mk48"
 )
 
 func run() error {

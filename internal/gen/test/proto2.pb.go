@@ -666,8 +666,8 @@ const file_test_proto2_proto_rawDesc = "" +
 	"\x03b13\x12\x18.hyperpb.test.Extensions\x18! \x01(\bR\x03b13:*\n" +
 	"\x03b14\x12\x18.hyperpb.test.Extensions\x18\" \x01(\tR\x03b14:*\n" +
 	"\x03b15\x12\x18.hyperpb.test.Extensions\x18# \x01(\fR\x03b15:@\n" +
-	"\x01z\x12\x18.hyperpb.test.Extensions\x182 \x03(\v2\x18.hyperpb.test.ExtensionsR\x01zB\x9f\x01\n" +
-	"\x10com.hyperpb.testB\vProto2ProtoP\x01Z-github.com/bufbuild/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
+	"\x01z\x12\x18.hyperpb.test.Extensions\x182 \x03(\v2\x18.hyperpb.test.ExtensionsR\x01zB\x98\x01\n" +
+	"\x10com.hyperpb.testB\vProto2ProtoP\x01Z&buf.build/go/hyperpb/internal/gen/test\xa2\x02\x03HTX\xaa\x02\fHyperpb.Test\xca\x02\fHyperpb\\Test\xe2\x02\x18Hyperpb\\Test\\GPBMetadata\xea\x02\rHyperpb::Test"
 
 var (
 	file_test_proto2_proto_rawDescOnce sync.Once

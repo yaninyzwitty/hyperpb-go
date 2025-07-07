@@ -15,8 +15,8 @@
 package hyperpb
 
 import (
-	"github.com/bufbuild/hyperpb/internal/tdp/dynamic"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // Shared is state that is shared by all messages in a particular tree of

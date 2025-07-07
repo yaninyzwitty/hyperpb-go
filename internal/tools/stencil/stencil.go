@@ -48,7 +48,7 @@ import (
 	"github.com/tiendc/go-deepcopy"
 	"golang.org/x/tools/go/packages"
 
-	"github.com/bufbuild/hyperpb/internal/xsync"
+	"buf.build/go/hyperpb/internal/xsync"
 )
 
 var (

@@ -21,10 +21,10 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/bufbuild/hyperpb/internal/tdp"
-	"github.com/bufbuild/hyperpb/internal/tdp/empty"
-	"github.com/bufbuild/hyperpb/internal/tdp/profile"
-	"github.com/bufbuild/hyperpb/internal/xunsafe"
+	"buf.build/go/hyperpb/internal/tdp"
+	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/tdp/profile"
+	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
 // MessageType implements [protoreflect.MessageType].
@@ -102,7 +102,7 @@ func (t *MessageType) Recompile(profile *Profile) *MessageType {
 
 // wrapType wraps an internal Type pointer.
 //
-//go:linkname wrapType github.com/bufbuild/hyperpb/internal/tdp/empty.wrapType
+//go:linkname wrapType buf.build/go/hyperpb/internal/tdp/empty.wrapType
 func wrapType(s *tdp.Type) *MessageType {
 	return xunsafe.Cast[MessageType](s)
 }
