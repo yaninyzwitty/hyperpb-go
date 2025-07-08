@@ -50,7 +50,7 @@ The other important internal packages are:
   <https://mcyoung.xyz/2025/04/21/go-arenas/> for an introduction.
 * `debug` - Debugging utilities. Enable with `-tags debug`.
 * `swiss` - Full-fledged Swisstable implementation.
-* `tools/stencil` - Code generator for manually specializing generic functions.
+* `tools/hyperstencil` - Code generator for manually specializing generic functions.
 * `xunsafe` - Unsafe helpers.
 
 # Implementation Details

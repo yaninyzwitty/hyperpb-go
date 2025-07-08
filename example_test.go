@@ -19,6 +19,7 @@ import (
 
 	"buf.build/go/protovalidate"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 
 	"buf.build/go/hyperpb"
 	"buf.build/go/hyperpb/internal/examples"
@@ -28,7 +29,7 @@ import (
 func Example() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := hyperpb.Compile[*weatherv1.WeatherReport]()
+	ty := hyperpb.CompileMessageDescriptor((*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor())
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
@@ -73,7 +74,7 @@ func Example() {
 func Example_protovalidate() {
 	// Compile a type for your message. This operation is quite slow, so it
 	// should be cached, like regexp.Compile.
-	ty := hyperpb.Compile[*weatherv1.WeatherReport]()
+	ty := hyperpb.CompileMessageDescriptor((*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor())
 
 	data := examples.ReadWeatherData() // Read some raw Protobuf-encoded data.
 
@@ -95,8 +96,12 @@ func Example_protovalidate() {
 func Example_unmarshalFromDescriptor() {
 	// Download a descriptor off of the network, unmarshal it, and compile a
 	// type from it.
-	ty, err := hyperpb.CompileForBytes(
-		examples.DownloadWeatherReportSchema(),
+	fds := new(descriptorpb.FileDescriptorSet)
+	if err := proto.Unmarshal(examples.DownloadWeatherReportSchema(), fds); err != nil {
+		panic(err)
+	}
+
+	ty, err := hyperpb.CompileFileDescriptorSet(fds,
 		"example.weather.v1.WeatherReport", // The type we want to compile.
 	)
 	if err != nil {

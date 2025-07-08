@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// objdump cleans up the output of go tool objdump into something readable.
+// hyperdump cleans up the output of go tool objdump into something readable.
 package main
 
 // Based on the Go integration in compiler-explorer (aka godbolt.com). Translated

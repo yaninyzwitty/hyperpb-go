@@ -29,7 +29,8 @@ our binary, and parse some data with it.
 
 ```go
 // Compile a type for your message. Make sure to cache this!
-ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
+// Here, we're using a compiled-in descriptor.
+ty := hyperpb.CompileFor((*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor())
 
 data := /* ... */
 
@@ -84,7 +85,7 @@ We can use the `hyperpb.CompileForBytes` function to parse a dynamic type and
 use it to walk the fields of a message:
 
 ```go
-ty := hyperpb.CompileForBytes(encodedSchema, messageName) // Remember to cache this!
+ty := hyperpb.CompileFileDescriptorSet(schema, messageName) // Remember to cache this!
 
 msg := hyperpb.NewMessage(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
@@ -104,7 +105,7 @@ runtime-loaded messages.
 
 ```go
 // Unmarshal like before.
-ty := hyperpb.CompileForBytes(encodedSchema, messageName)
+ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
 msg := hyperpb.NewMessage(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // ...
@@ -118,7 +119,7 @@ bytes, err := protojson.Marshal(msg)
 
 ```go
 // Unmarshal like before.
-ty := hyperpb.CompileForBytes(encodedSchema, messageName)
+ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
 msg := hyperpb.New(ty)
 if err := proto.Unmarshal(data, msg); err != nil {
     // Handle parse failure.
@@ -135,7 +136,7 @@ optimization knobs available. Calling `Message.Unmarshal` directly instead
 of `proto.Unmarshal` allows setting custom `UnmarshalOption`s:
 
 ```go
-ty := hyperpb.CompileForBytes(encodedSchema, messageName)
+ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
 msg := hyperpb.NewMessage(ty)
 
 // Unmarshal with custom performance knobs.
@@ -149,7 +150,7 @@ The compiler also takes `CompileOptions`, such as for configuring how extensions
 are resolved:
 
 ```go
-ty := hyperpb.CompileForBytes(encodedSchema, messageName,
+ty := hyperpb.CompileFileDescriptorSet(schema, messageName,
     hyperpb.WithExtensionsFromTypes(typeRegistry),
 )
 ```

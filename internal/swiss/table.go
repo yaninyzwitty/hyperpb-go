@@ -37,7 +37,7 @@ import (
 	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
-//go:generate go run ../tools/stencil
+//go:generate go run ../tools/hyperstencil
 
 const (
 	minEntires = ctrlSize * 7 / 8

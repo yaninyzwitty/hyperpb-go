@@ -26,7 +26,7 @@
 // # Usage
 //
 // The core conceit of hyperpb is that you must pre-compile a parser using
-// hyperpb.[CompileForDescriptor] at runtime, much like regular expressions require that you use
+// hyperpb.[CompileMessageDescriptor] at runtime, much like regular expressions require that you use
 // [regexp.Compile] them. Doing this allows hyperpb to run optimization passes on
 // your message, and delaying it to runtime allows us to continuously improve
 // layout optimizations, without making any source-breaking changes.

@@ -28,7 +28,7 @@ import (
 // the critical path. CompileOption is the same for symmetry, because having it
 // be an interface while UnmarshalOption isn't would be weird.
 
-// CompileOption is a configuration setting for [CompileForDescriptor].
+// CompileOption is a configuration setting for [CompileMessageDescriptor].
 type CompileOption struct{ apply func(*compiler.Options) }
 
 // WithExtensions provides an extension resolver for a compiler.

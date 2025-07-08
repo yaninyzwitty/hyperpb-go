@@ -221,7 +221,7 @@ func parseTestCase(t testing.TB, path string, file []byte) *TestCase {
 		protoreflect.FullName(test.TypeName))
 	require.NoError(t, err, "loading type %q", test.TypeName)
 
-	test.Type.Fast = hyperpb.CompileForDescriptor(
+	test.Type.Fast = hyperpb.CompileMessageDescriptor(
 		test.Type.Gencode.Descriptor(),
 		hyperpb.WithExtensionsFromTypes(protoregistry.GlobalTypes),
 

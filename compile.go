@@ -15,7 +15,6 @@
 package hyperpb
 
 import (
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -27,27 +26,9 @@ import (
 	"buf.build/go/hyperpb/internal/tdp/thunks"
 )
 
-// Compile compiles a dynamic [MessageType] for a generated message type.
-//
-// This is useful for getting a [MessageType] for a message type compiled into the
-// binary. This will not work if T is some kind of dynamic type, like a
-// *dynamicpb.Message, or a *hyperpb.Message.
-func Compile[T proto.Message](options ...CompileOption) *MessageType {
-	// Allow the caller to override the extension registry by placing our
-	// default registry first.
-	options = append([]CompileOption{WithExtensionsFromTypes(protoregistry.GlobalTypes)}, options...)
-
-	var m T
-	return CompileForDescriptor(m.ProtoReflect().Descriptor(), options...)
-}
-
-// CompileForBytes unmarshals a google.protobuf.FileDescriptorSet from schema,
+// CompileFileDescriptorSet unmarshals a google.protobuf.FileDescriptorSet from schema,
 // looks up a message with the given name, and compiles a type for it.
-func CompileForBytes(schema []byte, messageName protoreflect.FullName, options ...CompileOption) (*MessageType, error) {
-	fds := new(descriptorpb.FileDescriptorSet)
-	if err := proto.Unmarshal(schema, fds); err != nil {
-		return nil, err
-	}
+func CompileFileDescriptorSet(fds *descriptorpb.FileDescriptorSet, messageName protoreflect.FullName, options ...CompileOption) (*MessageType, error) {
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
 		return nil, err
@@ -64,13 +45,13 @@ func CompileForBytes(schema []byte, messageName protoreflect.FullName, options .
 	// Allow the caller to override the extension registry by placing our
 	// default registry first.
 	options = append([]CompileOption{WithExtensionsFromFiles(files)}, options...)
-	return CompileForDescriptor(msgDesc, options...), nil
+	return CompileMessageDescriptor(msgDesc, options...), nil
 }
 
-// CompileForDescriptor compiles a descriptor into a [MessageType], for optimized parsing.
+// CompileMessageDescriptor compiles a descriptor into a [MessageType], for optimized parsing.
 //
 // Panics if md is too complicated (i.e. it exceeds internal limitations for the compiler).
-func CompileForDescriptor(md protoreflect.MessageDescriptor, options ...CompileOption) *MessageType {
+func CompileMessageDescriptor(md protoreflect.MessageDescriptor, options ...CompileOption) *MessageType {
 	opts := compiler.Options{
 		Backend: (*backend)(nil),
 	}

@@ -97,7 +97,7 @@ func (t *MessageType) Recompile(profile *Profile) *MessageType {
 	options := slices.Clone(t.impl.Library.Metadata.([]CompileOption)) //nolint:errcheck
 	options = append(options, WithProfile(profile))
 
-	return CompileForDescriptor(t.Descriptor(), options...)
+	return CompileMessageDescriptor(t.Descriptor(), options...)
 }
 
 // wrapType wraps an internal Type pointer.

@@ -51,7 +51,7 @@ unexport GOARCH
 GO ?= go
 GO_HOST := $(HOST_TARGET) $(GO)
 GO := $(EXEC_ENV) $(GO)
-TEST := $(EXEC_ENV) $(BIN)/xtest -o $(TESTS)
+TEST := $(EXEC_ENV) $(BIN)/hypertest -o $(TESTS)
 
 TAGS ?= ""
 REMOTE ?= ""
@@ -86,18 +86,18 @@ clean: ## Delete intermediate build artifacts
 	git clean -Xdf
 
 .PHONY: test
-test: build $(BIN)/xtest ## Run unit tests
+test: build $(BIN)/hypertest ## Run unit tests
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -checkptr -p $(PKGS) -- \
 		$(TESTFLAGS)
 
 .PHONY: bench
-bench: build $(BIN)/xtest ## Run benchmarks
+bench: build $(BIN)/hypertest ## Run benchmarks
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKGS) \
 		-csv hyperpb.csv -table - -- \
 		-test.bench '$(BENCHMARK)' $(BENCHFLAGS)
 
 .PHONY: profile
-profile: build $(BIN)/xtest ## Profile benchmarks and open them in pprof
+profile: build $(BIN)/hypertest ## Profile benchmarks and open them in pprof
 	$(TEST) -remote=$(REMOTE) -tags=$(TAGS) -p $(PKG) -profile -- \
 		-test.run '^B' -test.bench '$(BENCHMARK)' \
 		-test.benchtime 5s $(BENCHFLAGS)
@@ -106,7 +106,7 @@ profile: build $(BIN)/xtest ## Profile benchmarks and open them in pprof
 .PHONY: asm
 asm: build ## Generate assembly output for manual inspection
 	$(GO) test -tags=$(TAGS) -c -o hyperpb.test $(PKG) $(TESTFLAGS)
-	$(GO_HOST) run ./internal/tools/objdump \
+	$(GO_HOST) run ./internal/tools/hyperdump \
 		-s '$(ASM_FILTER)' \
 		-info $(ASM_INFO) \
 		-prefix 'buf.build/go/hyperpb' \
@@ -157,10 +157,10 @@ internal/gen/*/*.pb.go: $(BIN)/buf internal/proto/*/*.proto internal/proto/*/*/*
 	$(BIN)/buf generate --template buf.gen.vt.yaml \
 		--exclude-path internal/proto/test/proto2.proto,internal/proto/test/editions.proto # Work around a bug.
 
-.PHONY: $(BIN)/xtest
-$(BIN)/xtest: generate
+.PHONY: $(BIN)/hypertest
+$(BIN)/hypertest: generate
 	@mkdir -p $(@D)
-	$(GO_HOST) build -o $(BIN)/xtest ./internal/tools/xtest
+	$(GO_HOST) build -o $(BIN)/hypertest ./internal/tools/hypertest
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)

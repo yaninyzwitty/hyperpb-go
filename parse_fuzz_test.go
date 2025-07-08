@@ -44,7 +44,7 @@ func fuzz[M proto.Message](f *testing.F) {
 	var z M
 	test := new(testdata.TestCase)
 	test.Type.Gencode = z.ProtoReflect().Type()
-	test.Type.Fast = hyperpb.CompileForDescriptor(test.Type.Gencode.Descriptor())
+	test.Type.Fast = hyperpb.CompileMessageDescriptor(test.Type.Gencode.Descriptor())
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		ctx := contexts.Get()

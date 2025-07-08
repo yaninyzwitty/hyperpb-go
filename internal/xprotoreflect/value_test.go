@@ -40,7 +40,7 @@ func TestScalar(t *testing.T) {
 func TestMessage(t *testing.T) {
 	t.Parallel()
 
-	ty := hyperpb.Compile[*emptypb.Empty]()
+	ty := hyperpb.CompileMessageDescriptor((*emptypb.Empty)(nil).ProtoReflect().Descriptor())
 	m := ty.New()
 
 	v := protoreflect.ValueOf(m)

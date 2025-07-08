@@ -25,7 +25,7 @@ import (
 	"buf.build/go/hyperpb/internal/tdp/profile"
 )
 
-//go:generate go run ../../tools/stencil
+//go:generate go run ../../tools/hyperstencil
 
 // Custom field kinds used by archetype selection; they're all negative.
 const (

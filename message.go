@@ -167,6 +167,9 @@ func (m *Message) Reset() { m.Clear(nil) }
 //
 // Returns an error if any fields are not set.
 func (m *Message) Initialized() error {
+	// NOTE: This method does not implement an interface, but it does need to
+	// match a protoiface method interface. See requiredShim below.
+
 	if !m.IsValid() {
 		return errInvalid
 	}
