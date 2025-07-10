@@ -21,7 +21,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"buf.build/go/hyperpb/internal/tdp/compiler"
-	"buf.build/go/hyperpb/internal/tdp/dynamic"
 	"buf.build/go/hyperpb/internal/tdp/profile"
 )
 
@@ -31,13 +30,6 @@ import (
 const (
 	proto2StringKind protoreflect.Kind = ^iota
 )
-
-// wrapMessage is a callback to construct the root package's message type.
-//
-// It is connected to the root package via linkname.
-//
-//go:linkname wrapMessage
-func wrapMessage(*dynamic.Message) protoreflect.Message
 
 // SelectArchetype selects an archetype from among those in this package.
 func SelectArchetype(fd protoreflect.FieldDescriptor, prof profile.Field) *compiler.Archetype {

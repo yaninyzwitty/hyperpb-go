@@ -101,8 +101,11 @@ func (t *MessageType) Recompile(profile *Profile) *MessageType {
 }
 
 // wrapType wraps an internal Type pointer.
-//
-//go:linkname wrapType buf.build/go/hyperpb/internal/tdp/empty.wrapType
 func wrapType(s *tdp.Type) *MessageType {
 	return xunsafe.Cast[MessageType](s)
+}
+
+//go:linkname protoReflectType buf.build/go/hyperpb/internal/tdp.hyperpb_ProtoReflect
+func protoReflectType(m *tdp.Type) protoreflect.MessageType {
+	return wrapType(m)
 }

@@ -164,12 +164,12 @@ func (m mapIxM[K]) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOfMessage(wrapMessage(*v))
+	return protoreflect.ValueOfMessage((*v).ProtoReflect())
 }
 
 func (m mapIxM[K]) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
-		if !yield(protoreflect.MapKey(xprotoreflect.ValueOfScalar(k)), protoreflect.ValueOfMessage(wrapMessage(v))) {
+		if !yield(protoreflect.MapKey(xprotoreflect.ValueOfScalar(k)), protoreflect.ValueOfMessage(v.ProtoReflect())) {
 			return
 		}
 	}

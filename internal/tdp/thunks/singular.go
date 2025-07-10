@@ -29,6 +29,7 @@ import (
 	"buf.build/go/hyperpb/internal/xunsafe"
 	"buf.build/go/hyperpb/internal/xunsafe/layout"
 	"buf.build/go/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/zigzag"
 )
 
 // Singular fields are implemented as a single field of the appropriate type.
@@ -252,7 +253,7 @@ func getMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) protoref
 	if sub == nil {
 		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
-	return protoreflect.ValueOfMessage(wrapMessage(sub))
+	return protoreflect.ValueOfMessage(sub.ProtoReflect())
 }
 
 //go:nosplit
@@ -273,7 +274,7 @@ func parseVarint[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //hyperpb:stencil parseZigZag64 parseZigZag[uint64] StoreFromScratch -> StoreFromScratch64
 func parseZigZag[T tdp.Int](p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[T](p2.Scratch())))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag.Decode64[T](p2.Scratch())))
 
 	var p *T
 	p1, p2, p = vm.GetMutableField[T](p1, p2)

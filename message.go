@@ -104,6 +104,11 @@ func (m *Message) Descriptor() protoreflect.MessageDescriptor {
 //
 // Type implements [protoreflect.Message]; Always returns *[MessageType].
 func (m *Message) Type() protoreflect.MessageType {
+	return m.HyperType()
+}
+
+// HyperType returns the [MessageType] for this value.
+func (m *Message) HyperType() *MessageType {
 	return wrapType(m.impl.Type())
 }
 
@@ -344,7 +349,10 @@ func (m *Message) ProtoMethods() *protoiface.Methods {
 
 // unmarshalShim implements [protoiface.Methods].Unmarshal.
 func unmarshalShim(in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, err error) {
-	m := in.Message.(*Message) //nolint:errcheck // Only called on *Message values.
+	// Gencode can pass non-Message types here, but they're all *dynamic.Messages internally.
+	raw := xunsafe.AnyData(in.Message)
+	m := xunsafe.Cast[Message](raw)
+
 	err = m.Unmarshal(
 		in.Buf,
 		WithDiscardUnknown(in.Flags&protoiface.UnmarshalDiscardUnknown != 0),
@@ -366,7 +374,7 @@ func wrapMessage(m *dynamic.Message) *Message {
 	return xunsafe.Cast[Message](m)
 }
 
-//go:linkname wrapMessage2 buf.build/go/hyperpb/internal/tdp/thunks.wrapMessage
-func wrapMessage2(m *dynamic.Message) protoreflect.Message {
+//go:linkname protoReflect buf.build/go/hyperpb/internal/tdp/dynamic.hyperpb_ProtoReflect
+func protoReflect(m *dynamic.Message) protoreflect.Message {
 	return wrapMessage(m)
 }

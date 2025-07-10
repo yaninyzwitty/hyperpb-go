@@ -218,7 +218,7 @@ func getOneofMessage(m *dynamic.Message, ty *tdp.Type, getter *tdp.Accessor) pro
 		return protoreflect.ValueOfMessage(empty.NewMessage(ty))
 	}
 	ptr := *dynamic.GetField[*dynamic.Message](m, getter.Offset)
-	return protoreflect.ValueOfMessage(wrapMessage(ptr))
+	return protoreflect.ValueOfMessage(ptr.ProtoReflect())
 }
 
 //go:nosplit

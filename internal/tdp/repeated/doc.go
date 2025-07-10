@@ -12,27 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package thunks
-
-import (
-	"unsafe"
-
-	"google.golang.org/protobuf/encoding/protowire"
-
-	"buf.build/go/hyperpb/internal/tdp"
-)
-
-// zigzag decodes a zigzag-encoded value of any type.
-//
-// Calling DecodeZigZag does not work correctly when sign extension is involved.
-func zigzag[T tdp.Int](raw T) T {
-	n := uint64(raw)
-	n &= (1 << (unsafe.Sizeof(raw) * 8)) - 1
-
-	return T(protowire.DecodeZigZag(n))
-}
-
-// zigzag64 is a helper for calling zigzag with a raw 64-bit input.
-func zigzag64[T tdp.Int](raw uint64) T {
-	return zigzag(T(raw))
-}
+// Package repeated contains shared layouts for repeated field implementations,
+// for sharing between the tdp packages and the gencode packages.
+package repeated

@@ -16,6 +16,8 @@ package tdp
 
 import (
 	"fmt"
+	"iter"
+	_ "unsafe"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/runtime/protoiface"
@@ -79,6 +81,19 @@ func (t *Type) ByDescriptor(fd protoreflect.FieldDescriptor) *Field {
 	}
 }
 
+// Submessages returns an iterator over the types of submessage fields in this
+// type.
+func (t *Type) Submessages() iter.Seq[*Type] {
+	return func(yield func(*Type) bool) {
+		for i := range t.Count {
+			m := t.ByIndex(int(i)).Message
+			if m != nil && !yield(m) {
+				return
+			}
+		}
+	}
+}
+
 // Format implements [fmt.Formatter].
 func (t *Type) Format(s fmt.State, verb rune) {
 	debug.Dict(
@@ -90,6 +105,18 @@ func (t *Type) Format(s fmt.State, verb rune) {
 		"parser", debug.Fprintf("%p", t.Parser),
 	).Format(s, verb)
 }
+
+// ProtoReflect wraps this type for reflection.
+func (t *Type) ProtoReflect() protoreflect.MessageType {
+	return hyperpb_ProtoReflect(t)
+}
+
+// wrapType is a callback to construct the root package's message type.
+//
+// It is connected to the root package via linkname.
+//
+//go:linkname hyperpb_ProtoReflect
+func hyperpb_ProtoReflect(*Type) protoreflect.MessageType
 
 // Aux is data on a typeHeader that is stored behind a pointer and kept
 // alive in the traces struct in [compiler.compile]. These rarely-accessed

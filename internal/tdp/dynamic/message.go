@@ -158,6 +158,12 @@ func (m *Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	return fd.Default()
 }
 
+// GetByIndex is like [Message.Get], but it takes a raw field index, performing
+// no bounds checks.
+func (m *Message) GetByIndexUnchecked(n int) protoreflect.Value {
+	return m.Type().ByIndex(n).Get(unsafe.Pointer(m))
+}
+
 // GetField returns the field data for a given message.
 //
 // Returns nil if the field is cold and there is no cold region allocated.
@@ -218,6 +224,16 @@ func (m *Message) MutableCold() *Cold {
 	}
 	return xunsafe.LoadSlice(m.Shared.Cold, m.ColdIndex)
 }
+
+// ProtoReflect is a callback to construct the root package's message type.
+//
+// It is connected to the root package via linkname.
+func (m *Message) ProtoReflect() protoreflect.Message {
+	return hyperpb_ProtoReflect(m)
+}
+
+//go:linkname hyperpb_ProtoReflect
+func hyperpb_ProtoReflect(*Message) protoreflect.Message
 
 // Dump dumps the internal state of a message.
 func (m *Message) Dump() string {

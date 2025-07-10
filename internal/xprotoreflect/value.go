@@ -73,6 +73,16 @@ func GetInt[T Int](v protoreflect.Value) T {
 	return T(r.num)
 }
 
+// GetRawInt pulls the raw integer value out of v.
+func GetRawInt(v protoreflect.Value) uint64 {
+	return unwrapValue(v).num
+}
+
+// GetRawPointer pulls the raw pointer value out of v.
+func GetRawPointer(v protoreflect.Value) unsafe.Pointer {
+	return unsafe.Pointer(unwrapValue(v).data)
+}
+
 // GetMessage extracts an message value out of a [protoreflect.Value].
 // This is faster than just calling v.Interface(), since that has a massive
 // type switch that performs slow sidecasts, rather than a direct downcast.

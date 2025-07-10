@@ -21,59 +21,14 @@ import (
 	"buf.build/go/hyperpb/internal/debug"
 	"buf.build/go/hyperpb/internal/tdp"
 	"buf.build/go/hyperpb/internal/tdp/dynamic"
-	"buf.build/go/hyperpb/internal/tdp/empty"
+	"buf.build/go/hyperpb/internal/tdp/repeated"
 	"buf.build/go/hyperpb/internal/tdp/vm"
 	"buf.build/go/hyperpb/internal/xunsafe"
 )
 
-// Repeated messages use two different layouts, and a hasbit is used to
-// differentiate them. The messages can either be packed into an arena slice,
-// or the arena slice can contain *message pointers. These are called inlined
-// and outlined modes; the hasbit is set in the latter case. We switch to the
-// outlined mode to avoid needing to copy parsed messages on slice resize.
-
 func getRepeatedMessage(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
-	p := dynamic.GetField[repeatedMessage](m, getter.Offset)
-	return protoreflect.ValueOfList(p)
-}
-
-// repeatedMessage is a [protoreflect.List] implementation for message types.
-type repeatedMessage struct {
-	empty.List
-
-	// Slice[byte] if stride is non-nil, Slice[*message] otherwise.
-	raw slice.Untyped
-
-	// The array stride for when raw is an inlined message list.
-	stride uint32
-}
-
-// IsValid implements [protoreflect.List].
-func (r *repeatedMessage) IsValid() bool { return r != nil }
-
-// Len implements [protoreflect.List].
-func (r *repeatedMessage) Len() int {
-	if r == nil {
-		return 0
-	}
-
-	if r.stride != 0 {
-		return int(r.raw.Len) / int(r.stride)
-	}
-
-	return int(r.raw.Len)
-}
-
-// Get implements [protoreflect.List].
-func (r *repeatedMessage) Get(n int) protoreflect.Value {
-	if r.stride != 0 {
-		xunsafe.BoundsCheck(n, int(r.raw.Len)/int(r.stride))
-		m := xunsafe.ByteAdd[dynamic.Message](r.raw.Ptr.AssertValid(), n*int(r.stride))
-		return protoreflect.ValueOfMessage(wrapMessage(m))
-	}
-
-	raw := slice.CastUntyped[*dynamic.Message](r.raw).Raw()
-	return protoreflect.ValueOfMessage(wrapMessage(raw[n]))
+	p := dynamic.GetField[repeated.Messages[dynamic.Message]](m, getter.Offset)
+	return protoreflect.ValueOfList(p.ProtoReflect())
 }
 
 //go:nosplit
@@ -105,22 +60,22 @@ func allocRepeatedMessageSplit(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Messa
 
 //go:nosplit
 func allocRepeatedMessage2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) {
-	var r *repeatedMessage
-	p1, p2, r = vm.GetMutableField[repeatedMessage](p1, p2)
-	p1.Log(p2, "repeated message", "%v", r.raw)
+	var r *repeated.Messages[dynamic.Message]
+	p1, p2, r = vm.GetMutableField[repeated.Messages[dynamic.Message]](p1, p2)
+	p1.Log(p2, "repeated message", "%v", r.Raw)
 
 	var m *dynamic.Message
 
-	if r.raw.Ptr != 0 && r.stride == 0 {
+	if r.Raw.Ptr != 0 && r.Stride == 0 {
 		goto pointers
 	}
 
 	{
 		ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 		stride := int(ty.Size)
-		s := slice.CastUntyped[byte](r.raw)
+		s := slice.CastUntyped[byte](r.Raw)
 
-		if r.raw.Ptr == 0 {
+		if r.Raw.Ptr == 0 {
 			p1, p2, r = newInlineRepeatedField(p1, p2, r)
 		} else if s.Len()+stride > s.Cap() {
 			p1, p2 = spillInlineRepeatedField(p1, p2, r)
@@ -129,10 +84,10 @@ func allocRepeatedMessage2(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, *dynamic.Message) 
 			goto pointers
 		}
 
-		s = slice.CastUntyped[byte](r.raw)
+		s = slice.CastUntyped[byte](r.Raw)
 		p := xunsafe.Add(s.Ptr(), s.Len())
 		s = s.SetLen(s.Len() + stride)
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 
 		p1.Log(p2, "inline repeated message", "%v, %p/%d", s.Addr(), p, stride)
 		return vm.AllocInPlace(p1, p2, p)
@@ -160,7 +115,7 @@ pointers:
 }
 
 //go:noinline
-func newInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P2, *repeatedMessage) {
+func newInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeated.Messages[dynamic.Message]) (vm.P1, vm.P2, *repeated.Messages[dynamic.Message]) {
 	// First element of this field. Allocate a byte array large enough to
 	// hold one element.
 	ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
@@ -170,17 +125,17 @@ func newInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P
 	s := slice.Make[byte](p1.Arena(), int(stride)*int(preload))
 	s = s.SetLen(0)
 
-	r.raw = s.Addr().Untyped()
-	r.stride = stride
+	r.Raw = s.Addr().Untyped()
+	r.Stride = stride
 
 	return p1, p2, r
 }
 
 //go:noinline
-func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm.P2) {
+func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeated.Messages[dynamic.Message]) (vm.P1, vm.P2) {
 	ty := p1.Shared().Library().AtOffset(p2.Field().Message.TypeOffset)
 	stride := int(ty.Size)
-	s := slice.CastUntyped[byte](r.raw)
+	s := slice.CastUntyped[byte](r.Raw)
 
 	// Spill all of the messages onto a pointer slice.
 	spill := slice.Make[xunsafe.Addr[dynamic.Message]](p1.Arena(), s.Cap()/stride*2)
@@ -192,17 +147,17 @@ func spillInlineRepeatedField(p1 vm.P1, p2 vm.P2, r *repeatedMessage) (vm.P1, vm
 	}
 	spill = spill.SetLen(j)
 
-	r.raw = spill.Addr().Untyped()
-	r.stride = 0 // Mark this as an outlined message.
+	r.Raw = spill.Addr().Untyped()
+	r.Stride = 0 // Mark this as an outlined message.
 
 	return p1, p2
 }
 
 //go:noinline
 func appendOneMessage(p1 vm.P1, p2 vm.P2, m *dynamic.Message) (vm.P1, vm.P2, *dynamic.Message) {
-	var slot *repeatedMessage
-	p1, p2, slot = vm.GetMutableField[repeatedMessage](p1, p2)
-	s := slice.CastUntyped[xunsafe.Addr[dynamic.Message]](slot.raw)
-	slot.raw = s.AppendOne(p1.Arena(), xunsafe.AddrOf(m)).Addr().Untyped()
+	var r *repeated.Messages[dynamic.Message]
+	p1, p2, r = vm.GetMutableField[repeated.Messages[dynamic.Message]](p1, p2)
+	s := slice.CastUntyped[xunsafe.Addr[dynamic.Message]](r.Raw)
+	r.Raw = s.AppendOne(p1.Arena(), xunsafe.AddrOf(m)).Addr().Untyped()
 	return p1, p2, m
 }

@@ -25,13 +25,6 @@ import (
 	"buf.build/go/hyperpb/internal/tdp"
 )
 
-// wrapType is a callback to construct the root package's message type.
-//
-// It is connected to the root package via linkname.
-//
-//go:linkname wrapType
-func wrapType(*tdp.Type) protoreflect.MessageType
-
 // Message is an Message value of any [Type].
 type Message struct{ ty *tdp.Type }
 
@@ -52,7 +45,7 @@ func (e Message) Descriptor() protoreflect.MessageDescriptor {
 
 // Type implements {protoreflect.Message}.
 func (e Message) Type() protoreflect.MessageType {
-	return wrapType(e.ty)
+	return e.ty.ProtoReflect()
 }
 
 // New implements [protoreflect.Message].

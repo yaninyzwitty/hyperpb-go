@@ -184,13 +184,13 @@ func (m mapSxM) Get(mk protoreflect.MapKey) protoreflect.Value {
 		return protoreflect.Value{}
 	}
 
-	return protoreflect.ValueOfMessage(wrapMessage(*v))
+	return protoreflect.ValueOfMessage((*v).ProtoReflect())
 }
 
 func (m mapSxM) Range(yield func(protoreflect.MapKey, protoreflect.Value) bool) {
 	for k, v := range m.table.All() {
 		k := k.String(m.src)
-		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfMessage(wrapMessage(v))) {
+		if !yield(protoreflect.MapKey(protoreflect.ValueOfString(k)), protoreflect.ValueOfMessage((v).ProtoReflect())) {
 			return
 		}
 	}

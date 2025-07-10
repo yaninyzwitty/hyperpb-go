@@ -12,25 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tdp
+package zigzag
 
-import "google.golang.org/protobuf/reflect/protoreflect"
+import (
+	"unsafe"
 
-// Scalar is a Protobuf scalar type.
-type Scalar interface {
-	int32 | int64 |
-		uint32 | uint64 |
-		float32 | float64 |
-		protoreflect.EnumNumber
+	"google.golang.org/protobuf/encoding/protowire"
+
+	"buf.build/go/hyperpb/internal/tdp"
+)
+
+// Decode decodes a zigzag-encoded value of any type.
+//
+// Calling DecodeZigZag does not work correctly when sign extension is involved.
+func Decode[T tdp.Number](raw T) T {
+	n := uint64(raw)
+	n &= (1 << (unsafe.Sizeof(raw) * 8)) - 1
+
+	return T(protowire.DecodeZigZag(n))
 }
 
-// Int is any of the integer types that this package has to handle
-// generically.
-type Int interface {
-	~int8 | ~uint8 | ~int32 | ~int64 | ~uint32 | ~uint64
-}
-
-// Number is anything from [Int], or a float.
-type Number interface {
-	Int | ~float32 | ~float64
+// Decode64 is a helper for calling zigzag with a raw 64-bit input.
+func Decode64[T tdp.Number](raw uint64) T {
+	return Decode(T(raw))
 }

@@ -22,9 +22,11 @@ import (
 	"buf.build/go/hyperpb/internal/swiss"
 	"buf.build/go/hyperpb/internal/tdp"
 	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/repeated"
 	"buf.build/go/hyperpb/internal/tdp/vm"
 	"buf.build/go/hyperpb/internal/xunsafe"
 	"buf.build/go/hyperpb/internal/xunsafe/layout"
+	"buf.build/go/hyperpb/internal/zigzag"
 	"google.golang.org/protobuf/encoding/protowire"
 	"math/bits"
 	"unsafe"
@@ -8048,36 +8050,36 @@ func parseRepeatedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
 
-	var r *repeatedScalar[byte, uint8]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint8]](p1, p2)
-	p1.Log(p2, "slot", "%v", r.raw)
+	var r *repeated.Scalars[byte, uint8]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint8]](p1, p2)
+	p1.Log(p2, "slot", "%v", r.Raw)
 
-	if r.raw.OffArena() {
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+	if r.IsZC() {
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s := slice.Make[uint8](p1.Arena(), len(borrow)+1)
 		for i, b := range borrow {
 			s.Store(i, uint8(b))
 		}
 		s.Store(s.Len()-1, uint8(n))
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	s := slice.CastUntyped[uint8](r.raw)
+	s := slice.CastUntyped[uint8](r.Raw)
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint8(n))
 
 		p1.Log(p2, "store", "%v", s.Addr())
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint8(n))
 	p1.Log(p2, "append", "%v", s.Addr())
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8087,36 +8089,36 @@ func parseRepeatedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
 
-	var r *repeatedScalar[byte, uint32]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint32]](p1, p2)
-	p1.Log(p2, "slot", "%v", r.raw)
+	var r *repeated.Scalars[byte, uint32]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint32]](p1, p2)
+	p1.Log(p2, "slot", "%v", r.Raw)
 
-	if r.raw.OffArena() {
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+	if r.IsZC() {
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s := slice.Make[uint32](p1.Arena(), len(borrow)+1)
 		for i, b := range borrow {
 			s.Store(i, uint32(b))
 		}
 		s.Store(s.Len()-1, uint32(n))
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	s := slice.CastUntyped[uint32](r.raw)
+	s := slice.CastUntyped[uint32](r.Raw)
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint32(n))
 
 		p1.Log(p2, "store", "%v", s.Addr())
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint32(n))
 	p1.Log(p2, "append", "%v", s.Addr())
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8126,36 +8128,36 @@ func parseRepeatedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
 
-	var r *repeatedScalar[byte, uint64]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint64]](p1, p2)
-	p1.Log(p2, "slot", "%v", r.raw)
+	var r *repeated.Scalars[byte, uint64]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint64]](p1, p2)
+	p1.Log(p2, "slot", "%v", r.Raw)
 
-	if r.raw.OffArena() {
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+	if r.IsZC() {
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s := slice.Make[uint64](p1.Arena(), len(borrow)+1)
 		for i, b := range borrow {
 			s.Store(i, uint64(b))
 		}
 		s.Store(s.Len()-1, uint64(n))
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
-	s := slice.CastUntyped[uint64](r.raw)
+	s := slice.CastUntyped[uint64](r.Raw)
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, uint64(n))
 
 		p1.Log(p2, "store", "%v", s.Addr())
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
 	}
 
 	s = s.AppendOne(p1.Arena(), uint64(n))
 	p1.Log(p2, "append", "%v", s.Addr())
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8193,14 +8195,14 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	count = n - count
 
-	var r *repeatedScalar[byte, uint8]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint8]](p1, p2)
+	var r *repeated.Scalars[byte, uint8]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint8]](p1, p2)
 	var s slice.Slice[uint8]
 	switch {
-	case r.raw.Ptr == 0:
+	case r.Raw.Ptr == 0:
 		if count == n {
-			r.raw = slice.OffArena(p1.Ptr(), n)
-			p1.Log(p2, "zc", "%v", r.raw)
+			r.Raw = slice.OffArena(p1.Ptr(), n)
+			p1.Log(p2, "zc", "%v", r.Raw)
 
 			p1.PtrAddr = p1.EndAddr
 			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
@@ -8209,19 +8211,19 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.Grow(p1.Arena(), count)
 		p1.Log(p2, "grow", "%v", s.Addr())
 
-	case r.raw.OffArena():
+	case r.IsZC():
 
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s = slice.Make[uint8](p1.Arena(), len(borrow)+count)
 		for i, b := range borrow {
 			s.Store(i, uint8(b))
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
 	default:
-		s = slice.CastUntyped[uint8](r.raw)
+		s = slice.CastUntyped[uint8](r.Raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
 			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
@@ -8283,7 +8285,7 @@ func parsePackedVarint8(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
@@ -8322,14 +8324,14 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	count = n - count
 
-	var r *repeatedScalar[byte, uint32]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint32]](p1, p2)
+	var r *repeated.Scalars[byte, uint32]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint32]](p1, p2)
 	var s slice.Slice[uint32]
 	switch {
-	case r.raw.Ptr == 0:
+	case r.Raw.Ptr == 0:
 		if count == n {
-			r.raw = slice.OffArena(p1.Ptr(), n)
-			p1.Log(p2, "zc", "%v", r.raw)
+			r.Raw = slice.OffArena(p1.Ptr(), n)
+			p1.Log(p2, "zc", "%v", r.Raw)
 
 			p1.PtrAddr = p1.EndAddr
 			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
@@ -8338,19 +8340,19 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.Grow(p1.Arena(), count)
 		p1.Log(p2, "grow", "%v", s.Addr())
 
-	case r.raw.OffArena():
+	case r.IsZC():
 
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s = slice.Make[uint32](p1.Arena(), len(borrow)+count)
 		for i, b := range borrow {
 			s.Store(i, uint32(b))
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
 	default:
-		s = slice.CastUntyped[uint32](r.raw)
+		s = slice.CastUntyped[uint32](r.Raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
 			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
@@ -8412,7 +8414,7 @@ func parsePackedVarint32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
@@ -8451,14 +8453,14 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 	count = n - count
 
-	var r *repeatedScalar[byte, uint64]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[byte, uint64]](p1, p2)
+	var r *repeated.Scalars[byte, uint64]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[byte, uint64]](p1, p2)
 	var s slice.Slice[uint64]
 	switch {
-	case r.raw.Ptr == 0:
+	case r.Raw.Ptr == 0:
 		if count == n {
-			r.raw = slice.OffArena(p1.Ptr(), n)
-			p1.Log(p2, "zc", "%v", r.raw)
+			r.Raw = slice.OffArena(p1.Ptr(), n)
+			p1.Log(p2, "zc", "%v", r.Raw)
 
 			p1.PtrAddr = p1.EndAddr
 			p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
@@ -8467,19 +8469,19 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		s = s.Grow(p1.Arena(), count)
 		p1.Log(p2, "grow", "%v", s.Addr())
 
-	case r.raw.OffArena():
+	case r.IsZC():
 
-		borrow := slice.CastUntyped[byte](r.raw).Raw()
+		borrow := slice.CastUntyped[byte](r.Raw).Raw()
 		s = slice.Make[uint64](p1.Arena(), len(borrow)+count)
 		for i, b := range borrow {
 			s.Store(i, uint64(b))
 		}
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 
 	default:
-		s = slice.CastUntyped[uint64](r.raw)
+		s = slice.CastUntyped[uint64](r.Raw)
 		if spare := s.Cap() - s.Len(); spare < count {
 			s = s.Grow(p1.Arena(), count-spare)
 			p1.Log(p2, "grow", "%v, %d", s.Addr(), spare)
@@ -8541,7 +8543,7 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	s = s.SetLen(p.Sub(xunsafe.AddrOf(s.Ptr())))
 	p1.Log(p2, "append", "%v", s.Addr())
 
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	p1.EndAddr = xunsafe.Addr[byte](p2.Scratch())
 	return p1, p2
 }
@@ -8549,60 +8551,60 @@ func parsePackedVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 //go:nosplit
 func appendFixed32(p1 vm.P1, p2 vm.P2, v uint32) (vm.P1, vm.P2) {
 	_ = appendFixed[uint32]
-	var r *repeatedScalar[uint32, uint32]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[uint32, uint32]](p1, p2)
-	s := slice.CastUntyped[uint32](r.raw)
+	var r *repeated.Scalars[uint32, uint32]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[uint32, uint32]](p1, p2)
+	s := slice.CastUntyped[uint32](r.Raw)
 
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, v)
 		p1.Log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
-	} else if r.raw.OffArena() {
+	} else if r.Raw.OffArena() {
 
 		borrow := s.Raw()
 		s = slice.Make[uint32](p1.Arena(), len(borrow)+1)
 		copy(s.Raw(), borrow)
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 	}
 
 	s = s.AppendOne(p1.Arena(), v)
 	p1.Log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	return p1, p2
 }
 
 //go:nosplit
 func appendFixed64(p1 vm.P1, p2 vm.P2, v uint64) (vm.P1, vm.P2) {
 	_ = appendFixed[uint64]
-	var r *repeatedScalar[uint64, uint64]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[uint64, uint64]](p1, p2)
-	s := slice.CastUntyped[uint64](r.raw)
+	var r *repeated.Scalars[uint64, uint64]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[uint64, uint64]](p1, p2)
+	s := slice.CastUntyped[uint64](r.Raw)
 
 	if s.Len() < s.Cap() {
 		s = s.SetLen(s.Len() + 1)
 		s.Store(s.Len()-1, v)
 		p1.Log(p2, "repeated fixed store", "%v %v", s.Addr(), s)
 
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		return p1, p2
-	} else if r.raw.OffArena() {
+	} else if r.Raw.OffArena() {
 
 		borrow := s.Raw()
 		s = slice.Make[uint64](p1.Arena(), len(borrow)+1)
 		copy(s.Raw(), borrow)
 		s = s.SetLen(len(borrow))
 
-		p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+		p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 	}
 
 	s = s.AppendOne(p1.Arena(), v)
 	p1.Log(p2, "repeated fixed append", "%v %v", s.Addr(), s)
-	r.raw = s.Addr().Untyped()
+	r.Raw = s.Addr().Untyped()
 	return p1, p2
 }
 
@@ -8620,14 +8622,14 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		p1.Fail(p2, vm.ErrorTruncated)
 	}
 
-	var r *repeatedScalar[uint32, uint32]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[uint32, uint32]](p1, p2)
+	var r *repeated.Scalars[uint32, uint32]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[uint32, uint32]](p1, p2)
 
-	if r.raw.Ptr == 0 {
+	if r.Raw.Ptr == 0 {
 
-		r.raw = slice.OffArena(p1.Ptr(), n/size)
+		r.Raw = slice.OffArena(p1.Ptr(), n/size)
 		if debug.Enabled {
-			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint32](r.raw))
+			p1.Log(p2, "zc", "%v, %v", r.Raw, slice.CastUntyped[uint32](r.Raw))
 		}
 
 		p1 = p1.Advance(n)
@@ -8635,15 +8637,15 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	{
-		s := slice.CastUntyped[uint32](r.raw)
-		if r.raw.OffArena() {
+		s := slice.CastUntyped[uint32](r.Raw)
+		if r.Raw.OffArena() {
 
 			borrow := s.Raw()
 			s = slice.Make[uint32](p1.Arena(), len(borrow)+n/size)
 			copy(s.Raw(), borrow)
 			s = s.SetLen(len(borrow))
 
-			p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+			p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 		}
 
 		size := layout.Size[uint32]()
@@ -8655,9 +8657,9 @@ func parsePackedFixed32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		p1 = p1.Advance(n)
 
 		s = s.Append(p1.Arena(), borrowed...)
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		if debug.Enabled {
-			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
+			p1.Log(p2, "append", "%v, %v", r.Raw, s.Raw())
 		}
 	}
 
@@ -8679,14 +8681,14 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		p1.Fail(p2, vm.ErrorTruncated)
 	}
 
-	var r *repeatedScalar[uint64, uint64]
-	p1, p2, r = vm.GetMutableField[repeatedScalar[uint64, uint64]](p1, p2)
+	var r *repeated.Scalars[uint64, uint64]
+	p1, p2, r = vm.GetMutableField[repeated.Scalars[uint64, uint64]](p1, p2)
 
-	if r.raw.Ptr == 0 {
+	if r.Raw.Ptr == 0 {
 
-		r.raw = slice.OffArena(p1.Ptr(), n/size)
+		r.Raw = slice.OffArena(p1.Ptr(), n/size)
 		if debug.Enabled {
-			p1.Log(p2, "zc", "%v, %v", r.raw, slice.CastUntyped[uint64](r.raw))
+			p1.Log(p2, "zc", "%v, %v", r.Raw, slice.CastUntyped[uint64](r.Raw))
 		}
 
 		p1 = p1.Advance(n)
@@ -8694,15 +8696,15 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	}
 
 	{
-		s := slice.CastUntyped[uint64](r.raw)
-		if r.raw.OffArena() {
+		s := slice.CastUntyped[uint64](r.Raw)
+		if r.Raw.OffArena() {
 
 			borrow := s.Raw()
 			s = slice.Make[uint64](p1.Arena(), len(borrow)+n/size)
 			copy(s.Raw(), borrow)
 			s = s.SetLen(len(borrow))
 
-			p1.Log(p2, "spill", "%v->%v", r.raw, s.Addr())
+			p1.Log(p2, "spill", "%v->%v", r.Raw, s.Addr())
 		}
 
 		size := layout.Size[uint64]()
@@ -8714,9 +8716,9 @@ func parsePackedFixed64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 		p1 = p1.Advance(n)
 
 		s = s.Append(p1.Arena(), borrowed...)
-		r.raw = s.Addr().Untyped()
+		r.Raw = s.Addr().Untyped()
 		if debug.Enabled {
-			p1.Log(p2, "append", "%v, %v", r.raw, s.Raw())
+			p1.Log(p2, "append", "%v, %v", r.Raw, s.Raw())
 		}
 	}
 
@@ -8752,7 +8754,7 @@ func parseVarint64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint32]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint32](p2.Scratch())))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag.Decode64[uint32](p2.Scratch())))
 
 	var p *uint32
 	p1, p2, p = vm.GetMutableField[uint32](p1, p2)
@@ -8765,7 +8767,7 @@ func parseZigZag32(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 func parseZigZag64(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2) {
 	_ = parseZigZag[uint64]
 	p1, p2 = vm.P1.SetScratch(p1.Varint(p2))
-	p1, p2 = p1.SetScratch(p2, uint64(zigzag64[uint64](p2.Scratch())))
+	p1, p2 = p1.SetScratch(p2, uint64(zigzag.Decode64[uint64](p2.Scratch())))
 
 	var p *uint64
 	p1, p2, p = vm.GetMutableField[uint64](p1, p2)

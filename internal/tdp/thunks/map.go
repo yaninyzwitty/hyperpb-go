@@ -27,6 +27,7 @@ import (
 	"buf.build/go/hyperpb/internal/xunsafe"
 	"buf.build/go/hyperpb/internal/xunsafe/layout"
 	"buf.build/go/hyperpb/internal/zc"
+	"buf.build/go/hyperpb/internal/zigzag"
 )
 
 // map<K, V>, for K an integer type, is implemented as a swiss.Table of that
@@ -618,14 +619,14 @@ func (varint64Item) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint64) {
 func (zigzag32Item) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint32) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
-	return p1, p2, zigzag64[uint32](n)
+	return p1, p2, zigzag.Decode64[uint32](n)
 }
 
 //go:nosplit
 func (zigzag64Item) parse(p1 vm.P1, p2 vm.P2) (vm.P1, vm.P2, uint64) {
 	var n uint64
 	p1, p2, n = p1.Varint(p2)
-	return p1, p2, zigzag64[uint64](n)
+	return p1, p2, zigzag.Decode64[uint64](n)
 }
 
 //go:nosplit
