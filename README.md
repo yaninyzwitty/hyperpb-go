@@ -28,45 +28,59 @@ For example, let's say that we want to compile a parser for some type baked into
 our binary, and parse some data with it.
 
 ```go
-// Compile a type for your message. Make sure to cache this!
-// Here, we're using a compiled-in descriptor.
-ty := hyperpb.CompileFor((*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor())
+package main
+import (
+    "fmt"
 
-data := /* ... */
+    "buf.build/go/hyperpb"
+    "google.golang.org/protobuf/proto"
 
-// Allocate a fresh message using that type.
-msg := hyperpb.NewMessage(ty)
+    weatherv1 "github.com/..."
+)
 
-// Parse the message, using proto.Unmarshal like any other message type.
-if err := proto.Unmarshal(data, msg); err != nil {
-    // Handle parse failure.
-}
+func main() {
+    // Compile a type for your message. Make sure to cache this!
+    // Here, we're using a compiled-in descriptor.
+    msgType := hyperpb.CompileMessageDescriptor(
+        (*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor(),
+    )
 
-// Use reflection to read some fields. hyperpb currently only supports access
-// by reflection. You can also look up fields by index using fields.Get(), which
-// is less legible but doesn't hit a hashmap.
-fields := ty.Descriptor().Fields()
+    data := /* ... */
 
-// Get returns a protoreflect.Value, which can be printed directly...
-fmt.Println(msg.Get(fields.ByName("region")))
+    // Allocate a fresh message using that type.
+    msg := hyperpb.NewMessage(msgType)
 
-// ... or converted to an explicit type to operate on, such as with List(),
-// which converts a repeated field into something with indexing operations.
-stations := msg.Get(fields.ByName("weather_stations")).List()
-for i := range stations.Len() {
-    // Get returns a protoreflect.Value too, so we need to convert it into
-    // a message to keep extracting fields.
-    station := stations.Get(i).Message()
-    fields := station.Descriptor().Fields()
+    // Parse the message, using proto.Unmarshal like any other message type.
+    if err := proto.Unmarshal(data, msg); err != nil {
+        // Handle parse failure.
+    }
 
-    // Here we extract each of the fields we care about from the message.
-    // Again, we could use fields.Get if we know the indices.
-    fmt.Println("station:", station.Get(fields.ByName("station")))
-    fmt.Println("frequency:", station.Get(fields.ByName("frequency")))
-    fmt.Println("temperature:", station.Get(fields.ByName("temperature")))
-    fmt.Println("pressure:", station.Get(fields.ByName("pressure")))
-    fmt.Println("wind_speed:", station.Get(fields.ByName("wind_speed")))
-    fmt.Println("conditions:", station.Get(fields.ByName("conditions")))
+    // Use reflection to read some fields. hyperpb currently only supports access
+    // by reflection. You can also look up fields by index using fields.Get(), which
+    // is less legible but doesn't hit a hashmap.
+    fields := msgType.Descriptor().Fields()
+
+    // Get returns a protoreflect.Value, which can be printed directly...
+    fmt.Println(msg.Get(fields.ByName("region")))
+
+    // ... or converted to an explicit type to operate on, such as with List(),
+    // which converts a repeated field into something with indexing operations.
+    stations := msg.Get(fields.ByName("weather_stations")).List()
+    for i := range stations.Len() {
+        // Get returns a protoreflect.Value too, so we need to convert it into
+        // a message to keep extracting fields.
+        station := stations.Get(i).Message()
+        fields := station.Descriptor().Fields()
+
+        // Here we extract each of the fields we care about from the message.
+        // Again, we could use fields.Get if we know the indices.
+        fmt.Println("station:", station.Get(fields.ByName("station")))
+        fmt.Println("frequency:", station.Get(fields.ByName("frequency")))
+        fmt.Println("temperature:", station.Get(fields.ByName("temperature")))
+        fmt.Println("pressure:", station.Get(fields.ByName("pressure")))
+        fmt.Println("wind_speed:", station.Get(fields.ByName("wind_speed")))
+        fmt.Println("conditions:", station.Get(fields.ByName("conditions")))
+    }
 }
 ```
 
@@ -85,17 +99,26 @@ We can use the `hyperpb.CompileForBytes` function to parse a dynamic type and
 use it to walk the fields of a message:
 
 ```go
-ty := hyperpb.CompileFileDescriptorSet(schema, messageName) // Remember to cache this!
+package main
 
-msg := hyperpb.NewMessage(ty)
-if err := proto.Unmarshal(data, msg); err != nil {
-    // Handle parse failure.
-}
+import (
+    "buf.build/go/hyperpb"
+    "google.golang.org/protobuf/proto"
+)
 
-// Range will iterate over all of the populated fields in msg. Here we
-// use Range with go1.24 iterator syntax.
-for field, value := range msg.Range {
-    // Do something with each populated field.
+func main() {
+    msgType := hyperpb.CompileFileDescriptorSet(schema, messageName) // Remember to cache this!
+
+    msg := hyperpb.NewMessage(msgType)
+    if err := proto.Unmarshal(data, msg); err != nil {
+        // Handle parse failure.
+    }
+
+    // Range will iterate over all of the populated fields in msg. Here we
+    // use Range with go1.24 iterator syntax.
+    for field, value := range msg.Range {
+        // Do something with each populated field.
+    }
 }
 ```
 
@@ -104,29 +127,51 @@ we can use them as an efficient transcoding medium from the wire format, for
 runtime-loaded messages.
 
 ```go
-// Unmarshal like before.
-ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
-msg := hyperpb.NewMessage(ty)
-if err := proto.Unmarshal(data, msg); err != nil {
-    // ...
-}
+package main
 
-// Dump the message to JSON. This just works!
-bytes, err := protojson.Marshal(msg)
+import (
+    "buf.build/go/hyperpb"
+    "google.golang.org/protobuf/encoding/protojson"
+    "google.golang.org/protobuf/proto"
+)
+
+func main() {
+    // Unmarshal like before.
+    msgType := hyperpb.CompileFileDescriptorSet(schema, messageName)
+    msg := hyperpb.NewMessage(msgType)
+    if err := proto.Unmarshal(data, msg); err != nil {
+        // ...
+    }
+
+    // Dump the message to JSON. This just works!
+    bytes, err := protojson.Marshal(msg)
+}
 ```
 
 `protovalidate` also works directly on reflection, so it works out-of-the-box:
 
 ```go
-// Unmarshal like before.
-ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
-msg := hyperpb.New(ty)
-if err := proto.Unmarshal(data, msg); err != nil {
-    // Handle parse failure.
-}
+package main
 
-// Run custom validation. This just works!
-err := protovalidate.Validate(msg)
+import (
+    "buf.build/go/hyperpb"
+    "buf.build/go/protovalidate"
+    "google.golang.org/protobuf/proto"
+)
+
+func main() {
+    // Unmarshal like before.
+    msgType := hyperpb.CompileFileDescriptorSet(schema, messageName)
+    msg := hyperpb.NewMessage(msgType)
+    if err := proto.Unmarshal(data, msg); err != nil {
+        // Handle parse failure.
+    }
+
+    // Run custom validation. This just works!
+    if err := protovalidate.Validate(msg); err != nil {
+        // Handle validation failure.
+    }
+}
 ```
 
 ## Advanced Usage
@@ -136,21 +181,30 @@ optimization knobs available. Calling `Message.Unmarshal` directly instead
 of `proto.Unmarshal` allows setting custom `UnmarshalOption`s:
 
 ```go
-ty := hyperpb.CompileFileDescriptorSet(schema, messageName)
-msg := hyperpb.NewMessage(ty)
+package main
 
-// Unmarshal with custom performance knobs.
-err := msg.Unmarshal(data,
-    hyperpb.WithMaxDecodeMisses(16),
-    // ...
+import (
+    "buf.build/go/hyperpb"
+    "google.golang.org/protobuf/proto"
 )
+
+func main() {
+    msgType := hyperpb.CompileFileDescriptorSet(schema, messageName)
+    msg := hyperpb.NewMessage(msgType)
+
+    // Unmarshal with custom performance knobs.
+    err := msg.Unmarshal(data,
+        hyperpb.WithMaxDecodeMisses(16),
+        // ...
+    )
+}
 ```
 
 The compiler also takes `CompileOptions`, such as for configuring how extensions
 are resolved:
 
 ```go
-ty := hyperpb.CompileFileDescriptorSet(schema, messageName,
+msgType := hyperpb.CompileFileDescriptorSet(schema, messageName,
     hyperpb.WithExtensionsFromTypes(typeRegistry),
 )
 ```
@@ -175,8 +229,8 @@ type requestContext struct {
 
 func (c *requestContext) Handle(req Request) {
     // ...
-    ty := c.types[req.Type]
-    msg := c.shared.NewMessage(ty)
+    msgType := c.types[req.Type]
+    msg := c.shared.NewMessage(msgType)
     defer c.shared.Free()
 
     c.process(msg, req, ...)
@@ -198,23 +252,31 @@ can build an optimized type, using that corpus as the profile, using
 `Type.Recompile`:
 
 ```go
-func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
+package pgo
+
+import (
+    "buf.build/go/hyperpb"
+    "google.golang.org/protobuf/proto"
+    "google.golang.org/protobuf/reflect/protoreflect"
+)
+
+func compilePGO(md protoreflect.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
     // Compile the type without any profiling information.
-    ty := hyperpb.CompileForDescriptor(md)
+    msgType := hyperpb.CompileForDescriptor(md)
 
     // Construct a new profile recorder.
-    profile := ty.NewProfile()
+    profile := msgType.NewProfile()
 
     // Parse all of the specimens in the corpus, making sure to record a profile
     // for all of them.
     s := new(hyperpb.Shared)
     for _, specimen := range corpus {
-        s.NewMessage(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+        s.NewMessage(msgType).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
         s.Free()
     }
 
     // Recompile with the profile.
-    return ty.Recompile(profile)
+    return msgType.Recompile(profile)
 }
 ```
 
@@ -229,7 +291,7 @@ type requestContext struct {
 }
 
 type typeInfo struct {
-    ty atomic.Pointer[hyperpb.Type]
+    msgType atomic.Pointer[hyperpb.Type]
     prof atomic.Pointer[hyperpb.Profile]
     seen atomic.Int64
 }
@@ -240,7 +302,7 @@ func (c *requestContext) Handle(req Request) {
     tyInfo.Lock()
     
     // Parse the type as usual.
-    msg := c.shared.NewMessage(tyInfo.ty.Load())
+    msg := c.shared.NewMessage(tyInfo.msgType.Load())
     defer c.shared.Free()
     err := msg.Unmarshal(
         // Only profile 1% of messages.
@@ -263,7 +325,7 @@ func (c *requestContext) Handle(req Request) {
 
             // Recompile the type. This is gonna be really slow, because
             // the compiler is slow, which is why we're doing it asynchronously.
-            tyInfo.ty.Store(tyInfo.ty.Load().Recompile(tyInfo.prof))
+            tyInfo.msgType.Store(tyInfo.msgType.Load().Recompile(tyInfo.prof))
             tyInfo.prof.Store(tyInfo.NewProfile())
         }
     }

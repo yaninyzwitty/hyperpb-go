@@ -38,12 +38,14 @@
 // our binary, and parse some data with it.
 //
 //	//Compile a type for your message. Make sure to cache this!
-//	ty := hyperpb.CompileFor[*weatherv1.WeatherReport]()
+//	msgType := hyperpb.CompileMessageDescriptor(
+//		(*weatherv1.WeatherReport)(nil).ProtoReflect().Descriptor(),
+//	)
 //
 //	data := /* ... */
 //
 //	// Allocate a fresh message using that type.
-//	msg := hyperpb.NewMessage(ty)
+//	msg := hyperpb.NewMessage(msgType)
 //
 //	// Parse the message, using proto.Unmarshal like any other message type.
 //	if err := proto.Unmarshal(data, msg); err != nil {
@@ -53,7 +55,7 @@
 //	// Use reflection to read some fields. hyperpb currently only supports access
 //	// by reflection. You can also look up fields by index using fields.Get(), which
 //	// is less legible but doesn't hit a hashmap.
-//	fields := ty.Descriptor().Fields()
+//	fields := msgType.Descriptor().Fields()
 //
 //	// Get returns a protoreflect.Value, which can be printed directly...
 //	fmt.Println(msg.Get(fields.ByName("region")))
@@ -106,8 +108,8 @@
 //
 //	func (c *requestContext) Handle(req Request) {
 //	    // ...
-//	    ty := types[req.Type]
-//	    msg := c.shared.NewMessage(ty)
+//	    msgType := types[req.Type]
+//	    msg := c.shared.NewMessage(msgType)
 //	    defer c.shared.Free()
 //
 //	    c.process(msg, req, ...)
@@ -127,23 +129,23 @@
 // can build an optimized type, using that corpus as the profile, using
 // `Type.Recompile`:
 //
-//	func compilePGO(md protocompile.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
+//	func compilePGO(md protoreflect.MessageDescriptor, corpus [][]byte) *hyperpb.MessageType {
 //		// Compile the type without any profiling information.
-//		ty := hyperpb.CompileForDescriptor(md)
+//		msgType := hyperpb.CompileForDescriptor(md)
 //
 //		// Construct a new profile recorder.
-//		profile := ty.NewProfile()
+//		profile := msgType.NewProfile()
 //
 //		// Parse all of the specimens in the corpus, making sure to record a profile
 //		// for all of them.
 //		s := new(hyperpb.Shared)
 //		for _, specimen := range corpus {
-//			s.NewMessage(ty).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
+//			s.NewMessage(msgType).Unmarshal(hyperpb.RecordProfile(profile, 1.0))
 //			s.Free()
 //		}
 //
 //		// Recompile with the profile.
-//		return ty.Recompile(profile)
+//		return msgType.Recompile(profile)
 //	}
 //
 // # Compatibility

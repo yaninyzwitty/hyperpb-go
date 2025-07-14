@@ -28,7 +28,7 @@ type Shared struct {
 }
 
 // NewMessage allocates a new message using this value's resources.
-func (s *Shared) NewMessage(ty *MessageType) *Message {
+func (s *Shared) NewMessage(msgType *MessageType) *Message {
 	if s == nil {
 		s = new(Shared)
 	}
@@ -36,17 +36,17 @@ func (s *Shared) NewMessage(ty *MessageType) *Message {
 	// Previously, this code was here:
 	//
 	// // Easy mistake to make: the memory allocated in alloc() contains no
-	// // pointers, so even though ty is "reachable" through m, it's not reachable
+	// // pointers, so even though msgType is "reachable" through m, it's not reachable
 	// // from the GC's perspective, so we need to mark it as alive here.
 	// //
-	// // This implicitly marks all other types reachable from ty as alive, meaning
+	// // This implicitly marks all other types reachable from msgType as alive, meaning
 	// // we only need to do this for top-level calls to New().
-	// c.arena.KeepAlive(ty)
+	// c.arena.KeepAlive(msgType)
 	//
-	// It is now redundant, because Context stores ty.Library(). The comment is
+	// It is now redundant, because Context stores msgType.Library(). The comment is
 	// kept for posterity about a nasty bug.
 
-	return wrapMessage(s.impl.New(&ty.impl))
+	return wrapMessage(s.impl.New(&msgType.impl))
 }
 
 // Free releases any resources held by this value, allowing them to be re-used.
