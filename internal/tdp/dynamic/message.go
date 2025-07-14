@@ -164,7 +164,7 @@ func (m *Message) GetByIndexUnchecked(n int) protoreflect.Value {
 	return m.Type().ByIndex(n).Get(unsafe.Pointer(m))
 }
 
-// GetField returns the field data for a given message.
+// GetField returns the field pointer for a given message.
 //
 // Returns nil if the field is cold and there is no cold region allocated.
 func GetField[T any](m *Message, offset tdp.Offset) *T {
@@ -176,6 +176,21 @@ func GetField[T any](m *Message, offset tdp.Offset) *T {
 		return xunsafe.ByteAdd[T](cold, ^offset.Data)
 	}
 	return xunsafe.ByteAdd[T](m, offset.Data)
+}
+
+// LoadField returns the field data for a given message.
+//
+// Returns nil if the field is cold and there is no cold region allocated.
+func LoadField[T any](m *Message, offset tdp.Offset) T {
+	if offset.Data < 0 {
+		cold := m.Cold()
+		if cold == nil {
+			var z T
+			return z
+		}
+		return *xunsafe.ByteAdd[T](cold, ^offset.Data)
+	}
+	return *xunsafe.ByteAdd[T](m, offset.Data)
 }
 
 // GetBit gets the value of the nth bit from this message's bitset.

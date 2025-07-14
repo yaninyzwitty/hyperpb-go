@@ -63,6 +63,9 @@ type Table[K Key, V any] struct {
 	// Instrumentation stats.
 	metrics *Metrics
 
+	// Scratch memory for holding a pointer that is needed for decoding keys.
+	Scratch *byte
+
 	// We can't use the address of a table as the seed, because the compiler
 	// wants to be able to copy tables byte-wise in memory.
 	seed hash

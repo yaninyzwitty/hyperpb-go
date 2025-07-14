@@ -73,6 +73,17 @@ func GetInt[T Int](v protoreflect.Value) T {
 	return T(r.num)
 }
 
+// GetString is like [protoreflect.Value.String], but it panics if the contained
+// type is not a string.
+func GetString(v protoreflect.Value) string {
+	r := unwrapValue(v)
+	if r.typ != xunsafe.AnyType("") {
+		panic(typeMismatch(protoreflect.ValueOf(""), v))
+	}
+
+	return unsafe.String(r.data, r.num)
+}
+
 // GetRawInt pulls the raw integer value out of v.
 func GetRawInt(v protoreflect.Value) uint64 {
 	return unwrapValue(v).num

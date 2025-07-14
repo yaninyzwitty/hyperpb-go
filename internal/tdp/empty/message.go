@@ -73,18 +73,18 @@ func (e Message) Clear(protoreflect.FieldDescriptor) {}
 func (e Message) Get(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	f := e.ty.ByDescriptor(fd)
 	if !f.IsValid() {
-		return protoreflect.ValueOf(nil)
+		return protoreflect.Value{}
 	}
 
 	switch {
 	case fd.IsList():
-		return protoreflect.ValueOf(List{})
+		return protoreflect.ValueOfList(List{})
 
 	case fd.IsMap():
-		panic(debug.Unsupported())
+		return protoreflect.ValueOfMap(Map{})
 
 	case fd.Message() != nil:
-		return protoreflect.ValueOf(Message{f.Message})
+		return protoreflect.ValueOfMessage(Message{f.Message})
 
 	default:
 		return fd.Default()

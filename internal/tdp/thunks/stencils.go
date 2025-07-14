@@ -104,6 +104,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -112,6 +113,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -192,6 +194,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -200,6 +203,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -280,6 +284,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -288,6 +293,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -368,6 +374,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -376,6 +383,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -456,6 +464,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -464,6 +473,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -544,6 +554,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -552,6 +563,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -632,6 +644,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -640,6 +653,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
@@ -720,6 +734,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -728,6 +743,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -808,6 +824,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -816,6 +833,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -896,6 +914,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -904,6 +923,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -984,6 +1004,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -992,6 +1013,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -1072,6 +1094,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -1080,6 +1103,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -1160,6 +1184,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1168,6 +1193,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -1248,6 +1274,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -1256,6 +1283,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -1336,6 +1364,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1344,6 +1373,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -1424,6 +1454,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -1432,6 +1463,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
@@ -1512,6 +1544,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1520,6 +1553,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -1600,6 +1634,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -1608,6 +1643,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -1688,6 +1724,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -1696,6 +1733,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -1776,6 +1814,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -1784,6 +1823,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -1864,6 +1904,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -1872,6 +1913,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -1952,6 +1994,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -1960,6 +2003,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -2040,6 +2084,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -2048,6 +2093,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -2128,6 +2174,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2136,6 +2183,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -2216,6 +2264,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -2224,6 +2273,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
@@ -2304,6 +2354,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2312,6 +2363,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -2392,6 +2444,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -2400,6 +2453,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -2480,6 +2534,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2488,6 +2543,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -2568,6 +2624,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2576,6 +2633,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -2656,6 +2714,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2664,6 +2723,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -2744,6 +2804,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2752,6 +2813,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -2832,6 +2894,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -2840,6 +2903,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -2920,6 +2984,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -2928,6 +2993,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -3008,6 +3074,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -3016,6 +3083,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
@@ -3096,6 +3164,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -3104,6 +3173,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -3184,6 +3254,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -3192,6 +3263,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -3272,6 +3344,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3280,6 +3353,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -3360,6 +3434,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3368,6 +3443,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -3448,6 +3524,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3456,6 +3533,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -3536,6 +3614,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3544,6 +3623,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -3624,6 +3704,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU32(m, k, extract)
@@ -3632,6 +3713,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU32(m2, k, extract)
 	}
 
@@ -3712,6 +3794,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3720,6 +3803,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -3800,6 +3884,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU8(m, k, extract)
@@ -3808,6 +3893,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU8(m2, k, extract)
 	}
 
@@ -3888,6 +3974,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3896,6 +3983,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -3976,6 +4064,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xU64(m, k, extract)
@@ -3984,6 +4073,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xU64(m2, k, extract)
 	}
 
@@ -4064,6 +4154,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4072,6 +4163,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -4152,6 +4244,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4160,6 +4253,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -4240,6 +4334,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4248,6 +4343,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -4328,6 +4424,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4336,6 +4433,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -4416,6 +4514,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4424,6 +4523,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -4504,6 +4604,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4512,6 +4613,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -4592,6 +4694,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -4600,6 +4703,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
@@ -4680,6 +4784,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4688,6 +4793,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -4768,6 +4874,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4776,6 +4883,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -4856,6 +4964,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -4864,6 +4973,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -4944,6 +5054,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -4952,6 +5063,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5032,6 +5144,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5040,6 +5153,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -5120,6 +5234,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5128,6 +5243,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5208,6 +5324,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5216,6 +5333,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -5296,6 +5414,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5304,6 +5423,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5384,6 +5504,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -5392,6 +5513,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
@@ -5472,6 +5594,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5480,6 +5603,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5560,6 +5684,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5568,6 +5693,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5648,6 +5774,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5656,6 +5783,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -5736,6 +5864,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5744,6 +5873,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -5824,6 +5954,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -5832,6 +5963,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -5912,6 +6044,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -5920,6 +6053,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -6000,6 +6134,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU32(m, k, extract)
@@ -6008,6 +6143,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU32(m2, k, extract)
 	}
 
@@ -6088,6 +6224,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6096,6 +6233,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -6176,6 +6314,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU8(m, k, extract)
@@ -6184,6 +6323,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU8(m2, k, extract)
 	}
 
@@ -6264,6 +6404,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6272,6 +6413,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -6352,6 +6494,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xU64(m, k, extract)
@@ -6360,6 +6503,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xU64(m2, k, extract)
 	}
 
@@ -6440,6 +6584,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6448,6 +6593,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
@@ -6528,6 +6674,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6536,6 +6683,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
@@ -6616,6 +6764,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6624,6 +6773,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
@@ -6704,6 +6854,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6712,6 +6863,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
@@ -6792,6 +6944,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU32(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU32(m, k, extract)
@@ -6800,6 +6953,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint32]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU32(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU32(m2, k, extract)
 	}
 
@@ -6880,6 +7034,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -6888,6 +7043,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
@@ -6968,6 +7124,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU8(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU8(m, k, extract)
@@ -6976,6 +7133,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint8]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU8(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU8(m2, k, extract)
 	}
 
@@ -7056,6 +7214,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -7064,6 +7223,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
@@ -7144,6 +7304,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xU64(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xU64(m, k, extract)
@@ -7152,6 +7313,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, uint64]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xU64(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xU64(m2, k, extract)
 	}
 
@@ -7232,6 +7394,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7240,6 +7403,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
@@ -7330,6 +7494,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7338,6 +7503,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
@@ -7428,6 +7594,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7436,6 +7603,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
@@ -7526,6 +7694,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7534,6 +7703,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
@@ -7624,6 +7794,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU32xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU32xP(m, k, extract)
@@ -7632,6 +7803,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint32, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU32xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU32xP(m2, k, extract)
 	}
 
@@ -7722,6 +7894,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7730,6 +7903,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
@@ -7820,6 +7994,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7828,6 +8003,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
@@ -7918,6 +8094,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU64xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU64xP(m, k, extract)
@@ -7926,6 +8103,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint64, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU64xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU64xP(m2, k, extract)
 	}
 
@@ -8016,6 +8194,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		swiss.InitU8xP(m, cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := swiss.InsertU8xP(m, k, extract)
@@ -8024,6 +8203,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[uint8, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		swiss.InitU8xP(m2, m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = swiss.InsertU8xP(m2, k, extract)
 	}
 

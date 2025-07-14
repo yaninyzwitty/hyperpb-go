@@ -21,7 +21,7 @@ type Scalar interface {
 	int32 | int64 |
 		uint32 | uint64 |
 		float32 | float64 |
-		protoreflect.EnumNumber
+		protoreflect.EnumNumber | bool
 }
 
 // Int is any of the integer types that this package has to handle

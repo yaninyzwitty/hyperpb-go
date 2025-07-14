@@ -21,19 +21,17 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"buf.build/go/hyperpb/internal/swiss"
+	"buf.build/go/hyperpb/internal/tdp"
 	"buf.build/go/hyperpb/internal/tdp/compiler"
 	"buf.build/go/hyperpb/internal/tdp/dynamic"
+	"buf.build/go/hyperpb/internal/tdp/maps"
 	"buf.build/go/hyperpb/internal/tdp/vm"
+	"buf.build/go/hyperpb/internal/xprotoreflect"
 	"buf.build/go/hyperpb/internal/xunsafe"
 	"buf.build/go/hyperpb/internal/xunsafe/layout"
 	"buf.build/go/hyperpb/internal/zc"
 	"buf.build/go/hyperpb/internal/zigzag"
 )
-
-// map<K, V>, for K an integer type, is implemented as a swiss.Table of that
-// type, while map<string, V> and map<bytes, V> are both implemented as a
-// swiss.Table[zc, _], requiring the original buffer's source to perform
-// lookups.
 
 // mapFields consists of archetypes for map fields. The first index is the key,
 // the second is the value.
@@ -412,7 +410,7 @@ var mapFields = map[protoreflect.Kind]map[protoreflect.Kind]*compiler.Archetype{
 		protoreflect.DoubleKind:   mapArch(getMap2xI[float64], parseMap2xF64),
 
 		// Special scalar types.
-		protoreflect.BoolKind: mapArch(getMap2x2, parseMap2x2),
+		protoreflect.BoolKind: mapArch(getMap2xI[bool], parseMap2x2),
 		protoreflect.EnumKind: mapArch(getMap2xI[protoreflect.EnumNumber], parseMap2xV32),
 
 		// String types.
@@ -545,10 +543,83 @@ func init() {
 	}
 }
 
+// getMapIxI is a [getterThunk] for map<K, V> where K and V are both integer types.
+func getMapIxI[K xprotoreflect.Int, V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.IntToScalar[K, V]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapIxS is a [getterThunk] for map<K, string> where K is an integer type.
+func getMapIxS[K xprotoreflect.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.IntToString[K]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapIxB is a [getterThunk] for map<K, bytes> where K is an integer type.
+func getMapIxB[K xprotoreflect.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.IntToBytes[K]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapIxM is a [getterThunk] for map<string, V> where V is an integer type.
+func getMapIxM[K xprotoreflect.Int](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.IntToMessage[K, dynamic.Message]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapSxI is a [getterThunk] for map<string, V> where V is an integer type.
+func getMapSxI[V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.StringToScalar[V]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapSxS is a [protoreflect.Map] for map<string, string>.
+func getMapSxS(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.StringToString](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapSxS is a [protoreflect.Map] for map<string, bytes>.
+func getMapSxB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.StringToBytes](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMapSxM is a [getterThunk] for map<string, V> where V is a message type.
+func getMapSxM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.StringToMessage[dynamic.Message]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMap2xI is a [getterThunk] for map<bool, V> where V is an integer type.
+func getMap2xI[V any](m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.BoolToScalar[V]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMap2xS is a [getterThunk] for map<bool, string>.
+func getMap2xS(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.BoolToString](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMap2xB is a [getterThunk] for map<bool, bytes>.
+func getMap2xB(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.BoolToBytes](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
+// getMap2xM is a [getterThunk] for map<bool, V> where V is a message type.
+func getMap2xM(m *dynamic.Message, _ *tdp.Type, getter *tdp.Accessor) protoreflect.Value {
+	v := dynamic.LoadField[*maps.BoolToMessage[dynamic.Message]](m, getter.Offset)
+	return protoreflect.ValueOfMap(v.ProtoReflect())
+}
+
 // mapArch is a helper for constructing map<K, V> archetypes, where K is not
 // bool.
 func mapArch(getter compiler.Getter, parser vm.Thunk) *compiler.Archetype {
 	return &compiler.Archetype{
+		// All maps use the same layout: a pointer to a swiss.Table.
 		Layout:  layout.Of[*swiss.Table[int32, int32]](),
 		Getter:  getter,
 		Parsers: []compiler.Parser{{Kind: protowire.BytesType, Retry: true, Thunk: parser}},
@@ -846,6 +917,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		m.Init(cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := m.Insert(k, extract)
@@ -854,6 +926,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = m2.Insert(k, extract)
 	}
 
@@ -950,6 +1023,7 @@ insert:
 		m = xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m)
 		m.Init(cap, nil, extract)
+		xunsafe.StoreNoWB(&m.Scratch, p1.Shared().Src)
 	}
 
 	vp := m.Insert(k, extract)
@@ -958,6 +1032,7 @@ insert:
 		m2 := xunsafe.Cast[swiss.Table[K, V]](p1.Arena().Alloc(size))
 		xunsafe.StoreNoWB(mp, m2)
 		m2.Init(m.Len()+1, m, extract)
+		xunsafe.StoreNoWB(&m2.Scratch, p1.Shared().Src)
 		vp = m2.Insert(k, extract)
 	}
 
